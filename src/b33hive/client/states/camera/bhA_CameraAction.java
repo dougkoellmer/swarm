@@ -1,0 +1,15 @@
+package com.b33hive.client.states.camera;
+
+import com.b33hive.shared.statemachine.bhA_Action;
+import com.b33hive.shared.statemachine.bhA_State;
+
+public abstract class bhA_CameraAction extends bhA_Action
+{
+	@Override
+	public void prePerform()
+	{
+		StateMachine_Camera machine = bhA_State.getEnteredInstance(StateMachine_Camera.class);
+		
+		machine.tryPoppingGettingAddressState();
+	}
+}

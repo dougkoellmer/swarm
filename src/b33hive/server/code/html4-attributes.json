@@ -1,0 +1,67 @@
+{
+  "description": "See http://code.google.com/p/google-caja/wiki/CajaWhitelists",
+  "inherits": [
+      "html4-attributes-defs.json",
+      "html4-attributes-whitelist.json"
+      ],
+
+  "types": [
+      { "key": "A::HREF",
+        "mimeTypes": "*/*", "optional": true, "type": "URI",
+        "uriEffect": "NEW_DOCUMENT", "loaderType": "UNSANDBOXED",
+        "safeValue": "#",
+        "reason": [
+            "Specify the safe value # since it does not navigate the page"
+            ]
+      },
+      {
+        "key": "A::TARGET",
+        "optional": "true",
+        "reason": [
+             "Either the name of a window or one of the special values that",
+             "start with an underscore.",
+             "From http://htmlhelp.com/reference/html40/values.html:",
+             "  _blank renders the link in a new, unnamed window",
+             "  _self renders the link in the current frame",
+             "  _parent renders the link in the immediate FRAMESET parent",
+             "  _top renders the link in the full, unframed window",
+             "NOTE: I've (DRK) taken out type:FRAME_TARGET (in quotes originally).",
+             "",
+             "We allow only _blank."
+             ],
+        "values": "_blank",
+        "default": "_self"
+      },
+      { "key": "AREA::TARGET", "optional": "true", "type": "FRAME_TARGET",
+        "values": "_blank", "default": "_self" },
+      { "key": "BASE::TARGET", "optional": "true", "type": "FRAME_TARGET",
+        "values": "_blank", "default": "_self" },
+      { "key": "FORM::TARGET", "optional": "true", "type": "FRAME_TARGET",
+        "values": "_blank", "default": "_self" },
+      { "key": "LINK::TARGET", "optional": "true", "type": "FRAME_TARGET",
+        "values": "_blank", "default": "_self" },
+      {
+        "key": "*::LANGUAGE",
+        "description": "predefined script language name",
+        "optional": true, "values": "text/javascript"
+      },
+      {
+        "key": "SCRIPT::TYPE",
+        "description": "content type of script language",
+        "optional": true, "pattern": "text/javascript(;.*)?",
+        "default": "text/javascript"
+      },
+      {
+        "key": "STYLE::TYPE",
+        "description": "content type of a style language",
+        "optional": true, "pattern": "text/css(;.*)?",
+        "default": "text/css"
+      },
+      {
+        "key": "INPUT::TYPE",
+        "description": "what kind of widget is needed",
+        "values": "text,checkbox,radio,submit,reset,hidden,image,button,file,password",
+        "optional": true, "default": "TEXT"
+      }
+      ]
+}

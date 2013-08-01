@@ -1,0 +1,6 @@
+{
+  "description": "See http://code.google.com/p/google-caja/wiki/CajaWhitelists",
+  "inherits": [
+      "html5-elements-defs.json",
+      "html5-elements-whitelist.json" ]
+}
