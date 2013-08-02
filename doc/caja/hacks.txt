@@ -1,0 +1,47 @@
+- removed FRAME_TARGET type from attributes json so that no-op javascript doesn't get added that sets the target attribute of <a> to null (a no-op)....html4-attributes.json
+
+- Added "data" to UriPolicyNanny's allowed schemas.
+
+- Made it so that cell address in a::href gets rewritten to javascript::bh.snapTo('address').
+
+- Making my own caja container for static html with no associated cajold js module
+
+- Providing guest code with API
+
+- scanning for no-op javascript
+
+- made HtmlSchema extensible
+
+- implementing my own client-side fetcher to get around IE10 bug.
+
+
+
+
+SERVER STEPS
+
+(1) build HTML DOM...this adds html/body tags if they aren't there, puts styles in the head, that kind of thing...otherwise is exactly reflective of what is sent to as the raw user source code.
+
+(2) pre clean HTML...this is a custom class class I made that traverses the tree, and using my custom HtmlSchema class, removes all script-related attributes, and the script tag itself...the purpose of this class is not to be an exhaustive sanitizer, but (1) to just remove as much script-related stuff as possible so that the caja compiler's job is as easy as possible, and (2) to tell the caller whether it found JS or not...again, this "finding" is not exhaustive...there may be false negatives and false positives, but we address that later...
+
+(3) caja compiler...namespaces the html and css portions, compiles whatever JavaScript may still be part of the DOM after pre cleaning...uses custom html schema to deny attributes that are script-related, but this should be moot, because pre cleaning should have already removed them...also calls back to custom uri policy that keeps track of whether an a::href b33path path is found
+
+(4) DOM transformation...if uri policy finds b33path path(s), we must traverse the dom again and transform them to javascript href methods...these will be part of the static html DOM
+
+(5) if Caja JS module is empty, AND pre cleaner didn't find JS, then we only send splash code back to client, as a stand in for compiled as well...otherwise we send separate splash and compiled code...there may be false positives here for detecting JS...for example....user provides an onclick="" attribute...there should really never be false negatives by this point though...if the cajoled JS module is empty, it should be there is no JS in the user-provided code....and especially no JS in the static html
+
+
+
+The reason we have to do a separate pre-clean, and not just let callbacks to the HtmlSchema handle the denying of JS, is that the Caja compiler asks the schema to check "ghost" attributes that aren't actually part of the DOM, and some of those attributes are script-related...so, the html schema would give a false positive for detecting javascript every time.
+
+
+The reason we have to detect Javascript at all is discussed here (https://groups.google.com/forum/#!topic/google-caja-discuss/IhtlNXzx7_8)
+
+
+
+SUMMARY of LINK:
+
+Using the default goals for the PluginCompiler (PipelineMaker.ONE_CAJOLED_MODULE.with(PipelineMaker.HTML_SAFE_STATIC.with(PipelineMaker.SANITY_CHECK))), I'm getting static html that is mostly namespaced/sandboxed correctly, except for at least one case. If I have <div id='blah' onclick='someFunction();'></div>, the DIV's id is changed to something like id_4___, instead of blah-<idClass>. Only when the cajoled JS is loaded does the id get set correctly using the idClass I provide.
+
+If I don't include the onclick attribute, then the static html is correct by itself. So basically I'm wondering if there is a configuration that will yield safe static html that disregards javascript completely.
+
+I figured out that removing "onclick" from the html schema transforms onclick into data-caja-onclick and my DIV id is correct. I could just modify the schema files to remove all attributes related to scripting, but does that cover all cases where cajoled JS is required to render the static html correctly? Is there a better way?

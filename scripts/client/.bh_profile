@@ -1,0 +1,2 @@
+export BH_TOOLS="$BH_HOME/tools"
+export BH_CLIENT_SCRIPTS="$BH_HOME/scripts/client/"

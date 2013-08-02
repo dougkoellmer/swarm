@@ -1,0 +1,23 @@
+- svn up in caja trunk
+
+- ant in caja trunk
+
+- might see bunch of errors complaining about exceptions and such...should be fine
+
+- server-side caja jars are in ant-jars
+
+- cilent-side js is in /home/dougk16/trunk/ant-lib/com/google/caja/plugin
+
+- mount shared folder by using sudo mount -t vboxsf linux_share linux_share
+
+- copy past jars and js into linux_share
+
+- VERY IMPORTANT...remove all caja-related jar files from the build path, then delete, all inside eclipse, not in windows
+
+- re-add jar files by dragging and dropping them into the WEB-INF/lib, again, in eclipse
+
+- now re-add jars to build path
+
+- js is all in a flat directory in the blah/blah/plugin folder in the caja svn repo, but for some reason when using caja in a webpage, caja.js has to be in a folder all itself, with a subfolder in the same directory whose name is the svn revision number *shrug*
+
+- make sure the two wrapping divs around a caja widget have their style/class set correctly by looking at the two divs wrapping a widget initialized with JS

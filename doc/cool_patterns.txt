@@ -1,0 +1,10 @@
+Some cool patterns discovered in b33hive...
+
+
+- Having the easy option between verbose and "compiled" transaction json and request paths
+
+- enum-based request paths
+
+- sending a transaction with just the path enum and a json encodable object
+
+- json enum keys allow completely flat json hierarchy for requests, because keys can't collide...also allow you to effectively selectively serialize large objects...just serialize the portion of the object you want to, then on client, the whole object attempts to read all the json, but only deserializes those portions that were sent down.

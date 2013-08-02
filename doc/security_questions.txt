@@ -1,0 +1,1 @@
+Isn't an implementation of the Java Servlet specification insecure because it stores password-equivalent session ids in plain text, or at least unsalted hashes?

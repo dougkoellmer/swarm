@@ -1,0 +1,14 @@
+- is it ready for mass audiences to use, or is some screening prcess recommended
+
+- how can i mention the google rewards thing?
+
+
+
+
+- should i host a ton of common javascript libraries on my server and use the mitigate feature?
+
+- which is better for external resources? httprequest, or that proxy fetcher thing...don't get the idea behind proxy
+
+- host CSS can pollute the namespace of guest code, technically...is this Ok?
+
+- services that require an API-key linked to a specific referrer or domain could perhaps abuse b33hive if the service didn't allow multiple keys per referrer

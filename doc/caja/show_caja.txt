@@ -1,0 +1,23 @@
+For once not asking a question! FWIW, I got a new version of my application out (http://b33hive.net) using Caja r5470. Mostly under-the-hood stuff, but here are some Caja-relevant changes:
+
+- Now using es5Mode to render a guest application's "focused" state.
+
+- Using server-side Caja to render an application's zoomed-out "splash" state with static html/css (before was using cajoled JS as well for focused state).
+
+- Splash state supports use of a special <splash> tag, similar to using <noscript> for normal webpages.
+
+- Added an API for guest code (http://b33hive.net/b33hive/examples (shows <splash> usage too) ).
+
+- Opened up uri policy to allow external images, css, and scripts. External CSS and scripts are allowed for focused state only.
+
+- Added a sandbox cell so you don't have to sign up for an account to experiment (http://b33hive.net/b33hive/sandbox).
+
+- Got it working on all the latest browsers, even on iPad (minus some small UI/input issues).
+
+
+Anyway, just in case you ever need to bring up an amazing use case for Caja, there you go! :-)
+
+
+Thanks,
+
+Doug

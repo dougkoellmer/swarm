@@ -1,0 +1,9 @@
+- have to update to latest .json html schema files...only change I have to make should be clearing the "type" key on the A::FRAMETARGET entry in one of the attributes json files
+
+- Have to make sure that UriPolicyNanny gets "data" allowed as an attribute on server
+
+- make sure that static caja container matches what bhCajaWrapper does...do this by inspecting DOM tree in chrome console or firebug, whatever...also have to include my custom caja-static-whatever class that helps hide noscript/splash content on focus
+
+- caja-gadget.css needs to retain my custom splash stuff
+
+- make sure my client side fetcher matches what's in caja.js...had to add a check for IE overrideMimType existance in mine.
