@@ -1,4 +1,4 @@
-package com.b33hive.server.account;
+package b33hive.server.account;
 
 import java.io.Externalizable;
 import java.io.IOException;
@@ -9,14 +9,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.b33hive.server.data.blob.bhE_BlobCacheLevel;
-import com.b33hive.server.data.blob.bhI_Blob;
-import com.b33hive.server.data.blob.bhI_BlobKeySource;
-import com.b33hive.server.data.blob.bhU_Blob;
-import com.b33hive.server.data.blob.bhU_Serialization;
-import com.b33hive.server.entities.bhS_BlobKeyPrefix;
-import com.b33hive.server.session.bhS_Session;
-import com.b33hive.server.structs.bhDate;
+import b33hive.server.data.blob.bhE_BlobCacheLevel;
+import b33hive.server.data.blob.bhI_Blob;
+import b33hive.server.data.blob.bhI_BlobKeySource;
+import b33hive.server.data.blob.bhU_Blob;
+import b33hive.server.data.blob.bhU_Serialization;
+import b33hive.server.entities.bhS_BlobKeyPrefix;
+import b33hive.server.session.bhS_Session;
+import b33hive.server.structs.bhDate;
 
 public class bhUserSession implements bhI_Blob, bhI_BlobKeySource
 {

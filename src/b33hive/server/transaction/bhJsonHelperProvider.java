@@ -1,7 +1,7 @@
-package com.b33hive.server.transaction;
+package b33hive.server.transaction;
 
-import com.b33hive.shared.json.bhJsonHelper;
-import com.b33hive.shared.reflection.bhI_Class;
+import b33hive.shared.json.bhJsonHelper;
+import b33hive.shared.reflection.bhI_Class;
 
 public class bhJsonHelperProvider implements bhI_Class<bhJsonHelper>
 {

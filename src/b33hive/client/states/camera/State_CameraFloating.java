@@ -1,12 +1,12 @@
-package com.b33hive.client.states.camera;
+package b33hive.client.states.camera;
 
-import com.b33hive.client.states.camera.StateMachine_Camera.CameraManager;
-import com.b33hive.shared.statemachine.bhA_Action;
-import com.b33hive.shared.statemachine.bhA_State;
-import com.b33hive.shared.statemachine.bhA_StateConstructor;
-import com.b33hive.shared.statemachine.bhStateEvent;
-import com.b33hive.shared.structs.bhGridCoordinate;
-import com.b33hive.shared.structs.bhPoint;
+import b33hive.client.states.camera.StateMachine_Camera.CameraManager;
+import b33hive.shared.statemachine.bhA_Action;
+import b33hive.shared.statemachine.bhA_State;
+import b33hive.shared.statemachine.bhA_StateConstructor;
+import b33hive.shared.statemachine.bhStateEvent;
+import b33hive.shared.structs.bhGridCoordinate;
+import b33hive.shared.structs.bhPoint;
 
 public class State_CameraFloating extends bhA_State
 {	

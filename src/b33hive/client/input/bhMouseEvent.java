@@ -1,6 +1,6 @@
-package com.b33hive.client.input;
+package b33hive.client.input;
 
-import com.b33hive.shared.structs.bhPoint;
+import b33hive.shared.structs.bhPoint;
 import com.google.gwt.dom.client.Element;
 
 public class bhMouseEvent

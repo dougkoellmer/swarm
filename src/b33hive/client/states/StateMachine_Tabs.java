@@ -1,15 +1,15 @@
-package com.b33hive.client.states;
+package b33hive.client.states;
 
 import java.util.ArrayList;
 
-import com.b33hive.client.states.account.StateMachine_Account;
-import com.b33hive.client.states.code.StateMachine_EditingCode;
-import com.b33hive.shared.statemachine.bhA_Action;
+import b33hive.client.states.account.StateMachine_Account;
+import b33hive.client.states.code.StateMachine_EditingCode;
+import b33hive.shared.statemachine.bhA_Action;
 
-import com.b33hive.shared.statemachine.bhA_ActionArgs;
-import com.b33hive.shared.statemachine.bhA_State;
-import com.b33hive.shared.statemachine.bhA_StateMachine;
-import com.b33hive.shared.statemachine.bhA_StateConstructor;
+import b33hive.shared.statemachine.bhA_ActionArgs;
+import b33hive.shared.statemachine.bhA_State;
+import b33hive.shared.statemachine.bhA_StateMachine;
+import b33hive.shared.statemachine.bhA_StateConstructor;
 
 /**
  * ...

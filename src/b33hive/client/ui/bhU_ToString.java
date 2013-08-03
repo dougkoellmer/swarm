@@ -1,7 +1,7 @@
-package com.b33hive.client.ui;
+package b33hive.client.ui;
 
-import com.b33hive.client.managers.bhClientAccountManager;
-import com.b33hive.client.managers.bhClientAccountManager.E_ResponseType;
+import b33hive.client.managers.bhClientAccountManager;
+import b33hive.client.managers.bhClientAccountManager.E_ResponseType;
 
 public class bhU_ToString
 {

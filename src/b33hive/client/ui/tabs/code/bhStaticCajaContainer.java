@@ -1,4 +1,4 @@
-package com.b33hive.client.ui.tabs.code;
+package b33hive.client.ui.tabs.code;
 
 import java.util.logging.Logger;
 

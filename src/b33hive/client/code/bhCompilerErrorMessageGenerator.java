@@ -1,12 +1,11 @@
-package com.b33hive.client.code;
+package b33hive.client.code;
 
 import java.util.List;
 
-import com.b33hive.shared.app.bhS_App;
-import com.b33hive.shared.code.bhCompilerResult;
-import com.b33hive.shared.code.bhCompilerMessage;
-import com.b33hive.shared.debugging.bhU_Debug;
-import com.b33hive.shared.entities.bhE_CharacterQuota;
+import b33hive.shared.app.bhS_App;
+import b33hive.shared.code.bhCompilerResult;
+import b33hive.shared.code.bhCompilerMessage;
+import b33hive.shared.debugging.bhU_Debug;
 
 public class bhCompilerErrorMessageGenerator
 {
@@ -54,7 +53,7 @@ public class bhCompilerErrorMessageGenerator
 				
 				case TOO_LONG:
 				{
-					return "Your source is too long. Please shorten it to " + bhE_CharacterQuota.FREE.getMaxCharacters() + " and try again.";
+					return "Your source is too long. Please shorten it and try again.";
 				}
 				
 				case RESPONSE_ERROR:

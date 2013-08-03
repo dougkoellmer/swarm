@@ -1,27 +1,26 @@
-package com.b33hive.client.ui.widget;
+package b33hive.client.ui.widget;
 
 import java.util.logging.Logger;
 
-import com.b33hive.client.app.bhS_ClientApp;
-import com.b33hive.client.entities.bhCamera;
-import com.b33hive.client.input.bhClickManager;
-import com.b33hive.client.input.bhI_ClickHandler;
-import com.b33hive.client.states.StateMachine_Base;
-import com.b33hive.client.states.camera.StateMachine_Camera;
-import com.b33hive.client.states.camera.State_CameraFloating;
-import com.b33hive.client.states.camera.State_CameraSnapping;
-import com.b33hive.client.states.camera.State_ViewingCell;
-import com.b33hive.client.ui.bhE_ZIndex;
-import com.b33hive.client.ui.tooltip.bhE_ToolTipType;
-import com.b33hive.client.ui.tooltip.bhToolTipConfig;
-import com.b33hive.client.ui.tooltip.bhToolTipManager;
-import com.b33hive.shared.app.bhS_App;
-import com.b33hive.shared.bhU_Math;
-import com.b33hive.shared.statemachine.bhA_Action;
-import com.b33hive.shared.statemachine.bhA_State;
-import com.b33hive.shared.statemachine.bhI_StateEventListener;
-import com.b33hive.shared.statemachine.bhStateEvent;
-import com.b33hive.shared.structs.bhPoint;
+import b33hive.client.entities.bhCamera;
+import b33hive.client.input.bhClickManager;
+import b33hive.client.input.bhI_ClickHandler;
+import b33hive.client.states.StateMachine_Base;
+import b33hive.client.states.camera.StateMachine_Camera;
+import b33hive.client.states.camera.State_CameraFloating;
+import b33hive.client.states.camera.State_CameraSnapping;
+import b33hive.client.states.camera.State_ViewingCell;
+import b33hive.client.ui.bhE_ZIndex;
+import b33hive.client.ui.tooltip.bhE_ToolTipType;
+import b33hive.client.ui.tooltip.bhToolTipConfig;
+import b33hive.client.ui.tooltip.bhToolTipManager;
+import b33hive.shared.app.bhS_App;
+import b33hive.shared.utils.bhU_Math;
+import b33hive.shared.statemachine.bhA_Action;
+import b33hive.shared.statemachine.bhA_State;
+import b33hive.shared.statemachine.bhI_StateEventListener;
+import b33hive.shared.statemachine.bhStateEvent;
+import b33hive.shared.structs.bhPoint;
 import com.google.gwt.dom.client.Touch;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -84,9 +83,13 @@ public class bhMagnifier extends FlowPanel implements bhI_StateEventListener
 	private final bhPoint m_utilPoint = new bhPoint();
 	
 	private final StateMachine_Camera.SetCameraTarget.Args m_args_SetCameraTarget = new StateMachine_Camera.SetCameraTarget.Args();
+	
+	private final double m_tickRatio;
 
-	public bhMagnifier()
+	public bhMagnifier(double tickCount)
 	{
+		m_tickRatio = tickCount = 1.0 / (((double)tickCount)+1.0);
+		
 		this.addStyleName("bh_magnifier");
 		m_zoomIn.addStyleName("bh_zoom_in_button");
 		m_zoomOut.addStyleName("bh_zoom_out_button");
@@ -128,14 +131,14 @@ public class bhMagnifier extends FlowPanel implements bhI_StateEventListener
 				if( !m_zoomIn.isEnabled() )  return;
 				
 				double newRatio = 0;
-				double mod = m_currentRatio % bhS_ClientApp.MAGNIFIER_TICK_RATIO;
-				if( mod > (bhS_ClientApp.MAGNIFIER_TICK_RATIO/2) )
+				double mod = m_currentRatio % m_tickRatio;
+				if( mod > (m_tickRatio/2) )
 				{
 					newRatio = m_currentRatio - mod;
 				}
 				else
 				{
-					newRatio = (m_currentRatio - mod) - bhS_ClientApp.MAGNIFIER_TICK_RATIO;
+					newRatio = (m_currentRatio - mod) - m_tickRatio;
 				}
 				
 				newRatio = bhU_Math.clamp(newRatio, 0, 1);
@@ -151,14 +154,14 @@ public class bhMagnifier extends FlowPanel implements bhI_StateEventListener
 				if( !m_zoomOut.isEnabled() )  return;
 				
 				double newRatio = 0;
-				double mod = m_currentRatio % bhS_ClientApp.MAGNIFIER_TICK_RATIO;
-				if( mod < (bhS_ClientApp.MAGNIFIER_TICK_RATIO/2) )
+				double mod = m_currentRatio % m_tickRatio;
+				if( mod < (m_tickRatio/2) )
 				{
-					newRatio = (m_currentRatio - mod) + bhS_ClientApp.MAGNIFIER_TICK_RATIO;
+					newRatio = (m_currentRatio - mod) + m_tickRatio;
 				}
 				else
 				{
-					newRatio = (m_currentRatio - mod) + bhS_ClientApp.MAGNIFIER_TICK_RATIO*2;
+					newRatio = (m_currentRatio - mod) + m_tickRatio*2;
 				}
 				
 				newRatio = bhU_Math.clamp(newRatio, 0, 1);

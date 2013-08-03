@@ -1,4 +1,4 @@
-package com.b33hive.client.entities;
+package b33hive.client.entities;
 
 public enum bhE_CellNuke
 {

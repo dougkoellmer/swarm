@@ -1,8 +1,8 @@
-package com.b33hive.server.entities;
+package b33hive.server.entities;
 
-import com.b33hive.server.data.blob.bhI_Blob;
-import com.b33hive.server.data.blob.bhI_BlobKeySource;
-import com.b33hive.server.data.blob.bhU_Blob;
+import b33hive.server.data.blob.bhI_Blob;
+import b33hive.server.data.blob.bhI_BlobKeySource;
+import b33hive.server.data.blob.bhU_Blob;
 
 public enum bhE_GridType implements bhI_BlobKeySource
 {

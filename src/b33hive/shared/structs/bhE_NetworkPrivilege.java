@@ -1,6 +1,6 @@
-package com.b33hive.shared.structs;
+package b33hive.shared.structs;
 
-import com.b33hive.shared.bhI_SerializableEnum;
+import b33hive.shared.lang.bhI_SerializableEnum;
 
 public enum bhE_NetworkPrivilege implements bhI_SerializableEnum
 {

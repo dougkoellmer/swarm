@@ -1,29 +1,30 @@
-package com.b33hive.client.transaction;
+package b33hive.client.transaction;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.logging.Logger;
 
-import com.b33hive.client.time.bhU_Time;
-import com.b33hive.shared.bhListenerManager;
-import com.b33hive.shared.app.bhA_App;
-import com.b33hive.shared.app.bhS_App;
-import com.b33hive.shared.debugging.bhU_Debug;
-import com.b33hive.shared.json.bhA_JsonFactory;
-import com.b33hive.shared.json.bhI_JsonArray;
-import com.b33hive.shared.json.bhI_JsonEncodable;
-import com.b33hive.shared.json.bhI_JsonObject;
-import com.b33hive.shared.json.bhJsonQuery;
-import com.b33hive.shared.json.bhJsonHelper;
-import com.b33hive.shared.transaction.bhA_TransactionObject;
-import com.b33hive.shared.transaction.bhE_RequestPath;
-import com.b33hive.shared.transaction.bhE_ResponseError;
-import com.b33hive.shared.transaction.bhI_RequestPath;
-import com.b33hive.shared.transaction.bhRequestPathManager;
-import com.b33hive.shared.json.bhE_JsonKey;
-import com.b33hive.shared.transaction.bhTransactionRequest;
-import com.b33hive.shared.transaction.bhTransactionResponse;
+import b33hive.client.time.bhU_Time;
+import b33hive.shared.utils.bhListenerManager;
+import b33hive.shared.app.bhA_App;
+import b33hive.shared.app.bhS_App;
+import b33hive.shared.debugging.bhU_Debug;
+import b33hive.shared.json.bhA_JsonFactory;
+import b33hive.shared.json.bhI_JsonArray;
+import b33hive.shared.json.bhI_JsonEncodable;
+import b33hive.shared.json.bhI_JsonObject;
+import b33hive.shared.json.bhJsonQuery;
+import b33hive.shared.json.bhJsonHelper;
+import b33hive.shared.transaction.bhA_TransactionObject;
+import b33hive.shared.transaction.bhE_RequestPath;
+import b33hive.shared.transaction.bhE_ResponseError;
+import b33hive.shared.transaction.bhI_RequestPath;
+import b33hive.shared.transaction.bhRequestPathManager;
+import b33hive.shared.transaction.bhS_Transaction;
+import b33hive.shared.json.bhE_JsonKey;
+import b33hive.shared.transaction.bhTransactionRequest;
+import b33hive.shared.transaction.bhTransactionResponse;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestBuilder;
@@ -63,6 +64,27 @@ public class bhClientTransactionManager
 	
 	private bhTransactionRequest m_currentlyHandledRequest;
 	
+	private final bhI_ResponseCallbacks m_callbacks = new bhI_ResponseCallbacks()
+	{
+		@Override
+		public void onResponseReceived(bhTransactionRequest request, bhTransactionResponse response)
+		{
+			bhClientTransactionManager.this.onResponseReceived(request, response);
+		}
+		
+		@Override
+		public void onResponseReceived(bhTransactionRequestBatch requestBatch, bhI_JsonArray jsonResponseBatch)
+		{
+			bhClientTransactionManager.this.onResponseReceived(requestBatch, jsonResponseBatch);
+		}
+		
+		@Override
+		public void onError(bhTransactionRequest request, bhTransactionResponse response)
+		{
+			bhClientTransactionManager.this.onError(request, response);
+		}
+	};
+	
 	private bhClientTransactionManager() 
 	{
 		
@@ -77,13 +99,13 @@ public class bhClientTransactionManager
 	public void setSynchronousRequestRouter(bhI_RequestDispatcher router)
 	{
 		m_syncDispatcher = router;
-		m_syncDispatcher.initialize(this);
+		m_syncDispatcher.initialize(m_callbacks, bhS_Transaction.MAX_GET_URL_LENGTH);
 	}
 	
 	public void setAsynchronousRequestRouter(bhI_AsynchronousRequestDispatcher router)
 	{
 		m_asyncDispatcher = router;
-		m_asyncDispatcher.initialize(this);
+		m_asyncDispatcher.initialize(m_callbacks, bhS_Transaction.MAX_GET_URL_LENGTH);
 	}
 	
 	private void callSuccessHandlers(bhTransactionRequest request, bhTransactionResponse response)

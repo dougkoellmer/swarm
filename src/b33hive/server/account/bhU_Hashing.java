@@ -1,4 +1,4 @@
-package com.b33hive.server.account;
+package b33hive.server.account;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;

@@ -1,4 +1,4 @@
-package com.b33hive.shared.account;
+package b33hive.shared.account;
 
 public enum bhE_SignInValidationError implements bhI_ValidationError
 {

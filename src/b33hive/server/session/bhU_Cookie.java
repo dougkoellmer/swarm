@@ -1,4 +1,4 @@
-package com.b33hive.server.session;
+package b33hive.server.session;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

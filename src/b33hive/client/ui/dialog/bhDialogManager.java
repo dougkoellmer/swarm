@@ -1,11 +1,11 @@
-package com.b33hive.client.ui.dialog;
+package b33hive.client.ui.dialog;
 
-import com.b33hive.client.states.State_AsyncDialog;
-import com.b33hive.client.states.State_GenericDialog;
-import com.b33hive.client.ui.bhE_ZIndex;
-import com.b33hive.client.ui.bhI_UIElement;
-import com.b33hive.shared.statemachine.bhA_Action;
-import com.b33hive.shared.statemachine.bhStateEvent;
+import b33hive.client.states.State_AsyncDialog;
+import b33hive.client.states.State_GenericDialog;
+import b33hive.client.ui.bhE_ZIndex;
+import b33hive.client.ui.bhI_UIElement;
+import b33hive.shared.statemachine.bhA_Action;
+import b33hive.shared.statemachine.bhStateEvent;
 import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.KeyUpEvent;

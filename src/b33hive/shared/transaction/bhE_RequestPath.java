@@ -1,4 +1,4 @@
-package com.b33hive.shared.transaction;
+package b33hive.shared.transaction;
 
 /**
  * Generally I have enums formatted LIKE_THIS, but the camelCase formatting here makes it

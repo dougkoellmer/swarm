@@ -1,4 +1,4 @@
-package com.b33hive.server.code;
+package b33hive.server.code;
 
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;

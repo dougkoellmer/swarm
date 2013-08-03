@@ -1,4 +1,4 @@
-package com.b33hive.client.ui.tabs.code;
+package b33hive.client.ui.tabs.code;
 
 import java.util.logging.Logger;
 
@@ -50,17 +50,17 @@ public class bhCodeMirrorWrapper extends Widget
 		
 		var onChange = function()
 		{
-			self.@com.b33hive.client.ui.tabs.code.bhCodeMirrorWrapper::onChange()();
+			self.@b33hive.client.ui.tabs.code.bhCodeMirrorWrapper::onChange()();
 		}
 		
 		var onSave = function()
 		{
-			self.@com.b33hive.client.ui.tabs.code.bhCodeMirrorWrapper::onSave()();
+			self.@b33hive.client.ui.tabs.code.bhCodeMirrorWrapper::onSave()();
 		}
 		
 		var onPreview = function()
 		{
-			self.@com.b33hive.client.ui.tabs.code.bhCodeMirrorWrapper::onPreview()();
+			self.@b33hive.client.ui.tabs.code.bhCodeMirrorWrapper::onPreview()();
 		}
 		
 		var config = 
@@ -77,7 +77,7 @@ public class bhCodeMirrorWrapper extends Widget
 			}
 		};
 		
-		var hostElement = this.@com.b33hive.client.ui.tabs.code.bhCodeMirrorWrapper::m_hostElement;
+		var hostElement = this.@b33hive.client.ui.tabs.code.bhCodeMirrorWrapper::m_hostElement;
 		
 		var codeMirror = $wnd.CodeMirror(hostElement, config);
 		
@@ -109,13 +109,13 @@ public class bhCodeMirrorWrapper extends Widget
 	
 	public native void setCodeMirrorHeight(String height)
 	/*-{
-			var codeMirror = this.@com.b33hive.client.ui.tabs.code.bhCodeMirrorWrapper::m_codeMirror;
+			var codeMirror = this.@b33hive.client.ui.tabs.code.bhCodeMirrorWrapper::m_codeMirror;
 			codeMirror.setSize(null, height);
 	}-*/;
 	
 	public native String getContent()
 	/*-{
-			var codeMirror = this.@com.b33hive.client.ui.tabs.code.bhCodeMirrorWrapper::m_codeMirror;
+			var codeMirror = this.@b33hive.client.ui.tabs.code.bhCodeMirrorWrapper::m_codeMirror;
 			return codeMirror.getValue();
 	}-*/;
 	
@@ -130,13 +130,13 @@ public class bhCodeMirrorWrapper extends Widget
 	
 	private native void native_setContent(String content)
 	/*-{
-			var codeMirror = this.@com.b33hive.client.ui.tabs.code.bhCodeMirrorWrapper::m_codeMirror;
+			var codeMirror = this.@b33hive.client.ui.tabs.code.bhCodeMirrorWrapper::m_codeMirror;
 			codeMirror.setValue(content);
 	}-*/;
 	
 	public native void focus()
 	/*-{
-			var codeMirror = this.@com.b33hive.client.ui.tabs.code.bhCodeMirrorWrapper::m_codeMirror;
+			var codeMirror = this.@b33hive.client.ui.tabs.code.bhCodeMirrorWrapper::m_codeMirror;
 			codeMirror.focus();
 	}-*/;
 	
@@ -155,13 +155,13 @@ public class bhCodeMirrorWrapper extends Widget
 			    element.fireEvent("onresize",event);
 			}
 	
-			var codeMirror = this.@com.b33hive.client.ui.tabs.code.bhCodeMirrorWrapper::m_codeMirror;
+			var codeMirror = this.@b33hive.client.ui.tabs.code.bhCodeMirrorWrapper::m_codeMirror;
 			codeMirror.refresh();
 	}-*/;
 	
 	public native void blur()
 	/*-{
-			var codeMirror = this.@com.b33hive.client.ui.tabs.code.bhCodeMirrorWrapper::m_codeMirror;
+			var codeMirror = this.@b33hive.client.ui.tabs.code.bhCodeMirrorWrapper::m_codeMirror;
 			codeMirror.getInputField().blur();
 	}-*/;
 }

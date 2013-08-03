@@ -1,6 +1,6 @@
-package com.b33hive.shared.json;
+package b33hive.shared.json;
 
-import com.b33hive.shared.json.bhJsonQuery.Condition;
+import b33hive.shared.json.bhJsonQuery.Condition;
 
 public class bhMutableJsonQuery extends bhJsonQuery
 {

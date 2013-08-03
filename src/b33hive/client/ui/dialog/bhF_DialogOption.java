@@ -1,4 +1,4 @@
-package com.b33hive.client.ui.dialog;
+package b33hive.client.ui.dialog;
 
 public class bhF_DialogOption
 {

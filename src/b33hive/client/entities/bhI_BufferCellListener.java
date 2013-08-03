@@ -1,8 +1,8 @@
-package com.b33hive.client.entities;
+package b33hive.client.entities;
 
-import com.b33hive.shared.entities.bhE_CodeSafetyLevel;
-import com.b33hive.shared.entities.bhE_CodeType;
-import com.b33hive.shared.structs.bhCode;
+import b33hive.shared.entities.bhE_CodeSafetyLevel;
+import b33hive.shared.entities.bhE_CodeType;
+import b33hive.shared.structs.bhCode;
 
 /**
  * ...

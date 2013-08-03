@@ -1,10 +1,10 @@
-package com.b33hive.client.navigation;
+package b33hive.client.navigation;
 
-import com.b33hive.client.input.bhBrowserHistoryManager;
-import com.b33hive.shared.json.bhI_JsonObject;
-import com.b33hive.shared.structs.bhCellAddress;
-import com.b33hive.shared.structs.bhCellAddressMapping;
-import com.b33hive.shared.structs.bhPoint;
+import b33hive.client.input.bhBrowserHistoryManager;
+import b33hive.shared.json.bhI_JsonObject;
+import b33hive.shared.structs.bhCellAddress;
+import b33hive.shared.structs.bhCellAddressMapping;
+import b33hive.shared.structs.bhPoint;
 
 public class bhHistoryStateManager
 {

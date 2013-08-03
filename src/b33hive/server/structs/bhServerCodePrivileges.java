@@ -1,14 +1,14 @@
-package com.b33hive.server.structs;
+package b33hive.server.structs;
 
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
-import com.b33hive.server.data.blob.bhU_Serialization;
-import com.b33hive.shared.entities.bhE_CharacterQuota;
-import com.b33hive.shared.structs.bhCodePrivileges;
-import com.b33hive.shared.structs.bhE_NetworkPrivilege;
+import b33hive.server.data.blob.bhU_Serialization;
+import b33hive.shared.entities.bhE_CharacterQuota;
+import b33hive.shared.structs.bhCodePrivileges;
+import b33hive.shared.structs.bhE_NetworkPrivilege;
 
 public class bhServerCodePrivileges extends bhCodePrivileges implements Externalizable
 {

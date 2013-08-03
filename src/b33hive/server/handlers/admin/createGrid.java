@@ -1,4 +1,4 @@
-package com.b33hive.server.handlers.admin;
+package b33hive.server.handlers.admin;
 
 import java.util.HashMap;
 import java.util.logging.Level;
@@ -6,49 +6,50 @@ import java.util.logging.Logger;
 
 import javax.servlet.ServletContext;
 
-import com.b33hive.server.account.bhE_Role;
-import com.b33hive.server.account.bhUserSession;
-import com.b33hive.server.app.bhS_ServerApp;
-import com.b33hive.server.data.blob.bhBlobException;
-import com.b33hive.server.data.blob.bhBlobManagerFactory;
-import com.b33hive.server.data.blob.bhE_BlobCacheLevel;
-import com.b33hive.server.data.blob.bhE_BlobTransactionType;
-import com.b33hive.server.data.blob.bhI_Blob;
-import com.b33hive.server.data.blob.bhI_BlobKeySource;
-import com.b33hive.server.data.blob.bhI_BlobManager;
-import com.b33hive.server.entities.bhE_GridType;
-import com.b33hive.server.entities.bhServerGrid;
-import com.b33hive.server.entities.bhServerUser;
-import com.b33hive.server.handlers.bhBlobTransaction_CreateUser;
-import com.b33hive.server.homecells.bhHomeCellCreator;
-import com.b33hive.server.session.bhSessionManager;
-import com.b33hive.server.structs.bhServerCellAddress;
-import com.b33hive.server.structs.bhServerCodePrivileges;
-import com.b33hive.server.transaction.bhI_RequestHandler;
-import com.b33hive.server.transaction.bhServerTransactionManager;
-import com.b33hive.server.transaction.bhTransactionContext;
-import com.b33hive.shared.entities.bhA_User;
-import com.b33hive.shared.entities.bhE_CodeType;
-import com.b33hive.shared.structs.bhCode;
-import com.b33hive.shared.structs.bhE_NetworkPrivilege;
-import com.b33hive.shared.structs.bhGridCoordinate;
-import com.b33hive.shared.transaction.bhE_RequestPath;
-import com.b33hive.shared.transaction.bhE_ResponseError;
-import com.b33hive.shared.transaction.bhTransactionRequest;
-import com.b33hive.shared.transaction.bhTransactionResponse;
+import b33hive.server.account.bhE_Role;
+import b33hive.server.account.bhUserSession;
+import b33hive.server.app.bhS_ServerApp;
+import b33hive.server.data.blob.bhBlobException;
+import b33hive.server.data.blob.bhBlobManagerFactory;
+import b33hive.server.data.blob.bhE_BlobCacheLevel;
+import b33hive.server.data.blob.bhE_BlobTransactionType;
+import b33hive.server.data.blob.bhI_Blob;
+import b33hive.server.data.blob.bhI_BlobKeySource;
+import b33hive.server.data.blob.bhI_BlobManager;
+import b33hive.server.entities.bhE_GridType;
+import b33hive.server.entities.bhServerGrid;
+import b33hive.server.entities.bhServerUser;
+import b33hive.server.handlers.blobxn.bhBlobTransaction_CreateUser;
+import b33hive.server.session.bhSessionManager;
+import b33hive.server.structs.bhServerCellAddress;
+import b33hive.server.structs.bhServerCodePrivileges;
+import b33hive.server.transaction.bhI_RequestHandler;
+import b33hive.server.transaction.bhServerTransactionManager;
+import b33hive.server.transaction.bhTransactionContext;
+import b33hive.shared.entities.bhA_User;
+import b33hive.shared.entities.bhE_CodeType;
+import b33hive.shared.structs.bhCode;
+import b33hive.shared.structs.bhE_NetworkPrivilege;
+import b33hive.shared.structs.bhGridCoordinate;
+import b33hive.shared.transaction.bhE_RequestPath;
+import b33hive.shared.transaction.bhE_ResponseError;
+import b33hive.shared.transaction.bhTransactionRequest;
+import b33hive.shared.transaction.bhTransactionResponse;
 
 public class createGrid implements bhI_RequestHandler
 {
 	private static final Logger s_logger = Logger.getLogger(createGrid.class.getName());
 	
+	private final Class<? extends bhI_HomeCellCreator> m_T_homeCellCreator;
+	
+	public createGrid(Class<? extends bhI_HomeCellCreator> T_homeCellCreator)
+	{
+		m_T_homeCellCreator = T_homeCellCreator;
+	}
+	
 	@Override
 	public void handleRequest(bhTransactionContext context, bhTransactionRequest request, bhTransactionResponse response)
-	{
-		if( !bhSessionManager.getInstance().isAuthorized(request, response, bhE_Role.ADMIN) )
-		{
-			return;
-		}
-		
+	{		
 		bhUserSession session = bhSessionManager.getInstance().getSession(request, response);
 		
 		bhI_BlobManager blobManager = bhBlobManagerFactory.getInstance().create(bhE_BlobCacheLevel.values());
@@ -141,6 +142,7 @@ public class createGrid implements bhI_RequestHandler
 			return;
 		}*/
 
-		(new bhHomeCellCreator((ServletContext)context.getNativeContext())).run(request, response, context, session, user);
+		bhI_HomeCellCreator creator = m_T_homeCellCreator.newInstance();
+		//(new bhHomeCellCreator((ServletContext)context.getNativeContext())).run(request, response, context, session, user);
 	}
 }

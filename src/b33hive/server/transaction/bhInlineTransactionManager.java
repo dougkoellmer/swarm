@@ -1,4 +1,4 @@
-package com.b33hive.server.transaction;
+package b33hive.server.transaction;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -8,11 +8,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspWriter;
 
-import com.b33hive.shared.app.bhS_App;
-import com.b33hive.shared.json.bhI_JsonEncodable;
-import com.b33hive.shared.transaction.bhE_RequestPath;
-import com.b33hive.shared.transaction.bhTransactionRequest;
-import com.b33hive.shared.transaction.bhTransactionResponse;
+import b33hive.shared.app.bhS_App;
+import b33hive.shared.json.bhI_JsonEncodable;
+import b33hive.shared.transaction.bhE_RequestPath;
+import b33hive.shared.transaction.bhTransactionRequest;
+import b33hive.shared.transaction.bhTransactionResponse;
 
 public class bhInlineTransactionManager
 {

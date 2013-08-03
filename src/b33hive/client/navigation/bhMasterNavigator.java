@@ -1,8 +1,8 @@
-package com.b33hive.client.navigation;
+package b33hive.client.navigation;
 
-import com.b33hive.client.input.bhMouse;
-import com.b33hive.client.ui.bhI_UIElement;
-import com.b33hive.shared.statemachine.bhStateEvent;
+import b33hive.client.input.bhMouse;
+import b33hive.client.ui.bhI_UIElement;
+import b33hive.shared.statemachine.bhStateEvent;
 
 public class bhMasterNavigator implements bhI_UIElement
 {

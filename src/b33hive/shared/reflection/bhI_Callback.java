@@ -1,4 +1,4 @@
-package com.b33hive.shared.reflection;
+package b33hive.shared.reflection;
 
 public interface bhI_Callback
 {

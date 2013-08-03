@@ -1,4 +1,4 @@
-package com.b33hive.client.ui.alignment;
+package b33hive.client.ui.alignment;
 
 public enum bhE_AlignmentPosition
 {

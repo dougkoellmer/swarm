@@ -1,8 +1,8 @@
-package com.b33hive.client.ui.cell;
+package b33hive.client.ui.cell;
 
 import java.util.logging.Logger;
 
-import com.b33hive.client.ui.bhU_UI;
+import b33hive.client.ui.bhU_UI;
 import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.dom.client.Style.Unit;

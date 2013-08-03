@@ -1,4 +1,4 @@
-package com.b33hive.client.ui.widget;
+package b33hive.client.ui.widget;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
@@ -48,7 +48,7 @@ public class bhTextBoxChangeDispatcher
 		var _this = this;
 		$wnd.setTimeout(function()
 		{
-			_this.@com.b33hive.client.ui.widget.bhTextBoxChangeDispatcher::dispatchTextChange()();
+			_this.@b33hive.client.ui.widget.bhTextBoxChangeDispatcher::dispatchTextChange()();
 		}, 0);
 	}-*/;
 	

@@ -1,18 +1,18 @@
-package com.b33hive.client.states;
+package b33hive.client.states;
 
-import com.b33hive.client.states.camera.StateMachine_Camera;
-import com.b33hive.client.transaction.bhE_ResponseErrorControl;
-import com.b33hive.client.transaction.bhE_ResponseSuccessControl;
-import com.b33hive.client.transaction.bhI_TransactionResponseHandler;
-import com.b33hive.client.transaction.bhClientTransactionManager;
+import b33hive.client.states.camera.StateMachine_Camera;
+import b33hive.client.transaction.bhE_ResponseErrorControl;
+import b33hive.client.transaction.bhE_ResponseSuccessControl;
+import b33hive.client.transaction.bhI_TransactionResponseHandler;
+import b33hive.client.transaction.bhClientTransactionManager;
 
-import com.b33hive.shared.statemachine.bhA_Action;
-import com.b33hive.shared.statemachine.bhA_ActionArgs;
-import com.b33hive.shared.statemachine.bhA_State;
-import com.b33hive.shared.statemachine.bhA_StateContainer;
-import com.b33hive.shared.statemachine.bhA_StateConstructor;
-import com.b33hive.shared.transaction.bhTransactionRequest;
-import com.b33hive.shared.transaction.bhTransactionResponse;
+import b33hive.shared.statemachine.bhA_Action;
+import b33hive.shared.statemachine.bhA_ActionArgs;
+import b33hive.shared.statemachine.bhA_State;
+import b33hive.shared.statemachine.bhA_StateContainer;
+import b33hive.shared.statemachine.bhA_StateConstructor;
+import b33hive.shared.transaction.bhTransactionRequest;
+import b33hive.shared.transaction.bhTransactionResponse;
 
 
 /**

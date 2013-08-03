@@ -1,18 +1,18 @@
-package com.b33hive.server.handlers;
+package b33hive.server.handlers.normal;
 
-import com.b33hive.server.account.bhE_Role;
-import com.b33hive.server.session.bhSessionManager;
-import com.b33hive.server.structs.bhServerGridCoordinate;
-import com.b33hive.server.transaction.bhI_RequestHandler;
-import com.b33hive.server.transaction.bhTransactionContext;
-import com.b33hive.shared.code.bhA_CodeCompiler;
-import com.b33hive.shared.code.bhCompilerResult;
-import com.b33hive.shared.entities.bhE_CodeSafetyLevel;
-import com.b33hive.shared.entities.bhE_CodeType;
-import com.b33hive.shared.structs.bhCode;
-import com.b33hive.shared.structs.bhCodePrivileges;
-import com.b33hive.shared.transaction.bhTransactionRequest;
-import com.b33hive.shared.transaction.bhTransactionResponse;
+import b33hive.server.account.bhE_Role;
+import b33hive.server.session.bhSessionManager;
+import b33hive.server.structs.bhServerGridCoordinate;
+import b33hive.server.transaction.bhI_RequestHandler;
+import b33hive.server.transaction.bhTransactionContext;
+import b33hive.shared.code.bhA_CodeCompiler;
+import b33hive.shared.code.bhCompilerResult;
+import b33hive.shared.entities.bhE_CodeSafetyLevel;
+import b33hive.shared.entities.bhE_CodeType;
+import b33hive.shared.structs.bhCode;
+import b33hive.shared.structs.bhCodePrivileges;
+import b33hive.shared.transaction.bhTransactionRequest;
+import b33hive.shared.transaction.bhTransactionResponse;
 
 public class previewCode implements bhI_RequestHandler
 {

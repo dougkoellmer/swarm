@@ -1,16 +1,16 @@
-package com.b33hive.shared.entities;
+package b33hive.shared.entities;
 
 import java.util.Iterator;
 
-import com.b33hive.shared.json.bhA_JsonEncodable;
-import com.b33hive.shared.json.bhA_JsonFactory;
-import com.b33hive.shared.json.bhE_JsonKey;
-import com.b33hive.shared.json.bhI_JsonArray;
-import com.b33hive.shared.json.bhI_JsonObject;
-import com.b33hive.shared.json.bhJsonHelper;
-import com.b33hive.shared.structs.bhCellAddressMapping;
-import com.b33hive.shared.structs.bhGridCoordinate;
-import com.b33hive.shared.structs.bhPoint;
+import b33hive.shared.json.bhA_JsonEncodable;
+import b33hive.shared.json.bhA_JsonFactory;
+import b33hive.shared.json.bhE_JsonKey;
+import b33hive.shared.json.bhI_JsonArray;
+import b33hive.shared.json.bhI_JsonObject;
+import b33hive.shared.json.bhJsonHelper;
+import b33hive.shared.structs.bhCellAddressMapping;
+import b33hive.shared.structs.bhGridCoordinate;
+import b33hive.shared.structs.bhPoint;
 
 
 /**

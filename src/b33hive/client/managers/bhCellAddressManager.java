@@ -1,26 +1,27 @@
-package com.b33hive.client.managers;
+package b33hive.client.managers;
 
-import com.b33hive.client.entities.bhBufferCell;
-import com.b33hive.client.entities.bhClientUser;
-import com.b33hive.client.structs.bhCellAddressCache;
-import com.b33hive.client.transaction.bhE_ResponseErrorControl;
-import com.b33hive.client.transaction.bhE_ResponseSuccessControl;
-import com.b33hive.client.transaction.bhE_TransactionAction;
-import com.b33hive.client.transaction.bhI_TransactionResponseHandler;
-import com.b33hive.client.transaction.bhClientTransactionManager;
-import com.b33hive.shared.json.bhMutableJsonQuery;
-import com.b33hive.shared.structs.bhCellAddress;
-import com.b33hive.shared.structs.bhCellAddressMapping;
-import com.b33hive.shared.structs.bhE_CellAddressParseError;
-import com.b33hive.shared.structs.bhE_GetCellAddressError;
-import com.b33hive.shared.structs.bhE_GetCellAddressMappingError;
-import com.b33hive.shared.structs.bhGetCellAddressMappingResult;
-import com.b33hive.shared.structs.bhGetCellAddressResult;
-import com.b33hive.shared.structs.bhGridCoordinate;
-import com.b33hive.shared.transaction.bhE_RequestPath;
-import com.b33hive.shared.transaction.bhE_ResponseError;
-import com.b33hive.shared.transaction.bhTransactionRequest;
-import com.b33hive.shared.transaction.bhTransactionResponse;
+import b33hive.client.entities.bhBufferCell;
+import b33hive.client.entities.bhA_ClientUser;
+import b33hive.client.structs.bhCellAddressCache;
+import b33hive.client.transaction.bhE_ResponseErrorControl;
+import b33hive.client.transaction.bhE_ResponseSuccessControl;
+import b33hive.client.transaction.bhE_TransactionAction;
+import b33hive.client.transaction.bhI_TransactionResponseHandler;
+import b33hive.client.transaction.bhClientTransactionManager;
+import b33hive.shared.json.bhMutableJsonQuery;
+import b33hive.shared.structs.bhCellAddress;
+import b33hive.shared.structs.bhCellAddressMapping;
+import b33hive.shared.structs.bhE_CellAddressParseError;
+import b33hive.shared.structs.bhE_GetCellAddressError;
+import b33hive.shared.structs.bhE_GetCellAddressMappingError;
+import b33hive.shared.structs.bhGetCellAddressMappingResult;
+import b33hive.shared.structs.bhGetCellAddressResult;
+import b33hive.shared.structs.bhGridCoordinate;
+import b33hive.shared.time.bhI_TimeSource;
+import b33hive.shared.transaction.bhE_RequestPath;
+import b33hive.shared.transaction.bhE_ResponseError;
+import b33hive.shared.transaction.bhTransactionRequest;
+import b33hive.shared.transaction.bhTransactionResponse;
 
 public class bhCellAddressManager implements bhI_TransactionResponseHandler
 {
@@ -42,7 +43,7 @@ public class bhCellAddressManager implements bhI_TransactionResponseHandler
 	
 	private static bhCellAddressManager s_instance = null;
 	
-	private final bhCellAddressCache m_cache = new bhCellAddressCache();
+	private final bhCellAddressCache m_cache;
 	
 	private final bhMutableJsonQuery m_query = new bhMutableJsonQuery();
 	
@@ -55,6 +56,15 @@ public class bhCellAddressManager implements bhI_TransactionResponseHandler
 	
 	private bhCellAddressManager()
 	{
+		m_cache = new bhCellAddressCache(xxx, xxx, new bhI_TimeSource()
+		{
+			@Override
+			public double getTime()
+			{
+				// TODO Auto-generated method stub
+				return 0;
+			}
+		});
 		m_query.addCondition(null);
 	}
 	
@@ -127,7 +137,8 @@ public class bhCellAddressManager implements bhI_TransactionResponseHandler
 		}
 		
 		//--- DRK > Try to get address from user.
-		address = bhClientUser.getInstance().getCellAddress(mapping);
+		bhA_ClientUser user = bhUserManager.getInstance().getUser();
+		address = user.getCellAddress(mapping);
 		if( address != null )
 		{
 			onAddressFound(mapping, address, true);
@@ -176,7 +187,8 @@ public class bhCellAddressManager implements bhI_TransactionResponseHandler
 		}
 		
 		//--- DRK > Try to get mapping from user.
-		mapping = bhClientUser.getInstance().getCellAddressMapping(address);
+		bhA_ClientUser user = bhUserManager.getInstance().getUser();
+		mapping = user.getCellAddressMapping(address);
 		if( mapping != null )
 		{
 			m_listener.onMappingFound(address, mapping);

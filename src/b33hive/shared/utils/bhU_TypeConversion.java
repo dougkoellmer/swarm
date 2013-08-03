@@ -1,4 +1,6 @@
-package com.b33hive.shared;
+package b33hive.shared.utils;
+
+import b33hive.shared.lang.bhI_SerializableEnum;
 
 public class bhU_TypeConversion
 {

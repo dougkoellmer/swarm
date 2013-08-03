@@ -1,4 +1,4 @@
-package com.b33hive.server.code;
+package b33hive.server.code;
 
 
 import java.util.Set;

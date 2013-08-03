@@ -1,4 +1,4 @@
-package com.b33hive.server.account;
+package b33hive.server.account;
 
 import java.sql.Date;
 import java.sql.SQLException;
@@ -11,16 +11,16 @@ import java.util.logging.Logger;
 
 import org.joda.time.DateTime;
 
-import com.b33hive.server.account.bhAccountDatabase.E_PasswordType;
-import com.b33hive.shared.account.bhE_SignInCredentialType;
-import com.b33hive.shared.account.bhE_SignInValidationError;
-import com.b33hive.shared.account.bhE_SignUpCredentialType;
-import com.b33hive.shared.account.bhE_SignUpValidationError;
-import com.b33hive.shared.account.bhS_Account;
-import com.b33hive.shared.account.bhSignInCredentials;
-import com.b33hive.shared.account.bhSignInValidationResult;
-import com.b33hive.shared.account.bhSignUpCredentials;
-import com.b33hive.shared.account.bhSignUpValidationResult;
+import b33hive.server.account.bhAccountDatabase.E_PasswordType;
+import b33hive.shared.account.bhE_SignInCredentialType;
+import b33hive.shared.account.bhE_SignInValidationError;
+import b33hive.shared.account.bhE_SignUpCredentialType;
+import b33hive.shared.account.bhE_SignUpValidationError;
+import b33hive.shared.account.bhS_Account;
+import b33hive.shared.account.bhSignInCredentials;
+import b33hive.shared.account.bhSignInValidationResult;
+import b33hive.shared.account.bhSignUpCredentials;
+import b33hive.shared.account.bhSignUpValidationResult;
 
 /**
  * 

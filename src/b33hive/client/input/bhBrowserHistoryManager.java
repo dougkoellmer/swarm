@@ -1,9 +1,10 @@
-package com.b33hive.client.input;
+package b33hive.client.input;
 
-import com.b33hive.client.json.bhClientJsonObject;
-import com.b33hive.shared.json.bhA_JsonFactory;
-import com.b33hive.shared.json.bhI_JsonEncodable;
-import com.b33hive.shared.json.bhI_JsonObject;
+import b33hive.client.thirdparty.history.bhHistoryJsWrapper;
+import b33hive.client.thirdparty.json.bhGwtJsonObject;
+import b33hive.shared.json.bhA_JsonFactory;
+import b33hive.shared.json.bhI_JsonEncodable;
+import b33hive.shared.json.bhI_JsonObject;
 import com.google.gwt.core.client.JavaScriptObject;
 
 public class bhBrowserHistoryManager
@@ -24,7 +25,7 @@ public class bhBrowserHistoryManager
 			
 			if( data != null )
 			{
-				json = new bhClientJsonObject(data);
+				json = new bhGwtJsonObject(data);
 			}
 			
 			m_listener.onStateChange(path, json);
@@ -42,7 +43,7 @@ public class bhBrowserHistoryManager
 	
 	private static JavaScriptObject createJsObject(bhI_JsonEncodable state)
 	{
-		return state != null ? ((bhClientJsonObject)state.writeJson()).getNative().getJavaScriptObject() : null;
+		return state != null ? ((bhGwtJsonObject)state.writeJson()).getNative().getJavaScriptObject() : null;
 	}
 	
 	public void setState(String path, String title, bhI_JsonEncodable state)
@@ -73,7 +74,7 @@ public class bhBrowserHistoryManager
 		}
 		else
 		{
-			return new bhClientJsonObject(nativeJson);
+			return new bhGwtJsonObject(nativeJson);
 		}
 	}
 	

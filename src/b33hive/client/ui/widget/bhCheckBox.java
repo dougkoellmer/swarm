@@ -1,7 +1,7 @@
-package com.b33hive.client.ui.widget;
+package b33hive.client.ui.widget;
 
-import com.b33hive.client.input.bhClickManager;
-import com.b33hive.client.input.bhI_ClickHandler;
+import b33hive.client.input.bhClickManager;
+import b33hive.client.input.bhI_ClickHandler;
 import com.google.gwt.dom.client.Style.Cursor;
 import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.dom.client.Style.Position;

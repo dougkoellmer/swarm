@@ -1,4 +1,4 @@
-package com.b33hive.server.code;
+package b33hive.server.code;
 
 import java.io.IOException;
 import java.net.URI;
@@ -17,24 +17,24 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.b33hive.server.structs.bhServerCode;
-import com.b33hive.shared.account.bhE_SignUpValidationError;
-import com.b33hive.shared.account.bhI_SignUpCredentialValidator;
-import com.b33hive.shared.app.bhS_App;
-import com.b33hive.shared.code.bhA_CodeCompiler;
-import com.b33hive.shared.code.bhCompilerResult;
-import com.b33hive.shared.code.bhCompilerMessage;
-import com.b33hive.shared.code.bhE_CompilationStatus;
-import com.b33hive.shared.code.bhE_CompilerMessageLevel;
-import com.b33hive.shared.code.bhFileRange;
-import com.b33hive.shared.code.bhU_Code;
-import com.b33hive.shared.entities.bhE_CodeSafetyLevel;
-import com.b33hive.shared.entities.bhE_CodeType;
-import com.b33hive.shared.structs.bhCellAddress;
-import com.b33hive.shared.structs.bhCode;
-import com.b33hive.shared.structs.bhCodePrivileges;
-import com.b33hive.shared.structs.bhE_CellAddressParseError;
-import com.b33hive.shared.structs.bhE_NetworkPrivilege;
+import b33hive.server.structs.bhServerCode;
+import b33hive.shared.account.bhE_SignUpValidationError;
+import b33hive.shared.account.bhI_SignUpCredentialValidator;
+import b33hive.shared.app.bhS_App;
+import b33hive.shared.code.bhA_CodeCompiler;
+import b33hive.shared.code.bhCompilerResult;
+import b33hive.shared.code.bhCompilerMessage;
+import b33hive.shared.code.bhE_CompilationStatus;
+import b33hive.shared.code.bhE_CompilerMessageLevel;
+import b33hive.shared.code.bhFileRange;
+import b33hive.shared.code.bhU_Code;
+import b33hive.shared.entities.bhE_CodeSafetyLevel;
+import b33hive.shared.entities.bhE_CodeType;
+import b33hive.shared.structs.bhCellAddress;
+import b33hive.shared.structs.bhCode;
+import b33hive.shared.structs.bhCodePrivileges;
+import b33hive.shared.structs.bhE_CellAddressParseError;
+import b33hive.shared.structs.bhE_NetworkPrivilege;
 import com.google.caja.SomethingWidgyHappenedError;
 import com.google.caja.config.ConfigUtil;
 import com.google.caja.lang.html.HtmlSchema;
@@ -151,11 +151,11 @@ public class bhServerCodeCompiler extends bhA_CodeCompiler
 	}
 	
 	@Override
-	public bhCompilerResult compile(bhCode sourceCode, bhCodePrivileges privileges, String idClass /*?????*/)
+	public bhCompilerResult compile(bhCode sourceCode, bhCodePrivileges privileges, String namespace /*?????*/)
 	{
-		idClass += bhS_App.CAJA_NAMESPACE_SUFFIX;
+		//idClass += bhS_App.CAJA_NAMESPACE_SUFFIX;
 		
-		bhCompilerResult result = (bhCompilerResult) super.compile(sourceCode, privileges, idClass);
+		bhCompilerResult result = (bhCompilerResult) super.compile(sourceCode, privileges, namespace);
 		
 		if( result.getStatus() != bhE_CompilationStatus.NO_ERROR )
 		{
@@ -174,7 +174,7 @@ public class bhServerCodeCompiler extends bhA_CodeCompiler
 		bhUriPolicy uriPolicy = new bhUriPolicy(privileges.getNetworkPrivilege());
 		
 		PluginMeta meta = new PluginMeta(fetcher, uriPolicy);
-		meta.setIdClass(idClass);
+		meta.setIdClass(namespace);
 		//meta.setPrecajoleMinify(true); // not sure what it does, but sounds like extra CPU to minify, which we don't care about
 		MessageQueue messageQueue = new SimpleMessageQueue();
 

@@ -1,20 +1,20 @@
-package com.b33hive.server.structs;
+package b33hive.server.structs;
 
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
-import com.b33hive.client.app.bhE_Platform;
-import com.b33hive.server.data.blob.bhI_Blob;
-import com.b33hive.server.data.blob.bhI_BlobKeySource;
-import com.b33hive.server.data.blob.bhU_Blob;
-import com.b33hive.server.data.blob.bhU_Serialization;
-import com.b33hive.server.entities.bhS_BlobKeyPrefix;
-import com.b33hive.shared.json.bhI_JsonObject;
-import com.b33hive.shared.structs.bhCellAddress;
-import com.b33hive.shared.structs.bhCodePrivileges;
-import com.b33hive.shared.structs.bhE_CellAddressParseError;
+import b33hive.client.app.bhE_Platform;
+import b33hive.server.data.blob.bhI_Blob;
+import b33hive.server.data.blob.bhI_BlobKeySource;
+import b33hive.server.data.blob.bhU_Blob;
+import b33hive.server.data.blob.bhU_Serialization;
+import b33hive.server.entities.bhS_BlobKeyPrefix;
+import b33hive.shared.json.bhI_JsonObject;
+import b33hive.shared.structs.bhCellAddress;
+import b33hive.shared.structs.bhCodePrivileges;
+import b33hive.shared.structs.bhE_CellAddressParseError;
 
 public class bhServerCellAddress extends bhCellAddress implements Externalizable, bhI_BlobKeySource
 {

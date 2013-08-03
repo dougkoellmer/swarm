@@ -1,6 +1,6 @@
-package com.b33hive.client.ui;
+package b33hive.client.ui;
 
-import com.b33hive.shared.bhU_Math;
+import b33hive.shared.utils.bhU_Math;
 
 public class bhTweener
 {

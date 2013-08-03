@@ -1,14 +1,13 @@
-package com.b33hive.client.managers;
+package b33hive.client.managers;
 
 import java.util.logging.Logger;
 
-import com.b33hive.client.app.bhS_ClientApp;
-import com.b33hive.client.entities.bhCamera;
-import com.b33hive.shared.app.bhS_App;
-import com.b33hive.shared.debugging.bhU_Debug;
-import com.b33hive.shared.structs.bhPoint;
-import com.b33hive.shared.structs.bhTolerance;
-import com.b33hive.shared.structs.bhVector;
+import b33hive.client.entities.bhCamera;
+import b33hive.shared.app.bhS_App;
+import b33hive.shared.debugging.bhU_Debug;
+import b33hive.shared.structs.bhPoint;
+import b33hive.shared.structs.bhTolerance;
+import b33hive.shared.structs.bhVector;
 
 public class bhCameraManager
 {
@@ -33,8 +32,14 @@ public class bhCameraManager
 	
 	private final bhCamera m_camera;
 	
-	public bhCameraManager(bhCamera camera)
+	private double m_minSnapTime = 0;
+	private double m_snapTimeRange = 0;
+	
+	public bhCameraManager(bhCamera camera, double minSnapTime, double snapTimeRange)
 	{
+		m_minSnapTime = minSnapTime;
+		m_snapTimeRange = snapTimeRange;
+		
 		m_camera = camera;
 		s_instance = this; // kinda hacky...eh
 	}
@@ -158,7 +163,7 @@ public class bhCameraManager
 		
 		if( !instant )
 		{
-			double timeToTravel = bhS_ClientApp.MIN_SNAP_TIME + distanceRatio * bhS_ClientApp.SNAP_TIME_RANGE;
+			double timeToTravel = m_minSnapTime + distanceRatio * m_snapTimeRange;
 			
 			m_snapTime = timeToTravel;
 		}

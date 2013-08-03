@@ -1,9 +1,9 @@
-package com.b33hive.shared.transaction;
+package b33hive.shared.transaction;
 
-import com.b33hive.shared.json.bhE_JsonKey;
-import com.b33hive.shared.json.bhI_JsonArray;
-import com.b33hive.shared.json.bhI_JsonObject;
-import com.b33hive.shared.json.bhJsonHelper;
+import b33hive.shared.json.bhE_JsonKey;
+import b33hive.shared.json.bhI_JsonArray;
+import b33hive.shared.json.bhI_JsonObject;
+import b33hive.shared.json.bhJsonHelper;
 
 public class bhU_RequestBatch
 {

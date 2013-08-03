@@ -1,9 +1,9 @@
-package com.b33hive.client.structs;
+package b33hive.client.structs;
 
-import com.b33hive.client.entities.bhBufferCell;
-import com.b33hive.client.ui.cell.bhVisualCell;
-import com.b33hive.shared.memory.bhObjectPool;
-import com.b33hive.shared.reflection.bhI_Class;
+import b33hive.client.entities.bhBufferCell;
+import b33hive.client.ui.cell.bhVisualCell;
+import b33hive.shared.memory.bhObjectPool;
+import b33hive.shared.reflection.bhI_Class;
 
 /**
  * ...

@@ -1,11 +1,12 @@
-package com.b33hive.shared.structs;
+package b33hive.shared.structs;
 
-import com.b33hive.shared.debugging.bhU_Debug;
-import com.b33hive.shared.entities.bhE_CharacterQuota;
-import com.b33hive.shared.json.bhA_JsonEncodable;
-import com.b33hive.shared.json.bhE_JsonKey;
-import com.b33hive.shared.json.bhI_JsonObject;
-import com.b33hive.shared.json.bhJsonHelper;
+
+import b33hive.shared.debugging.bhU_Debug;
+import b33hive.shared.entities.bhE_CharacterQuota;
+import b33hive.shared.json.bhA_JsonEncodable;
+import b33hive.shared.json.bhE_JsonKey;
+import b33hive.shared.json.bhI_JsonObject;
+import b33hive.shared.json.bhJsonHelper;
 
 public class bhCodePrivileges extends bhA_JsonEncodable
 {
@@ -72,6 +73,6 @@ public class bhCodePrivileges extends bhA_JsonEncodable
 		m_network = network != null ? network : bhE_NetworkPrivilege.IMAGES;
 		
 		bhE_CharacterQuota quota = bhJsonHelper.getInstance().getEnum(json, bhE_JsonKey.characterQuota, bhE_CharacterQuota.values());
-		m_characterQuota = quota != null ? quota : bhE_CharacterQuota.FREE;
+		m_characterQuota = quota == null ? bhE_CharacterQuota.FREE : quota;
 	}
 }

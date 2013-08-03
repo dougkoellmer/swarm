@@ -1,9 +1,9 @@
-package com.b33hive.shared.memory;
+package b33hive.shared.memory;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import com.b33hive.shared.time.bhI_TimeSource;
+import b33hive.shared.time.bhI_TimeSource;
 
 public class bhLRUCache
 {

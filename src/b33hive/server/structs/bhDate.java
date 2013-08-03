@@ -1,4 +1,4 @@
-package com.b33hive.server.structs;
+package b33hive.server.structs;
 
 import java.io.Externalizable;
 import java.io.IOException;

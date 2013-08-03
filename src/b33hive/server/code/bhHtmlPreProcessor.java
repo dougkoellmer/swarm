@@ -1,4 +1,4 @@
-package com.b33hive.server.code;
+package b33hive.server.code;
 
 import java.util.logging.Logger;
 
@@ -7,9 +7,9 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
-import com.b33hive.shared.code.bhU_Code;
-import com.b33hive.shared.structs.bhCellAddress;
-import com.b33hive.shared.structs.bhE_CellAddressParseError;
+import b33hive.shared.code.bhU_Code;
+import b33hive.shared.structs.bhCellAddress;
+import b33hive.shared.structs.bhE_CellAddressParseError;
 import com.google.caja.parser.html.AttribKey;
 import com.google.caja.parser.html.Dom;
 import com.google.caja.parser.html.ElKey;

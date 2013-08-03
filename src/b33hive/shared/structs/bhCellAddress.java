@@ -1,14 +1,14 @@
-package com.b33hive.shared.structs;
+package b33hive.shared.structs;
 
 import java.util.ArrayList;
 
-import com.b33hive.shared.app.bhS_App;
-import com.b33hive.shared.account.bhE_SignUpValidationError;
-import com.b33hive.shared.account.bhI_SignUpCredentialValidator;
-import com.b33hive.shared.json.bhA_JsonEncodable;
-import com.b33hive.shared.json.bhE_JsonKey;
-import com.b33hive.shared.json.bhI_JsonObject;
-import com.b33hive.shared.json.bhJsonHelper;
+import b33hive.shared.app.bhS_App;
+import b33hive.shared.account.bhE_SignUpValidationError;
+import b33hive.shared.account.bhI_SignUpCredentialValidator;
+import b33hive.shared.json.bhA_JsonEncodable;
+import b33hive.shared.json.bhE_JsonKey;
+import b33hive.shared.json.bhI_JsonObject;
+import b33hive.shared.json.bhJsonHelper;
 
 public class bhCellAddress extends bhA_JsonEncodable
 {

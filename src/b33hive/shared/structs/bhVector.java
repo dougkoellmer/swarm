@@ -1,7 +1,7 @@
-package com.b33hive.shared.structs; 
+package b33hive.shared.structs; 
 
-import com.b33hive.shared.bhU_Math;
-import com.b33hive.shared.debugging.bhU_Debug;
+import b33hive.shared.utils.bhU_Math;
+import b33hive.shared.debugging.bhU_Debug;
 
 
 

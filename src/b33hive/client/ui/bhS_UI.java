@@ -1,4 +1,4 @@
-package com.b33hive.client.ui;
+package b33hive.client.ui;
 
 public class bhS_UI
 {

@@ -1,4 +1,4 @@
-package com.b33hive.shared.statemachine;
+package b33hive.shared.statemachine;
 
 public abstract class bhA_StateConstructor
 {

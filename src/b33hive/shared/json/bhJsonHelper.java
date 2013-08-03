@@ -1,9 +1,9 @@
-package com.b33hive.shared.json;
+package b33hive.shared.json;
 
 import java.util.List;
 
-import com.b33hive.shared.bhU_TypeConversion;
-import com.b33hive.shared.reflection.bhI_Class;
+import b33hive.shared.utils.bhU_TypeConversion;
+import b33hive.shared.reflection.bhI_Class;
 
 public class bhJsonHelper
 {

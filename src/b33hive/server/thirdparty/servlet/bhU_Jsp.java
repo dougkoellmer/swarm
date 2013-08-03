@@ -1,11 +1,11 @@
-package com.b33hive.server.servlets;
+package b33hive.server.thirdparty.servlet;
 
 import java.io.IOException;
 
 import javax.servlet.jsp.JspWriter;
 
-import com.b33hive.shared.transaction.bhTransactionRequest;
-import com.b33hive.shared.transaction.bhTransactionResponse;
+import b33hive.shared.transaction.bhTransactionRequest;
+import b33hive.shared.transaction.bhTransactionResponse;
 
 public class bhU_Jsp
 {

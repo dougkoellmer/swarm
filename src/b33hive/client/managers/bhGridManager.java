@@ -1,18 +1,18 @@
-package com.b33hive.client.managers;
+package b33hive.client.managers;
 
-import com.b33hive.client.entities.bhClientGrid;
-import com.b33hive.client.states.StateMachine_Base;
-import com.b33hive.client.structs.bhAccountInfo;
-import com.b33hive.client.transaction.bhE_TransactionAction;
-import com.b33hive.client.transaction.bhE_ResponseErrorControl;
-import com.b33hive.client.transaction.bhE_ResponseSuccessControl;
-import com.b33hive.client.transaction.bhI_TransactionResponseHandler;
-import com.b33hive.client.transaction.bhClientTransactionManager;
-import com.b33hive.shared.json.bhI_JsonObject;
-import com.b33hive.shared.transaction.bhE_RequestPath;
-import com.b33hive.shared.transaction.bhE_ResponseError;
-import com.b33hive.shared.transaction.bhTransactionRequest;
-import com.b33hive.shared.transaction.bhTransactionResponse;
+import b33hive.client.entities.bhClientGrid;
+import b33hive.client.states.StateMachine_Base;
+import b33hive.client.structs.bhAccountInfo;
+import b33hive.client.transaction.bhE_TransactionAction;
+import b33hive.client.transaction.bhE_ResponseErrorControl;
+import b33hive.client.transaction.bhE_ResponseSuccessControl;
+import b33hive.client.transaction.bhI_TransactionResponseHandler;
+import b33hive.client.transaction.bhClientTransactionManager;
+import b33hive.shared.json.bhI_JsonObject;
+import b33hive.shared.transaction.bhE_RequestPath;
+import b33hive.shared.transaction.bhE_ResponseError;
+import b33hive.shared.transaction.bhTransactionRequest;
+import b33hive.shared.transaction.bhTransactionResponse;
 
 public class bhGridManager implements bhI_TransactionResponseHandler
 {

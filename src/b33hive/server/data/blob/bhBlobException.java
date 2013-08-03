@@ -1,4 +1,4 @@
-package com.b33hive.server.data.blob;
+package b33hive.server.data.blob;
 
 public class bhBlobException extends Exception
 {

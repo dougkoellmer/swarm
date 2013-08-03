@@ -1,19 +1,19 @@
-package com.b33hive.server.structs;
+package b33hive.server.structs;
 
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.Map;
 
-import com.b33hive.server.data.blob.bhE_BlobCacheLevel;
-import com.b33hive.server.data.blob.bhI_Blob;
-import com.b33hive.server.data.blob.bhI_BlobKeySource;
-import com.b33hive.server.data.blob.bhU_Blob;
-import com.b33hive.server.data.blob.bhU_Serialization;
-import com.b33hive.server.entities.bhE_GridType;
-import com.b33hive.server.entities.bhS_BlobKeyPrefix;
-import com.b33hive.shared.structs.bhCellAddressMapping;
-import com.b33hive.shared.structs.bhGridCoordinate;
+import b33hive.server.data.blob.bhE_BlobCacheLevel;
+import b33hive.server.data.blob.bhI_Blob;
+import b33hive.server.data.blob.bhI_BlobKeySource;
+import b33hive.server.data.blob.bhU_Blob;
+import b33hive.server.data.blob.bhU_Serialization;
+import b33hive.server.entities.bhE_GridType;
+import b33hive.server.entities.bhS_BlobKeyPrefix;
+import b33hive.shared.structs.bhCellAddressMapping;
+import b33hive.shared.structs.bhGridCoordinate;
 
 public class bhServerCellAddressMapping extends bhCellAddressMapping implements bhI_Blob, bhI_BlobKeySource
 {

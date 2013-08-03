@@ -1,6 +1,6 @@
-package com.b33hive.client.ui.tooltip;
+package b33hive.client.ui.tooltip;
 
-import com.b33hive.client.ui.alignment.bhAlignmentDefinition;
+import b33hive.client.ui.alignment.bhAlignmentDefinition;
 
 public class bhToolTipConfig
 {

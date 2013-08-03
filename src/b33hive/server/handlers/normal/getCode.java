@@ -1,4 +1,4 @@
-package com.b33hive.server.handlers;
+package b33hive.server.handlers.normal;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,34 +8,33 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 
-import com.b33hive.server.data.blob.bhBlobException;
-import com.b33hive.server.data.blob.bhBlobManagerFactory;
-import com.b33hive.server.data.blob.bhE_BlobCacheLevel;
-import com.b33hive.server.data.blob.bhI_Blob;
-import com.b33hive.server.data.blob.bhI_BlobKeySource;
-import com.b33hive.server.data.blob.bhI_BlobManager;
-import com.b33hive.server.entities.bhE_GridType;
-import com.b33hive.server.entities.bhServerCell;
-import com.b33hive.server.servlets.bhU_Servlet;
-import com.b33hive.server.structs.bhServerCellAddressMapping;
-import com.b33hive.server.structs.bhServerGridCoordinate;
-import com.b33hive.server.transaction.bhI_DeferredRequestHandler;
-import com.b33hive.server.transaction.bhI_RequestHandler;
-import com.b33hive.server.transaction.bhServerTransactionManager;
-import com.b33hive.server.transaction.bhTransactionBatch;
-import com.b33hive.server.transaction.bhTransactionContext;
-import com.b33hive.shared.bhU_BitTricks;
-import com.b33hive.shared.entities.bhA_Cell;
-import com.b33hive.shared.entities.bhE_CodeSafetyLevel;
-import com.b33hive.shared.entities.bhE_CodeType;
-import com.b33hive.shared.json.bhE_JsonKey;
-import com.b33hive.shared.json.bhJsonHelper;
-import com.b33hive.shared.structs.bhCode;
-import com.b33hive.shared.structs.bhCodePrivileges;
-import com.b33hive.shared.transaction.bhE_RequestPath;
-import com.b33hive.shared.transaction.bhE_ResponseError;
-import com.b33hive.shared.transaction.bhTransactionRequest;
-import com.b33hive.shared.transaction.bhTransactionResponse;
+import b33hive.server.data.blob.bhBlobException;
+import b33hive.server.data.blob.bhBlobManagerFactory;
+import b33hive.server.data.blob.bhE_BlobCacheLevel;
+import b33hive.server.data.blob.bhI_Blob;
+import b33hive.server.data.blob.bhI_BlobKeySource;
+import b33hive.server.data.blob.bhI_BlobManager;
+import b33hive.server.entities.bhE_GridType;
+import b33hive.server.entities.bhServerCell;
+import b33hive.server.structs.bhServerCellAddressMapping;
+import b33hive.server.structs.bhServerGridCoordinate;
+import b33hive.server.transaction.bhI_DeferredRequestHandler;
+import b33hive.server.transaction.bhI_RequestHandler;
+import b33hive.server.transaction.bhServerTransactionManager;
+import b33hive.server.transaction.bhTransactionBatch;
+import b33hive.server.transaction.bhTransactionContext;
+import b33hive.shared.utils.bhU_BitTricks;
+import b33hive.shared.entities.bhA_Cell;
+import b33hive.shared.entities.bhE_CodeSafetyLevel;
+import b33hive.shared.entities.bhE_CodeType;
+import b33hive.shared.json.bhE_JsonKey;
+import b33hive.shared.json.bhJsonHelper;
+import b33hive.shared.structs.bhCode;
+import b33hive.shared.structs.bhCodePrivileges;
+import b33hive.shared.transaction.bhE_RequestPath;
+import b33hive.shared.transaction.bhE_ResponseError;
+import b33hive.shared.transaction.bhTransactionRequest;
+import b33hive.shared.transaction.bhTransactionResponse;
 
 public class getCode implements bhI_RequestHandler, bhI_DeferredRequestHandler
 {

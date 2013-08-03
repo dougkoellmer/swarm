@@ -1,8 +1,8 @@
-package com.b33hive.client.transaction;
+package b33hive.client.transaction;
 
-import com.b33hive.shared.json.bhJsonQuery;
-import com.b33hive.shared.transaction.bhI_RequestPath;
-import com.b33hive.shared.transaction.bhTransactionRequest;
+import b33hive.shared.json.bhJsonQuery;
+import b33hive.shared.transaction.bhI_RequestPath;
+import b33hive.shared.transaction.bhTransactionRequest;
 
 public interface bhI_AsynchronousRequestDispatcher extends bhI_RequestDispatcher
 {

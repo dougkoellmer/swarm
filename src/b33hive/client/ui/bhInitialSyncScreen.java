@@ -1,10 +1,10 @@
-package com.b33hive.client.ui;
+package b33hive.client.ui;
 
-import com.b33hive.client.states.State_GenericDialog;
-import com.b33hive.client.states.State_Initializing;
-import com.b33hive.shared.statemachine.bhA_Action;
-import com.b33hive.shared.statemachine.bhI_StateEventListener;
-import com.b33hive.shared.statemachine.bhStateEvent;
+import b33hive.client.states.State_GenericDialog;
+import b33hive.client.states.State_Initializing;
+import b33hive.shared.statemachine.bhA_Action;
+import b33hive.shared.statemachine.bhI_StateEventListener;
+import b33hive.shared.statemachine.bhStateEvent;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.AbsolutePanel;

@@ -1,11 +1,11 @@
-package com.b33hive.server.data.blob;
+package b33hive.server.data.blob;
 
 import java.util.ConcurrentModificationException;
 
-import com.b33hive.server.entities.bhS_BlobKeyPrefix;
-import com.b33hive.server.entities.bhServerGrid;
-import com.b33hive.shared.app.bhS_App;
-import com.b33hive.shared.transaction.bhE_ResponseError;
+import b33hive.server.entities.bhS_BlobKeyPrefix;
+import b33hive.server.entities.bhServerGrid;
+import b33hive.shared.app.bhS_App;
+import b33hive.shared.transaction.bhE_ResponseError;
 
 public abstract class bhA_BlobTransaction
 {

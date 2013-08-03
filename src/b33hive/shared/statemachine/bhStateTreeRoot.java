@@ -1,10 +1,10 @@
-package com.b33hive.shared.statemachine;
+package b33hive.shared.statemachine;
 
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
-import com.b33hive.client.states.code.State_EditingCodeBlocker;
-import com.b33hive.shared.debugging.bhU_Debug;
+import b33hive.client.states.code.State_EditingCodeBlocker;
+import b33hive.shared.debugging.bhU_Debug;
 
 public class bhStateTreeRoot
 {

@@ -1,54 +1,55 @@
-package com.b33hive.client.states.camera;
+package b33hive.client.states.camera;
 
 
 import java.util.logging.Logger;
 
-import com.b33hive.client.code.bhCompilerErrorMessageGenerator;
-import com.b33hive.client.entities.bhCamera;
-import com.b33hive.client.managers.bhCellCodeManager;
-import com.b33hive.client.entities.bhBufferCell;
-import com.b33hive.client.managers.bhCameraManager;
-import com.b33hive.client.managers.bhCellAddressManager;
-import com.b33hive.client.managers.bhCellBuffer;
-import com.b33hive.client.managers.bhCellBufferManager;
-import com.b33hive.client.managers.bhClientAccountManager;
-import com.b33hive.client.entities.bhClientGrid;
-import com.b33hive.client.entities.bhClientUser;
-import com.b33hive.client.managers.bhF_BufferUpdateOption;
-import com.b33hive.client.input.bhBrowserHistoryManager;
-import com.b33hive.client.input.bhBrowserAddressManager;
-import com.b33hive.client.states.StateMachine_Base;
-import com.b33hive.client.states.State_AsyncDialog;
-import com.b33hive.client.states.State_GenericDialog;
-import com.b33hive.client.states.StateMachine_Base.OnGridResize;
-import com.b33hive.client.states.camera.State_GettingMapping.OnResponse.E_Type;
-import com.b33hive.client.structs.bhCellCodeCache;
-import com.b33hive.client.structs.bhI_LocalCodeRepository;
-import com.b33hive.client.structs.bhLocalCodeRepositoryWrapper;
-import com.b33hive.client.transaction.bhClientTransactionManager;
-import com.b33hive.client.transaction.bhE_TransactionAction;
-import com.b33hive.shared.app.bhS_App;
-import com.b33hive.shared.code.bhCompilerResult;
-import com.b33hive.shared.code.bhE_CompilationStatus;
-import com.b33hive.shared.debugging.bhU_Debug;
-import com.b33hive.shared.entities.bhE_CodeType;
-import com.b33hive.shared.json.bhI_JsonObject;
-import com.b33hive.shared.statemachine.bhA_Action;
+import b33hive.client.code.bhCompilerErrorMessageGenerator;
+import b33hive.client.entities.bhCamera;
+import b33hive.client.managers.bhCellCodeManager;
+import b33hive.client.entities.bhBufferCell;
+import b33hive.client.managers.bhCameraManager;
+import b33hive.client.managers.bhCellAddressManager;
+import b33hive.client.managers.bhCellBuffer;
+import b33hive.client.managers.bhCellBufferManager;
+import b33hive.client.managers.bhClientAccountManager;
+import b33hive.client.managers.bhUserManager;
+import b33hive.client.entities.bhClientGrid;
+import b33hive.client.entities.bhA_ClientUser;
+import b33hive.client.managers.bhF_BufferUpdateOption;
+import b33hive.client.input.bhBrowserHistoryManager;
+import b33hive.client.input.bhBrowserAddressManager;
+import b33hive.client.states.StateMachine_Base;
+import b33hive.client.states.State_AsyncDialog;
+import b33hive.client.states.State_GenericDialog;
+import b33hive.client.states.StateMachine_Base.OnGridResize;
+import b33hive.client.states.camera.State_GettingMapping.OnResponse.E_Type;
+import b33hive.client.structs.bhCellCodeCache;
+import b33hive.client.structs.bhI_LocalCodeRepository;
+import b33hive.client.structs.bhLocalCodeRepositoryWrapper;
+import b33hive.client.transaction.bhClientTransactionManager;
+import b33hive.client.transaction.bhE_TransactionAction;
+import b33hive.shared.app.bhS_App;
+import b33hive.shared.code.bhCompilerResult;
+import b33hive.shared.code.bhE_CompilationStatus;
+import b33hive.shared.debugging.bhU_Debug;
+import b33hive.shared.entities.bhE_CodeType;
+import b33hive.shared.json.bhI_JsonObject;
+import b33hive.shared.statemachine.bhA_Action;
 
-import com.b33hive.shared.statemachine.bhA_ActionArgs;
-import com.b33hive.shared.statemachine.bhA_EventAction;
-import com.b33hive.shared.statemachine.bhA_State;
-import com.b33hive.shared.statemachine.bhA_StateMachine;
-import com.b33hive.shared.statemachine.bhI_StateEventListener;
-import com.b33hive.shared.statemachine.bhA_StateConstructor;
-import com.b33hive.shared.statemachine.bhStateEvent;
-import com.b33hive.shared.structs.bhCellAddress;
-import com.b33hive.shared.structs.bhCellAddressMapping;
-import com.b33hive.shared.structs.bhE_CellAddressParseError;
-import com.b33hive.shared.structs.bhGridCoordinate;
-import com.b33hive.shared.structs.bhPoint;
-import com.b33hive.shared.structs.bhTolerance;
-import com.b33hive.shared.structs.bhVector;
+import b33hive.shared.statemachine.bhA_ActionArgs;
+import b33hive.shared.statemachine.bhA_EventAction;
+import b33hive.shared.statemachine.bhA_State;
+import b33hive.shared.statemachine.bhA_StateMachine;
+import b33hive.shared.statemachine.bhI_StateEventListener;
+import b33hive.shared.statemachine.bhA_StateConstructor;
+import b33hive.shared.statemachine.bhStateEvent;
+import b33hive.shared.structs.bhCellAddress;
+import b33hive.shared.structs.bhCellAddressMapping;
+import b33hive.shared.structs.bhE_CellAddressParseError;
+import b33hive.shared.structs.bhGridCoordinate;
+import b33hive.shared.structs.bhPoint;
+import b33hive.shared.structs.bhTolerance;
+import b33hive.shared.structs.bhVector;
 
 /**
  * ...
@@ -525,7 +526,8 @@ public class StateMachine_Camera extends bhA_StateMachine implements bhI_StateEv
 		bhA_Action.register(new SetCameraTarget());
 		bhA_Action.register(new SetInitialPosition());
 		
-		m_codeRepo.addSource(bhClientUser.getInstance());
+		bhA_ClientUser user = bhUserManager.getInstance().getUser();
+		m_codeRepo.addSource(user);
 		m_codeRepo.addSource(bhCellCodeCache.getInstance());
 	}
 	
@@ -603,7 +605,9 @@ public class StateMachine_Camera extends bhA_StateMachine implements bhI_StateEv
 	protected void didEnter(bhA_StateConstructor constructor)
 	{
 		//--- DRK > Not enforcing z constraints here because UI probably hasn't told us camera view size yet.
-		m_cameraManager.setCameraPosition(bhClientUser.getInstance().getLastPosition(), false);
+		
+		bhA_ClientUser user = bhUserManager.getInstance().getUser();
+		m_cameraManager.setCameraPosition(user.getLastPosition(), false);
 
 		bhCellCodeManager.getInstance().start(new bhCellCodeManager.I_SyncOrPreviewDelegate()
 		{

@@ -1,4 +1,4 @@
-package com.b33hive.server.app;
+package b33hive.server.app;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;

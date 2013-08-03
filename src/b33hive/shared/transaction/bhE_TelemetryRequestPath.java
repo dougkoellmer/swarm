@@ -1,4 +1,4 @@
-package com.b33hive.shared.transaction;
+package b33hive.shared.transaction;
 
 /**
  * @author Doug

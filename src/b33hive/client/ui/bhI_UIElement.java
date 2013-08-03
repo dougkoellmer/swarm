@@ -1,6 +1,6 @@
-package com.b33hive.client.ui;
+package b33hive.client.ui;
 
-import com.b33hive.shared.statemachine.bhI_StateEventListener;
+import b33hive.shared.statemachine.bhI_StateEventListener;
 
 
 /**

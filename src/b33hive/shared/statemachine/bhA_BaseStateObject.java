@@ -1,6 +1,6 @@
-package com.b33hive.shared.statemachine;
+package b33hive.shared.statemachine;
 
-import com.b33hive.shared.debugging.bhU_Debug;
+import b33hive.shared.debugging.bhU_Debug;
 
 /**
  * This base class provides both actions and states with a unified API to safely manipulate the machine tree.

@@ -1,7 +1,7 @@
-package com.b33hive.client.code;
+package b33hive.client.code;
 
-import com.b33hive.shared.code.bhA_CodeCompiler;
-import com.b33hive.shared.code.bhCompilerResult;
+import b33hive.shared.code.bhA_CodeCompiler;
+import b33hive.shared.code.bhCompilerResult;
 
 public class bhClientCodeCompiler extends bhA_CodeCompiler
 {

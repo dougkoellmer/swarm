@@ -1,21 +1,21 @@
-package com.b33hive.server.entities;
+package b33hive.server.entities;
 
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.Map;
 
-import com.b33hive.server.data.blob.bhE_BlobCacheLevel;
-import com.b33hive.server.data.blob.bhI_Blob;
-import com.b33hive.server.data.blob.bhU_Serialization;
-import com.b33hive.server.structs.bhDate;
-import com.b33hive.server.structs.bhServerCellAddress;
-import com.b33hive.server.structs.bhServerCodePrivileges;
-import com.b33hive.server.structs.bhServerCode;
-import com.b33hive.shared.entities.bhA_Cell;
-import com.b33hive.shared.entities.bhE_CodeType;
-import com.b33hive.shared.structs.bhCodePrivileges;
-import com.b33hive.shared.structs.bhCode;
+import b33hive.server.data.blob.bhE_BlobCacheLevel;
+import b33hive.server.data.blob.bhI_Blob;
+import b33hive.server.data.blob.bhU_Serialization;
+import b33hive.server.structs.bhDate;
+import b33hive.server.structs.bhServerCellAddress;
+import b33hive.server.structs.bhServerCodePrivileges;
+import b33hive.server.structs.bhServerCode;
+import b33hive.shared.entities.bhA_Cell;
+import b33hive.shared.entities.bhE_CodeType;
+import b33hive.shared.structs.bhCodePrivileges;
+import b33hive.shared.structs.bhCode;
 
 
 /**

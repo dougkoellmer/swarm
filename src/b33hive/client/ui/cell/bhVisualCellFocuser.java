@@ -1,25 +1,25 @@
-package com.b33hive.client.ui.cell;
+package b33hive.client.ui.cell;
 
 import java.util.logging.Logger;
 
-import com.b33hive.client.entities.bhCamera;
-import com.b33hive.client.entities.bhBufferCell;
-import com.b33hive.client.managers.bhCellBuffer;
-import com.b33hive.client.managers.bhCellBufferManager;
-import com.b33hive.client.states.camera.StateMachine_Camera;
-import com.b33hive.client.states.camera.State_CameraSnapping;
-import com.b33hive.client.states.camera.State_ViewingCell;
-import com.b33hive.client.ui.bhE_ZIndex;
-import com.b33hive.client.ui.bhI_UIElement;
-import com.b33hive.client.ui.bhS_UI;
-import com.b33hive.shared.app.bhS_App;
-import com.b33hive.shared.debugging.bhU_Debug;
-import com.b33hive.shared.statemachine.bhA_Action;
-import com.b33hive.shared.statemachine.bhA_State;
-import com.b33hive.shared.statemachine.bhE_StateTimeType;
-import com.b33hive.shared.statemachine.bhStateEvent;
-import com.b33hive.shared.structs.bhGridCoordinate;
-import com.b33hive.shared.structs.bhPoint;
+import b33hive.client.entities.bhCamera;
+import b33hive.client.entities.bhBufferCell;
+import b33hive.client.managers.bhCellBuffer;
+import b33hive.client.managers.bhCellBufferManager;
+import b33hive.client.states.camera.StateMachine_Camera;
+import b33hive.client.states.camera.State_CameraSnapping;
+import b33hive.client.states.camera.State_ViewingCell;
+import b33hive.client.ui.bhE_ZIndex;
+import b33hive.client.ui.bhI_UIElement;
+import b33hive.client.ui.bhS_UI;
+import b33hive.shared.app.bhS_App;
+import b33hive.shared.debugging.bhU_Debug;
+import b33hive.shared.statemachine.bhA_Action;
+import b33hive.shared.statemachine.bhA_State;
+import b33hive.shared.statemachine.bhE_StateTimeType;
+import b33hive.shared.statemachine.bhStateEvent;
+import b33hive.shared.structs.bhGridCoordinate;
+import b33hive.shared.structs.bhPoint;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Panel;
 

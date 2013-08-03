@@ -1,13 +1,13 @@
-package com.b33hive.client.input;
+package b33hive.client.input;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.b33hive.client.input.bhE_MouseEventType;
-import com.b33hive.client.input.bhMouseEvent;
-import com.b33hive.shared.debugging.bhU_Debug;
-import com.b33hive.shared.structs.bhPoint;
-import com.b33hive.shared.structs.bhTolerance;
+import b33hive.client.input.bhE_MouseEventType;
+import b33hive.client.input.bhMouseEvent;
+import b33hive.shared.debugging.bhU_Debug;
+import b33hive.shared.structs.bhPoint;
+import b33hive.shared.structs.bhTolerance;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Touch;
 import com.google.gwt.event.dom.client.DomEvent;

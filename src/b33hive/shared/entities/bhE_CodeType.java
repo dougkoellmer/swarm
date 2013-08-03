@@ -1,7 +1,7 @@
-package com.b33hive.shared.entities;
+package b33hive.shared.entities;
 
-import com.b33hive.shared.json.bhE_JsonKey;
-import com.b33hive.shared.json.bhI_JsonKeySource;
+import b33hive.shared.json.bhE_JsonKey;
+import b33hive.shared.json.bhI_JsonKeySource;
 
 public enum bhE_CodeType
 {

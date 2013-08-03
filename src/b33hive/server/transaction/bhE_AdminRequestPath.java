@@ -1,7 +1,7 @@
-package com.b33hive.server.transaction;
+package b33hive.server.transaction;
 
-import com.b33hive.shared.transaction.bhE_HttpMethod;
-import com.b33hive.shared.transaction.bhI_RequestPath;
+import b33hive.shared.transaction.bhE_HttpMethod;
+import b33hive.shared.transaction.bhI_RequestPath;
 
 public enum bhE_AdminRequestPath implements bhI_RequestPath
 {

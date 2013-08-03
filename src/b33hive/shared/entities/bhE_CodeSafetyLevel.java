@@ -1,6 +1,6 @@
-package com.b33hive.shared.entities;
+package b33hive.shared.entities;
 
-import com.b33hive.shared.bhI_SerializableEnum;
+import b33hive.shared.lang.bhI_SerializableEnum;
 
 public enum bhE_CodeSafetyLevel implements bhI_SerializableEnum
 {

@@ -1,7 +1,7 @@
-package com.b33hive.server.structs;
+package b33hive.server.structs;
 
-import com.b33hive.shared.bhU_BitTricks;
-import com.b33hive.shared.debugging.bhU_Debug;
+import b33hive.shared.utils.bhU_BitTricks;
+import b33hive.shared.debugging.bhU_Debug;
 
 import java.io.Externalizable;
 import java.io.IOException;

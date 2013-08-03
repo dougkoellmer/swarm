@@ -1,4 +1,4 @@
-package com.b33hive.client.ui.tooltip;
+package b33hive.client.ui.tooltip;
 
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.Label;

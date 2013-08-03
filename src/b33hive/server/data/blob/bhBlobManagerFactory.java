@@ -1,6 +1,6 @@
-package com.b33hive.server.data.blob;
+package b33hive.server.data.blob;
 
-import com.b33hive.server.transaction.bhI_TransactionScopeListener;
+import b33hive.server.transaction.bhI_TransactionScopeListener;
 
 public class bhBlobManagerFactory implements bhI_TransactionScopeListener
 {

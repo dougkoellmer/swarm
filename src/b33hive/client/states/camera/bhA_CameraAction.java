@@ -1,7 +1,7 @@
-package com.b33hive.client.states.camera;
+package b33hive.client.states.camera;
 
-import com.b33hive.shared.statemachine.bhA_Action;
-import com.b33hive.shared.statemachine.bhA_State;
+import b33hive.shared.statemachine.bhA_Action;
+import b33hive.shared.statemachine.bhA_State;
 
 public abstract class bhA_CameraAction extends bhA_Action
 {

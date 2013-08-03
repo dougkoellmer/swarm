@@ -1,21 +1,21 @@
-package com.b33hive.server.handlers;
+package b33hive.server.handlers.blobxn;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.b33hive.server.app.bhS_ServerApp;
-import com.b33hive.server.data.blob.bhA_BlobTransaction;
-import com.b33hive.server.data.blob.bhBlobException;
-import com.b33hive.server.data.blob.bhBlobManagerFactory;
-import com.b33hive.server.data.blob.bhE_BlobCacheLevel;
-import com.b33hive.server.data.blob.bhI_BlobManager;
-import com.b33hive.server.entities.bhE_GridType;
-import com.b33hive.server.entities.bhServerCell;
-import com.b33hive.server.entities.bhServerGrid;
-import com.b33hive.server.structs.bhServerCellAddress;
-import com.b33hive.server.structs.bhServerCellAddressMapping;
-import com.b33hive.server.structs.bhServerGridCoordinate;
-import com.b33hive.shared.structs.bhCellAddress;
+import b33hive.server.app.bhS_ServerApp;
+import b33hive.server.data.blob.bhA_BlobTransaction;
+import b33hive.server.data.blob.bhBlobException;
+import b33hive.server.data.blob.bhBlobManagerFactory;
+import b33hive.server.data.blob.bhE_BlobCacheLevel;
+import b33hive.server.data.blob.bhI_BlobManager;
+import b33hive.server.entities.bhE_GridType;
+import b33hive.server.entities.bhServerCell;
+import b33hive.server.entities.bhServerGrid;
+import b33hive.server.structs.bhServerCellAddress;
+import b33hive.server.structs.bhServerCellAddressMapping;
+import b33hive.server.structs.bhServerGridCoordinate;
+import b33hive.shared.structs.bhCellAddress;
 
 public class bhBlobTransaction_DeactivateCell extends bhA_BlobTransaction
 {

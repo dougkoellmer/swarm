@@ -1,11 +1,11 @@
-package com.b33hive.client.states.code;
+package b33hive.client.states.code;
 
 
-import com.b33hive.shared.statemachine.bhA_Action;
-import com.b33hive.shared.statemachine.bhA_EventAction;
-import com.b33hive.shared.statemachine.bhA_State;
-import com.b33hive.shared.statemachine.bhA_StateConstructor;
-import com.b33hive.shared.structs.bhCellAddress;
+import b33hive.shared.statemachine.bhA_Action;
+import b33hive.shared.statemachine.bhA_EventAction;
+import b33hive.shared.statemachine.bhA_State;
+import b33hive.shared.statemachine.bhA_StateConstructor;
+import b33hive.shared.structs.bhCellAddress;
 
 public class State_EditingCodeBlocker extends bhA_State
 {

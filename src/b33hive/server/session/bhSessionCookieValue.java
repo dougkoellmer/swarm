@@ -1,16 +1,16 @@
-package com.b33hive.server.session;
+package b33hive.server.session;
 
 import java.security.SecureRandom;
 
-import com.b33hive.server.account.bhS_ServerAccount;
-import com.b33hive.server.account.bhU_Hashing;
-import com.b33hive.server.data.blob.bhI_Blob;
-import com.b33hive.server.data.blob.bhI_BlobKeySource;
-import com.b33hive.server.data.blob.bhU_Blob;
-import com.b33hive.shared.json.bhA_JsonEncodable;
-import com.b33hive.shared.json.bhI_JsonKeySource;
-import com.b33hive.shared.json.bhI_JsonObject;
-import com.b33hive.shared.json.bhJsonHelper;
+import b33hive.server.account.bhS_ServerAccount;
+import b33hive.server.account.bhU_Hashing;
+import b33hive.server.data.blob.bhI_Blob;
+import b33hive.server.data.blob.bhI_BlobKeySource;
+import b33hive.server.data.blob.bhU_Blob;
+import b33hive.shared.json.bhA_JsonEncodable;
+import b33hive.shared.json.bhI_JsonKeySource;
+import b33hive.shared.json.bhI_JsonObject;
+import b33hive.shared.json.bhJsonHelper;
 
 class bhSessionCookieValue extends bhA_JsonEncodable implements bhI_BlobKeySource
 {

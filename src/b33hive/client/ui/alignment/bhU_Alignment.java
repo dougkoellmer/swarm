@@ -1,4 +1,4 @@
-package com.b33hive.client.ui.alignment;
+package b33hive.client.ui.alignment;
 
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.dom.client.Element;

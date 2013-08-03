@@ -1,8 +1,8 @@
-package com.b33hive.client.ui.tabs;
+package b33hive.client.ui.tabs;
 
-import com.b33hive.client.ui.bhI_UIElement;
-import com.b33hive.shared.statemachine.bhA_Action;
-import com.b33hive.shared.statemachine.bhStateEvent;
+import b33hive.client.ui.bhI_UIElement;
+import b33hive.shared.statemachine.bhA_Action;
+import b33hive.shared.statemachine.bhStateEvent;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 
 public class bhBookmarkTab extends AbsolutePanel implements bhI_TabContent

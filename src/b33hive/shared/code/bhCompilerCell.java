@@ -1,7 +1,7 @@
-package com.b33hive.shared.code;
+package b33hive.shared.code;
 
-import com.b33hive.shared.entities.bhA_Cell;
-import com.b33hive.shared.json.bhI_JsonObject;
+import b33hive.shared.entities.bhA_Cell;
+import b33hive.shared.json.bhI_JsonObject;
 
 class bhCompilerCell extends bhA_Cell
 {

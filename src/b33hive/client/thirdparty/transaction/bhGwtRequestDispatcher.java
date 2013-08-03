@@ -1,23 +1,27 @@
-package com.b33hive.client.transaction;
+package b33hive.client.thirdparty.transaction;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.logging.Logger;
 
-import com.b33hive.shared.app.bhS_App;
-import com.b33hive.shared.debugging.bhU_Debug;
-import com.b33hive.shared.json.bhA_JsonFactory;
-import com.b33hive.shared.json.bhE_JsonKey;
-import com.b33hive.shared.json.bhI_JsonArray;
-import com.b33hive.shared.json.bhI_JsonObject;
-import com.b33hive.shared.json.bhJsonQuery;
-import com.b33hive.shared.json.bhJsonHelper;
-import com.b33hive.shared.transaction.bhE_HttpMethod;
-import com.b33hive.shared.transaction.bhE_ResponseError;
-import com.b33hive.shared.transaction.bhI_RequestPath;
-import com.b33hive.shared.transaction.bhS_Transaction;
-import com.b33hive.shared.transaction.bhTransactionRequest;
-import com.b33hive.shared.transaction.bhTransactionResponse;
+import b33hive.client.transaction.bhClientTransactionManager;
+import b33hive.client.transaction.bhI_AsynchronousRequestDispatcher;
+import b33hive.client.transaction.bhI_ResponseCallbacks;
+import b33hive.client.transaction.bhTransactionRequestBatch;
+import b33hive.shared.app.bhS_App;
+import b33hive.shared.debugging.bhU_Debug;
+import b33hive.shared.json.bhA_JsonFactory;
+import b33hive.shared.json.bhE_JsonKey;
+import b33hive.shared.json.bhI_JsonArray;
+import b33hive.shared.json.bhI_JsonObject;
+import b33hive.shared.json.bhJsonQuery;
+import b33hive.shared.json.bhJsonHelper;
+import b33hive.shared.transaction.bhE_HttpMethod;
+import b33hive.shared.transaction.bhE_ResponseError;
+import b33hive.shared.transaction.bhI_RequestPath;
+import b33hive.shared.transaction.bhS_Transaction;
+import b33hive.shared.transaction.bhTransactionRequest;
+import b33hive.shared.transaction.bhTransactionResponse;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestBuilder;
@@ -35,12 +39,14 @@ public class bhGwtRequestDispatcher implements bhI_AsynchronousRequestDispatcher
 	
 	private final bhTransactionResponse m_reusedResponse = new bhTransactionResponse();
 	
-	private bhClientTransactionManager m_transactionManager = null;
+	private bhI_ResponseCallbacks m_callbacks = null;
+	private int m_maxGetUrlLength;
 	
 	@Override
-	public void initialize(bhClientTransactionManager manager)
+	public void initialize(bhI_ResponseCallbacks callbacks, int maxGetUrlLength)
 	{
-		m_transactionManager = manager;
+		m_maxGetUrlLength = maxGetUrlLength;
+		m_callbacks = callbacks;
 	}
 	
 	@Override
@@ -62,7 +68,7 @@ public class bhGwtRequestDispatcher implements bhI_AsynchronousRequestDispatcher
 			//--- DRK > Fringe case precaution that we don't exceed practical URL length restrictions.
 			//---		This could happen if someone had a huge monitor I guess, and was scrolling through tons
 			//---		of cells at one time.  In this case, we change the request to a post.
-			if( url.length() >= bhS_App.MAX_URL_LENGTH )
+			if( url.length() >= m_maxGetUrlLength )
 			{
 				url = URL.encode(baseUrl);
 				method = RequestBuilder.POST;
@@ -116,7 +122,7 @@ public class bhGwtRequestDispatcher implements bhI_AsynchronousRequestDispatcher
 		
 		if( !(request instanceof bhTransactionRequestBatch) )
 		{
-			m_transactionManager.onResponseReceived(request, m_reusedResponse);
+			m_callbacks.onResponseReceived(request, m_reusedResponse);
 		}
 		else
 		{
@@ -131,7 +137,7 @@ public class bhGwtRequestDispatcher implements bhI_AsynchronousRequestDispatcher
 
 			bhI_JsonArray responseList = bhJsonHelper.getInstance().getJsonArray(responseJson, bhE_JsonKey.responseList);
 			
-			m_transactionManager.onResponseReceived(batch, responseList);
+			m_callbacks.onResponseReceived(batch, responseList);
 		}
 		
 		this.m_nativeRequestMap.remove(nativeRequest);
@@ -154,7 +160,7 @@ public class bhGwtRequestDispatcher implements bhI_AsynchronousRequestDispatcher
 	
 	private void onError(Request nativeRequest, bhTransactionRequest request, bhTransactionResponse response)
 	{
-		m_transactionManager.onError(request, response);
+		m_callbacks.onError(request, response);
 		
 		m_nativeRequestMap.remove(nativeRequest);
 	}

@@ -1,9 +1,9 @@
-package com.b33hive.client.entities;
+package b33hive.client.entities;
 
-import com.b33hive.shared.app.bhS_App;
-import com.b33hive.shared.structs.bhPoint;
-import com.b33hive.shared.structs.bhRect;
-import com.b33hive.shared.structs.bhVector;
+import b33hive.shared.app.bhS_App;
+import b33hive.shared.structs.bhPoint;
+import b33hive.shared.structs.bhRect;
+import b33hive.shared.structs.bhVector;
 
 /**
  * ...

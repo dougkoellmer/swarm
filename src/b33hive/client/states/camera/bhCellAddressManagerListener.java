@@ -1,10 +1,10 @@
-package com.b33hive.client.states.camera;
+package b33hive.client.states.camera;
 
-import com.b33hive.client.states.camera.StateMachine_Camera.PendingSnap;
-import com.b33hive.shared.statemachine.bhA_State;
-import com.b33hive.shared.structs.bhCellAddress;
-import com.b33hive.shared.structs.bhCellAddressMapping;
-import com.b33hive.client.managers.*;
+import b33hive.client.states.camera.StateMachine_Camera.PendingSnap;
+import b33hive.shared.statemachine.bhA_State;
+import b33hive.shared.structs.bhCellAddress;
+import b33hive.shared.structs.bhCellAddressMapping;
+import b33hive.client.managers.*;
 
 class bhCellAddressManagerListener implements bhCellAddressManager.I_Listener
 {

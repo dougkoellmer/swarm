@@ -1,4 +1,4 @@
-package com.b33hive.shared.account;
+package b33hive.shared.account;
 
 public class bhS_Account
 {

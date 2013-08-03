@@ -1,34 +1,33 @@
-package com.b33hive.client.navigation;
+package b33hive.client.navigation;
 
 import java.util.logging.Logger;
 
-import com.b33hive.client.app.bhS_ClientApp;
-import com.b33hive.client.entities.bhBufferCell;
-import com.b33hive.client.entities.bhCamera;
-import com.b33hive.client.input.bhBrowserHistoryManager;
-import com.b33hive.client.input.bhBrowserAddressManager;
-import com.b33hive.client.managers.bhCameraManager;
-import com.b33hive.client.states.camera.StateMachine_Camera;
-import com.b33hive.client.states.camera.State_CameraFloating;
-import com.b33hive.client.states.camera.State_CameraSnapping;
-import com.b33hive.client.states.camera.State_GettingMapping;
-import com.b33hive.client.states.camera.State_ViewingCell;
-import com.b33hive.client.ui.tooltip.bhToolTipManager;
-import com.b33hive.client.ui.widget.bhMagnifier;
-import com.b33hive.shared.debugging.bhU_Debug;
-import com.b33hive.shared.json.bhI_JsonObject;
-import com.b33hive.shared.statemachine.bhA_Action;
-import com.b33hive.shared.statemachine.bhA_State;
-import com.b33hive.shared.statemachine.bhE_StateTimeType;
-import com.b33hive.shared.statemachine.bhI_StateEventListener;
-import com.b33hive.shared.statemachine.bhStateEvent;
-import com.b33hive.shared.structs.bhCellAddress;
-import com.b33hive.shared.structs.bhCellAddressMapping;
-import com.b33hive.shared.structs.bhE_CellAddressParseError;
-import com.b33hive.shared.structs.bhE_GetCellAddressMappingError;
-import com.b33hive.shared.structs.bhGetCellAddressMappingResult;
-import com.b33hive.shared.structs.bhGridCoordinate;
-import com.b33hive.shared.structs.bhPoint;
+import b33hive.client.entities.bhBufferCell;
+import b33hive.client.entities.bhCamera;
+import b33hive.client.input.bhBrowserHistoryManager;
+import b33hive.client.input.bhBrowserAddressManager;
+import b33hive.client.managers.bhCameraManager;
+import b33hive.client.states.camera.StateMachine_Camera;
+import b33hive.client.states.camera.State_CameraFloating;
+import b33hive.client.states.camera.State_CameraSnapping;
+import b33hive.client.states.camera.State_GettingMapping;
+import b33hive.client.states.camera.State_ViewingCell;
+import b33hive.client.ui.tooltip.bhToolTipManager;
+import b33hive.client.ui.widget.bhMagnifier;
+import b33hive.shared.debugging.bhU_Debug;
+import b33hive.shared.json.bhI_JsonObject;
+import b33hive.shared.statemachine.bhA_Action;
+import b33hive.shared.statemachine.bhA_State;
+import b33hive.shared.statemachine.bhE_StateTimeType;
+import b33hive.shared.statemachine.bhI_StateEventListener;
+import b33hive.shared.statemachine.bhStateEvent;
+import b33hive.shared.structs.bhCellAddress;
+import b33hive.shared.structs.bhCellAddressMapping;
+import b33hive.shared.structs.bhE_CellAddressParseError;
+import b33hive.shared.structs.bhE_GetCellAddressMappingError;
+import b33hive.shared.structs.bhGetCellAddressMappingResult;
+import b33hive.shared.structs.bhGridCoordinate;
+import b33hive.shared.structs.bhPoint;
 
 /**
  * Responsible for piping user navigation to the state machine via the browser back/forward/refresh buttons and address bar.
@@ -64,9 +63,13 @@ public class bhBrowserNavigator implements bhI_StateEventListener
 	
 	private final bhHistoryStateManager.I_Listener m_historyStateListener;
 	
-	bhBrowserNavigator()
+	private final double m_floatingHistoryUpdateRate;
+	
+	bhBrowserNavigator(double floatingHistoryUpdateRate)
 	{
 		s_instance = this;
+		
+		m_floatingHistoryUpdateRate = floatingHistoryUpdateRate;
 		
 		m_args_SnapToCoordinate.setUserData(this.getClass());
 		m_args_SetCameraTarget.setUserData(this.getClass());
@@ -523,7 +526,7 @@ public class bhBrowserNavigator implements bhI_StateEventListener
 	private void setPositionForFloatingState(bhA_State state, bhPoint point, boolean force)
 	{
 		double timeInState = state.getTimeInState(bhE_StateTimeType.TOTAL);
-		if( force || timeInState - m_lastTimeFloatingStateSet >= bhS_ClientApp.SET_HISTORY_STATE_MIN_FREQUENCY )
+		if( force || timeInState - m_lastTimeFloatingStateSet >= m_floatingHistoryUpdateRate )
 		{
 			m_historyManager.setState(FLOATING_STATE_PATH, point);
 			

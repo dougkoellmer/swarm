@@ -1,4 +1,4 @@
-package com.b33hive.server.data.sql;
+package b33hive.server.data.sql;
 
 public class bhU_Sql
 {

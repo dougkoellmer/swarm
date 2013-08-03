@@ -1,15 +1,15 @@
-package com.b33hive.client.states.account;
+package b33hive.client.states.account;
 
-import com.b33hive.client.managers.bhClientAccountManager;
-import com.b33hive.client.managers.bhClientAccountManager.E_ResponseType;
-import com.b33hive.client.states.StateMachine_Base;
-import com.b33hive.client.states.State_AsyncDialog;
-import com.b33hive.client.states.State_GenericDialog;
-import com.b33hive.client.states.code.State_EditingCodeBlocker;
-import com.b33hive.shared.debugging.bhU_Debug;
-import com.b33hive.shared.statemachine.bhA_State;
-import com.b33hive.shared.statemachine.bhA_StateMachine;
-import com.b33hive.shared.statemachine.bhA_StateConstructor;
+import b33hive.client.managers.bhClientAccountManager;
+import b33hive.client.managers.bhClientAccountManager.E_ResponseType;
+import b33hive.client.states.StateMachine_Base;
+import b33hive.client.states.State_AsyncDialog;
+import b33hive.client.states.State_GenericDialog;
+import b33hive.client.states.code.State_EditingCodeBlocker;
+import b33hive.shared.debugging.bhU_Debug;
+import b33hive.shared.statemachine.bhA_State;
+import b33hive.shared.statemachine.bhA_StateMachine;
+import b33hive.shared.statemachine.bhA_StateConstructor;
 
 
 /**

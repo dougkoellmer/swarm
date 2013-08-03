@@ -1,17 +1,17 @@
-package com.b33hive.client.entities;
+package b33hive.client.entities;
 
 import java.util.logging.Logger;
 
-import com.b33hive.client.managers.bhCellCodeManager;
-import com.b33hive.shared.app.bhS_App;
-import com.b33hive.shared.bhU_Math;
-import com.b33hive.shared.debugging.bhU_Debug;
-import com.b33hive.shared.entities.bhA_Cell;
-import com.b33hive.shared.entities.bhE_CodeSafetyLevel;
-import com.b33hive.shared.entities.bhE_CodeType;
-import com.b33hive.shared.structs.bhCellAddress;
-import com.b33hive.shared.structs.bhCode;
-import com.b33hive.shared.structs.bhPoint;
+import b33hive.client.managers.bhCellCodeManager;
+import b33hive.shared.app.bhS_App;
+import b33hive.shared.utils.bhU_Math;
+import b33hive.shared.debugging.bhU_Debug;
+import b33hive.shared.entities.bhA_Cell;
+import b33hive.shared.entities.bhE_CodeSafetyLevel;
+import b33hive.shared.entities.bhE_CodeType;
+import b33hive.shared.structs.bhCellAddress;
+import b33hive.shared.structs.bhCode;
+import b33hive.shared.structs.bhPoint;
 
 
 /**

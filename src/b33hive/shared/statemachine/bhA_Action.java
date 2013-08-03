@@ -1,10 +1,10 @@
-package com.b33hive.shared.statemachine;
+package b33hive.shared.statemachine;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
-import com.b33hive.shared.debugging.bhU_Debug;
+import b33hive.shared.debugging.bhU_Debug;
 
 
 /**

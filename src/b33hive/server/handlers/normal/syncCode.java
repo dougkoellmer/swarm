@@ -1,33 +1,34 @@
-package com.b33hive.server.handlers;
+package b33hive.server.handlers.normal;
 
 import java.util.ConcurrentModificationException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.b33hive.server.account.bhE_Role;
-import com.b33hive.server.account.bhUserSession;
-import com.b33hive.server.data.blob.bhBlobException;
-import com.b33hive.server.data.blob.bhBlobManagerFactory;
-import com.b33hive.server.data.blob.bhE_BlobCacheLevel;
-import com.b33hive.server.data.blob.bhI_BlobManager;
-import com.b33hive.server.entities.bhE_GridType;
-import com.b33hive.server.entities.bhServerCell;
-import com.b33hive.server.entities.bhServerUser;
-import com.b33hive.server.session.bhSessionManager;
-import com.b33hive.server.structs.bhServerCellAddressMapping;
-import com.b33hive.server.structs.bhServerCode;
-import com.b33hive.server.structs.bhServerGridCoordinate;
-import com.b33hive.server.transaction.bhI_RequestHandler;
-import com.b33hive.server.transaction.bhTransactionContext;
-import com.b33hive.shared.app.bhS_App;
-import com.b33hive.shared.code.bhA_CodeCompiler;
-import com.b33hive.shared.code.bhCompilerResult;
-import com.b33hive.shared.code.bhE_CompilationStatus;
-import com.b33hive.shared.entities.bhE_CodeType;
-import com.b33hive.shared.entities.bhE_EditingPermission;
-import com.b33hive.shared.transaction.bhE_ResponseError;
-import com.b33hive.shared.transaction.bhTransactionRequest;
-import com.b33hive.shared.transaction.bhTransactionResponse;
+import b33hive.server.account.bhE_Role;
+import b33hive.server.account.bhUserSession;
+import b33hive.server.data.blob.bhBlobException;
+import b33hive.server.data.blob.bhBlobManagerFactory;
+import b33hive.server.data.blob.bhE_BlobCacheLevel;
+import b33hive.server.data.blob.bhI_BlobManager;
+import b33hive.server.entities.bhE_GridType;
+import b33hive.server.entities.bhServerCell;
+import b33hive.server.entities.bhServerUser;
+import b33hive.server.handlers.bhU_CellCode;
+import b33hive.server.session.bhSessionManager;
+import b33hive.server.structs.bhServerCellAddressMapping;
+import b33hive.server.structs.bhServerCode;
+import b33hive.server.structs.bhServerGridCoordinate;
+import b33hive.server.transaction.bhI_RequestHandler;
+import b33hive.server.transaction.bhTransactionContext;
+import b33hive.shared.app.bhS_App;
+import b33hive.shared.code.bhA_CodeCompiler;
+import b33hive.shared.code.bhCompilerResult;
+import b33hive.shared.code.bhE_CompilationStatus;
+import b33hive.shared.entities.bhE_CodeType;
+import b33hive.shared.entities.bhE_EditingPermission;
+import b33hive.shared.transaction.bhE_ResponseError;
+import b33hive.shared.transaction.bhTransactionRequest;
+import b33hive.shared.transaction.bhTransactionResponse;
 
 public class syncCode implements bhI_RequestHandler
 {

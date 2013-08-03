@@ -1,4 +1,4 @@
-package com.b33hive.server.entities;
+package b33hive.server.entities;
 
 public class bhS_BlobKeyPrefix
 {

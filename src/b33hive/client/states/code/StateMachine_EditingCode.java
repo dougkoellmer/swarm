@@ -1,28 +1,29 @@
-package com.b33hive.client.states.code;
+package b33hive.client.states.code;
 
-import com.b33hive.client.managers.bhCellCodeManager;
-import com.b33hive.client.entities.bhBufferCell;
-import com.b33hive.client.entities.bhClientUser;
-import com.b33hive.client.entities.bhE_CodeStatus;
-import com.b33hive.client.states.StateMachine_Base;
-import com.b33hive.client.states.camera.StateMachine_Camera;
-import com.b33hive.client.states.camera.State_CameraSnapping;
-import com.b33hive.client.states.camera.State_ViewingCell;
-import com.b33hive.client.states.camera.State_ViewingCell.Refresh;
-import com.b33hive.client.states.code.State_EditingCodeBlocker.Reason;
-import com.b33hive.client.transaction.bhClientTransactionManager;
-import com.b33hive.client.ui.tabs.code.bhCodeMirrorWrapper;
-import com.b33hive.shared.debugging.bhU_Debug;
-import com.b33hive.shared.entities.bhE_CodeType;
-import com.b33hive.shared.statemachine.bhA_Action;
+import b33hive.client.managers.bhCellCodeManager;
+import b33hive.client.managers.bhUserManager;
+import b33hive.client.entities.bhBufferCell;
+import b33hive.client.entities.bhA_ClientUser;
+import b33hive.client.entities.bhE_CodeStatus;
+import b33hive.client.states.StateMachine_Base;
+import b33hive.client.states.camera.StateMachine_Camera;
+import b33hive.client.states.camera.State_CameraSnapping;
+import b33hive.client.states.camera.State_ViewingCell;
+import b33hive.client.states.camera.State_ViewingCell.Refresh;
+import b33hive.client.states.code.State_EditingCodeBlocker.Reason;
+import b33hive.client.transaction.bhClientTransactionManager;
+import b33hive.client.ui.tabs.code.bhCodeMirrorWrapper;
+import b33hive.shared.debugging.bhU_Debug;
+import b33hive.shared.entities.bhE_CodeType;
+import b33hive.shared.statemachine.bhA_Action;
 
-import com.b33hive.shared.statemachine.bhA_State;
-import com.b33hive.shared.statemachine.bhA_StateMachine;
-import com.b33hive.shared.statemachine.bhI_StateEventListener;
-import com.b33hive.shared.statemachine.bhA_StateConstructor;
-import com.b33hive.shared.statemachine.bhStateEvent;
-import com.b33hive.shared.structs.bhCode;
-import com.b33hive.shared.structs.bhGridCoordinate;
+import b33hive.shared.statemachine.bhA_State;
+import b33hive.shared.statemachine.bhA_StateMachine;
+import b33hive.shared.statemachine.bhI_StateEventListener;
+import b33hive.shared.statemachine.bhA_StateConstructor;
+import b33hive.shared.statemachine.bhStateEvent;
+import b33hive.shared.structs.bhCode;
+import b33hive.shared.structs.bhGridCoordinate;
 
 
 /**
@@ -124,7 +125,7 @@ public class StateMachine_EditingCode extends bhA_StateMachine implements bhI_St
 				State_ViewingCell viewingState = (State_ViewingCell) cameraState;
 				bhBufferCell viewedCell = viewingState.getCell();
 				bhGridCoordinate coord = viewedCell.getCoordinate();
-				bhClientUser user = bhClientUser.getInstance();
+				bhA_ClientUser user = bhUserManager.getInstance().getUser();
 				
 				if( user.isCellOwner(coord) )
 				{

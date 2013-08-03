@@ -1,4 +1,4 @@
-package com.b33hive.shared.json;
+package b33hive.shared.json;
 
 /*
  * All directly-related-to-application keys should be put here for reasons of key-collision, performance, and obfuscation.
@@ -84,6 +84,6 @@ public enum bhE_JsonKey implements bhI_JsonKeySource
 
 	public String getVerboseKey()
 	{
-		return this.name();
+		return "bh_" + this.name();
 	}
 }

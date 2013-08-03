@@ -1,4 +1,4 @@
-package com.b33hive.shared.debugging;
+package b33hive.shared.debugging;
 
 
 public final class bhU_Debug

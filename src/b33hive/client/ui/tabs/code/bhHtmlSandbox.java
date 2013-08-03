@@ -1,6 +1,6 @@
-package com.b33hive.client.ui.tabs.code;
+package b33hive.client.ui.tabs.code;
 
-import com.b33hive.shared.debugging.bhU_Debug;
+import b33hive.shared.debugging.bhU_Debug;
 import com.google.gwt.user.client.Element;
 
 public class bhHtmlSandbox
@@ -10,30 +10,18 @@ public class bhHtmlSandbox
 		void onStartUpComplete(boolean success);
 	}
 	
-	private static bhHtmlSandbox s_instance;
-	
 	private final bhCajaWrapper m_cajaWrapper;
 	
 	private boolean m_isRunning = false;
 	
-	private bhHtmlSandbox(I_StartUpCallback callback)
+	private bhHtmlSandbox(I_StartUpCallback callback, String apiNamespace)
 	{
-		m_cajaWrapper = new bhCajaWrapper(callback);
+		m_cajaWrapper = new bhCajaWrapper(callback, apiNamespace);
 	}
 	
-	public static bhHtmlSandbox getInstance()
+	public void insertStaticHtml(Element element, String compiledHtml, String cellNamespace)
 	{
-		return s_instance;
-	}
-	
-	public static void startUp(I_StartUpCallback callback)
-	{
-		s_instance = new bhHtmlSandbox(callback);
-	}
-	
-	public void insertStaticHtml(Element element, String compiledHtml, String idClass)
-	{
-		m_cajaWrapper.insertStaticHtml(element, compiledHtml, idClass);
+		m_cajaWrapper.insertStaticHtml(element, compiledHtml, cellNamespace);
 	}
 	
 	public void allowScrolling(Element element, boolean yesOrNo)
@@ -41,7 +29,7 @@ public class bhHtmlSandbox
 		m_cajaWrapper.allowScrolling(element, yesOrNo);
 	}
 	
-	public void start(Element element, String compiledHtml, String compiledJs, String idClass, final bhI_CodeLoadListener listener)
+	public void start(Element element, String compiledHtml, String compiledJs, String cellNamespace, final bhI_CodeLoadListener listener)
 	{
 		if( m_isRunning )
 		{
@@ -49,7 +37,7 @@ public class bhHtmlSandbox
 			return;
 		}
 		
-		m_cajaWrapper.start(element, compiledHtml, compiledJs, idClass, listener);
+		m_cajaWrapper.start(element, compiledHtml, compiledJs, cellNamespace, listener);
 		
 		m_isRunning = true;
 	}

@@ -1,6 +1,6 @@
-package com.b33hive.client.structs;
+package b33hive.client.structs;
 
-import com.b33hive.client.entities.bhI_BufferCellListener;
+import b33hive.client.entities.bhI_BufferCellListener;
 
 /**
  * ...

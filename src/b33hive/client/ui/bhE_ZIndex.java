@@ -1,4 +1,4 @@
-package com.b33hive.client.ui;
+package b33hive.client.ui;
 
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.IsWidget;

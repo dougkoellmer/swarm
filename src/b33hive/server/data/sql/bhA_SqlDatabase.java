@@ -1,4 +1,4 @@
-package com.b33hive.server.data.sql;
+package b33hive.server.data.sql;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -6,8 +6,8 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.b33hive.server.account.bhAccountDatabase;
-import com.b33hive.server.transaction.bhI_TransactionScopeListener;
+import b33hive.server.account.bhAccountDatabase;
+import b33hive.server.transaction.bhI_TransactionScopeListener;
 
 public class bhA_SqlDatabase implements bhI_TransactionScopeListener
 {

@@ -1,4 +1,4 @@
-package com.b33hive.server.session;
+package b33hive.server.session;
 
 public enum bhE_SessionType
 {

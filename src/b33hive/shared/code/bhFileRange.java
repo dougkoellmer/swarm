@@ -1,10 +1,10 @@
-package com.b33hive.shared.code;
+package b33hive.shared.code;
 
-import com.b33hive.shared.json.bhA_JsonEncodable;
-import com.b33hive.shared.json.bhE_JsonKey;
-import com.b33hive.shared.json.bhI_JsonArray;
-import com.b33hive.shared.json.bhI_JsonObject;
-import com.b33hive.shared.json.bhJsonHelper;
+import b33hive.shared.json.bhA_JsonEncodable;
+import b33hive.shared.json.bhE_JsonKey;
+import b33hive.shared.json.bhI_JsonArray;
+import b33hive.shared.json.bhI_JsonObject;
+import b33hive.shared.json.bhJsonHelper;
 
 public class bhFileRange extends bhA_JsonEncodable
 {

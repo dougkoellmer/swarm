@@ -1,10 +1,11 @@
-package com.b33hive.shared.code;
+package b33hive.shared.code;
 
 import java.util.logging.Logger;
 
-import com.b33hive.shared.app.bhS_App;
-import com.b33hive.shared.structs.bhCode;
-import com.b33hive.shared.structs.bhCodePrivileges;
+import b33hive.shared.app.bhS_App;
+import b33hive.shared.entities.bhE_CharacterQuota;
+import b33hive.shared.structs.bhCode;
+import b33hive.shared.structs.bhCodePrivileges;
 
 public abstract class bhA_CodeCompiler
 {
@@ -33,6 +34,7 @@ public abstract class bhA_CodeCompiler
 			return result.onSuccess();
 		}
 		
+		if( privileges.getCharacterQuota() != bhE_CharacterQuota.UNLIMITED )
 		if( sourceCode.getRawCodeLength() > privileges.getCharacterQuota().getMaxCharacters() )
 		{
 			return result.onFailure(bhE_CompilationStatus.TOO_LONG);

@@ -1,4 +1,4 @@
-package com.b33hive.client.input;
+package b33hive.client.thirdparty.history;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.user.client.Window;
@@ -79,7 +79,7 @@ public class bhHistoryJsWrapper
 			        
 			        var data = State.data;
 			        
-			        thisArg.@com.b33hive.client.input.bhHistoryJsWrapper::onStateChange(Ljava/lang/String;Lcom/google/gwt/core/client/JavaScriptObject;)(State.url, data);
+			        thisArg.@b33hive.client.thirdparty.history.bhHistoryJsWrapper::onStateChange(Ljava/lang/String;Lcom/google/gwt/core/client/JavaScriptObject;)(State.url, data);
 			    }
 			 );
 	}-*/;

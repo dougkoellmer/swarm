@@ -1,4 +1,4 @@
-package com.b33hive.shared.structs;
+package b33hive.shared.structs;
 
 public class bhLinkedList
 {

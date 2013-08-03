@@ -1,6 +1,6 @@
-package com.b33hive.client.ui;
+package b33hive.client.ui;
 
-import com.b33hive.client.ui.widget.bhUIBlocker;
+import b33hive.client.ui.widget.bhUIBlocker;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;

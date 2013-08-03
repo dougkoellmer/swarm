@@ -1,32 +1,32 @@
-package com.b33hive.client.states.camera;
+package b33hive.client.states.camera;
 
-import com.b33hive.client.input.bhBrowserHistoryManager;
-import com.b33hive.client.managers.bhCellAddressManager;
-import com.b33hive.client.managers.bhCellCodeManager;
-import com.b33hive.client.app.bhS_ClientApp;
-import com.b33hive.client.entities.bhBufferCell;
-import com.b33hive.client.entities.bhClientUser;
-import com.b33hive.client.entities.bhE_CellNuke;
-import com.b33hive.client.entities.bhE_CodeStatus;
-import com.b33hive.client.states.camera.StateMachine_Camera.CameraManager;
-import com.b33hive.client.states.code.StateMachine_EditingCode;
-import com.b33hive.client.structs.bhI_LocalCodeRepository;
-import com.b33hive.client.transaction.bhClientTransactionManager;
-import com.b33hive.client.transaction.bhE_TransactionAction;
-import com.b33hive.shared.app.bhS_App;
-import com.b33hive.shared.debugging.bhU_Debug;
-import com.b33hive.shared.entities.bhE_CodeType;
-import com.b33hive.shared.statemachine.bhA_Action;
+import b33hive.client.input.bhBrowserHistoryManager;
+import b33hive.client.managers.bhCellAddressManager;
+import b33hive.client.managers.bhCellCodeManager;
+import b33hive.client.managers.bhUserManager;
+import b33hive.client.entities.bhBufferCell;
+import b33hive.client.entities.bhA_ClientUser;
+import b33hive.client.entities.bhE_CellNuke;
+import b33hive.client.entities.bhE_CodeStatus;
+import b33hive.client.states.camera.StateMachine_Camera.CameraManager;
+import b33hive.client.states.code.StateMachine_EditingCode;
+import b33hive.client.structs.bhI_LocalCodeRepository;
+import b33hive.client.transaction.bhClientTransactionManager;
+import b33hive.client.transaction.bhE_TransactionAction;
+import b33hive.shared.app.bhS_App;
+import b33hive.shared.debugging.bhU_Debug;
+import b33hive.shared.entities.bhE_CodeType;
+import b33hive.shared.statemachine.bhA_Action;
 
-import com.b33hive.shared.statemachine.bhA_ActionArgs;
-import com.b33hive.shared.statemachine.bhA_State;
-import com.b33hive.shared.statemachine.bhI_StateEventListener;
-import com.b33hive.shared.statemachine.bhA_StateConstructor;
-import com.b33hive.shared.statemachine.bhStateEvent;
-import com.b33hive.shared.structs.bhCellAddress;
-import com.b33hive.shared.structs.bhCellAddressMapping;
-import com.b33hive.shared.structs.bhGridCoordinate;
-import com.b33hive.shared.structs.bhPoint;
+import b33hive.shared.statemachine.bhA_ActionArgs;
+import b33hive.shared.statemachine.bhA_State;
+import b33hive.shared.statemachine.bhI_StateEventListener;
+import b33hive.shared.statemachine.bhA_StateConstructor;
+import b33hive.shared.statemachine.bhStateEvent;
+import b33hive.shared.structs.bhCellAddress;
+import b33hive.shared.structs.bhCellAddressMapping;
+import b33hive.shared.structs.bhGridCoordinate;
+import b33hive.shared.structs.bhPoint;
 
 
 /**
@@ -149,7 +149,8 @@ public class State_ViewingCell extends bhA_State implements bhI_StateEventListen
 		//--- DRK > This ensures that any "preview" operations performed get cleared out.
 		//---		My programmer senses are tingling on this one, telling me it might be a
 		//---		hacky solution, at least as far as readability.
-		bhClientUser.getInstance().tryPopulatingCell(m_cell.getCoordinate(), bhE_CodeType.COMPILED, m_cell);
+		bhA_ClientUser user = bhUserManager.getInstance().getUser();
+		user.tryPopulatingCell(m_cell.getCoordinate(), bhE_CodeType.COMPILED, m_cell);
 		
 		m_cell = null;
 	}

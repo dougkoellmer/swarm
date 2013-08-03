@@ -1,4 +1,4 @@
-package com.b33hive.server.account;
+package b33hive.server.account;
 
 import java.sql.Connection;
 import java.sql.Date;
@@ -14,10 +14,10 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
-import com.b33hive.server.data.sql.bhA_SqlDatabase;
-import com.b33hive.server.data.sql.bhS_Sql;
-import com.b33hive.server.data.sql.bhU_Sql;
-import com.b33hive.shared.bhU_TypeConversion;
+import b33hive.server.data.sql.bhA_SqlDatabase;
+import b33hive.server.data.sql.bhS_Sql;
+import b33hive.server.data.sql.bhU_Sql;
+import b33hive.shared.utils.bhU_TypeConversion;
 import com.google.appengine.api.rdbms.AppEngineDriver;
 
 /**

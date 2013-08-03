@@ -1,4 +1,4 @@
-package com.b33hive.server.handlers;
+package b33hive.server.handlers.normal;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -6,20 +6,20 @@ import net.tanesha.recaptcha.ReCaptcha;
 import net.tanesha.recaptcha.ReCaptchaFactory;
 import net.tanesha.recaptcha.ReCaptchaResponse;
 
-import com.b33hive.server.account.bhS_ServerRecaptcha;
-import com.b33hive.server.account.bhServerAccountManager;
-import com.b33hive.server.account.bhUserSession;
-import com.b33hive.server.session.bhSessionManager;
-import com.b33hive.server.transaction.bhI_RequestHandler;
-import com.b33hive.server.transaction.bhTransactionContext;
-import com.b33hive.shared.account.bhE_SignUpCredentialType;
-import com.b33hive.shared.account.bhE_SignUpValidationError;
-import com.b33hive.shared.account.bhS_Recaptcha;
-import com.b33hive.shared.account.bhSignUpCredentials;
-import com.b33hive.shared.account.bhSignUpValidationResult;
-import com.b33hive.shared.account.bhSignUpValidator;
-import com.b33hive.shared.transaction.bhTransactionRequest;
-import com.b33hive.shared.transaction.bhTransactionResponse;
+import b33hive.server.account.bhS_ServerRecaptcha;
+import b33hive.server.account.bhServerAccountManager;
+import b33hive.server.account.bhUserSession;
+import b33hive.server.session.bhSessionManager;
+import b33hive.server.transaction.bhI_RequestHandler;
+import b33hive.server.transaction.bhTransactionContext;
+import b33hive.shared.account.bhE_SignUpCredentialType;
+import b33hive.shared.account.bhE_SignUpValidationError;
+import b33hive.shared.account.bhS_Recaptcha;
+import b33hive.shared.account.bhSignUpCredentials;
+import b33hive.shared.account.bhSignUpValidationResult;
+import b33hive.shared.account.bhSignUpValidator;
+import b33hive.shared.transaction.bhTransactionRequest;
+import b33hive.shared.transaction.bhTransactionResponse;
 
 public class signUp implements bhI_RequestHandler
 {

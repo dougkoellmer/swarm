@@ -11,7 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-package com.b33hive.server.transaction;
+package b33hive.server.transaction;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -31,34 +31,31 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONException;
 
-import com.b33hive.server.account.bhAccountDatabase;
-import com.b33hive.server.app.bhServerApp;
-import com.b33hive.server.data.blob.bhBlobManagerFactory;
-import com.b33hive.server.json.bhServerJsonArray;
-import com.b33hive.server.json.bhServerJsonObject;
-import com.b33hive.server.servlets.bhA_BaseServlet;
-import com.b33hive.server.session.bhSessionManager;
-import com.b33hive.server.telemetry.bhTelemetryDatabase;
-import com.b33hive.shared.app.bhA_App;
-import com.b33hive.shared.app.bhS_App;
-import com.b33hive.shared.json.bhA_JsonFactory;
-import com.b33hive.shared.json.bhE_JsonKey;
-import com.b33hive.shared.json.bhI_JsonEncodable;
-import com.b33hive.shared.json.bhI_JsonObject;
-import com.b33hive.shared.json.bhJsonQuery;
-import com.b33hive.shared.json.bhJsonHelper;
-import com.b33hive.shared.reflection.bhI_Class;
-import com.b33hive.shared.structs.bhOptHashMap;
-import com.b33hive.shared.transaction.bhA_TransactionObject;
-import com.b33hive.shared.transaction.bhCachePolicy;
-import com.b33hive.shared.transaction.bhE_ReservedRequestPath;
-import com.b33hive.shared.transaction.bhE_ResponseError;
-import com.b33hive.shared.transaction.bhE_RequestPath;
-import com.b33hive.shared.transaction.bhI_RequestPath;
-import com.b33hive.shared.transaction.bhRequestPathManager;
-import com.b33hive.shared.transaction.bhTransactionRequest;
-import com.b33hive.shared.transaction.bhTransactionResponse;
-import com.b33hive.shared.transaction.bhU_RequestBatch;
+import b33hive.server.account.bhAccountDatabase;
+import b33hive.server.app.bhServerApp;
+import b33hive.server.data.blob.bhBlobManagerFactory;
+import b33hive.server.session.bhSessionManager;
+import b33hive.server.telemetry.bhTelemetryDatabase;
+import b33hive.shared.app.bhA_App;
+import b33hive.shared.app.bhS_App;
+import b33hive.shared.json.bhA_JsonFactory;
+import b33hive.shared.json.bhE_JsonKey;
+import b33hive.shared.json.bhI_JsonEncodable;
+import b33hive.shared.json.bhI_JsonObject;
+import b33hive.shared.json.bhJsonQuery;
+import b33hive.shared.json.bhJsonHelper;
+import b33hive.shared.reflection.bhI_Class;
+import b33hive.shared.structs.bhOptHashMap;
+import b33hive.shared.transaction.bhA_TransactionObject;
+import b33hive.shared.transaction.bhCachePolicy;
+import b33hive.shared.transaction.bhE_ReservedRequestPath;
+import b33hive.shared.transaction.bhE_ResponseError;
+import b33hive.shared.transaction.bhE_RequestPath;
+import b33hive.shared.transaction.bhI_RequestPath;
+import b33hive.shared.transaction.bhRequestPathManager;
+import b33hive.shared.transaction.bhTransactionRequest;
+import b33hive.shared.transaction.bhTransactionResponse;
+import b33hive.shared.transaction.bhU_RequestBatch;
 
 public class bhServerTransactionManager
 {	

@@ -1,26 +1,26 @@
-package com.b33hive.client.ui.tabs.code;
+package b33hive.client.ui.tabs.code;
 
 import java.util.HashMap;
 
 import org.apache.commons.collections.map.HashedMap;
 
-import com.b33hive.client.entities.bhBufferCell;
-import com.b33hive.client.entities.bhClientGrid;
-import com.b33hive.client.states.camera.StateMachine_Camera;
-import com.b33hive.client.states.camera.State_ViewingCell;
-import com.b33hive.client.ui.tabs.code.bhHtmlSandbox.I_StartUpCallback;
-import com.b33hive.shared.code.bhU_UriPolicy;
-import com.b33hive.shared.code.bhUriData;
-import com.b33hive.shared.debugging.bhU_Debug;
-import com.b33hive.shared.memory.bhObjectPool;
-import com.b33hive.shared.reflection.bhI_Class;
-import com.b33hive.shared.statemachine.bhA_Action;
-import com.b33hive.shared.statemachine.bhA_State;
-import com.b33hive.shared.structs.bhCellAddress;
-import com.b33hive.shared.structs.bhCodePrivileges;
-import com.b33hive.shared.structs.bhE_CellAddressParseError;
-import com.b33hive.shared.structs.bhE_NetworkPrivilege;
-import com.b33hive.shared.structs.bhGridCoordinate;
+import b33hive.client.entities.bhBufferCell;
+import b33hive.client.entities.bhClientGrid;
+import b33hive.client.states.camera.StateMachine_Camera;
+import b33hive.client.states.camera.State_ViewingCell;
+import b33hive.client.ui.tabs.code.bhHtmlSandbox.I_StartUpCallback;
+import b33hive.shared.code.bhU_UriPolicy;
+import b33hive.shared.code.bhUriData;
+import b33hive.shared.debugging.bhU_Debug;
+import b33hive.shared.memory.bhObjectPool;
+import b33hive.shared.reflection.bhI_Class;
+import b33hive.shared.statemachine.bhA_Action;
+import b33hive.shared.statemachine.bhA_State;
+import b33hive.shared.structs.bhCellAddress;
+import b33hive.shared.structs.bhCodePrivileges;
+import b33hive.shared.structs.bhE_CellAddressParseError;
+import b33hive.shared.structs.bhE_NetworkPrivilege;
+import b33hive.shared.structs.bhGridCoordinate;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
@@ -38,16 +38,67 @@ public class bhCajaWrapper
 	
 	private Element m_currentHostElement = null;
 	
+	private final String m_apiNamespace;
+	
 	private final bhUriData m_utilUriData = new bhUriData();
 	
-	bhCajaWrapper(I_StartUpCallback callback)
+	bhCajaWrapper(I_StartUpCallback callback, String apiNamespace)
 	{
+		m_apiNamespace = apiNamespace;
+		
 		m_callback = callback;
 		
-		bhU_CajaApi.registerApi();
+		bhU_CellApi.registerApi(apiNamespace);
 		
-		initialize_native(this);
+		tameApi(apiNamespace);
+		
+		initialize_native(this, apiNamespace);
 	}
+	
+	static native void tameApi(String apiNamespace)
+	/*-{
+		{// BH SPECIFIC
+			$wnd.caja.markReadOnlyRecord($wnd[apiNamespace]);
+			
+			$wnd.caja.markFunction($wnd[apiNamespace].snap);
+			
+			$wnd.caja.markFunction($wnd[apiNamespace].getCoordinate);
+			$wnd.caja.markFunction($wnd[apiNamespace].getAddress);
+			$wnd.caja.markFunction($wnd[apiNamespace].getPosition);
+			$wnd.caja.markFunction($wnd[apiNamespace].getUsername);
+			$wnd.caja.markFunction($wnd[apiNamespace].getGridSize);
+			
+			$wnd[apiNamespace+"_tamed"] = $wnd.caja.tame($wnd[apiNamespace]);
+		}
+
+		{// CONSOLE
+			var consoleWrapper;
+			if (!"console" in window || typeof console === "undefined")
+			{
+				//TODO: Define an alternate logging facility, maybe within b33hive itself
+				consoleWrapper =
+				{
+					log:function(arg){}
+				};
+			}
+			else
+			{
+				consoleWrapper =
+				{
+					log:function(arg){console.log(arg);}
+				};
+			}
+			$wnd.caja.markReadOnlyRecord(consoleWrapper);
+			$wnd.caja.markFunction(consoleWrapper.log);
+			$wnd.console_tamed = $wnd.caja.tame(consoleWrapper);
+		}
+		
+		{// ALERT
+			
+			$wnd.caja.markFunction($wnd[apiNamespace+"_alert"]);
+			$wnd.alert_tamed = $wnd.caja.tame($wnd[apiNamespace+"_alert"]);
+		}
+	}-*/;
 	
 	private void caja_initialize_success()
 	{
@@ -59,7 +110,7 @@ public class bhCajaWrapper
 		m_callback.onStartUpComplete(false);
 	}
 	
-	private native void initialize_native(bhCajaWrapper thisArg)
+	private native void initialize_native(bhCajaWrapper thisArg, String apiNamespace)
 	/*-{
 			$wnd.caja.initFeralFrame(window);
 			
@@ -69,8 +120,8 @@ public class bhCajaWrapper
 				(
 					function()
 					{
-						@com.b33hive.client.ui.tabs.code.bhU_CajaApi::tameApi()();
-						thisArg.@com.b33hive.client.ui.tabs.code.bhCajaWrapper::caja_initialize_success()();
+						@b33hive.client.ui.tabs.code.bhCajaWrapper::tameApi(Ljava/lang/String;)(apiNamespace);
+						thisArg.@b33hive.client.ui.tabs.code.bhCajaWrapper::caja_initialize_success()();
 					}
 				);
 			}
@@ -90,7 +141,7 @@ public class bhCajaWrapper
 				},
 				function() // on failure
 				{
-					thisArg.@com.b33hive.client.ui.tabs.code.bhCajaWrapper::caja_initialize_failure()();
+					thisArg.@b33hive.client.ui.tabs.code.bhCajaWrapper::caja_initialize_failure()();
 				}
 			);
 	}-*/;
@@ -125,16 +176,16 @@ public class bhCajaWrapper
 		cajaContainer.allowScrolling(yesOrNo);
 	}
 	
-	public void insertStaticHtml(Element element, String compiledHtml, String idClass)
+	public void insertStaticHtml(Element element, String compiledHtml, String cellNamespace)
 	{
 		bhStaticCajaContainer cajaContainer = getContainer(element);
 		
-		cajaContainer.setIdClass(idClass);
+		cajaContainer.setIdClass(cellNamespace);
 		
 		cajaContainer.setInnerHtml(compiledHtml);
 	}
 	
-	public void start(Element hostElement, String compiledHtml, String compiledJs, String idClass, bhI_CodeLoadListener listener)
+	public void start(Element hostElement, String compiledHtml, String compiledJs, String cellNamespace, bhI_CodeLoadListener listener)
 	{
 		if( m_currentHostElement != null )
 		{
@@ -152,10 +203,10 @@ public class bhCajaWrapper
 		
 		// HACK: namespacing dynamic content separately to avoid "leaked" setInterval calls being able to
 		//		modify static DOM elements that are namespaced normally without the prefix. This is pretty
-		//		much just a cosmetic workaround...behind the scenes, user code may still try to access non-existent elements.
-		idClass = "d_" + idClass;
+		//		much just a bandaid workaround...behind the scenes, user code may still try to access non-existent elements.
+		cellNamespace = "d_" + cellNamespace;
 		
-		native_start(this, hostElement, compiledHtml, compiledJs, idClass, listener);
+		native_start(this, hostElement, compiledHtml, compiledJs, cellNamespace, listener, m_apiNamespace);
 	}
 	
 	private String rewriteUri(String fullUri, String scheme, String authority, String attribute, String path)
@@ -174,7 +225,7 @@ public class bhCajaWrapper
 			m_utilUriData.scheme = null;
 		}
 		
-		bhBufferCell cell = bhU_CajaApi.getCurrentCell();
+		bhBufferCell cell = bhU_CellApi.getCurrentCell();
 		bhCodePrivileges privileges = cell.getCodePrivileges();
 		
 		if( privileges == null )
@@ -189,7 +240,7 @@ public class bhCajaWrapper
 		return newUri;
 	}
 	
-	private native void native_start(bhCajaWrapper thisArg, Element element, String compiledHtml, String compiledJs, String idClass, bhI_CodeLoadListener listener)
+	private native void native_start(bhCajaWrapper thisArg, Element element, String compiledHtml, String compiledJs, String cellNamespace, bhI_CodeLoadListener listener, String apiNamespace)
 	/*-{
 			function uriPolicyHelper(uri)
 			{
@@ -199,7 +250,7 @@ public class bhCajaWrapper
 				var scheme = uri.scheme_;
 				var fullUri = uri.toString();
 				
-				var rewrittenUri = thisArg.@com.b33hive.client.ui.tabs.code.bhCajaWrapper::rewriteUri(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)(fullUri, scheme, authority, attribute, path);
+				var rewrittenUri = thisArg.@b33hive.client.ui.tabs.code.bhCajaWrapper::rewriteUri(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)(fullUri, scheme, authority, attribute, path);
 				
 				return rewrittenUri;
 			}
@@ -235,6 +286,19 @@ public class bhCajaWrapper
 		            return null;
 		        }
 			};
+			
+			function makeApi()
+			{
+				var api =
+				{
+					console:$wnd.console_tamed,
+   					alert:$wnd.alert_tamed
+				};
+				
+				api[apiNamespace] = $wnd[apiNamespace+"_tamed"];
+				
+				return api;
+			}
 
 			$wnd.caja.load
 			(
@@ -243,26 +307,19 @@ public class bhCajaWrapper
 				
 				function(frame)
 				{
-					thisArg.@com.b33hive.client.ui.tabs.code.bhCajaWrapper::onFrameLoad(Lcom/google/gwt/core/client/JavaScriptObject;)(frame);
+					thisArg.@b33hive.client.ui.tabs.code.bhCajaWrapper::onFrameLoad(Lcom/google/gwt/core/client/JavaScriptObject;)(frame);
 
 	   				frame.code('', 'text/html', compiledHtml)
-	   					 .api
-	   					 (
-   					 		{
-   					 			bh:$wnd.bh_tamed,
-   					 			console:$wnd.console_tamed,
-   					 			alert:$wnd.bh_alert_tamed
-   					 		}
-	   					 )
+	   					 .api(mapeApi())
 	   					 .run();
 	   				
 	   				if( listener != null )
 	   				{
-	   					listener.@com.b33hive.client.ui.tabs.code.bhI_CodeLoadListener::onCodeLoad()();
+	   					listener.@b33hive.client.ui.tabs.code.bhI_CodeLoadListener::onCodeLoad()();
 	   				}
 				},
 				{
-					idClass:idClass
+					idClass:cellNamespace
 				}
 			);
 	}-*/;

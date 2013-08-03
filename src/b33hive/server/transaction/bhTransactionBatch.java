@@ -1,10 +1,10 @@
-package com.b33hive.server.transaction;
+package b33hive.server.transaction;
 
 import java.util.ArrayList;
 
-import com.b33hive.shared.transaction.bhE_ResponseError;
-import com.b33hive.shared.transaction.bhTransactionRequest;
-import com.b33hive.shared.transaction.bhTransactionResponse;
+import b33hive.shared.transaction.bhE_ResponseError;
+import b33hive.shared.transaction.bhTransactionRequest;
+import b33hive.shared.transaction.bhTransactionResponse;
 
 public class bhTransactionBatch
 {

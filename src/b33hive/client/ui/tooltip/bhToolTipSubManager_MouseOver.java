@@ -1,11 +1,9 @@
-package com.b33hive.client.ui.tooltip;
+package b33hive.client.ui.tooltip;
 
 import java.util.HashMap;
 
-import com.b33hive.client.ui.bhE_ZIndex;
-import com.b33hive.client.ui.bhS_UI;
-import com.b33hive.shared.debugging.bhU_Debug;
-import com.b33hive.shared.structs.bhPoint;
+import b33hive.shared.debugging.bhU_Debug;
+import b33hive.shared.structs.bhPoint;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -44,6 +42,8 @@ class bhToolTipSubManager_MouseOver implements bhI_ToolTipSubManager, MouseOverH
 	
 	private final HashMap<Element, bhToolTipConfig> m_tipMap = new HashMap<Element, bhToolTipConfig>();
 	
+	private final int m_delayMilliseconds;
+	
 	private final Timer m_timer = new Timer()
 	{
 		@Override
@@ -57,8 +57,9 @@ class bhToolTipSubManager_MouseOver implements bhI_ToolTipSubManager, MouseOverH
 		}
 	};
 	
-	bhToolTipSubManager_MouseOver(bhToolTipManager toolTipManager)
+	bhToolTipSubManager_MouseOver(bhToolTipManager toolTipManager, int delayMilliseconds)
 	{
+		m_delayMilliseconds = delayMilliseconds;
 		m_toolTipManager = toolTipManager;
 	}
 	
@@ -149,7 +150,7 @@ class bhToolTipSubManager_MouseOver implements bhI_ToolTipSubManager, MouseOverH
 		addMoveHandler();
 		
 		m_currentTargetElement = element;
-		m_timer.schedule(bhS_UI.TOOL_TIP_DELAY);
+		m_timer.schedule(m_delayMilliseconds);
 	}
 	
 	@Override

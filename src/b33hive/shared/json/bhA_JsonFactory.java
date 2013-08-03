@@ -1,6 +1,6 @@
-package com.b33hive.shared.json;
+package b33hive.shared.json;
 
-import com.b33hive.shared.reflection.bhI_Class;
+import b33hive.shared.reflection.bhI_Class;
 
 
 public abstract class bhA_JsonFactory

@@ -1,40 +1,39 @@
-package com.b33hive.client.managers;
+package b33hive.client.managers;
 
 import java.util.HashSet;
 import java.util.logging.Logger;
 
-import com.b33hive.client.app.bhS_ClientApp;
-import com.b33hive.client.entities.bhBufferCell;
-import com.b33hive.client.entities.bhClientUser;
-import com.b33hive.client.entities.bhE_CellNuke;
-import com.b33hive.client.entities.bhE_CodeStatus;
-import com.b33hive.client.states.camera.State_ViewingCell;
-import com.b33hive.client.structs.bhCellCodeCache;
-import com.b33hive.client.structs.bhI_LocalCodeRepository;
-import com.b33hive.client.transaction.bhE_ResponseErrorControl;
-import com.b33hive.client.transaction.bhE_ResponseSuccessControl;
-import com.b33hive.client.transaction.bhE_TransactionAction;
-import com.b33hive.client.transaction.bhI_TransactionResponseHandler;
-import com.b33hive.client.transaction.bhClientTransactionManager;
-import com.b33hive.shared.app.bhS_App;
-import com.b33hive.shared.code.bhCompilerResult;
-import com.b33hive.shared.code.bhE_CompilationStatus;
-import com.b33hive.shared.debugging.bhU_Debug;
-import com.b33hive.shared.entities.bhA_Cell;
-import com.b33hive.shared.entities.bhE_CodeSafetyLevel;
-import com.b33hive.shared.entities.bhE_CodeType;
-import com.b33hive.shared.statemachine.bhA_State;
-import com.b33hive.shared.structs.bhCode;
-import com.b33hive.shared.structs.bhGridCoordinate;
-import com.b33hive.shared.structs.bhPoint;
-import com.b33hive.shared.transaction.bhE_ResponseError;
-import com.b33hive.shared.json.bhE_JsonKey;
-import com.b33hive.shared.json.bhMutableJsonQuery;
-import com.b33hive.shared.json.bhJsonHelper;
-import com.b33hive.shared.transaction.bhE_RequestPath;
-import com.b33hive.shared.transaction.bhI_RequestPath;
-import com.b33hive.shared.transaction.bhTransactionRequest;
-import com.b33hive.shared.transaction.bhTransactionResponse;
+import b33hive.client.entities.bhBufferCell;
+import b33hive.client.entities.bhA_ClientUser;
+import b33hive.client.entities.bhE_CellNuke;
+import b33hive.client.entities.bhE_CodeStatus;
+import b33hive.client.states.camera.State_ViewingCell;
+import b33hive.client.structs.bhCellCodeCache;
+import b33hive.client.structs.bhI_LocalCodeRepository;
+import b33hive.client.transaction.bhE_ResponseErrorControl;
+import b33hive.client.transaction.bhE_ResponseSuccessControl;
+import b33hive.client.transaction.bhE_TransactionAction;
+import b33hive.client.transaction.bhI_TransactionResponseHandler;
+import b33hive.client.transaction.bhClientTransactionManager;
+import b33hive.shared.app.bhS_App;
+import b33hive.shared.code.bhCompilerResult;
+import b33hive.shared.code.bhE_CompilationStatus;
+import b33hive.shared.debugging.bhU_Debug;
+import b33hive.shared.entities.bhA_Cell;
+import b33hive.shared.entities.bhE_CodeSafetyLevel;
+import b33hive.shared.entities.bhE_CodeType;
+import b33hive.shared.statemachine.bhA_State;
+import b33hive.shared.structs.bhCode;
+import b33hive.shared.structs.bhGridCoordinate;
+import b33hive.shared.structs.bhPoint;
+import b33hive.shared.transaction.bhE_ResponseError;
+import b33hive.shared.json.bhE_JsonKey;
+import b33hive.shared.json.bhMutableJsonQuery;
+import b33hive.shared.json.bhJsonHelper;
+import b33hive.shared.transaction.bhE_RequestPath;
+import b33hive.shared.transaction.bhI_RequestPath;
+import b33hive.shared.transaction.bhTransactionRequest;
+import b33hive.shared.transaction.bhTransactionResponse;
 import com.google.gwt.http.client.RequestBuilder;
 
 /**
@@ -144,7 +143,9 @@ public class bhCellCodeManager implements bhI_TransactionResponseHandler
 		bhCode compiledCode = new bhCode(sourceCode.getRawCode(), bhE_CodeType.COMPILED);
 		compiledCode.setSafetyLevel(bhE_CodeSafetyLevel.REQUIRES_DYNAMIC_SANDBOX);
 		cell.onSyncStart(sourceCode, compiledCode);
-		bhClientUser.getInstance().onSyncStart(coord, compiledCode);
+		
+		bhA_ClientUser user = bhUserManager.getInstance().getUser();
+		user.onSyncStart(coord, compiledCode);
 		
 		cell.onServerRequest(bhE_CodeType.SPLASH);
 	}
@@ -248,7 +249,8 @@ public class bhCellCodeManager implements bhI_TransactionResponseHandler
 		m_utilCell.readJson(response.getJson());
 		m_utilCoord.readJson(request.getJson());
 		m_utilCell.getCoordinate().copy(m_utilCoord);
-		bhClientUser user = bhClientUser.getInstance();
+		
+		bhA_ClientUser user = bhUserManager.getInstance().getUser();
 		
 		int typeOrdinal = bhJsonHelper.getInstance().getInt(request.getJson(), bhE_JsonKey.codeType);
 		bhE_CodeType eHtmlType = bhE_CodeType.values()[typeOrdinal];
@@ -256,7 +258,10 @@ public class bhCellCodeManager implements bhI_TransactionResponseHandler
 		
 		if( code == null )
 		{
-			code = new bhCode(bhS_ClientApp.OPEN_CELL_CODE, bhE_CodeType.values());
+			//TODO: Get this from somewhere else.
+			final String OPEN_CELL_CODE = "<div style='width:100%; height:100%; background-color:#BBBBBB;'></div>";
+			
+			code = new bhCode(OPEN_CELL_CODE, bhE_CodeType.values());
 			code.setSafetyLevel(bhE_CodeSafetyLevel.SAFE);
 			m_utilCell.setCode(eHtmlType, code);
 		}
@@ -318,7 +323,7 @@ public class bhCellCodeManager implements bhI_TransactionResponseHandler
 		}
 		else if( request.getPath() == bhE_RequestPath.syncCode )
 		{
-			bhClientUser user = bhClientUser.getInstance();
+			bhA_ClientUser user = bhUserManager.getInstance().getUser();
 			m_utilCoord.readJson(request.getJson());
 			
 			if( isSyncing(m_utilCoord) )
@@ -477,7 +482,7 @@ public class bhCellCodeManager implements bhI_TransactionResponseHandler
 				return bhE_ResponseErrorControl.BREAK;
 			}
 			
-			bhClientUser user = bhClientUser.getInstance();
+			bhA_ClientUser user = bhUserManager.getInstance().getUser();
 			
 			m_utilCoord.readJson(request.getJson());
 			

@@ -1,6 +1,6 @@
-package com.b33hive.client.ui.cell;
+package b33hive.client.ui.cell;
 
-import com.b33hive.client.ui.bhE_ZIndex;
+import b33hive.client.ui.bhE_ZIndex;
 import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.ui.FlowPanel;

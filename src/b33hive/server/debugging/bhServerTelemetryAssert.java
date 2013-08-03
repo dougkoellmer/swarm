@@ -1,9 +1,9 @@
-package com.b33hive.server.debugging;
+package b33hive.server.debugging;
 
-import com.b33hive.server.data.sql.bhI_SqlEncodable;
-import com.b33hive.shared.debugging.bhTelemetryAssert;
-import com.b33hive.shared.json.bhI_JsonObject;
-import com.b33hive.shared.structs.bhTuple;
+import b33hive.server.data.sql.bhI_SqlEncodable;
+import b33hive.shared.debugging.bhTelemetryAssert;
+import b33hive.shared.json.bhI_JsonObject;
+import b33hive.shared.structs.bhTuple;
 
 public class bhServerTelemetryAssert extends bhTelemetryAssert implements bhI_SqlEncodable
 {

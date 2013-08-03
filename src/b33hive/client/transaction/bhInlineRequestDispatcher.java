@@ -1,13 +1,13 @@
-package com.b33hive.client.transaction;
+package b33hive.client.transaction;
 
 import java.util.ArrayList;
 
-import com.b33hive.client.js.bhU_Native;
-import com.b33hive.shared.debugging.bhU_Debug;
-import com.b33hive.shared.json.bhA_JsonFactory;
-import com.b33hive.shared.json.bhI_JsonArray;
-import com.b33hive.shared.transaction.bhTransactionRequest;
-import com.b33hive.shared.transaction.bhTransactionResponse;
+import b33hive.client.js.bhU_Native;
+import b33hive.shared.debugging.bhU_Debug;
+import b33hive.shared.json.bhA_JsonFactory;
+import b33hive.shared.json.bhI_JsonArray;
+import b33hive.shared.transaction.bhTransactionRequest;
+import b33hive.shared.transaction.bhTransactionResponse;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.core.client.JsArrayString;
 
@@ -37,7 +37,7 @@ public class bhInlineRequestDispatcher implements bhI_RequestDispatcher
 		final bhTransactionResponse m_response;
 	}
 	
-	private bhClientTransactionManager m_manager;
+	private bhI_ResponseCallbacks m_callbacks;
 	
 	private final ArrayList<InlineTransaction> m_inlineTransactions = new ArrayList<InlineTransaction>();
 	private final ArrayList<QueuedTransaction> m_queuedTransactions = new ArrayList<QueuedTransaction>();
@@ -74,9 +74,9 @@ public class bhInlineRequestDispatcher implements bhI_RequestDispatcher
 	}
 	
 	@Override
-	public void initialize(bhClientTransactionManager manager)
+	public void initialize(bhI_ResponseCallbacks callbacks, int maxGetUrlLength)
 	{
-		m_manager = manager;
+		m_callbacks = callbacks;
 	}
 	
 	public void flushQueuedSynchronousResponses()
@@ -100,11 +100,11 @@ public class bhInlineRequestDispatcher implements bhI_RequestDispatcher
 	{
 		if( request instanceof bhTransactionRequestBatch )
 		{
-			m_manager.onResponseReceived((bhTransactionRequestBatch)request, (bhI_JsonArray)responseObject);
+			m_callbacks.onResponseReceived((bhTransactionRequestBatch)request, (bhI_JsonArray)responseObject);
 		}
 		else
 		{
-			m_manager.onResponseReceived(request, (bhTransactionResponse)responseObject);
+			m_callbacks.onResponseReceived(request, (bhTransactionResponse)responseObject);
 		}
 	}
 

@@ -1,4 +1,4 @@
-package com.b33hive.shared;
+package b33hive.shared.lang;
 
 public class bhBoolean
 {

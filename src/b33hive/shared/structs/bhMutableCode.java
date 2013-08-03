@@ -1,7 +1,7 @@
-package com.b33hive.shared.structs;
+package b33hive.shared.structs;
 
-import com.b33hive.shared.entities.bhE_CodeType;
-import com.b33hive.shared.json.bhI_JsonObject;
+import b33hive.shared.entities.bhE_CodeType;
+import b33hive.shared.json.bhI_JsonObject;
 
 public class bhMutableCode extends bhCode
 {

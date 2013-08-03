@@ -1,4 +1,4 @@
-package com.b33hive.server.handlers;
+package b33hive.server.handlers.normal;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Properties;
@@ -9,21 +9,21 @@ import javax.mail.*;
 import javax.mail.internet.*;
 import javax.servlet.http.HttpServletRequest;
 
-import com.b33hive.server.account.bhE_Role;
-import com.b33hive.server.account.bhS_ServerAccount;
-import com.b33hive.server.account.bhServerAccountManager;
-import com.b33hive.server.account.bhUserSession;
-import com.b33hive.server.session.bhSessionManager;
-import com.b33hive.server.transaction.bhI_RequestHandler;
-import com.b33hive.server.transaction.bhTransactionContext;
-import com.b33hive.shared.account.bhE_SignInCredentialType;
-import com.b33hive.shared.account.bhS_Account;
-import com.b33hive.shared.account.bhSignInCredentials;
-import com.b33hive.shared.account.bhSignInValidationResult;
-import com.b33hive.shared.account.bhSignInValidator;
-import com.b33hive.shared.transaction.bhE_ResponseError;
-import com.b33hive.shared.transaction.bhTransactionRequest;
-import com.b33hive.shared.transaction.bhTransactionResponse;
+import b33hive.server.account.bhE_Role;
+import b33hive.server.account.bhS_ServerAccount;
+import b33hive.server.account.bhServerAccountManager;
+import b33hive.server.account.bhUserSession;
+import b33hive.server.session.bhSessionManager;
+import b33hive.server.transaction.bhI_RequestHandler;
+import b33hive.server.transaction.bhTransactionContext;
+import b33hive.shared.account.bhE_SignInCredentialType;
+import b33hive.shared.account.bhS_Account;
+import b33hive.shared.account.bhSignInCredentials;
+import b33hive.shared.account.bhSignInValidationResult;
+import b33hive.shared.account.bhSignInValidator;
+import b33hive.shared.transaction.bhE_ResponseError;
+import b33hive.shared.transaction.bhTransactionRequest;
+import b33hive.shared.transaction.bhTransactionResponse;
 
 public class setNewDesiredPassword implements bhI_RequestHandler
 {

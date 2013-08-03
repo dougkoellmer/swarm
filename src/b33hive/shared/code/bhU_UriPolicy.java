@@ -1,9 +1,9 @@
-package com.b33hive.shared.code;
+package b33hive.shared.code;
 
-import com.b33hive.shared.bhBoolean;
-import com.b33hive.shared.structs.bhCellAddress;
-import com.b33hive.shared.structs.bhE_CellAddressParseError;
-import com.b33hive.shared.structs.bhE_NetworkPrivilege;
+import b33hive.shared.lang.bhBoolean;
+import b33hive.shared.structs.bhCellAddress;
+import b33hive.shared.structs.bhE_CellAddressParseError;
+import b33hive.shared.structs.bhE_NetworkPrivilege;
 import com.google.gwt.regexp.shared.MatchResult;
 import com.google.gwt.regexp.shared.RegExp;
 

@@ -1,7 +1,7 @@
-package com.b33hive.client.json;
+package b33hive.client.thirdparty.json;
 
-import com.b33hive.shared.json.bhI_JsonArray;
-import com.b33hive.shared.json.bhI_JsonObject;
+import b33hive.shared.json.bhI_JsonArray;
+import b33hive.shared.json.bhI_JsonObject;
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONBoolean;
 import com.google.gwt.json.client.JSONNumber;

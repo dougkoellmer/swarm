@@ -1,19 +1,19 @@
-package com.b33hive.client.transaction;
+package b33hive.client.transaction;
 
 import java.util.ArrayList;
 
-import com.b33hive.shared.json.bhA_JsonFactory;
-import com.b33hive.shared.json.bhE_JsonKey;
-import com.b33hive.shared.json.bhI_JsonArray;
-import com.b33hive.shared.json.bhI_JsonEncodable;
-import com.b33hive.shared.json.bhI_JsonObject;
-import com.b33hive.shared.json.bhJsonQuery;
-import com.b33hive.shared.json.bhJsonHelper;
-import com.b33hive.shared.transaction.bhE_HttpMethod;
-import com.b33hive.shared.transaction.bhE_RequestPath;
-import com.b33hive.shared.transaction.bhE_ReservedRequestPath;
-import com.b33hive.shared.transaction.bhI_RequestPath;
-import com.b33hive.shared.transaction.bhTransactionRequest;
+import b33hive.shared.json.bhA_JsonFactory;
+import b33hive.shared.json.bhE_JsonKey;
+import b33hive.shared.json.bhI_JsonArray;
+import b33hive.shared.json.bhI_JsonEncodable;
+import b33hive.shared.json.bhI_JsonObject;
+import b33hive.shared.json.bhJsonQuery;
+import b33hive.shared.json.bhJsonHelper;
+import b33hive.shared.transaction.bhE_HttpMethod;
+import b33hive.shared.transaction.bhE_RequestPath;
+import b33hive.shared.transaction.bhE_ReservedRequestPath;
+import b33hive.shared.transaction.bhI_RequestPath;
+import b33hive.shared.transaction.bhTransactionRequest;
 import com.google.gwt.http.client.RequestBuilder;
 
 

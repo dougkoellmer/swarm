@@ -1,4 +1,4 @@
-package com.b33hive.shared.entities;
+package b33hive.shared.entities;
 
 public enum bhE_EditingPermission
 {

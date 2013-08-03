@@ -1,15 +1,15 @@
-package com.b33hive.server.structs;
+package b33hive.server.structs;
 
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
-import com.b33hive.server.data.blob.bhU_Serialization;
-import com.b33hive.shared.entities.bhE_CodeSafetyLevel;
-import com.b33hive.shared.entities.bhE_CodeType;
-import com.b33hive.shared.json.bhI_JsonObject;
-import com.b33hive.shared.structs.bhCode;
+import b33hive.server.data.blob.bhU_Serialization;
+import b33hive.shared.entities.bhE_CodeSafetyLevel;
+import b33hive.shared.entities.bhE_CodeType;
+import b33hive.shared.json.bhI_JsonObject;
+import b33hive.shared.structs.bhCode;
 
 public class bhServerCode extends bhCode implements Externalizable
 {

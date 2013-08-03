@@ -1,6 +1,6 @@
-package com.b33hive.client.ui;
+package b33hive.client.ui;
 
-import com.b33hive.client.app.bhPlatformInfo;
+import b33hive.client.app.bhPlatformInfo;
 import com.google.gwt.user.client.Element;
 
 /**

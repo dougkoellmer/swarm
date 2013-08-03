@@ -1,21 +1,22 @@
-package com.b33hive.client.ui.tabs.code;
+package b33hive.client.ui.tabs.code;
 
 import java.util.logging.Logger;
 
-import com.b33hive.client.entities.bhClientUser;
-import com.b33hive.client.managers.bhClientAccountManager;
-import com.b33hive.client.states.StateMachine_Base;
-import com.b33hive.client.states.account.StateMachine_Account;
-import com.b33hive.client.states.account.State_AccountStatusPending;
-import com.b33hive.client.states.account.State_ManageAccount;
-import com.b33hive.client.states.camera.State_ViewingCell;
-import com.b33hive.client.states.code.StateMachine_EditingCode;
-import com.b33hive.client.states.code.State_EditingCode;
-import com.b33hive.shared.statemachine.bhA_Action;
-import com.b33hive.shared.statemachine.bhA_State;
-import com.b33hive.shared.statemachine.bhA_StateMachine;
-import com.b33hive.shared.statemachine.bhI_StateEventListener;
-import com.b33hive.shared.statemachine.bhStateEvent;
+import b33hive.client.entities.bhA_ClientUser;
+import b33hive.client.managers.bhClientAccountManager;
+import b33hive.client.managers.bhUserManager;
+import b33hive.client.states.StateMachine_Base;
+import b33hive.client.states.account.StateMachine_Account;
+import b33hive.client.states.account.State_AccountStatusPending;
+import b33hive.client.states.account.State_ManageAccount;
+import b33hive.client.states.camera.State_ViewingCell;
+import b33hive.client.states.code.StateMachine_EditingCode;
+import b33hive.client.states.code.State_EditingCode;
+import b33hive.shared.statemachine.bhA_Action;
+import b33hive.shared.statemachine.bhA_State;
+import b33hive.shared.statemachine.bhA_StateMachine;
+import b33hive.shared.statemachine.bhI_StateEventListener;
+import b33hive.shared.statemachine.bhStateEvent;
 import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
@@ -77,7 +78,9 @@ public class bhCodeEditor extends FlowPanel implements bhI_StateEventListener
 	
 	private void toggleActiveCodeMirrorInstance(State_ViewingCell viewingState )
 	{
-		if( bhClientUser.getInstance().isCellOwner(viewingState.getCell().getCoordinate()) )
+		bhA_ClientUser user = bhUserManager.getInstance().getUser();
+		
+		if( user.isCellOwner(viewingState.getCell().getCoordinate()) )
 		{
 			this.setActiveCodeMirrorInstance(m_codeMirror_writable);
 		}

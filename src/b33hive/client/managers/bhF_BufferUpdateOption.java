@@ -1,4 +1,4 @@
-package com.b33hive.client.managers;
+package b33hive.client.managers;
 
 public class bhF_BufferUpdateOption
 {

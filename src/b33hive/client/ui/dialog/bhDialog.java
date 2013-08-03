@@ -1,12 +1,12 @@
-package com.b33hive.client.ui.dialog;
+package b33hive.client.ui.dialog;
 
-import com.b33hive.client.input.bhClickManager;
-import com.b33hive.client.input.bhI_ClickHandler;
-import com.b33hive.client.states.State_AsyncDialog;
-import com.b33hive.client.states.State_GenericDialog;
-import com.b33hive.client.ui.widget.bhButton;
-import com.b33hive.client.ui.widget.bhDefaultButton;
-import com.b33hive.shared.statemachine.bhA_Action;
+import b33hive.client.input.bhClickManager;
+import b33hive.client.input.bhI_ClickHandler;
+import b33hive.client.states.State_AsyncDialog;
+import b33hive.client.states.State_GenericDialog;
+import b33hive.client.ui.widget.bhButton;
+import b33hive.client.ui.widget.bhDefaultButton;
+import b33hive.shared.statemachine.bhA_Action;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.dom.client.Style.Overflow;
@@ -108,7 +108,7 @@ public class bhDialog extends AbsolutePanel
 	/*-{
 		setTimeout(function()
 		{
-			thisArg.@com.b33hive.client.ui.dialog.bhDialog::updateLayout()();
+			thisArg.@b33hive.client.ui.dialog.bhDialog::updateLayout()();
 		}, 0);
 	}-*/;
 	

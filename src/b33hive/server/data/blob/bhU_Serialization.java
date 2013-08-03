@@ -1,4 +1,4 @@
-package com.b33hive.server.data.blob;
+package b33hive.server.data.blob;
 
 import java.io.Externalizable;
 import java.io.IOException;
@@ -8,7 +8,7 @@ import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
-import com.b33hive.shared.bhU_TypeConversion;
+import b33hive.shared.utils.bhU_TypeConversion;
 
 public final class bhU_Serialization
 {

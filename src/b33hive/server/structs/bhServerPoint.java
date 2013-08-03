@@ -1,11 +1,11 @@
-package com.b33hive.server.structs;
+package b33hive.server.structs;
 
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
-import com.b33hive.shared.structs.bhPoint;
+import b33hive.shared.structs.bhPoint;
 
 /**
  * Externalizable can't be used on the client, so we must needs create a server version of bhPoint just to read/write byte streams.

@@ -1,22 +1,22 @@
-package com.b33hive.client.managers;
+package b33hive.client.managers;
 
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
-import com.b33hive.client.entities.bhCamera;
-import com.b33hive.client.entities.bhBufferCell;
-import com.b33hive.client.entities.bhClientGrid;
-import com.b33hive.client.entities.bhE_CodeStatus;
-import com.b33hive.client.structs.bhI_LocalCodeRepository;
-import com.b33hive.shared.app.bhS_App;
-import com.b33hive.shared.bhU_BitTricks;
-import com.b33hive.shared.debugging.bhU_Debug;
-import com.b33hive.shared.entities.bhA_Cell;
-import com.b33hive.shared.entities.bhE_CodeSafetyLevel;
-import com.b33hive.shared.entities.bhE_CodeType;
-import com.b33hive.shared.structs.bhCode;
-import com.b33hive.shared.structs.bhPoint;
-import com.b33hive.shared.structs.bhGridCoordinate;
+import b33hive.client.entities.bhCamera;
+import b33hive.client.entities.bhBufferCell;
+import b33hive.client.entities.bhClientGrid;
+import b33hive.client.entities.bhE_CodeStatus;
+import b33hive.client.structs.bhI_LocalCodeRepository;
+import b33hive.shared.app.bhS_App;
+import b33hive.shared.utils.bhU_BitTricks;
+import b33hive.shared.debugging.bhU_Debug;
+import b33hive.shared.entities.bhA_Cell;
+import b33hive.shared.entities.bhE_CodeSafetyLevel;
+import b33hive.shared.entities.bhE_CodeType;
+import b33hive.shared.structs.bhCode;
+import b33hive.shared.structs.bhPoint;
+import b33hive.shared.structs.bhGridCoordinate;
 
 /**
  * ...

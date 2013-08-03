@@ -1,4 +1,4 @@
-package com.b33hive.server.code;
+package b33hive.server.code;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -11,14 +11,14 @@ import javax.mail.internet.ParseException;
 
 import org.apache.commons.codec.binary.Base64;
 
-import com.b33hive.shared.bhBoolean;
-import com.b33hive.shared.account.bhE_SignUpValidationError;
-import com.b33hive.shared.account.bhI_SignUpCredentialValidator;
-import com.b33hive.shared.code.bhU_UriPolicy;
-import com.b33hive.shared.code.bhUriData;
-import com.b33hive.shared.structs.bhCellAddress;
-import com.b33hive.shared.structs.bhE_CellAddressParseError;
-import com.b33hive.shared.structs.bhE_NetworkPrivilege;
+import b33hive.shared.lang.bhBoolean;
+import b33hive.shared.account.bhE_SignUpValidationError;
+import b33hive.shared.account.bhI_SignUpCredentialValidator;
+import b33hive.shared.code.bhU_UriPolicy;
+import b33hive.shared.code.bhUriData;
+import b33hive.shared.structs.bhCellAddress;
+import b33hive.shared.structs.bhE_CellAddressParseError;
+import b33hive.shared.structs.bhE_NetworkPrivilege;
 import com.google.caja.lexer.ExternalReference;
 import com.google.caja.plugin.LoaderType;
 import com.google.caja.plugin.UriEffect;

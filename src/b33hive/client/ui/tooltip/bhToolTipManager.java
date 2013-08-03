@@ -1,18 +1,18 @@
-package com.b33hive.client.ui.tooltip;
+package b33hive.client.ui.tooltip;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
-import com.b33hive.client.input.bhSimpleMouse;
-import com.b33hive.client.ui.bhE_ZIndex;
-import com.b33hive.client.ui.bhS_UI;
-import com.b33hive.client.ui.alignment.bhAlignmentDefinition;
-import com.b33hive.client.ui.alignment.bhE_AlignmentPosition;
-import com.b33hive.client.ui.alignment.bhE_AlignmentType;
-import com.b33hive.client.ui.alignment.bhU_Alignment;
-import com.b33hive.shared.debugging.bhU_Debug;
-import com.b33hive.shared.structs.bhPoint;
+import b33hive.client.input.bhSimpleMouse;
+import b33hive.client.ui.bhE_ZIndex;
+import b33hive.client.ui.bhS_UI;
+import b33hive.client.ui.alignment.bhAlignmentDefinition;
+import b33hive.client.ui.alignment.bhE_AlignmentPosition;
+import b33hive.client.ui.alignment.bhE_AlignmentType;
+import b33hive.client.ui.alignment.bhU_Alignment;
+import b33hive.shared.debugging.bhU_Debug;
+import b33hive.shared.structs.bhPoint;
 import com.gargoylesoftware.htmlunit.javascript.host.Event;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
@@ -59,7 +59,7 @@ public class bhToolTipManager
 	
 	private final boolean m_isMouseOverEnabled;
 	
-	private bhToolTipManager(boolean enabled)
+	public bhToolTipManager(boolean enabled, int mouseOverDelayMilliseconds)
 	{
 		m_isMouseOverEnabled = enabled;
 		
@@ -78,15 +78,10 @@ public class bhToolTipManager
 		}, MouseDownEvent.getType());
 		
 		m_subManagers[bhE_ToolTipType.FOCUS.ordinal()]			= new bhToolTipSubManager_Focus(this);
-		m_subManagers[bhE_ToolTipType.MOUSE_OVER.ordinal()]		= new bhToolTipSubManager_MouseOver(this);
+		m_subManagers[bhE_ToolTipType.MOUSE_OVER.ordinal()]		= new bhToolTipSubManager_MouseOver(this, mouseOverDelayMilliseconds);
 		m_subManagers[bhE_ToolTipType.NOTIFICATION.ordinal()]	= new bhToolTipSubManager_Notification(this);
 		m_subManagers[bhE_ToolTipType.TUTORIAL.ordinal()]		= new bhToolTipSubManager_Tutorial(this);
 		m_subManagers[bhE_ToolTipType.STATUS.ordinal()]			= new bhToolTipSubManager_Status(this);
-	}
-	
-	public static void startUp(boolean isMouseOverEnabled)
-	{
-		s_instance = new bhToolTipManager(isMouseOverEnabled);
 	}
 	
 	private void setAlignmentDefaults(bhToolTip toolTip, bhAlignmentDefinition alignment, bhPoint mousePoint)

@@ -1,4 +1,4 @@
-package com.b33hive.client.input;
+package b33hive.client.input;
 
 public enum bhE_MouseEventType
 {

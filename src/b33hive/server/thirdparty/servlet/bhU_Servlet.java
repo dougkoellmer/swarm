@@ -1,21 +1,24 @@
-package com.b33hive.server.servlets;
+package b33hive.server.thirdparty.servlet;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Writer;
 import java.net.URLDecoder;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.IOUtils;
 import org.json.JSONException;
 
-import com.b33hive.server.json.bhServerJsonObject;
-import com.b33hive.shared.json.bhA_JsonFactory;
-import com.b33hive.shared.json.bhI_JsonObject;
-import com.b33hive.shared.transaction.bhS_Transaction;
+import b33hive.server.thirdparty.json.bhServerJsonObject;
+import b33hive.shared.json.bhA_JsonFactory;
+import b33hive.shared.json.bhI_JsonObject;
+import b33hive.shared.transaction.bhS_Transaction;
 
 public class bhU_Servlet
 {
@@ -32,6 +35,26 @@ public class bhU_Servlet
 		catch (InterruptedException e1)
 		{
 		}
+	}
+	
+	public static String getResource(ServletContext context, String file)
+	{
+		InputStream stream = context.getResourceAsStream(file);
+		String resource = "";
+		
+		if( stream != null )
+		{
+			try
+			{
+				resource = IOUtils.toString(stream, "UTF-8");
+			}
+			catch (IOException e)
+			{
+				s_logger.severe("Couldn't load resource: " + file);
+			}
+		}
+		
+		return resource;
 	}
 	
 	public static void redirectToMainPage(HttpServletResponse response) throws IOException

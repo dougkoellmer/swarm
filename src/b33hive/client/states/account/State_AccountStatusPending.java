@@ -1,8 +1,8 @@
-package com.b33hive.client.states.account;
+package b33hive.client.states.account;
 
 
-import com.b33hive.shared.statemachine.bhA_State;
-import com.b33hive.shared.statemachine.bhA_StateConstructor;
+import b33hive.shared.statemachine.bhA_State;
+import b33hive.shared.statemachine.bhA_StateConstructor;
 
 
 /**

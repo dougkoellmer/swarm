@@ -1,38 +1,38 @@
-package com.b33hive.client.managers;
+package b33hive.client.managers;
 
 import java.util.Iterator;
 
-import com.b33hive.client.entities.bhBufferCell;
-import com.b33hive.client.entities.bhCamera;
-import com.b33hive.client.entities.bhClientGrid;
-import com.b33hive.client.entities.bhClientUser;
-import com.b33hive.client.entities.bhE_CellNuke;
-import com.b33hive.client.entities.bhUserCell;
-import com.b33hive.client.managers.bhClientAccountManager.E_ResponseType;
-import com.b33hive.client.states.camera.StateMachine_Camera;
-import com.b33hive.client.structs.bhAccountInfo;
-import com.b33hive.client.structs.bhCellCodeCache;
-import com.b33hive.client.structs.bhI_LocalCodeRepository;
-import com.b33hive.client.structs.bhLocalCodeRepositoryWrapper;
-import com.b33hive.client.transaction.bhE_TransactionAction;
-import com.b33hive.client.transaction.bhE_ResponseErrorControl;
-import com.b33hive.client.transaction.bhE_ResponseSuccessControl;
-import com.b33hive.client.transaction.bhI_ResponseBatchListener;
-import com.b33hive.client.transaction.bhI_TransactionResponseHandler;
-import com.b33hive.client.transaction.bhClientTransactionManager;
-import com.b33hive.shared.debugging.bhU_Debug;
-import com.b33hive.shared.entities.bhE_CodeType;
-import com.b33hive.shared.json.bhE_JsonKey;
-import com.b33hive.shared.json.bhJsonHelper;
-import com.b33hive.shared.statemachine.bhA_State;
-import com.b33hive.shared.structs.bhCellAddress;
-import com.b33hive.shared.structs.bhCode;
-import com.b33hive.shared.structs.bhGridCoordinate;
-import com.b33hive.shared.structs.bhPoint;
-import com.b33hive.shared.transaction.bhE_RequestPath;
-import com.b33hive.shared.transaction.bhE_ResponseError;
-import com.b33hive.shared.transaction.bhTransactionRequest;
-import com.b33hive.shared.transaction.bhTransactionResponse;
+import b33hive.client.entities.bhBufferCell;
+import b33hive.client.entities.bhCamera;
+import b33hive.client.entities.bhClientGrid;
+import b33hive.client.entities.bhA_ClientUser;
+import b33hive.client.entities.bhE_CellNuke;
+import b33hive.client.entities.bhUserCell;
+import b33hive.client.managers.bhClientAccountManager.E_ResponseType;
+import b33hive.client.states.camera.StateMachine_Camera;
+import b33hive.client.structs.bhAccountInfo;
+import b33hive.client.structs.bhCellCodeCache;
+import b33hive.client.structs.bhI_LocalCodeRepository;
+import b33hive.client.structs.bhLocalCodeRepositoryWrapper;
+import b33hive.client.transaction.bhE_TransactionAction;
+import b33hive.client.transaction.bhE_ResponseErrorControl;
+import b33hive.client.transaction.bhE_ResponseSuccessControl;
+import b33hive.client.transaction.bhI_ResponseBatchListener;
+import b33hive.client.transaction.bhI_TransactionResponseHandler;
+import b33hive.client.transaction.bhClientTransactionManager;
+import b33hive.shared.debugging.bhU_Debug;
+import b33hive.shared.entities.bhE_CodeType;
+import b33hive.shared.json.bhE_JsonKey;
+import b33hive.shared.json.bhJsonHelper;
+import b33hive.shared.statemachine.bhA_State;
+import b33hive.shared.structs.bhCellAddress;
+import b33hive.shared.structs.bhCode;
+import b33hive.shared.structs.bhGridCoordinate;
+import b33hive.shared.structs.bhPoint;
+import b33hive.shared.transaction.bhE_RequestPath;
+import b33hive.shared.transaction.bhE_ResponseError;
+import b33hive.shared.transaction.bhTransactionRequest;
+import b33hive.shared.transaction.bhTransactionResponse;
 
 public class bhUserManager implements bhI_TransactionResponseHandler, bhClientAccountManager.I_Delegate, bhI_ResponseBatchListener
 {
@@ -54,15 +54,16 @@ public class bhUserManager implements bhI_TransactionResponseHandler, bhClientAc
 	
 	private final bhLocalCodeRepositoryWrapper m_localCodeRepo = new bhLocalCodeRepositoryWrapper();
 	
-	private bhUserManager()
+	private final bhA_ClientUser m_user;
+	
+	public bhUserManager(bhA_ClientUser user)
 	{
+		m_user = user;
+		
 		m_localCodeRepo.addSource(bhCellBufferManager.getInstance());
 		m_localCodeRepo.addSource(bhCellCodeCache.getInstance());
-	}
-	
-	public static void startUp()
-	{
-		s_instance = new bhUserManager();
+		
+		s_instance = this;
 	}
 	
 	public void start(I_Listener listener)
@@ -88,6 +89,11 @@ public class bhUserManager implements bhI_TransactionResponseHandler, bhClientAc
 		return s_instance;
 	}
 	
+	public bhA_ClientUser getUser()
+	{
+		return m_user;
+	}
+	
 	public void getPosition(bhE_TransactionAction action)
 	{
 		bhClientTransactionManager.getInstance().performAction(action, bhE_RequestPath.getStartingPosition);
@@ -100,7 +106,7 @@ public class bhUserManager implements bhI_TransactionResponseHandler, bhClientAc
 	
 	private void onGetUserDataSuccess(bhTransactionResponse response)
 	{
-		bhClientUser user = bhClientUser.getInstance();
+		bhA_ClientUser user = m_user;
 		user.readJson(response.getJson());
 		Boolean createdUser = bhJsonHelper.getInstance().getBoolean(response.getJson(), bhE_JsonKey.createdUser);
 		createdUser = createdUser != null ? createdUser : false; // can be null when reading inline transaction from the page and the user is already created.
@@ -172,7 +178,7 @@ public class bhUserManager implements bhI_TransactionResponseHandler, bhClientAc
 			bhPoint startingPosition = new bhPoint();
 			startingPosition.readJson(response.getJson());
 			
-			bhClientUser.getInstance().getLastPosition().copy(startingPosition);
+			m_user.getLastPosition().copy(startingPosition);
 			
 			return bhE_ResponseSuccessControl.BREAK;
 		}
@@ -192,7 +198,7 @@ public class bhUserManager implements bhI_TransactionResponseHandler, bhClientAc
 		if( request.getPath() == bhE_RequestPath.getStartingPosition )
 		{
 			//--- DRK > Trivial error, so just fail silently.
-			bhClientUser.getInstance().getLastPosition().zeroOut();
+			m_user.getLastPosition().zeroOut();
 			
 			return bhE_ResponseErrorControl.BREAK;
 		}
@@ -266,7 +272,7 @@ public class bhUserManager implements bhI_TransactionResponseHandler, bhClientAc
 	
 	private void clearUser()
 	{
-		bhClientUser user = bhClientUser.getInstance();
+		bhA_ClientUser user = m_user;
 		
 		if( user.isPopulated() )
 		{

@@ -1,9 +1,9 @@
-package com.b33hive.client.structs;
+package b33hive.client.structs;
 
-import com.b33hive.client.entities.bhBufferCell;
-import com.b33hive.shared.entities.bhA_Cell;
-import com.b33hive.shared.entities.bhE_CodeType;
-import com.b33hive.shared.structs.*;
+import b33hive.client.entities.bhBufferCell;
+import b33hive.shared.entities.bhA_Cell;
+import b33hive.shared.entities.bhE_CodeType;
+import b33hive.shared.structs.*;
 
 public interface bhI_LocalCodeRepository
 {

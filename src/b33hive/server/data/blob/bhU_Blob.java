@@ -1,4 +1,4 @@
-package com.b33hive.server.data.blob;
+package b33hive.server.data.blob;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

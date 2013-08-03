@@ -1,8 +1,8 @@
-package com.b33hive.client.ui.tabs.account;
+package b33hive.client.ui.tabs.account;
 
-import com.b33hive.shared.account.bhE_SignUpValidationError;
-import com.b33hive.shared.account.bhI_CredentialType;
-import com.b33hive.shared.account.bhI_ValidationError;
+import b33hive.shared.account.bhE_SignUpValidationError;
+import b33hive.shared.account.bhI_CredentialType;
+import b33hive.shared.account.bhI_ValidationError;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;

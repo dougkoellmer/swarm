@@ -1,4 +1,4 @@
-package com.b33hive.server.entities;
+package b33hive.server.entities;
 
 import java.io.IOException;
 import java.io.ObjectInput;
@@ -7,23 +7,23 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 
-import com.b33hive.server.data.blob.bhE_BlobCacheLevel;
-import com.b33hive.server.data.blob.bhI_Blob;
-import com.b33hive.server.data.blob.bhU_Serialization;
-import com.b33hive.server.structs.bhDate;
-import com.b33hive.server.structs.bhServerCellAddressMapping;
-import com.b33hive.server.structs.bhServerGridCoordinate;
-import com.b33hive.server.structs.bhServerPoint;
-import com.b33hive.shared.entities.bhA_User;
-import com.b33hive.shared.entities.bhE_EditingPermission;
-import com.b33hive.shared.json.bhA_JsonFactory;
-import com.b33hive.shared.json.bhE_JsonKey;
-import com.b33hive.shared.json.bhI_JsonArray;
-import com.b33hive.shared.json.bhI_JsonObject;
-import com.b33hive.shared.json.bhJsonHelper;
-import com.b33hive.shared.structs.bhCellAddressMapping;
-import com.b33hive.shared.structs.bhGridCoordinate;
-import com.b33hive.shared.structs.bhPoint;
+import b33hive.server.data.blob.bhE_BlobCacheLevel;
+import b33hive.server.data.blob.bhI_Blob;
+import b33hive.server.data.blob.bhU_Serialization;
+import b33hive.server.structs.bhDate;
+import b33hive.server.structs.bhServerCellAddressMapping;
+import b33hive.server.structs.bhServerGridCoordinate;
+import b33hive.server.structs.bhServerPoint;
+import b33hive.shared.entities.bhA_User;
+import b33hive.shared.entities.bhE_EditingPermission;
+import b33hive.shared.json.bhA_JsonFactory;
+import b33hive.shared.json.bhE_JsonKey;
+import b33hive.shared.json.bhI_JsonArray;
+import b33hive.shared.json.bhI_JsonObject;
+import b33hive.shared.json.bhJsonHelper;
+import b33hive.shared.structs.bhCellAddressMapping;
+import b33hive.shared.structs.bhGridCoordinate;
+import b33hive.shared.structs.bhPoint;
 
 
 /**

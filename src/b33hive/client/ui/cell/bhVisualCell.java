@@ -1,21 +1,21 @@
-package com.b33hive.client.ui.cell;
+package b33hive.client.ui.cell;
 
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
-import com.b33hive.client.entities.bhI_BufferCellListener;
-import com.b33hive.client.ui.bhE_ZIndex;
-import com.b33hive.client.ui.bhS_UI;
-import com.b33hive.client.ui.bhU_UI;
-import com.b33hive.client.ui.tabs.code.bhHtmlSandbox;
-import com.b33hive.client.ui.tabs.code.bhI_CodeLoadListener;
-import com.b33hive.client.ui.widget.bhUIBlocker;
-import com.b33hive.shared.app.bhS_App;
-import com.b33hive.shared.bhU_BitTricks;
-import com.b33hive.shared.debugging.bhU_Debug;
-import com.b33hive.shared.entities.bhE_CodeSafetyLevel;
-import com.b33hive.shared.entities.bhE_CodeType;
-import com.b33hive.shared.structs.bhCode;
+import b33hive.client.entities.bhI_BufferCellListener;
+import b33hive.client.ui.bhE_ZIndex;
+import b33hive.client.ui.bhS_UI;
+import b33hive.client.ui.bhU_UI;
+import b33hive.client.ui.tabs.code.bhHtmlSandbox;
+import b33hive.client.ui.tabs.code.bhI_CodeLoadListener;
+import b33hive.client.ui.widget.bhUIBlocker;
+import b33hive.shared.app.bhS_App;
+import b33hive.shared.utils.bhU_BitTricks;
+import b33hive.shared.debugging.bhU_Debug;
+import b33hive.shared.entities.bhE_CodeSafetyLevel;
+import b33hive.shared.entities.bhE_CodeType;
+import b33hive.shared.structs.bhCode;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.dom.client.Style.Position;

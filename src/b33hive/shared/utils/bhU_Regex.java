@@ -1,4 +1,4 @@
-package com.b33hive.shared;
+package b33hive.shared.utils;
 
 import com.google.gwt.regexp.shared.MatchResult;
 import com.google.gwt.regexp.shared.RegExp;

@@ -1,4 +1,4 @@
-package com.b33hive.client.ui.widget;
+package b33hive.client.ui.widget;
 
 public interface bhI_TextBoxChangeListener
 {

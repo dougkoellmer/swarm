@@ -1,9 +1,9 @@
-package com.b33hive.server.json;
+package b33hive.server.thirdparty.json;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import com.b33hive.shared.json.bhI_JsonArray;
-import com.b33hive.shared.json.bhI_JsonObject;
+import b33hive.shared.json.bhI_JsonArray;
+import b33hive.shared.json.bhI_JsonObject;
 
 public class bhServerJsonArray extends Object implements bhI_JsonArray
 {

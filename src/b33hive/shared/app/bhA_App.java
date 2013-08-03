@@ -1,6 +1,6 @@
-package com.b33hive.shared.app;
+package b33hive.shared.app;
 
-import com.b33hive.shared.bhE_AppEnvironment;
+import b33hive.shared.bhE_AppEnvironment;
 
 public abstract class bhA_App
 {	

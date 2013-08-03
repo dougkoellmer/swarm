@@ -1,4 +1,4 @@
-package com.b33hive.server.telemetry;
+package b33hive.server.telemetry;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -7,11 +7,11 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.b33hive.server.account.bhS_AccountQuery;
-import com.b33hive.server.data.sql.bhA_SqlDatabase;
-import com.b33hive.server.data.sql.bhI_SqlEncodable;
-import com.b33hive.server.data.sql.bhS_Sql;
-import com.b33hive.shared.structs.bhTuple;
+import b33hive.server.account.bhS_AccountQuery;
+import b33hive.server.data.sql.bhA_SqlDatabase;
+import b33hive.server.data.sql.bhI_SqlEncodable;
+import b33hive.server.data.sql.bhS_Sql;
+import b33hive.shared.structs.bhTuple;
 import com.google.protos.cloud.sql.Client.SqlException;
 
 public class bhTelemetryDatabase extends bhA_SqlDatabase

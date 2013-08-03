@@ -1,11 +1,11 @@
-package com.b33hive.client.structs;
+package b33hive.client.structs;
 
 import java.util.ArrayList;
 
-import com.b33hive.client.entities.bhBufferCell;
-import com.b33hive.shared.entities.bhA_Cell;
-import com.b33hive.shared.entities.bhE_CodeType;
-import com.b33hive.shared.structs.bhGridCoordinate;
+import b33hive.client.entities.bhBufferCell;
+import b33hive.shared.entities.bhA_Cell;
+import b33hive.shared.entities.bhE_CodeType;
+import b33hive.shared.structs.bhGridCoordinate;
 
 public class bhLocalCodeRepositoryWrapper implements bhI_LocalCodeRepository
 {

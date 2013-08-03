@@ -1,4 +1,4 @@
-package com.b33hive.server.transaction;
+package b33hive.server.transaction;
 
 public interface bhI_TransactionScopeListener
 {

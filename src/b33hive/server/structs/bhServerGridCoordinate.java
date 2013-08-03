@@ -1,15 +1,15 @@
-package com.b33hive.server.structs;
+package b33hive.server.structs;
 
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
-import com.b33hive.server.data.blob.bhI_Blob;
-import com.b33hive.server.data.blob.bhI_BlobKeySource;
-import com.b33hive.server.data.blob.bhU_Blob;
-import com.b33hive.shared.json.bhI_JsonObject;
-import com.b33hive.shared.structs.bhGridCoordinate;
+import b33hive.server.data.blob.bhI_Blob;
+import b33hive.server.data.blob.bhI_BlobKeySource;
+import b33hive.server.data.blob.bhU_Blob;
+import b33hive.shared.json.bhI_JsonObject;
+import b33hive.shared.structs.bhGridCoordinate;
 
 /**
  * Externalizable can't be used on the client, so we must needs create a server version of bhPoint just to read/write byte streams.

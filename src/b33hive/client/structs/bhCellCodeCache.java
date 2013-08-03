@@ -1,16 +1,15 @@
-package com.b33hive.client.structs;
+package b33hive.client.structs;
 
-import com.b33hive.client.app.bhClientApp;
-import com.b33hive.client.app.bhS_ClientApp;
-import com.b33hive.client.entities.bhBufferCell;
-import com.b33hive.shared.app.bhS_App;
-import com.b33hive.shared.entities.bhA_Cell;
-import com.b33hive.shared.entities.bhE_CodeSafetyLevel;
-import com.b33hive.shared.entities.bhE_CodeType;
-import com.b33hive.shared.memory.bhLRUCache;
-import com.b33hive.shared.structs.bhCode;
-import com.b33hive.shared.structs.bhCodePrivileges;
-import com.b33hive.shared.structs.bhGridCoordinate;
+import b33hive.client.entities.bhBufferCell;
+import b33hive.shared.app.bhS_App;
+import b33hive.shared.entities.bhA_Cell;
+import b33hive.shared.entities.bhE_CodeSafetyLevel;
+import b33hive.shared.entities.bhE_CodeType;
+import b33hive.shared.memory.bhLRUCache;
+import b33hive.shared.structs.bhCode;
+import b33hive.shared.structs.bhCodePrivileges;
+import b33hive.shared.structs.bhGridCoordinate;
+import b33hive.shared.time.bhI_TimeSource;
 
 public class bhCellCodeCache implements bhI_LocalCodeRepository
 {
@@ -21,12 +20,15 @@ public class bhCellCodeCache implements bhI_LocalCodeRepository
 		}
 	}
 	
-	private static final bhCellCodeCache s_instance = new bhCellCodeCache();
+	private static bhCellCodeCache s_instance = null;
 	
-	private final bhLRUCache m_cache = new bhLRUCache(bhS_ClientApp.CODE_CACHE_SIZE, bhS_ClientApp.CODE_CACHE_EXPIRATION, bhClientApp.getInstance());
+	//private final bhLRUCache m_cache = new bhLRUCache(bhS_ClientApp.CODE_CACHE_SIZE, bhS_ClientApp.CODE_CACHE_EXPIRATION, bhClientApp.getInstance());
+	private final bhLRUCache m_cache;
 	
-	private bhCellCodeCache() 
+	public bhCellCodeCache(int cacheSize, int cacheExpiration, bhI_TimeSource timeSource) 
 	{
+		m_cache = new bhLRUCache(cacheSize, cacheExpiration, timeSource);
+		s_instance = this;
 	}
 	
 	public static bhCellCodeCache getInstance()

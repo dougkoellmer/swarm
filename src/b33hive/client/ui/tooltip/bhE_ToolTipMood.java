@@ -1,4 +1,4 @@
-package com.b33hive.client.ui.tooltip;
+package b33hive.client.ui.tooltip;
 
 public enum bhE_ToolTipMood
 {

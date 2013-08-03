@@ -1,7 +1,7 @@
-package com.b33hive.shared.account;
+package b33hive.shared.account;
 
-import com.b33hive.shared.app.bhS_App;
-import com.b33hive.shared.bhU_Regex;
+import b33hive.shared.app.bhS_App;
+import b33hive.shared.utils.bhU_Regex;
 
 public interface bhI_SignInCredentialValidator
 {

@@ -1,4 +1,4 @@
-package com.b33hive.client.ui.cell;
+package b33hive.client.ui.cell;
 
 import java.util.ArrayList;
 

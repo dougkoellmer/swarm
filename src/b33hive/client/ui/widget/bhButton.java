@@ -1,4 +1,4 @@
-package com.b33hive.client.ui.widget;
+package b33hive.client.ui.widget;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;

@@ -1,4 +1,4 @@
-package com.b33hive.shared.transaction;
+package b33hive.shared.transaction;
 
 public enum bhE_ReservedRequestPath implements bhI_RequestPath
 {

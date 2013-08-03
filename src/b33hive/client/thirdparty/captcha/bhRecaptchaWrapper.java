@@ -1,4 +1,4 @@
-package com.b33hive.client.recaptcha;
+package b33hive.client.thirdparty.captcha;
 
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.Window;

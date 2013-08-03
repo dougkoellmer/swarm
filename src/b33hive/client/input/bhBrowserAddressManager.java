@@ -1,4 +1,4 @@
-package com.b33hive.client.input;
+package b33hive.client.input;
 
 import com.google.gwt.user.client.Window;
 

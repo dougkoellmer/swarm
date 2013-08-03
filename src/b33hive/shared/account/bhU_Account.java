@@ -1,6 +1,6 @@
-package com.b33hive.shared.account;
+package b33hive.shared.account;
 
-import com.b33hive.shared.app.bhS_App;
+import b33hive.shared.app.bhS_App;
 
 public class bhU_Account
 {

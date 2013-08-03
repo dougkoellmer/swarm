@@ -1,7 +1,7 @@
-package com.b33hive.shared.account;
+package b33hive.shared.account;
 
-import com.b33hive.shared.bhE_AppEnvironment;
-import com.b33hive.shared.app.bhA_App;
+import b33hive.shared.bhE_AppEnvironment;
+import b33hive.shared.app.bhA_App;
 
 public class bhSignUpValidator
 {	

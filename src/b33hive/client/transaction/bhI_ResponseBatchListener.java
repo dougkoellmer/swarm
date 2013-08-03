@@ -1,4 +1,4 @@
-package com.b33hive.client.transaction;
+package b33hive.client.transaction;
 
 /**
  * ...

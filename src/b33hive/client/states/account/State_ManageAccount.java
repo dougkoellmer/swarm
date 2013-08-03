@@ -1,14 +1,14 @@
-package com.b33hive.client.states.account;
+package b33hive.client.states.account;
 
 
-import com.b33hive.client.managers.bhClientAccountManager;
-import com.b33hive.shared.account.bhSignInCredentials;
-import com.b33hive.shared.account.bhSignInValidator;
-import com.b33hive.shared.debugging.bhU_Debug;
-import com.b33hive.shared.statemachine.bhA_Action;
-import com.b33hive.shared.statemachine.bhA_ActionArgs;
-import com.b33hive.shared.statemachine.bhA_State;
-import com.b33hive.shared.statemachine.bhA_StateConstructor;
+import b33hive.client.managers.bhClientAccountManager;
+import b33hive.shared.account.bhSignInCredentials;
+import b33hive.shared.account.bhSignInValidator;
+import b33hive.shared.debugging.bhU_Debug;
+import b33hive.shared.statemachine.bhA_Action;
+import b33hive.shared.statemachine.bhA_ActionArgs;
+import b33hive.shared.statemachine.bhA_State;
+import b33hive.shared.statemachine.bhA_StateConstructor;
 
 
 /**

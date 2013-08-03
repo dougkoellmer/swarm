@@ -1,12 +1,12 @@
-package com.b33hive.client.ui.tooltip;
+package b33hive.client.ui.tooltip;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import com.google.gwt.user.client.Timer;
 
-import com.b33hive.client.ui.bhE_ZIndex;
-import com.b33hive.client.ui.bhS_UI;
-import com.b33hive.shared.debugging.bhU_Debug;
+import b33hive.client.ui.bhE_ZIndex;
+import b33hive.client.ui.bhS_UI;
+import b33hive.shared.debugging.bhU_Debug;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;

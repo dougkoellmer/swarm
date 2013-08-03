@@ -1,9 +1,9 @@
-package com.b33hive.shared.memory;
+package b33hive.shared.memory;
 
 import java.util.ArrayList;
 
-import com.b33hive.shared.debugging.bhU_Debug;
-import com.b33hive.shared.reflection.bhI_Class;
+import b33hive.shared.debugging.bhU_Debug;
+import b33hive.shared.reflection.bhI_Class;
 
 public class bhObjectPool<T>
 {

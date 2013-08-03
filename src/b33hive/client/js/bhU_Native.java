@@ -1,4 +1,4 @@
-package com.b33hive.client.js;
+package b33hive.client.js;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;

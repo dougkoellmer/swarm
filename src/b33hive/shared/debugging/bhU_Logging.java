@@ -1,4 +1,4 @@
-package com.b33hive.shared.logging;
+package b33hive.shared.debugging;
 
 import java.util.logging.Logger;
 

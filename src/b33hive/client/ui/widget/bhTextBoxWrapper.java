@@ -1,6 +1,6 @@
-package com.b33hive.client.ui.widget;
+package b33hive.client.ui.widget;
 
-import com.b33hive.client.ui.bhS_UI;
+import b33hive.client.ui.bhS_UI;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.TextBox;

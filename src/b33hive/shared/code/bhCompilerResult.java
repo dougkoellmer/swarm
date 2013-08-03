@@ -1,16 +1,16 @@
-package com.b33hive.shared.code;
+package b33hive.shared.code;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.b33hive.shared.debugging.bhU_Debug;
-import com.b33hive.shared.entities.bhE_CodeType;
-import com.b33hive.shared.json.bhA_JsonEncodable;
-import com.b33hive.shared.json.bhE_JsonKey;
-import com.b33hive.shared.json.bhI_JsonArray;
-import com.b33hive.shared.json.bhI_JsonObject;
-import com.b33hive.shared.json.bhJsonHelper;
-import com.b33hive.shared.structs.bhCode;
+import b33hive.shared.debugging.bhU_Debug;
+import b33hive.shared.entities.bhE_CodeType;
+import b33hive.shared.json.bhA_JsonEncodable;
+import b33hive.shared.json.bhE_JsonKey;
+import b33hive.shared.json.bhI_JsonArray;
+import b33hive.shared.json.bhI_JsonObject;
+import b33hive.shared.json.bhJsonHelper;
+import b33hive.shared.structs.bhCode;
 
 public class bhCompilerResult extends bhA_JsonEncodable
 {

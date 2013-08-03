@@ -1,16 +1,16 @@
-package com.b33hive.client.managers;
+package b33hive.client.managers;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 
-import com.b33hive.client.entities.bhBufferCell;
-import com.b33hive.client.structs.bhCellPool;
-import com.b33hive.client.structs.bhI_LocalCodeRepository;
-import com.b33hive.shared.bhU_BitTricks;
-import com.b33hive.shared.debugging.bhU_Debug;
-import com.b33hive.shared.entities.bhE_CodeType;
-import com.b33hive.shared.structs.bhGridCoordinate;
+import b33hive.client.entities.bhBufferCell;
+import b33hive.client.structs.bhCellPool;
+import b33hive.client.structs.bhI_LocalCodeRepository;
+import b33hive.shared.utils.bhU_BitTricks;
+import b33hive.shared.debugging.bhU_Debug;
+import b33hive.shared.entities.bhE_CodeType;
+import b33hive.shared.structs.bhGridCoordinate;
 
 
 /**

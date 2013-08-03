@@ -1,16 +1,16 @@
-package com.b33hive.client.states.camera;
+package b33hive.client.states.camera;
 
-import com.b33hive.client.entities.bhBufferCell;
-import com.b33hive.client.states.camera.StateMachine_Camera.CameraManager;
-import com.b33hive.shared.statemachine.bhA_Action;
-import com.b33hive.shared.statemachine.bhA_ActionArgs;
-import com.b33hive.shared.statemachine.bhA_EventAction;
-import com.b33hive.shared.statemachine.bhA_State;
-import com.b33hive.shared.statemachine.bhA_StateConstructor;
-import com.b33hive.shared.statemachine.bhStateEvent;
-import com.b33hive.shared.structs.bhCellAddress;
-import com.b33hive.shared.structs.bhCellAddressMapping;
-import com.b33hive.shared.structs.bhPoint;
+import b33hive.client.entities.bhBufferCell;
+import b33hive.client.states.camera.StateMachine_Camera.CameraManager;
+import b33hive.shared.statemachine.bhA_Action;
+import b33hive.shared.statemachine.bhA_ActionArgs;
+import b33hive.shared.statemachine.bhA_EventAction;
+import b33hive.shared.statemachine.bhA_State;
+import b33hive.shared.statemachine.bhA_StateConstructor;
+import b33hive.shared.statemachine.bhStateEvent;
+import b33hive.shared.structs.bhCellAddress;
+import b33hive.shared.structs.bhCellAddressMapping;
+import b33hive.shared.structs.bhPoint;
 
 public class State_GettingMapping extends bhA_State
 {

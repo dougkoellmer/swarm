@@ -1,4 +1,4 @@
-package com.b33hive.server.app;
+package b33hive.server.app;
 
 public class bhS_ServerApp
 {

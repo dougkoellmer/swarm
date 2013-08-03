@@ -1,28 +1,29 @@
-package com.b33hive.client.states.code;
+package b33hive.client.states.code;
 
-import com.b33hive.client.managers.bhCellCodeManager;
-import com.b33hive.client.managers.bhClientAccountManager;
-import com.b33hive.client.code.bhCompilerErrorMessageGenerator;
-import com.b33hive.client.entities.bhBufferCell;
-import com.b33hive.client.entities.bhClientUser;
-import com.b33hive.client.entities.bhE_CodeStatus;
-import com.b33hive.client.states.StateMachine_Base;
-import com.b33hive.client.states.State_AsyncDialog;
-import com.b33hive.client.states.State_GenericDialog;
-import com.b33hive.client.states.camera.State_ViewingCell;
-import com.b33hive.client.states.code.State_EditingCodeBlocker.Reason;
-import com.b33hive.shared.code.bhA_CodeCompiler;
-import com.b33hive.shared.code.bhCompilerResult;
-import com.b33hive.shared.code.bhE_CompilationStatus;
-import com.b33hive.shared.debugging.bhU_Debug;
-import com.b33hive.shared.entities.bhE_CodeType;
-import com.b33hive.shared.statemachine.bhA_Action;
-import com.b33hive.shared.statemachine.bhA_ActionArgs;
-import com.b33hive.shared.statemachine.bhA_StateConstructor;
+import b33hive.client.managers.bhCellCodeManager;
+import b33hive.client.managers.bhClientAccountManager;
+import b33hive.client.managers.bhUserManager;
+import b33hive.client.code.bhCompilerErrorMessageGenerator;
+import b33hive.client.entities.bhBufferCell;
+import b33hive.client.entities.bhA_ClientUser;
+import b33hive.client.entities.bhE_CodeStatus;
+import b33hive.client.states.StateMachine_Base;
+import b33hive.client.states.State_AsyncDialog;
+import b33hive.client.states.State_GenericDialog;
+import b33hive.client.states.camera.State_ViewingCell;
+import b33hive.client.states.code.State_EditingCodeBlocker.Reason;
+import b33hive.shared.code.bhA_CodeCompiler;
+import b33hive.shared.code.bhCompilerResult;
+import b33hive.shared.code.bhE_CompilationStatus;
+import b33hive.shared.debugging.bhU_Debug;
+import b33hive.shared.entities.bhE_CodeType;
+import b33hive.shared.statemachine.bhA_Action;
+import b33hive.shared.statemachine.bhA_ActionArgs;
+import b33hive.shared.statemachine.bhA_StateConstructor;
 
-import com.b33hive.shared.statemachine.bhA_State;
-import com.b33hive.shared.structs.bhCode;
-import com.b33hive.shared.structs.bhGridCoordinate;
+import b33hive.shared.statemachine.bhA_State;
+import b33hive.shared.structs.bhCode;
+import b33hive.shared.structs.bhGridCoordinate;
 
 
 /**
@@ -72,7 +73,7 @@ public class State_EditingCode extends bhA_State
 			State_ViewingCell viewingState = (State_ViewingCell) bhA_State.getForegroundedInstance(State_ViewingCell.class);
 			bhBufferCell viewedCell = viewingState.getCell();
 			
-			bhClientUser user = bhClientUser.getInstance();
+			bhA_ClientUser user = bhUserManager.getInstance().getUser();
 			
 			user.onSourceCodeChanged(viewedCell.getCoordinate(), code);
 		}
@@ -88,7 +89,8 @@ public class State_EditingCode extends bhA_State
 			}
 
 			//--- DRK > Just to make extra sure.
-			if( !bhClientUser.getInstance().isEditable(state.getCell().getCoordinate()))
+			bhA_ClientUser user = bhUserManager.getInstance().getUser();
+			if( !user.isEditable(state.getCell().getCoordinate()))
 			{
 				return false;
 			}
@@ -131,7 +133,8 @@ public class State_EditingCode extends bhA_State
 		bhBufferCell viewedCell = viewingState.getCell();
 		bhGridCoordinate coord = viewedCell.getCoordinate();
 		
-		bhCode sourceCode = bhClientUser.getInstance().getCode(coord, bhE_CodeType.SOURCE);
+		bhA_ClientUser user = bhUserManager.getInstance().getUser();
+		bhCode sourceCode = user.getCode(coord, bhE_CodeType.SOURCE);
 		
 		bhCompilerResult compilerResult = bhA_CodeCompiler.getInstance().compile(sourceCode, viewedCell.getCodePrivileges(), /*namespace=*/null);
 		
@@ -174,17 +177,18 @@ public class State_EditingCode extends bhA_State
 			return false;
 		}
 		
-		if( !bhClientUser.getInstance().isCellOwner(state.getCell().getCoordinate()) )
+		bhA_ClientUser user = bhUserManager.getInstance().getUser();
+		if( !user.isCellOwner(state.getCell().getCoordinate()) )
 		{
 			return false;
 		}
 		
 		//--- DRK > Just to make extra sure.
-		if( isPreview && !bhClientUser.getInstance().isSourceCodeChanged(state.getCell().getCoordinate()))
+		if( isPreview && !user.isSourceCodeChanged(state.getCell().getCoordinate()))
 		{
 			return false;
 		}
-		else if (!isPreview && !bhClientUser.getInstance().isSourceCodeChanged(state.getCell().getCoordinate()) )
+		else if (!isPreview && !user.isSourceCodeChanged(state.getCell().getCoordinate()) )
 		{
 			return false;
 		}

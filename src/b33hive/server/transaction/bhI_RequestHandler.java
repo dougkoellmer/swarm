@@ -1,7 +1,7 @@
-package com.b33hive.server.transaction;
+package b33hive.server.transaction;
 
-import com.b33hive.shared.transaction.bhTransactionRequest;
-import com.b33hive.shared.transaction.bhTransactionResponse;
+import b33hive.shared.transaction.bhTransactionRequest;
+import b33hive.shared.transaction.bhTransactionResponse;
 
 public interface bhI_RequestHandler
 {

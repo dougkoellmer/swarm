@@ -1,8 +1,8 @@
-package com.b33hive.client.states;
+package b33hive.client.states;
 
-import com.b33hive.shared.statemachine.bhA_Action;
-import com.b33hive.shared.statemachine.bhA_ActionArgs;
-import com.b33hive.shared.statemachine.bhA_State;
+import b33hive.shared.statemachine.bhA_Action;
+import b33hive.shared.statemachine.bhA_ActionArgs;
+import b33hive.shared.statemachine.bhA_State;
 
 public class State_AsyncDialog extends State_GenericDialog
 {

@@ -1,4 +1,4 @@
-package com.b33hive.server.entities;
+package b33hive.server.entities;
 
 import java.io.IOException;
 import java.io.ObjectInput;
@@ -8,19 +8,18 @@ import java.util.Map;
 import java.util.Random;
 import java.util.logging.Logger;
 
-import com.b33hive.server.app.bhS_ServerApp;
-import com.b33hive.server.data.blob.bhE_BlobCacheLevel;
-import com.b33hive.server.data.blob.bhI_Blob;
-import com.b33hive.server.data.blob.bhI_BlobKeySource;
-import com.b33hive.server.data.blob.bhU_Blob;
-import com.b33hive.server.data.blob.bhU_Serialization;
-import com.b33hive.server.structs.bhBitArray;
-import com.b33hive.server.structs.bhDate;
-import com.b33hive.server.structs.bhServerGridCoordinate;
-import com.b33hive.server.test.bhT_Grid;
-import com.b33hive.shared.app.bhS_App;
-import com.b33hive.shared.entities.bhA_Grid;
-import com.b33hive.shared.structs.bhGridCoordinate;
+import b33hive.server.app.bhS_ServerApp;
+import b33hive.server.data.blob.bhE_BlobCacheLevel;
+import b33hive.server.data.blob.bhI_Blob;
+import b33hive.server.data.blob.bhI_BlobKeySource;
+import b33hive.server.data.blob.bhU_Blob;
+import b33hive.server.data.blob.bhU_Serialization;
+import b33hive.server.structs.bhBitArray;
+import b33hive.server.structs.bhDate;
+import b33hive.server.structs.bhServerGridCoordinate;
+import b33hive.shared.app.bhS_App;
+import b33hive.shared.entities.bhA_Grid;
+import b33hive.shared.structs.bhGridCoordinate;
 
 /**
  * ...

@@ -1,4 +1,4 @@
-package com.b33hive.server.session;
+package b33hive.server.session;
 
 import java.math.BigInteger;
 import java.net.URLDecoder;
@@ -17,23 +17,23 @@ import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.EncoderException;
 import org.apache.commons.codec.net.URLCodec;
 
-import com.b33hive.server.account.bhE_Role;
-import com.b33hive.server.account.bhS_ServerAccount;
-import com.b33hive.server.account.bhUserSession;
-import com.b33hive.server.data.blob.bhBlobException;
-import com.b33hive.server.data.blob.bhBlobManagerFactory;
-import com.b33hive.server.data.blob.bhE_BlobCacheLevel;
-import com.b33hive.server.data.blob.bhI_Blob;
-import com.b33hive.server.data.blob.bhI_BlobKeySource;
-import com.b33hive.server.data.blob.bhI_BlobManager;
-import com.b33hive.server.data.blob.bhU_Serialization;
-import com.b33hive.server.transaction.bhI_TransactionScopeListener;
-import com.b33hive.shared.debugging.bhU_Debug;
-import com.b33hive.shared.json.bhA_JsonFactory;
-import com.b33hive.shared.json.bhI_JsonObject;
-import com.b33hive.shared.transaction.bhE_ResponseError;
-import com.b33hive.shared.transaction.bhTransactionRequest;
-import com.b33hive.shared.transaction.bhTransactionResponse;
+import b33hive.server.account.bhE_Role;
+import b33hive.server.account.bhS_ServerAccount;
+import b33hive.server.account.bhUserSession;
+import b33hive.server.data.blob.bhBlobException;
+import b33hive.server.data.blob.bhBlobManagerFactory;
+import b33hive.server.data.blob.bhE_BlobCacheLevel;
+import b33hive.server.data.blob.bhI_Blob;
+import b33hive.server.data.blob.bhI_BlobKeySource;
+import b33hive.server.data.blob.bhI_BlobManager;
+import b33hive.server.data.blob.bhU_Serialization;
+import b33hive.server.transaction.bhI_TransactionScopeListener;
+import b33hive.shared.debugging.bhU_Debug;
+import b33hive.shared.json.bhA_JsonFactory;
+import b33hive.shared.json.bhI_JsonObject;
+import b33hive.shared.transaction.bhE_ResponseError;
+import b33hive.shared.transaction.bhTransactionRequest;
+import b33hive.shared.transaction.bhTransactionResponse;
 
 public class bhSessionManager implements bhI_TransactionScopeListener
 {

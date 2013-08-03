@@ -1,4 +1,4 @@
-package com.b33hive.server.account;
+package b33hive.server.account;
 
 public class bhS_ServerAccount
 {

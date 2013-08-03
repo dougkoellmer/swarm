@@ -1,4 +1,4 @@
-package com.b33hive.server.telemetry;
+package b33hive.server.telemetry;
 
 public class bhS_Telemetry
 {

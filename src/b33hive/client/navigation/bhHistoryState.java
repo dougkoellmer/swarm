@@ -1,16 +1,16 @@
-package com.b33hive.client.navigation;
+package b33hive.client.navigation;
 
-import com.b33hive.client.states.camera.StateMachine_Camera;
-import com.b33hive.client.states.camera.State_CameraFloating;
-import com.b33hive.shared.json.bhA_JsonEncodable;
-import com.b33hive.shared.json.bhE_JsonKey;
-import com.b33hive.shared.json.bhI_JsonObject;
-import com.b33hive.shared.json.bhJsonHelper;
-import com.b33hive.shared.statemachine.bhA_Action;
-import com.b33hive.shared.structs.bhCellAddressMapping;
-import com.b33hive.shared.structs.bhGridCoordinate;
-import com.b33hive.shared.structs.bhPoint;
-import com.b33hive.shared.structs.bhTolerance;
+import b33hive.client.states.camera.StateMachine_Camera;
+import b33hive.client.states.camera.State_CameraFloating;
+import b33hive.shared.json.bhA_JsonEncodable;
+import b33hive.shared.json.bhE_JsonKey;
+import b33hive.shared.json.bhI_JsonObject;
+import b33hive.shared.json.bhJsonHelper;
+import b33hive.shared.statemachine.bhA_Action;
+import b33hive.shared.structs.bhCellAddressMapping;
+import b33hive.shared.structs.bhGridCoordinate;
+import b33hive.shared.structs.bhPoint;
+import b33hive.shared.structs.bhTolerance;
 
 class bhHistoryState extends bhA_JsonEncodable
 {

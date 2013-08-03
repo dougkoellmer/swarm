@@ -1,4 +1,4 @@
-package com.b33hive.server.servlets;
+package b33hive.server.thirdparty.servlet;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -14,17 +14,16 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONException;
 
-import com.b33hive.server.account.bhE_Role;
-import com.b33hive.server.json.bhServerJsonObject;
-import com.b33hive.server.session.bhSessionManager;
-import com.b33hive.server.transaction.bhJsonHelperProvider;
-import com.b33hive.server.transaction.bhServerTransactionManager;
-import com.b33hive.shared.app.bhS_App;
-import com.b33hive.shared.json.bhA_JsonFactory;
-import com.b33hive.shared.json.bhI_JsonObject;
-import com.b33hive.shared.transaction.bhS_Transaction;
-import com.b33hive.shared.transaction.bhTransactionRequest;
-import com.b33hive.shared.transaction.bhTransactionResponse;
+import b33hive.server.account.bhE_Role;
+import b33hive.server.session.bhSessionManager;
+import b33hive.server.transaction.bhJsonHelperProvider;
+import b33hive.server.transaction.bhServerTransactionManager;
+import b33hive.shared.app.bhS_App;
+import b33hive.shared.json.bhA_JsonFactory;
+import b33hive.shared.json.bhI_JsonObject;
+import b33hive.shared.transaction.bhS_Transaction;
+import b33hive.shared.transaction.bhTransactionRequest;
+import b33hive.shared.transaction.bhTransactionResponse;
 
 public class bhAdminServlet extends bhA_BaseServlet
 {

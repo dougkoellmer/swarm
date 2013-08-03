@@ -1,26 +1,28 @@
-package com.b33hive.client.structs;
+package b33hive.client.structs;
 
-import com.b33hive.client.app.bhClientApp;
-import com.b33hive.client.app.bhS_ClientApp;
-import com.b33hive.client.entities.bhBufferCell;
-import com.b33hive.shared.app.bhS_App;
-import com.b33hive.shared.entities.bhA_Cell;
-import com.b33hive.shared.entities.bhE_CodeType;
-import com.b33hive.shared.memory.bhLRUCache;
-import com.b33hive.shared.structs.bhCellAddress;
-import com.b33hive.shared.structs.bhCellAddressMapping;
-import com.b33hive.shared.structs.bhCode;
-import com.b33hive.shared.structs.bhGridCoordinate;
+import b33hive.client.entities.bhBufferCell;
+import b33hive.shared.app.bhS_App;
+import b33hive.shared.entities.bhA_Cell;
+import b33hive.shared.entities.bhE_CodeType;
+import b33hive.shared.memory.bhLRUCache;
+import b33hive.shared.structs.bhCellAddress;
+import b33hive.shared.structs.bhCellAddressMapping;
+import b33hive.shared.structs.bhCode;
+import b33hive.shared.structs.bhGridCoordinate;
+import b33hive.shared.time.bhI_TimeSource;
 
 public class bhCellAddressCache
 {
 	private final bhLRUCache m_addressToMapping;
 	private final bhLRUCache m_mappingToAddress;
 	
-	public bhCellAddressCache() 
+	public bhCellAddressCache(int cacheSize, int cacheExpiration, bhI_TimeSource timeSource) 
 	{
-		m_addressToMapping = new bhLRUCache(bhS_ClientApp.ADDRESS_CACHE_SIZE, bhS_ClientApp.ADDRESS_CACHE_EXPIRATION, bhClientApp.getInstance());
-		m_mappingToAddress = new bhLRUCache(bhS_ClientApp.ADDRESS_CACHE_SIZE, bhS_ClientApp.ADDRESS_CACHE_EXPIRATION, bhClientApp.getInstance());
+		//m_addressToMapping = new bhLRUCache(bhS_ClientApp.ADDRESS_CACHE_SIZE, bhS_ClientApp.ADDRESS_CACHE_EXPIRATION, bhClientApp.getInstance());
+		//m_mappingToAddress = new bhLRUCache(bhS_ClientApp.ADDRESS_CACHE_SIZE, bhS_ClientApp.ADDRESS_CACHE_EXPIRATION, bhClientApp.getInstance());
+		
+		m_addressToMapping = new bhLRUCache(cacheSize, cacheExpiration, timeSource);
+		m_mappingToAddress = new bhLRUCache(cacheSize, cacheExpiration, timeSource);
 	}
 	
 	public bhCellAddressMapping get(bhCellAddress address)

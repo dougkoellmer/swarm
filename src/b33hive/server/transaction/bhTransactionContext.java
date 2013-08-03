@@ -1,12 +1,12 @@
-package com.b33hive.server.transaction;
+package b33hive.server.transaction;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.b33hive.shared.structs.bhOptHashMap;
-import com.b33hive.shared.transaction.bhI_RequestPath;
-import com.b33hive.shared.transaction.bhTransactionRequest;
-import com.b33hive.shared.transaction.bhTransactionResponse;
+import b33hive.shared.structs.bhOptHashMap;
+import b33hive.shared.transaction.bhI_RequestPath;
+import b33hive.shared.transaction.bhTransactionRequest;
+import b33hive.shared.transaction.bhTransactionResponse;
 
 public class bhTransactionContext
 {

@@ -1,6 +1,6 @@
-package com.b33hive.shared.app;
+package b33hive.shared.app;
 
-import com.b33hive.shared.bhU_BitTricks;
+import b33hive.shared.utils.bhU_BitTricks;
 
 public class bhS_App
 {
@@ -29,11 +29,6 @@ public class bhS_App
 	
 	public static final int MAX_CELL_ADDRESS_PARTS = 2;
 	
-	public static final String CAJA_NAMESPACE_SUFFIX = "___";
-	
 	public static final int SANDBOX_COORD_M = 2;
 	public static final int SANDBOX_COORD_N = 2;
-	
-	
-	public static final int MAX_URL_LENGTH = 2000;
 }

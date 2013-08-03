@@ -1,4 +1,4 @@
-package com.b33hive.client.time;
+package b33hive.client.time;
 
 import java.util.Date;
 

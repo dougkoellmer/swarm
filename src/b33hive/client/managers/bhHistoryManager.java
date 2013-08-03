@@ -1,10 +1,10 @@
-package com.b33hive.client.managers;
+package b33hive.client.managers;
 
-import com.b33hive.client.app.bhS_ClientApp;
-import com.b33hive.shared.app.bhS_App;
-import com.b33hive.shared.structs.bhGridCoordinate;
-import com.b33hive.shared.structs.bhLinkedListNode;
-import com.b33hive.shared.structs.bhQueue;
+import b33hive.client.app.bhS_ClientApp;
+import b33hive.shared.app.bhS_App;
+import b33hive.shared.structs.bhGridCoordinate;
+import b33hive.shared.structs.bhLinkedListNode;
+import b33hive.shared.structs.bhQueue;
 
 public class bhHistoryManager
 {

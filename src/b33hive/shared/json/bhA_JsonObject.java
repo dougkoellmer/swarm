@@ -1,4 +1,4 @@
-package com.b33hive.shared.json;
+package b33hive.shared.json;
 
 public abstract class bhA_JsonObject implements bhI_JsonObject
 {

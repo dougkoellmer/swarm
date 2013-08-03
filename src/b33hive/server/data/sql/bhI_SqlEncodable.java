@@ -1,6 +1,6 @@
-package com.b33hive.server.data.sql;
+package b33hive.server.data.sql;
 
-import com.b33hive.shared.structs.bhTuple;
+import b33hive.shared.structs.bhTuple;
 
 public interface bhI_SqlEncodable
 {

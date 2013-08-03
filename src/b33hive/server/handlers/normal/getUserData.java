@@ -1,26 +1,27 @@
-package com.b33hive.server.handlers;
+package b33hive.server.handlers.normal;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.b33hive.server.account.bhE_Role;
-import com.b33hive.server.account.bhUserSession;
-import com.b33hive.server.app.bhS_ServerApp;
-import com.b33hive.server.data.blob.bhBlobException;
-import com.b33hive.server.data.blob.bhBlobManagerFactory;
-import com.b33hive.server.data.blob.bhE_BlobCacheLevel;
-import com.b33hive.server.data.blob.bhE_BlobTransactionType;
-import com.b33hive.server.data.blob.bhI_BlobManager;
-import com.b33hive.server.entities.bhServerUser;
-import com.b33hive.server.session.bhSessionManager;
-import com.b33hive.server.transaction.bhI_RequestHandler;
-import com.b33hive.server.transaction.bhTransactionContext;
-import com.b33hive.shared.entities.bhA_Grid;
-import com.b33hive.shared.json.bhE_JsonKey;
-import com.b33hive.shared.json.bhJsonHelper;
-import com.b33hive.shared.transaction.bhE_ResponseError;
-import com.b33hive.shared.transaction.bhTransactionRequest;
-import com.b33hive.shared.transaction.bhTransactionResponse;
+import b33hive.server.account.bhE_Role;
+import b33hive.server.account.bhUserSession;
+import b33hive.server.app.bhS_ServerApp;
+import b33hive.server.data.blob.bhBlobException;
+import b33hive.server.data.blob.bhBlobManagerFactory;
+import b33hive.server.data.blob.bhE_BlobCacheLevel;
+import b33hive.server.data.blob.bhE_BlobTransactionType;
+import b33hive.server.data.blob.bhI_BlobManager;
+import b33hive.server.entities.bhServerUser;
+import b33hive.server.handlers.blobxn.bhBlobTransaction_CreateUser;
+import b33hive.server.session.bhSessionManager;
+import b33hive.server.transaction.bhI_RequestHandler;
+import b33hive.server.transaction.bhTransactionContext;
+import b33hive.shared.entities.bhA_Grid;
+import b33hive.shared.json.bhE_JsonKey;
+import b33hive.shared.json.bhJsonHelper;
+import b33hive.shared.transaction.bhE_ResponseError;
+import b33hive.shared.transaction.bhTransactionRequest;
+import b33hive.shared.transaction.bhTransactionResponse;
 
 public class getUserData implements bhI_RequestHandler
 {
