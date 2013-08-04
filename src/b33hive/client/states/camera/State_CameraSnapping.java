@@ -334,5 +334,3 @@ public class State_CameraSnapping extends bhA_State implements bhI_StateEventLis
 		}
 	}
 }
-
-

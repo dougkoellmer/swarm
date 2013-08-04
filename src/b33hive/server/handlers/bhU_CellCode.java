@@ -39,6 +39,7 @@ import b33hive.shared.transaction.bhE_RequestPath;
 import b33hive.shared.transaction.bhE_ResponseError;
 import b33hive.shared.transaction.bhTransactionRequest;
 import b33hive.shared.transaction.bhTransactionResponse;
+import b33hive.shared.utils.bhU_Singletons;
 
 public final class bhU_CellCode
 {
@@ -107,7 +108,7 @@ public final class bhU_CellCode
 	{
 		cell.setCode(bhE_CodeType.SOURCE, sourceCode); // DRK > may be redundant.
 		
-		bhA_CodeCompiler compiler = bhA_CodeCompiler.getInstance();
+		bhA_CodeCompiler compiler = bhU_Singletons.get(bhA_CodeCompiler.class);
 		
 		bhCompilerResult result = compiler.compile(sourceCode, cell.getCodePrivileges(), mapping.writeString());
 		

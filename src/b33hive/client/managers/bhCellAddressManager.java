@@ -22,6 +22,7 @@ import b33hive.shared.transaction.bhE_RequestPath;
 import b33hive.shared.transaction.bhE_ResponseError;
 import b33hive.shared.transaction.bhTransactionRequest;
 import b33hive.shared.transaction.bhTransactionResponse;
+import b33hive.shared.utils.bhU_Singletons;
 
 public class bhCellAddressManager implements bhI_TransactionResponseHandler
 {
@@ -41,8 +42,6 @@ public class bhCellAddressManager implements bhI_TransactionResponseHandler
 		void onResponseError(bhCellAddressMapping mapping);
 	}
 	
-	private static bhCellAddressManager s_instance = null;
-	
 	private final bhCellAddressCache m_cache;
 	
 	private final bhMutableJsonQuery m_query = new bhMutableJsonQuery();
@@ -54,9 +53,9 @@ public class bhCellAddressManager implements bhI_TransactionResponseHandler
 	private final bhGetCellAddressMappingResult m_reusedMappingResult = new bhGetCellAddressMappingResult();
 	private final bhGetCellAddressResult m_reusedAddressResult = new bhGetCellAddressResult();
 	
-	private bhCellAddressManager()
+	public bhCellAddressManager(int cacheSize, double cacheExpiration )
 	{
-		m_cache = new bhCellAddressCache(xxx, xxx, new bhI_TimeSource()
+		m_cache = new bhCellAddressCache(cacheSize, cacheExpiration, new bhI_TimeSource()
 		{
 			@Override
 			public double getTime()
@@ -80,16 +79,6 @@ public class bhCellAddressManager implements bhI_TransactionResponseHandler
 		bhClientTransactionManager.getInstance().removeHandler(this);
 		
 		m_listener = null;
-	}
-	
-	public static void startUp()
-	{
-		s_instance = new bhCellAddressManager();
-	}
-	
-	public static bhCellAddressManager getInstance()
-	{
-		return s_instance;
 	}
 	
 	public boolean isWaitingOnResponse(bhCellAddressMapping mapping)
@@ -137,7 +126,8 @@ public class bhCellAddressManager implements bhI_TransactionResponseHandler
 		}
 		
 		//--- DRK > Try to get address from user.
-		bhA_ClientUser user = bhUserManager.getInstance().getUser();
+		bhUserManager userManager = bhU_Singletons.get(bhUserManager.class);
+		bhA_ClientUser user = userManager.getUser();
 		address = user.getCellAddress(mapping);
 		if( address != null )
 		{
@@ -187,7 +177,8 @@ public class bhCellAddressManager implements bhI_TransactionResponseHandler
 		}
 		
 		//--- DRK > Try to get mapping from user.
-		bhA_ClientUser user = bhUserManager.getInstance().getUser();
+		bhUserManager userManager = bhU_Singletons.get(bhUserManager.class);
+		bhA_ClientUser user = userManager.getUser();
 		mapping = user.getCellAddressMapping(address);
 		if( mapping != null )
 		{

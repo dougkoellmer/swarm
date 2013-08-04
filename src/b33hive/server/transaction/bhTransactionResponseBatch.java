@@ -9,6 +9,7 @@ import b33hive.shared.json.bhI_JsonObject;
 import b33hive.shared.json.bhJsonHelper;
 import b33hive.shared.transaction.bhTransactionRequest;
 import b33hive.shared.transaction.bhTransactionResponse;
+import b33hive.shared.utils.bhU_Singletons;
 
 class bhTransactionResponseBatch extends bhTransactionResponse
 {
@@ -29,7 +30,8 @@ class bhTransactionResponseBatch extends bhTransactionResponse
 	{
 		super.writeJson(json);
 		
-		final bhI_JsonArray responsesJson = bhA_JsonFactory.getInstance().createJsonArray();
+		bhA_JsonFactory factory = bhU_Singletons.get(bhA_JsonFactory.class);
+		final bhI_JsonArray responsesJson = factory.createJsonArray();
 		
 		for ( int i = 0; i < m_responses.size(); i++ )
 		{

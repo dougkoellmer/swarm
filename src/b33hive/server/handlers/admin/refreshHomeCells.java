@@ -13,6 +13,7 @@ import b33hive.server.data.blob.bhE_BlobCacheLevel;
 import b33hive.server.data.blob.bhI_BlobManager;
 import b33hive.server.entities.bhServerCell;
 import b33hive.server.entities.bhServerUser;
+import b33hive.server.handlers.bhU_Handler;
 import b33hive.server.session.bhSessionManager;
 import b33hive.server.structs.bhServerCellAddressMapping;
 import b33hive.server.transaction.bhI_RequestHandler;
@@ -54,6 +55,11 @@ public class refreshHomeCells implements bhI_RequestHandler
 			return;
 		}
 		
-		//(new bhHomeCellCreator((ServletContext)context.getNativeContext())).run(request, response, context, session, user);
+		bhI_HomeCellCreator homeCellCreator = bhU_Handler.newObjectInstance(m_T_homeCellCreator, response);
+		
+		if( homeCellCreator == null )  return;
+		
+		homeCellCreator.initialize((ServletContext)context.getNativeContext());
+		homeCellCreator.run(request, response, context, session, user);
 	}
 }

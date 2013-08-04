@@ -6,6 +6,7 @@ import b33hive.shared.json.bhE_JsonKey;
 import b33hive.shared.json.bhI_JsonArray;
 import b33hive.shared.json.bhI_JsonObject;
 import b33hive.shared.json.bhJsonHelper;
+import b33hive.shared.utils.bhU_Singletons;
 import b33hive.shared.debugging.bhU_Logging;
 
 public abstract class bhA_Coordinate extends bhA_JsonEncodable
@@ -193,7 +194,8 @@ public abstract class bhA_Coordinate extends bhA_JsonEncodable
 	@Override
 	public void writeJson(bhI_JsonObject json)
 	{
-		bhI_JsonArray components = bhA_JsonFactory.getInstance().createJsonArray();
+		bhA_JsonFactory jsonFactory = bhU_Singletons.get(bhA_JsonFactory.class);
+		bhI_JsonArray components = jsonFactory.createJsonArray();
 		components.addDouble(getX());
 		components.addDouble(getY());
 		components.addDouble(getZ());

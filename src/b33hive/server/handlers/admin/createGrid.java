@@ -19,6 +19,7 @@ import b33hive.server.data.blob.bhI_BlobManager;
 import b33hive.server.entities.bhE_GridType;
 import b33hive.server.entities.bhServerGrid;
 import b33hive.server.entities.bhServerUser;
+import b33hive.server.handlers.bhU_Handler;
 import b33hive.server.handlers.blobxn.bhBlobTransaction_CreateUser;
 import b33hive.server.session.bhSessionManager;
 import b33hive.server.structs.bhServerCellAddress;
@@ -142,7 +143,11 @@ public class createGrid implements bhI_RequestHandler
 			return;
 		}*/
 
-		bhI_HomeCellCreator creator = m_T_homeCellCreator.newInstance();
-		//(new bhHomeCellCreator((ServletContext)context.getNativeContext())).run(request, response, context, session, user);
+		bhI_HomeCellCreator homeCellCreator = bhU_Handler.newObjectInstance(m_T_homeCellCreator, response);
+		
+		if( homeCellCreator == null )  return;
+		
+		homeCellCreator.initialize((ServletContext)context.getNativeContext());
+		homeCellCreator.run(request, response, context, session, user);
 	}
 }

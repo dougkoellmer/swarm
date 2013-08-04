@@ -34,6 +34,8 @@ import b33hive.shared.transaction.bhE_RequestPath;
 import b33hive.shared.transaction.bhI_RequestPath;
 import b33hive.shared.transaction.bhTransactionRequest;
 import b33hive.shared.transaction.bhTransactionResponse;
+import b33hive.shared.utils.bhU_Singletons;
+
 import com.google.gwt.http.client.RequestBuilder;
 
 /**
@@ -144,7 +146,8 @@ public class bhCellCodeManager implements bhI_TransactionResponseHandler
 		compiledCode.setSafetyLevel(bhE_CodeSafetyLevel.REQUIRES_DYNAMIC_SANDBOX);
 		cell.onSyncStart(sourceCode, compiledCode);
 		
-		bhA_ClientUser user = bhUserManager.getInstance().getUser();
+		bhUserManager userManager = bhU_Singletons.get(bhUserManager.class);
+		bhA_ClientUser user = userManager.getUser();
 		user.onSyncStart(coord, compiledCode);
 		
 		cell.onServerRequest(bhE_CodeType.SPLASH);
@@ -249,8 +252,9 @@ public class bhCellCodeManager implements bhI_TransactionResponseHandler
 		m_utilCell.readJson(response.getJson());
 		m_utilCoord.readJson(request.getJson());
 		m_utilCell.getCoordinate().copy(m_utilCoord);
-		
-		bhA_ClientUser user = bhUserManager.getInstance().getUser();
+
+		bhUserManager userManager = bhU_Singletons.get(bhUserManager.class);
+		bhA_ClientUser user = userManager.getUser();
 		
 		int typeOrdinal = bhJsonHelper.getInstance().getInt(request.getJson(), bhE_JsonKey.codeType);
 		bhE_CodeType eHtmlType = bhE_CodeType.values()[typeOrdinal];
@@ -323,7 +327,8 @@ public class bhCellCodeManager implements bhI_TransactionResponseHandler
 		}
 		else if( request.getPath() == bhE_RequestPath.syncCode )
 		{
-			bhA_ClientUser user = bhUserManager.getInstance().getUser();
+			bhUserManager userManager = bhU_Singletons.get(bhUserManager.class);
+			bhA_ClientUser user = userManager.getUser();
 			m_utilCoord.readJson(request.getJson());
 			
 			if( isSyncing(m_utilCoord) )
@@ -481,8 +486,9 @@ public class bhCellCodeManager implements bhI_TransactionResponseHandler
 			{
 				return bhE_ResponseErrorControl.BREAK;
 			}
-			
-			bhA_ClientUser user = bhUserManager.getInstance().getUser();
+
+			bhUserManager userManager = bhU_Singletons.get(bhUserManager.class);
+			bhA_ClientUser user = userManager.getUser();
 			
 			m_utilCoord.readJson(request.getJson());
 			

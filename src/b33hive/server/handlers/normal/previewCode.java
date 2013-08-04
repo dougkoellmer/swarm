@@ -13,6 +13,7 @@ import b33hive.shared.structs.bhCode;
 import b33hive.shared.structs.bhCodePrivileges;
 import b33hive.shared.transaction.bhTransactionRequest;
 import b33hive.shared.transaction.bhTransactionResponse;
+import b33hive.shared.utils.bhU_Singletons;
 
 public class previewCode implements bhI_RequestHandler
 {
@@ -43,7 +44,7 @@ public class previewCode implements bhI_RequestHandler
 		
 		bhCode sourceCode = new bhCode(request.getJson(), bhE_CodeType.SOURCE);
 		
-		bhA_CodeCompiler compiler = bhA_CodeCompiler.getInstance();
+		bhA_CodeCompiler compiler = bhU_Singletons.get(bhA_CodeCompiler.class);
 		
 		bhCompilerResult result = compiler.compile(sourceCode, privileges, coordinate.writeString());
 		

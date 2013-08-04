@@ -11,25 +11,10 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class bhClickManager
 {
-	private static bhClickManager s_instance;
-	
-	private final boolean m_isTouchOnlyInterface;
-	
 	private final bhPoint m_touchPoint = new bhPoint();
 	
-	private bhClickManager(boolean isTouchOnlyInterface)
+	public bhClickManager()
 	{
-		m_isTouchOnlyInterface = isTouchOnlyInterface;
-	}
-	
-	public static void startUp()
-	{
-		s_instance = new bhClickManager(false);
-	}
-	
-	public static bhClickManager getInstance()
-	{
-		return s_instance;
 	}
 	
 	public void addClickHandler(Widget widget, final bhI_ClickHandler handler)

@@ -179,7 +179,7 @@ public class bhBufferCell extends bhA_Cell
 				}
 				else
 				{
-					m_visualization.setCode(code, this.getIdClass());
+					m_visualization.setCode(code, this.getCellNamespace());
 				}
 			}
 			else if( compiledStatus == bhE_CodeStatus.GET_ERROR )
@@ -207,7 +207,7 @@ public class bhBufferCell extends bhA_Cell
 				bhCode code = this.getCode(type);
 				if( splashStatus == bhE_CodeStatus.HAS_CODE && code != null && code.isStandInFor(bhE_CodeType.COMPILED))
 				{
-					m_visualization.setCode(code, this.getIdClass());
+					m_visualization.setCode(code, this.getCellNamespace());
 					
 					bhU_Debug.ASSERT(compiledStatus == bhE_CodeStatus.WAITING_ON_CODE, "onFocusGained2 " + compiledStatus);
 				}
@@ -257,7 +257,7 @@ public class bhBufferCell extends bhA_Cell
 				
 				if( setCodeVisualization )
 				{
-					m_visualization.setCode(this.getCode(bhE_CodeType.SPLASH), this.getIdClass());
+					m_visualization.setCode(this.getCode(bhE_CodeType.SPLASH), this.getCellNamespace());
 				}
 			}
 			else if( status == bhE_CodeStatus.WAITING_ON_CODE )
@@ -315,9 +315,9 @@ public class bhBufferCell extends bhA_Cell
 		return m_codeStatus[eType.ordinal()];
 	}
 	
-	private String getIdClass()
+	private String getCellNamespace()
 	{
-		return this.getCoordinate().writeString() + bhS_App.CAJA_NAMESPACE_SUFFIX;
+		return this.getCoordinate().writeString();
 	}
 	
 	@Override
@@ -343,7 +343,7 @@ public class bhBufferCell extends bhA_Cell
 				{
 					if( updateVisualization )
 					{
-						m_visualization.setCode(code, this.getIdClass());
+						m_visualization.setCode(code, this.getCellNamespace());
 					}
 				}
 			}
@@ -354,7 +354,7 @@ public class bhBufferCell extends bhA_Cell
 				{
 					if( updateVisualization )
 					{
-						m_visualization.setCode(code, this.getIdClass());
+						m_visualization.setCode(code, this.getCellNamespace());
 					}
 				}
 			}

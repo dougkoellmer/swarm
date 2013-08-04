@@ -2,6 +2,7 @@ package b33hive.shared.json;
 
 import java.util.List;
 
+import b33hive.shared.utils.bhU_Singletons;
 import b33hive.shared.utils.bhU_TypeConversion;
 import b33hive.shared.reflection.bhI_Class;
 
@@ -141,7 +142,8 @@ public class bhJsonHelper
 	
 	public void putList(bhI_JsonObject json, bhI_JsonKeySource key, List<? extends Object> list)
 	{
-		bhI_JsonArray array = bhA_JsonFactory.getInstance().createJsonArray();
+		bhA_JsonFactory jsonFactory = bhU_Singletons.get(bhA_JsonFactory.class);
+		bhI_JsonArray array = jsonFactory.createJsonArray();
 		
 		for( int i = 0; i < list.size(); i++ )
 		{
@@ -158,7 +160,8 @@ public class bhJsonHelper
 	
 	public void putJavaVarArgs(bhI_JsonObject json, bhI_JsonKeySource key, Object ... values)
 	{
-		bhI_JsonArray array = bhA_JsonFactory.getInstance().createJsonArray();
+		bhA_JsonFactory jsonFactory = bhU_Singletons.get(bhA_JsonFactory.class);
+		bhI_JsonArray array = jsonFactory.createJsonArray();
 		
 		for( int i = 0; i < values.length; i++ )
 		{

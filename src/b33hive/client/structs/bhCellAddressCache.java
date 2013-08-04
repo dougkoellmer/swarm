@@ -16,7 +16,7 @@ public class bhCellAddressCache
 	private final bhLRUCache m_addressToMapping;
 	private final bhLRUCache m_mappingToAddress;
 	
-	public bhCellAddressCache(int cacheSize, int cacheExpiration, bhI_TimeSource timeSource) 
+	public bhCellAddressCache(int cacheSize, double cacheExpiration, bhI_TimeSource timeSource) 
 	{
 		//m_addressToMapping = new bhLRUCache(bhS_ClientApp.ADDRESS_CACHE_SIZE, bhS_ClientApp.ADDRESS_CACHE_EXPIRATION, bhClientApp.getInstance());
 		//m_mappingToAddress = new bhLRUCache(bhS_ClientApp.ADDRESS_CACHE_SIZE, bhS_ClientApp.ADDRESS_CACHE_EXPIRATION, bhClientApp.getInstance());

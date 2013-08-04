@@ -22,6 +22,8 @@ import b33hive.shared.statemachine.bhA_StateConstructor;
 import b33hive.shared.transaction.bhE_RequestPath;
 import b33hive.shared.transaction.bhTransactionRequest;
 import b33hive.shared.transaction.bhTransactionResponse;
+import b33hive.shared.utils.bhU_Singletons;
+
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.user.client.Window;
 
@@ -61,8 +63,13 @@ public class State_Initializing extends bhA_State implements bhI_TransactionResp
 	@Override
 	protected void didEnter(bhA_StateConstructor constructor)
 	{
+		final bhClientAccountManager accountManager = bhU_Singletons.get(bhClientAccountManager.class);
+		final bhUserManager userManager = bhU_Singletons.get(bhUserManager.class);
+		final bhGridManager gridManager = bhU_Singletons.get(bhGridManager.class);
+		final bhClientTransactionManager transactionManager = bhU_Singletons.get(bhClientTransactionManager.class);
+		
 		//--- DRK > Do an initial transaction to see if user is signed in...this is synchronous.
-		bhClientAccountManager.getInstance().init(new bhI_Callback()
+		accountManager.init(new bhI_Callback()
 		{
 			@Override
 			public void invoke()
@@ -70,14 +77,14 @@ public class State_Initializing extends bhA_State implements bhI_TransactionResp
 				m_successCount = 0;
 				m_requiredSuccessCount = 2;
 				
-				bhClientTransactionManager.getInstance().addHandler(State_Initializing.this);
+				transactionManager.addHandler(State_Initializing.this);
 				
-				bhGridManager.getInstance().getGridData(bhE_TransactionAction.QUEUE_REQUEST);
-				bhUserManager.getInstance().getPosition(bhE_TransactionAction.QUEUE_REQUEST);
+				gridManager.getGridData(bhE_TransactionAction.QUEUE_REQUEST);
+				userManager.getPosition(bhE_TransactionAction.QUEUE_REQUEST);
 				
-				if( bhClientAccountManager.getInstance().isSignedIn() )
+				if( accountManager.isSignedIn() )
 				{
-					bhUserManager.getInstance().populateUser(bhE_TransactionAction.QUEUE_REQUEST);
+					userManager.populateUser(bhE_TransactionAction.QUEUE_REQUEST);
 					
 					//m_requiredSuccessCount++;
 				}

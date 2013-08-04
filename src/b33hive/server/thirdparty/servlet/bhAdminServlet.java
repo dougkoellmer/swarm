@@ -24,6 +24,7 @@ import b33hive.shared.json.bhI_JsonObject;
 import b33hive.shared.transaction.bhS_Transaction;
 import b33hive.shared.transaction.bhTransactionRequest;
 import b33hive.shared.transaction.bhTransactionResponse;
+import b33hive.shared.utils.bhU_Singletons;
 
 public class bhAdminServlet extends bhA_BaseServlet
 {
@@ -56,16 +57,16 @@ public class bhAdminServlet extends bhA_BaseServlet
 		
 		bhJsonHelperProvider.getInstance().endScope();
 		
-		
 		nativeResponse.setContentType("text/html");
 		
+		bhA_JsonFactory jsonFactory = bhU_Singletons.get(bhA_JsonFactory.class);
 		bhI_JsonObject requestJson = null;
 		String requestJsonString = "";
 		
 		if( !isGet )
 		{
 			requestJsonString = nativeRequest.getParameter("json");
-			requestJson = requestJsonString == null ? null : bhA_JsonFactory.getInstance().createJsonObject(requestJsonString);
+			requestJson = requestJsonString == null ? null : jsonFactory.createJsonObject(requestJsonString);
 		}
 		
 		PrintWriter writer = nativeResponse.getWriter();
@@ -77,7 +78,8 @@ public class bhAdminServlet extends bhA_BaseServlet
 		
 		if( !isGet )
 		{
-			bhI_JsonObject responseJson = bhA_JsonFactory.getInstance().createJsonObject();
+			
+			bhI_JsonObject responseJson = jsonFactory.createJsonObject();
 			
 			bhServerTransactionManager.getInstance().handleRequestFromClient(nativeRequest, nativeResponse, this.getServletContext(), requestJson, responseJson, true);
 			

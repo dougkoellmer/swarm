@@ -35,6 +35,8 @@ import b33hive.shared.structs.bhCode;
 import b33hive.shared.structs.bhCodePrivileges;
 import b33hive.shared.structs.bhE_CellAddressParseError;
 import b33hive.shared.structs.bhE_NetworkPrivilege;
+import b33hive.shared.thirdparty.bhS_Caja;
+
 import com.google.caja.SomethingWidgyHappenedError;
 import com.google.caja.config.ConfigUtil;
 import com.google.caja.lang.html.HtmlSchema;
@@ -151,9 +153,9 @@ public class bhServerCodeCompiler extends bhA_CodeCompiler
 	}
 	
 	@Override
-	public bhCompilerResult compile(bhCode sourceCode, bhCodePrivileges privileges, String namespace /*?????*/)
+	public bhCompilerResult compile(bhCode sourceCode, bhCodePrivileges privileges, String namespace)
 	{
-		//idClass += bhS_App.CAJA_NAMESPACE_SUFFIX;
+		namespace += bhS_Caja.CAJA_NAMESPACE_SUFFIX;
 		
 		bhCompilerResult result = (bhCompilerResult) super.compile(sourceCode, privileges, namespace);
 		

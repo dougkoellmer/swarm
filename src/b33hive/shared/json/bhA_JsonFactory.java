@@ -4,19 +4,7 @@ import b33hive.shared.reflection.bhI_Class;
 
 
 public abstract class bhA_JsonFactory
-{
-	private static bhA_JsonFactory s_instance = null;
-	
-	public bhA_JsonFactory()
-	{
-		s_instance = this;
-	}
-	
-	public static bhA_JsonFactory getInstance()
-	{
-		return s_instance;
-	}
-	
+{	
 	public bhI_JsonObject createJsonObject()
 	{
 		return this.getJsonObjectClass().newInstance();

@@ -89,7 +89,7 @@ public class bhStaticCajaContainer
 		m_innerCaja.setInnerHTML(html);
 	}
 	
-	void setIdClass(String idClass)
+	void setCellNamespace(String idClass)
 	{
 		if( m_idClass != null )
 		{

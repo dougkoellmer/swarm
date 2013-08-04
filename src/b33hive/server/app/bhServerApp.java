@@ -146,7 +146,7 @@ public final class bhServerApp extends bhA_App
 		addAdminHandler(new deactivateUserCells(),					bhE_AdminRequestPath.deactivateUserCells);
 		addAdminHandler(new refreshHomeCells(T_homeCellCreator),	bhE_AdminRequestPath.refreshHomeCells);
 		addAdminHandler(new clearCell(),							bhE_AdminRequestPath.clearCell);
-		addAdminHandler(new recompileCells()),						bhE_AdminRequestPath.recompileCells);
+		addAdminHandler(new recompileCells(),						bhE_AdminRequestPath.recompileCells);
 	}
 	
 	private static void addAdminHandler(bhI_RequestHandler handler, bhI_RequestPath path)

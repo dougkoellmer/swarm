@@ -43,8 +43,6 @@ public class bhToolTipManager
 {
 	private static final Logger s_logger = Logger.getLogger(bhToolTipManager.class.getName());
 	
-	private static bhToolTipManager s_instance;
-	
 	private final bhI_ToolTipSubManager[] m_subManagers;
 	
 	private final ArrayList<bhToolTip> m_activeTips = new ArrayList<bhToolTip>();
@@ -235,11 +233,6 @@ public class bhToolTipManager
 				m_activeTips.remove(index);
 			}
 		}
-	}
-	
-	public static bhToolTipManager getInstance()
-	{
-		return s_instance;
 	}
 	
 	public void update(double timeStep)

@@ -3,7 +3,7 @@ package b33hive.client.ui.cell;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
-import b33hive.client.app.bhS_ClientApp;
+import b33hive.client.app.bhS_Client;
 import b33hive.client.entities.bhCamera;
 import b33hive.client.entities.bhBufferCell;
 import b33hive.client.managers.bhCellBuffer;
@@ -106,9 +106,9 @@ public class bhVisualCellManager implements bhI_UIElement, bhI_CellPoolDelegate
 					bhCellAddress address = bufferCell.getCellAddress();
 					String title = "Cell says...";
 					
-					if( message.length() > bhS_ClientApp.MAX_ALERT_CHARACTERS )
+					if( message.length() > bhS_Client.MAX_ALERT_CHARACTERS )
 					{
-						message = message.substring(0, bhS_ClientApp.MAX_ALERT_CHARACTERS);
+						message = message.substring(0, bhS_Client.MAX_ALERT_CHARACTERS);
 						message += "...";
 					}
 					

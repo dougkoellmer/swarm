@@ -14,7 +14,7 @@ public class bhHtmlSandbox
 	
 	private boolean m_isRunning = false;
 	
-	private bhHtmlSandbox(I_StartUpCallback callback, String apiNamespace)
+	public bhHtmlSandbox(I_StartUpCallback callback, String apiNamespace)
 	{
 		m_cajaWrapper = new bhCajaWrapper(callback, apiNamespace);
 	}

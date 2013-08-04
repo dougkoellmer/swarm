@@ -5,21 +5,9 @@ import com.google.gwt.user.client.Window;
 
 public class bhRecaptchaWrapper
 {
-	private static bhRecaptchaWrapper s_instance;
-	
-	private bhRecaptchaWrapper()
+	public bhRecaptchaWrapper()
 	{
 		
-	}
-	
-	public static void startUp()
-	{
-		s_instance = new bhRecaptchaWrapper();
-	}
-	
-	public static bhRecaptchaWrapper getInstance()
-	{
-		return s_instance;
 	}
 	
 	public native String getResponse()

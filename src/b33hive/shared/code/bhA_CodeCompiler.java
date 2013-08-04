@@ -11,16 +11,8 @@ public abstract class bhA_CodeCompiler
 {
 	private static final Logger s_logger = Logger.getLogger(bhA_CodeCompiler.class.getName());
 	
-	private static bhA_CodeCompiler s_instance = null;
-	
 	protected bhA_CodeCompiler()
 	{
-		s_instance = this;
-	}
-	
-	public static bhA_CodeCompiler getInstance()
-	{
-		return s_instance;
 	}
 	
 	protected abstract bhCompilerResult createResult();

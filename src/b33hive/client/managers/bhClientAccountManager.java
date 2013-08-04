@@ -74,8 +74,6 @@ public class bhClientAccountManager implements bhI_TransactionResponseHandler
 		void onAuthenticationError();
 	}
 	
-	private static bhClientAccountManager s_instance = null;
-	
 	private boolean m_isSignedIn = false;
 	
 	private bhSignUpValidationResult m_latestBadSignUpResult = null;
@@ -91,7 +89,7 @@ public class bhClientAccountManager implements bhI_TransactionResponseHandler
 	
 	private bhI_Callback m_initCallback = null;
 	
-	private bhClientAccountManager()
+	public bhClientAccountManager()
 	{
 		
 	}
@@ -177,11 +175,6 @@ public class bhClientAccountManager implements bhI_TransactionResponseHandler
 		}
 	}
 	
-	public static void startUp()
-	{
-		s_instance = new bhClientAccountManager();
-	}
-	
 	public void start()
 	{
 		bhClientTransactionManager.getInstance().addHandler(this);
@@ -190,11 +183,6 @@ public class bhClientAccountManager implements bhI_TransactionResponseHandler
 	public void stop()
 	{
 		bhClientTransactionManager.getInstance().removeHandler(this);
-	}
-	
-	public static bhClientAccountManager getInstance()
-	{
-		return s_instance;
 	}
 	
 	public bhSignUpValidationResult checkOutLatestBadSignUpResult()

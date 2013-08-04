@@ -4,8 +4,6 @@ import com.google.gwt.user.client.Window;
 
 public class bhPlatformInfo
 {
-	private static bhPlatformInfo s_instance = null;
-	
 	private final bhE_Platform m_platform;
 	
 	private String m_rawUserAgent;
@@ -14,7 +12,7 @@ public class bhPlatformInfo
 	
 	private boolean m_has3dTransforms = false;
 	
-	private bhPlatformInfo()
+	public bhPlatformInfo()
 	{
 		m_rawUserAgent = Window.Navigator.getUserAgent().toLowerCase();
 		m_rawPlatform = Window.Navigator.getPlatform();
@@ -89,16 +87,6 @@ public class bhPlatformInfo
 	public String getRawPlatform()
 	{
 		return m_rawUserAgent;
-	}
-	
-	public static void startUp()
-	{
-		s_instance = new bhPlatformInfo();
-	}
-	
-	public static bhPlatformInfo getInstance()
-	{
-		return s_instance;
 	}
 	
 	public bhE_Platform getPlatform()

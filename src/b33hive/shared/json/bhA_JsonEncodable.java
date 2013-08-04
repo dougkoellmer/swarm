@@ -1,5 +1,7 @@
 package b33hive.shared.json;
 
+import b33hive.shared.utils.bhU_Singletons;
+
 /**
  * Partial convenience implementation of bhI_JsonEncodable.
  * Objects that subclass this get passed back and forth between client and server or client and some local persistence layer.
@@ -26,14 +28,16 @@ public abstract class bhA_JsonEncodable implements bhI_JsonEncodable
 	@Override
 	public void readJson(String json)
 	{
-		bhI_JsonObject jsonObject = bhA_JsonFactory.getInstance().createJsonObject(json);
+		bhA_JsonFactory jsonFactory = bhU_Singletons.get(bhA_JsonFactory.class);
+		bhI_JsonObject jsonObject = jsonFactory.createJsonObject(json);
 		this.readJson(jsonObject);
 	}
 	
 	@Override
 	public bhI_JsonObject writeJson()
 	{
-		bhI_JsonObject json = bhA_JsonFactory.getInstance().createJsonObject();
+		bhA_JsonFactory jsonFactory = bhU_Singletons.get(bhA_JsonFactory.class);
+		bhI_JsonObject json = jsonFactory.createJsonObject();
 		this.writeJson(json);
 		return json;
 	}	

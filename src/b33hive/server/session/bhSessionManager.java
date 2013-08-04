@@ -34,6 +34,7 @@ import b33hive.shared.json.bhI_JsonObject;
 import b33hive.shared.transaction.bhE_ResponseError;
 import b33hive.shared.transaction.bhTransactionRequest;
 import b33hive.shared.transaction.bhTransactionResponse;
+import b33hive.shared.utils.bhU_Singletons;
 
 public class bhSessionManager implements bhI_TransactionScopeListener
 {
@@ -126,12 +127,13 @@ public class bhSessionManager implements bhI_TransactionScopeListener
 			//--- DRK > Just being safe here in case someone is spamming invalid cookie data.
 			try
 			{
-				bhI_JsonObject json = bhA_JsonFactory.getInstance().createJsonObject(cookieValueJson);
+				bhA_JsonFactory jsonFactory = bhU_Singletons.get(bhA_JsonFactory.class);
+				bhI_JsonObject json = jsonFactory.createJsonObject(cookieValueJson);
 				cookieValue = new bhSessionCookieValue(json, type);
 			}
 			catch(Exception e)
 			{
-				s_logger.log(Level.SEVERE, "Could not parse cookie value json  ("+cookieValueJson+").", e);
+				s_logger.log(Level.SEVERE, "Could not parse cookie value's json ("+cookieValueJson+").", e);
 			}
 		}
 		

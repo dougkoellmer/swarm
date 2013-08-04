@@ -6,6 +6,7 @@ import b33hive.shared.json.bhE_JsonKey;
 import b33hive.shared.json.bhI_JsonArray;
 import b33hive.shared.json.bhI_JsonObject;
 import b33hive.shared.json.bhJsonHelper;
+import b33hive.shared.utils.bhU_Singletons;
 
 public class bhSignInValidationResult extends bhA_JsonEncodable
 {
@@ -66,7 +67,8 @@ public class bhSignInValidationResult extends bhA_JsonEncodable
 	@Override
 	public void writeJson(bhI_JsonObject json)
 	{
-		bhI_JsonArray errors = bhA_JsonFactory.getInstance().createJsonArray();
+		bhA_JsonFactory jsonFactory = bhU_Singletons.get(bhA_JsonFactory.class);
+		bhI_JsonArray errors = jsonFactory.createJsonArray();
 		
 		for( int i = 0; i < m_errors.length; i++ )
 		{

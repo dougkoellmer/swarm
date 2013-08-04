@@ -21,6 +21,8 @@ import b33hive.shared.structs.bhCodePrivileges;
 import b33hive.shared.structs.bhE_CellAddressParseError;
 import b33hive.shared.structs.bhE_NetworkPrivilege;
 import b33hive.shared.structs.bhGridCoordinate;
+import b33hive.shared.thirdparty.bhS_Caja;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
@@ -180,7 +182,9 @@ public class bhCajaWrapper
 	{
 		bhStaticCajaContainer cajaContainer = getContainer(element);
 		
-		cajaContainer.setIdClass(cellNamespace);
+		cellNamespace += bhS_Caja.CAJA_NAMESPACE_SUFFIX;
+		
+		cajaContainer.setCellNamespace(cellNamespace);
 		
 		cajaContainer.setInnerHtml(compiledHtml);
 	}

@@ -5,6 +5,7 @@ import b33hive.shared.json.bhA_JsonFactory;
 import b33hive.shared.json.bhE_JsonKey;
 import b33hive.shared.json.bhI_JsonObject;
 import b33hive.shared.json.bhJsonHelper;
+import b33hive.shared.utils.bhU_Singletons;
 
 public abstract class bhA_TransactionObject extends bhA_JsonEncodable
 {
@@ -34,10 +35,11 @@ public abstract class bhA_TransactionObject extends bhA_JsonEncodable
 	}
 	
 	public bhI_JsonObject getJson()
-	{
+	{		
 		if ( m_jsonArgs == null )
 		{
-			m_jsonArgs = bhA_JsonFactory.getInstance().createJsonObject();
+			bhA_JsonFactory jsonFactory = bhU_Singletons.get(bhA_JsonFactory.class);
+			m_jsonArgs = jsonFactory.createJsonObject();
 		}
 		
 		return m_jsonArgs;

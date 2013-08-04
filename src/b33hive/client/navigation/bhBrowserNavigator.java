@@ -39,8 +39,6 @@ public class bhBrowserNavigator implements bhI_StateEventListener
 {
 	private static final Logger s_logger = Logger.getLogger(bhBrowserNavigator.class.getName());
 	
-	private static bhBrowserNavigator s_instance = null;
-	
 	private final static String FLOATING_STATE_PATH = "/";
 	
 	private final bhHistoryStateManager m_historyManager;
@@ -67,8 +65,6 @@ public class bhBrowserNavigator implements bhI_StateEventListener
 	
 	bhBrowserNavigator(double floatingHistoryUpdateRate)
 	{
-		s_instance = this;
-		
 		m_floatingHistoryUpdateRate = floatingHistoryUpdateRate;
 		
 		m_args_SnapToCoordinate.setUserData(this.getClass());
@@ -135,11 +131,6 @@ public class bhBrowserNavigator implements bhI_StateEventListener
 		m_historyManager = new bhHistoryStateManager(m_historyStateListener);
 		
 		m_addressManager = new bhBrowserAddressManager();
-	}
-	
-	public static bhBrowserNavigator getInstance()
-	{
-		return s_instance;
 	}
 	
 	public void go(int offset)

@@ -6,6 +6,7 @@ import b33hive.shared.json.bhI_JsonArray;
 import b33hive.shared.json.bhI_JsonObject;
 import b33hive.shared.json.bhJsonHelper;
 import b33hive.shared.json.bhE_JsonKey;
+import b33hive.shared.utils.bhU_Singletons;
 
 public class bhSignUpCredentials extends bhA_AccountCredentials
 {
@@ -63,7 +64,8 @@ public class bhSignUpCredentials extends bhA_AccountCredentials
 		
 		bhU_Account.cropPassword(m_credentials, bhE_SignUpCredentialType.PASSWORD.ordinal());
 		
-		bhI_JsonArray creds = bhA_JsonFactory.getInstance().createJsonArray();
+		bhA_JsonFactory jsonFactory = bhU_Singletons.get(bhA_JsonFactory.class);
+		bhI_JsonArray creds = jsonFactory.createJsonArray();
 		
 		for( int i = 0; i < m_credentials.length; i++ )
 		{

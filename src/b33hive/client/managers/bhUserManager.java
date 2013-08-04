@@ -33,6 +33,7 @@ import b33hive.shared.transaction.bhE_RequestPath;
 import b33hive.shared.transaction.bhE_ResponseError;
 import b33hive.shared.transaction.bhTransactionRequest;
 import b33hive.shared.transaction.bhTransactionResponse;
+import b33hive.shared.utils.bhU_Singletons;
 
 public class bhUserManager implements bhI_TransactionResponseHandler, bhClientAccountManager.I_Delegate, bhI_ResponseBatchListener
 {
@@ -45,10 +46,9 @@ public class bhUserManager implements bhI_TransactionResponseHandler, bhClientAc
 		void onUserDidClear();
 	}
 	
-	private static bhUserManager s_instance = null;
-	
 	private boolean m_failedToAuthenticateInBatch = false;
 	private boolean m_authenticatedInBatch = false;
+	private final bhClientAccountManager m_accountManager;
 	
 	I_Listener m_listener = null;
 	
@@ -56,21 +56,20 @@ public class bhUserManager implements bhI_TransactionResponseHandler, bhClientAc
 	
 	private final bhA_ClientUser m_user;
 	
-	public bhUserManager(bhA_ClientUser user)
+	public bhUserManager(bhClientAccountManager accountManager, bhA_ClientUser user)
 	{
+		m_accountManager = accountManager;
 		m_user = user;
 		
 		m_localCodeRepo.addSource(bhCellBufferManager.getInstance());
 		m_localCodeRepo.addSource(bhCellCodeCache.getInstance());
-		
-		s_instance = this;
 	}
 	
 	public void start(I_Listener listener)
 	{
 		bhClientTransactionManager.getInstance().addHandler(this);
 		bhClientTransactionManager.getInstance().addBatchListener(this);
-		bhClientAccountManager.getInstance().addDelegate(this);
+		m_accountManager.addDelegate(this);
 		
 		m_listener = listener;
 	}
@@ -79,14 +78,9 @@ public class bhUserManager implements bhI_TransactionResponseHandler, bhClientAc
 	{
 		m_listener = null;
 		
-		bhClientAccountManager.getInstance().removeDelegate(this);
+		m_accountManager.removeDelegate(this);
 		bhClientTransactionManager.getInstance().removeBatchListener(this);
 		bhClientTransactionManager.getInstance().removeHandler(this);
-	}
-	
-	public static bhUserManager getInstance()
-	{
-		return s_instance;
 	}
 	
 	public bhA_ClientUser getUser()
@@ -121,7 +115,7 @@ public class bhUserManager implements bhI_TransactionResponseHandler, bhClientAc
 			
 			if( firstIteration )
 			{
-				bhAccountInfo info = bhClientAccountManager.getInstance().getAccountInfo();
+				bhAccountInfo info = m_accountManager.getAccountInfo();
 				userCell.setAddress(new bhCellAddress(info.get(bhAccountInfo.Type.USERNAME)));
 				
 				firstIteration = false;
@@ -135,7 +129,8 @@ public class bhUserManager implements bhI_TransactionResponseHandler, bhClientAc
 				//---		make sure everything's house-cleaned before the user moves in.
 				//---		Note that this code will have to be placed elsewhere if/when cells are taken
 				//---		manually in the future, and not implicitly when creating the user.
-				bhCellCodeManager.getInstance().nukeFromOrbit(userCell.getCoordinate(), bhE_CellNuke.EVERYTHING);
+				bhCellCodeManager codeManager = bhU_Singletons.get(bhCellCodeManager.class);
+				codeManager.nukeFromOrbit(userCell.getCoordinate(), bhE_CellNuke.EVERYTHING);
 				userCell.setCode(bhE_CodeType.SOURCE, new bhCode("", bhE_CodeType.SOURCE));
 				userCell.setCode(bhE_CodeType.SPLASH, new bhCode("", bhE_CodeType.SPLASH));
 				userCell.setCode(bhE_CodeType.COMPILED, new bhCode("", bhE_CodeType.COMPILED));
@@ -154,7 +149,8 @@ public class bhUserManager implements bhI_TransactionResponseHandler, bhClientAc
 				
 				//--- DRK > This will just loop back into the user to find the cell address that we now know,
 				//---		and then instantly let the View know about it. No transaction should go out.
-				bhCellAddressManager.getInstance().getCellAddress(userCell.getCoordinate(), bhE_TransactionAction.MAKE_REQUEST);
+				bhCellAddressManager addressManager = bhU_Singletons.get(bhCellAddressManager.class);
+				addressManager.getCellAddress(userCell.getCoordinate(), bhE_TransactionAction.MAKE_REQUEST);
 			}
 			else
 			{
@@ -220,7 +216,7 @@ public class bhUserManager implements bhI_TransactionResponseHandler, bhClientAc
 			}
 			else
 			{
-				if( m_authenticatedInBatch || bhClientAccountManager.getInstance().isSignedIn() )
+				if( m_authenticatedInBatch || m_accountManager.isSignedIn() )
 				{
 					m_listener.onGetUserFailed();
 					

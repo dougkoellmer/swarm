@@ -24,6 +24,7 @@ import b33hive.shared.json.bhJsonHelper;
 import b33hive.shared.structs.bhCellAddressMapping;
 import b33hive.shared.structs.bhGridCoordinate;
 import b33hive.shared.structs.bhPoint;
+import b33hive.shared.utils.bhU_Singletons;
 
 
 /**
@@ -146,7 +147,8 @@ public class bhServerUser extends bhA_User implements bhI_Blob
 	@Override
 	public void writeJson(bhI_JsonObject json)
 	{
-		bhI_JsonArray ownedCoordinates = bhA_JsonFactory.getInstance().createJsonArray();
+		bhA_JsonFactory jsonFactory = bhU_Singletons.get(bhA_JsonFactory.class);
+		bhI_JsonArray ownedCoordinates = jsonFactory.createJsonArray();
 		for( int i = 0; i < m_ownedCells.size(); i++ )
 		{
 			bhServerCellAddressMapping mapping = m_ownedCells.get(i);
