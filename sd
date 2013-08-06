@@ -1,0 +1,1353 @@
+diff --git a/src/b33hive/client/ui/bhUIController.java b/src/b33hive/client/ui/bhUIController.java
+deleted file mode 100644
+index f58c795..0000000
+--- a/src/b33hive/client/ui/bhUIController.java
++++ /dev/null
+@@ -1,103 +0,0 @@
+-package b33hive.client.ui;
+-
+-import java.util.ArrayList;
+-
+-import b33hive.client.input.bhMouse;
+-import b33hive.client.navigation.bhMasterNavigator;
+-import b33hive.client.navigation.bhMouseNavigator;
+-import b33hive.client.states.StateContainer_Base;
+-import b33hive.client.states.StateMachine_Base;
+-import b33hive.client.ui.cell.bhVisualCellContainer;
+-import b33hive.client.ui.cell.bhVisualCellFocuser;
+-import b33hive.client.ui.cell.bhVisualCellHighlight;
+-import b33hive.client.ui.cell.bhVisualCellHud;
+-import b33hive.client.ui.cell.bhVisualCellManager;
+-import b33hive.client.ui.dialog.bhDialogManager;
+-import b33hive.client.ui.tooltip.bhToolTipManager;
+-import b33hive.shared.statemachine.bhA_Action;
+-import b33hive.shared.statemachine.bhE_StateEventType;
+-import b33hive.shared.statemachine.bhI_StateEventListener;
+-import b33hive.shared.statemachine.bhStateEvent;
+-import com.google.gwt.user.client.ui.Panel;
+-import com.google.gwt.user.client.ui.RootLayoutPanel;
+-import com.google.gwt.user.client.ui.RootPanel;
+-
+-
+-
+-/**
+- * ...
+- * @author 
+- */
+-public class bhUIController extends Object implements bhI_StateEventListener
+-{
+-	private static final bhUIController s_instance = new bhUIController();
+-	
+-	private final ArrayList<bhI_UIElement> m_listeners = new ArrayList<bhI_UIElement>();
+-	
+-	private static void startUpInitialUI()
+-	{
+-		s_instance.m_listeners.add(new bhDialogManager(RootPanel.get()));
+-		s_instance.m_listeners.add(new bhInitialSyncScreen());
+-	}
+-	
+-	private static void shutDownInitialUI()
+-	{
+-		s_instance.m_listeners.remove(s_instance.m_listeners.size()-1);
+-	}
+-	
+-	private static void startUpCoreUI()
+-	{
+-		bhSplitPanel splitPanel = bhSplitPanel.getInstance();
+-		bhVisualCellContainer cellContainer = splitPanel.getCellContainer();
+-		
+-		bhMouse mouse = new bhMouse(cellContainer.getMouseEnabledLayer());
+-		
+-		// TODO: Clean this up so that all this crap doesn't add itself to parent containers in constructors.
+-		s_instance.m_listeners.add(new bhMasterNavigator(mouse));
+-		s_instance.m_listeners.add(new bhVisualCellManager(cellContainer.getCellContainerLayer()));
+-		s_instance.m_listeners.add(splitPanel);
+-		s_instance.m_listeners.add(new bhVisualCellHighlight(cellContainer.getCellContainerLayer()));
+-		s_instance.m_listeners.add(new bhVisualCellFocuser(cellContainer.getCellContainerLayer()));
+-		s_instance.m_listeners.add(new bhVisualCellHud((Panel)cellContainer));
+-		
+-		RootLayoutPanel.get().add(splitPanel);
+-	}
+-	
+-	public static bhUIController getInstance()
+-	{
+-		return s_instance;
+-	}
+-	
+-	public bhUIController()
+-	{
+-	}
+-	
+-	public void onStateEvent(bhStateEvent event)
+-	{
+-		if ( event.getType() == bhE_StateEventType.DID_ENTER )
+-		{
+-			if ( event.getState() instanceof StateMachine_Base )
+-			{
+-				startUpInitialUI();
+-			}
+-			else if ( event.getState() instanceof StateContainer_Base )
+-			{
+-				shutDownInitialUI();
+-				
+-				startUpCoreUI();
+-			}
+-		}
+-		else if( event.getType() == bhE_StateEventType.DID_UPDATE )
+-		{
+-			if( event.getState() instanceof StateMachine_Base )
+-			{
+-				bhToolTipManager.getInstance().update(event.getState().getLastTimeStep());
+-			}
+-		}
+-		
+-		for ( int i = 0; i < m_listeners.size(); i++ )
+-		{
+-			m_listeners.get(i).onStateEvent(event);
+-		}
+-	}
+-}
+\ No newline at end of file
+diff --git a/src/b33hive/client/ui/tabs/code/bhHtmlSandbox.java b/src/b33hive/client/ui/tabs/code/bhHtmlSandbox.java
+deleted file mode 100644
+index 1b95393..0000000
+--- a/src/b33hive/client/ui/tabs/code/bhHtmlSandbox.java
++++ /dev/null
+@@ -1,62 +0,0 @@
+-package b33hive.client.ui.tabs.code;
+-
+-import b33hive.shared.debugging.bhU_Debug;
+-import com.google.gwt.user.client.Element;
+-
+-public class bhHtmlSandbox
+-{
+-	public interface I_StartUpCallback
+-	{
+-		void onStartUpComplete(boolean success);
+-	}
+-	
+-	private final bhCajaWrapper m_cajaWrapper;
+-	
+-	private boolean m_isRunning = false;
+-	
+-	public bhHtmlSandbox(I_StartUpCallback callback, String apiNamespace)
+-	{
+-		m_cajaWrapper = new bhCajaWrapper(callback, apiNamespace);
+-	}
+-	
+-	public void insertStaticHtml(Element element, String compiledHtml, String cellNamespace)
+-	{
+-		m_cajaWrapper.insertStaticHtml(element, compiledHtml, cellNamespace);
+-	}
+-	
+-	public void allowScrolling(Element element, boolean yesOrNo)
+-	{
+-		m_cajaWrapper.allowScrolling(element, yesOrNo);
+-	}
+-	
+-	public void start(Element element, String compiledHtml, String compiledJs, String cellNamespace, final bhI_CodeLoadListener listener)
+-	{
+-		if( m_isRunning )
+-		{
+-			bhU_Debug.ASSERT(false, "bhHtmlSandbox::start1");
+-			return;
+-		}
+-		
+-		m_cajaWrapper.start(element, compiledHtml, compiledJs, cellNamespace, listener);
+-		
+-		m_isRunning = true;
+-	}
+-	
+-	public boolean isRunning()
+-	{
+-		return m_isRunning;
+-	}
+-	
+-	public void stop()
+-	{
+-		if( !m_isRunning )
+-		{
+-			bhU_Debug.ASSERT(false, "bhHtmlSandbox::stop1");
+-			return;
+-		}
+-		
+-		m_cajaWrapper.stop();
+-		
+-		m_isRunning = false;
+-	}
+-}
+diff --git a/src/b33hive/server/app/bhS_ServerApp.java b/src/b33hive/server/app/bhS_ServerApp.java
+deleted file mode 100644
+index 7fb9dcb..0000000
+--- a/src/b33hive/server/app/bhS_ServerApp.java
++++ /dev/null
+@@ -1,10 +0,0 @@
+-package b33hive.server.app;
+-
+-public class bhS_ServerApp
+-{
+-	public static final int MAX_BLOB_CONCURRENCY_ATTEMPTS = 4;
+-	
+-	public static final int GRID_EXPANSION_DELTA = 8;
+-	
+-	public static final double DEFAULT_STARTING_Z = 128;
+-}
+diff --git a/src/b33hive/server/app/bhServerApp.java b/src/b33hive/server/app/bhServerApp.java
+deleted file mode 100644
+index a984043..0000000
+--- a/src/b33hive/server/app/bhServerApp.java
++++ /dev/null
+@@ -1,176 +0,0 @@
+-package b33hive.server.app;
+-
+-import java.sql.DriverManager;
+-import java.sql.SQLException;
+-import java.util.logging.Level;
+-import java.util.logging.Logger;
+-
+-import b33hive.client.app.bhPlatformInfo;
+-import b33hive.client.transaction.bhClientTransactionManager;
+-import b33hive.server.account.bhAccountDatabase;
+-import b33hive.server.account.bhServerAccountManager;
+-import b33hive.server.code.bhServerCodeCompiler;
+-import b33hive.server.data.blob.bhBlobManagerFactory;
+-import b33hive.server.handlers.*;
+-import b33hive.server.handlers.admin.adminHandler;
+-import b33hive.server.handlers.admin.bhI_HomeCellCreator;
+-import b33hive.server.handlers.admin.clearCell;
+-import b33hive.server.handlers.admin.createGrid;
+-import b33hive.server.handlers.admin.deactivateUserCells;
+-import b33hive.server.handlers.admin.recompileCells;
+-import b33hive.server.handlers.admin.refreshHomeCells;
+-import b33hive.server.handlers.normal.*;
+-import b33hive.server.session.bhSessionManager;
+-import b33hive.server.telemetry.bhTelemetryDatabase;
+-import b33hive.server.thirdparty.json.bhServerJsonFactory;
+-import b33hive.server.transaction.bhE_AdminRequestPath;
+-import b33hive.server.transaction.bhE_DebugRequestPath;
+-import b33hive.server.transaction.bhI_RequestHandler;
+-import b33hive.server.transaction.bhInlineTransactionManager;
+-import b33hive.server.transaction.bhServerTransactionManager;
+-import b33hive.shared.bhE_AppEnvironment;
+-import b33hive.shared.app.bhA_App;
+-import b33hive.shared.debugging.bhI_AssertionDelegate;
+-import b33hive.shared.debugging.bhTelemetryAssert;
+-import b33hive.shared.debugging.bhU_Debug;
+-import b33hive.shared.transaction.bhE_RequestPath;
+-import b33hive.shared.transaction.bhE_TelemetryRequestPath;
+-import b33hive.shared.transaction.bhI_RequestPath;
+-import b33hive.shared.transaction.bhRequestPathManager;
+-import com.google.appengine.api.rdbms.AppEngineDriver;
+-import com.google.gwt.user.client.Window;
+-
+-public final class bhServerApp extends bhA_App
+-{
+-	private static final Logger s_logger = Logger.getLogger(bhServerApp.class.getName());
+-
+-	private bhServerApp()
+-	{
+-		super(bhE_AppEnvironment.SERVER);
+-	}
+-	
+-	public static bhServerApp getInstance()
+-	{
+-		return (bhServerApp) s_instance;
+-	}
+-	
+-	//TODO: Should probably throw an exception type, perhaps custom.
+-	public static synchronized void entryPoint()
+-	{
+-		if( s_instance != null )
+-		{
+-			s_logger.warning("Attempted to start application twice.");
+-			
+-			return;
+-		}
+-		
+-		s_instance = new bhServerApp();
+-		
+-		bhU_Debug.setDelegate(new bhI_AssertionDelegate()
+-		{
+-			@Override
+-			public void doAssert(String message)
+-			{
+-				assert(false);
+-			}
+-		});
+-		
+-		new bhServerJsonFactory(); // DRK > initializes bhA_JsonFactory singleton.
+-		
+-		new bhServerCodeCompiler(); // initializes compiler singleton.
+-		
+-		try
+-		{
+-			DriverManager.registerDriver(new AppEngineDriver());
+-		}
+-		catch (SQLException e1)
+-		{
+-			s_logger.log(Level.SEVERE, "Could not start up sql databases.", e1);
+-		}
+-
+-		bhBlobManagerFactory.startUp();
+-		bhSessionManager.startUp();
+-		bhServerAccountManager.startUp();
+-		bhServerTransactionManager.startUp();
+-		bhTelemetryDatabase.startUp();
+-		bhAccountDatabase.startUp();
+-		
+-		addClientHandlers();
+-		addAdminHandlers();
+-		addTelemetryHandlers();
+-		//addDebugHandlers();
+-		//addDebugPathResponseErrors();
+-		
+-		bhServerTransactionManager.getInstance().addScopeListener(bhBlobManagerFactory.getInstance());
+-		bhServerTransactionManager.getInstance().addScopeListener(bhSessionManager.getInstance());
+-		bhServerTransactionManager.getInstance().addScopeListener(bhAccountDatabase.getInstance());
+-		bhServerTransactionManager.getInstance().addScopeListener(bhTelemetryDatabase.getInstance());
+-	}
+-	
+-	private static void addDebugPathResponseErrors()
+-	{
+-		bhServerTransactionManager manager = bhServerTransactionManager.getInstance();
+-		manager.setDebugResponseError(bhE_RequestPath.syncCode);
+-	}
+-	
+-	private static void addClientHandlers()
+-	{
+-		bhRequestPathManager.getInstance().register(bhE_RequestPath.values());
+-		
+-		bhServerTransactionManager manager = bhServerTransactionManager.getInstance();
+-		
+-		getCode getCodeHandler = new getCode();
+-		
+-		manager.addRequestHandler(getCodeHandler,				bhE_RequestPath.getCode);
+-		manager.addRequestHandler(new syncCode(),				bhE_RequestPath.syncCode);
+-		manager.addRequestHandler(new getCellAddress(),			bhE_RequestPath.getCellAddress);
+-		manager.addRequestHandler(new getCellAddressMapping(),	bhE_RequestPath.getCellAddressMapping);
+-		manager.addRequestHandler(new getUserData(),			bhE_RequestPath.getUserData);
+-		manager.addRequestHandler(new getGridData(),			bhE_RequestPath.getGridData);
+-		manager.addRequestHandler(new signIn(),					bhE_RequestPath.signIn);
+-		manager.addRequestHandler(new signUp(),					bhE_RequestPath.signUp);
+-		manager.addRequestHandler(new signOut(),				bhE_RequestPath.signOut);
+-		manager.addRequestHandler(new getAccountInfo(),			bhE_RequestPath.getAccountInfo);
+-		manager.addRequestHandler(new setNewDesiredPassword(),	bhE_RequestPath.setNewDesiredPassword);
+-		manager.addRequestHandler(new getPasswordChangeToken(),	bhE_RequestPath.getPasswordChangeToken);
+-		manager.addRequestHandler(new getServerVersion(),		bhE_RequestPath.getServerVersion);
+-		
+-		manager.addDeferredHandler(getCodeHandler);
+-	}
+-	
+-	private static void addAdminHandlers(Class<? extends bhI_HomeCellCreator> T_homeCellCreator)
+-	{
+-		bhRequestPathManager.getInstance().register(bhE_AdminRequestPath.values());
+-		
+-		addAdminHandler(new createGrid(T_homeCellCreator),			bhE_AdminRequestPath.createGrid);
+-		addAdminHandler(new deactivateUserCells(),					bhE_AdminRequestPath.deactivateUserCells);
+-		addAdminHandler(new refreshHomeCells(T_homeCellCreator),	bhE_AdminRequestPath.refreshHomeCells);
+-		addAdminHandler(new clearCell(),							bhE_AdminRequestPath.clearCell);
+-		addAdminHandler(new recompileCells(),						bhE_AdminRequestPath.recompileCells);
+-	}
+-	
+-	private static void addAdminHandler(bhI_RequestHandler handler, bhI_RequestPath path)
+-	{
+-		bhServerTransactionManager manager = bhServerTransactionManager.getInstance();
+-		
+-		manager.addRequestHandler(new adminHandler(handler), path);
+-	}
+-	
+-	private static void addTelemetryHandlers()
+-	{
+-		bhRequestPathManager.getInstance().register(bhE_TelemetryRequestPath.values());
+-		
+-		bhServerTransactionManager manager = bhServerTransactionManager.getInstance();
+-		
+-		manager.addRequestHandler(new logAssert(),	bhE_TelemetryRequestPath.logAssert);
+-	}
+-	
+-	private static void addDebugHandlers()
+-	{
+-		bhRequestPathManager.getInstance().register(bhE_DebugRequestPath.values());
+-		
+-		bhServerTransactionManager manager = bhServerTransactionManager.getInstance();
+-		
+-		manager.addRequestHandler(new sessionQueryTest(),		bhE_DebugRequestPath.sessionQueryTest);
+-	}
+-}
+diff --git a/src/b33hive/server/app/bhServletContextListener.java b/src/b33hive/server/app/bhServletContextListener.java
+deleted file mode 100644
+index 70c7775..0000000
+--- a/src/b33hive/server/app/bhServletContextListener.java
++++ /dev/null
+@@ -1,29 +0,0 @@
+-package b33hive.server.app;
+-
+-import javax.servlet.ServletContext;
+-import javax.servlet.ServletContextEvent;
+-import javax.servlet.ServletContextListener;
+-
+-public class bhServletContextListener implements ServletContextListener
+-{
+-	ServletContext m_context;
+-	
+-	public bhServletContextListener()
+-	{
+-		
+-	}
+-	
+-	@Override
+-	public void contextInitialized(ServletContextEvent contextEvent)
+-	{
+-		m_context = contextEvent.getServletContext();
+-		
+-		bhServerApp.entryPoint();
+-	}
+-	
+-	@Override
+-	public void contextDestroyed(ServletContextEvent contextEvent)
+-	{
+-		m_context = contextEvent.getServletContext();
+-	}
+-}
+\ No newline at end of file
+diff --git a/src/b33hive/server/handlers/blobxn/bhBlobTransaction_AddCellToUser.java b/src/b33hive/server/handlers/blobxn/bhBlobTransaction_AddCellToUser.java
+deleted file mode 100644
+index 9d9ad4e..0000000
+--- a/src/b33hive/server/handlers/blobxn/bhBlobTransaction_AddCellToUser.java
++++ /dev/null
+@@ -1,132 +0,0 @@
+-package b33hive.server.handlers.blobxn;
+-
+-import java.util.ArrayList;
+-import java.util.HashMap;
+-import java.util.Map;
+-import java.util.logging.Level;
+-import java.util.logging.Logger;
+-
+-import b33hive.server.account.bhUserSession;
+-import b33hive.server.app.bhS_ServerApp;
+-import b33hive.server.data.blob.bhA_BlobTransaction;
+-import b33hive.server.data.blob.bhBlobException;
+-import b33hive.server.data.blob.bhBlobManagerFactory;
+-import b33hive.server.data.blob.bhE_BlobCacheLevel;
+-import b33hive.server.data.blob.bhI_Blob;
+-import b33hive.server.data.blob.bhI_BlobKeySource;
+-import b33hive.server.data.blob.bhI_BlobManager;
+-import b33hive.server.entities.bhS_BlobKeyPrefix;
+-import b33hive.server.entities.bhServerCell;
+-import b33hive.server.entities.bhServerGrid;
+-import b33hive.server.entities.bhServerUser;
+-import b33hive.server.structs.bhServerCellAddress;
+-import b33hive.server.structs.bhServerCellAddressMapping;
+-import b33hive.server.structs.bhServerCodePrivileges;
+-import b33hive.server.structs.bhServerGridCoordinate;
+-import b33hive.shared.structs.bhCellAddress;
+-import b33hive.shared.structs.bhCellAddressMapping;
+-import b33hive.shared.structs.bhCodePrivileges;
+-import b33hive.shared.structs.bhE_CellAddressParseError;
+-import b33hive.shared.structs.bhGridCoordinate;
+-
+-public class bhBlobTransaction_AddCellToUser extends bhA_BlobTransaction
+-{
+-private static final Logger s_logger = Logger.getLogger(bhBlobTransaction_AddCellToUser.class.getName());
+-	
+-	private final bhUserSession	m_session;
+-	
+-	private bhServerUser m_user = null;
+-	
+-	private final bhBlobTransaction_CreateCell m_createCellTransaction;
+-	
+-	public bhBlobTransaction_AddCellToUser(bhUserSession session, bhServerCellAddress cellAddress, bhGridCoordinate preference, bhServerCodePrivileges privileges)
+-	{
+-		m_createCellTransaction = new bhBlobTransaction_CreateCell(cellAddress, preference, privileges);
+-		
+-		m_session = session;
+-	}
+-	
+-	public bhBlobTransaction_AddCellToUser(bhUserSession session, bhServerCellAddress cellAddress, bhGridCoordinate preference)
+-	{
+-		m_createCellTransaction = new bhBlobTransaction_CreateCell(cellAddress, preference, null);
+-		
+-		m_session = session;
+-	}
+-	
+-	bhBlobTransaction_AddCellToUser(bhUserSession session, bhServerCellAddress cellAddress)
+-	{
+-		m_createCellTransaction = new bhBlobTransaction_CreateCell(cellAddress, null, null);
+-		
+-		m_session = session;
+-	}
+-
+-	@Override
+-	protected void performOperations() throws bhBlobException
+-	{
+-		m_user = null;
+-		
+-		//--- DRK > Sanity check.
+-		bhServerCellAddress address = m_createCellTransaction.getAddress();
+-		String usernamePart = address.getPart(bhCellAddress.E_Part.USERNAME);
+-		if( usernamePart == null || !m_session.getUsername().equals(usernamePart))
+-		{
+-			throw new bhBlobException("Username doesn't match username part of cell address..." + m_session.getUsername() + ", " + usernamePart);
+-		}
+-		
+-		//--- DRK > Another sanity check.
+-		// NOTE: Allowing user part only for now.
+-		/*String cellPart = address.getPart(bhCellAddress.E_Part.CELL);
+-		if( cellPart == null )
+-		{
+-			throw new bhBlobException("Address doesn't have a cell part.");
+-		}*/
+-		
+-		if( address.getParseError() != bhE_CellAddressParseError.NO_ERROR )
+-		{
+-			throw new bhBlobException("Bad address: " + address.getRawAddress());
+-		}
+-		
+-		//--- DRK > Do a get that we'll use to perform some sanity checks.
+-		bhI_BlobManager blobManager = bhBlobManagerFactory.getInstance().create(bhE_BlobCacheLevel.PERSISTENT);
+-		HashMap<bhI_BlobKeySource, Class<? extends bhI_Blob>> existanceQuery = new HashMap<bhI_BlobKeySource, Class<? extends bhI_Blob>>();
+-		existanceQuery.put(m_session, bhServerUser.class);
+-		existanceQuery.put(address, bhServerCellAddressMapping.class);
+-		Map<bhI_BlobKeySource, bhI_Blob> result = blobManager.getBlobs(existanceQuery);
+-		
+-		//--- DRK > Make sure user exists.
+-		if( result == null )
+-		{
+-			throw new bhBlobException("User came up null.");
+-		}
+-		m_user = (bhServerUser) result.get(m_session);
+-		if( m_user == null )
+-		{
+-			throw new bhBlobException("User came up null.");
+-		}
+-		
+-		//--- DRK > Make sure address isn't already registered.
+-		bhServerCellAddressMapping mappingResult = (bhServerCellAddressMapping) result.get(address);
+-		if( mappingResult != null )
+-		{
+-			throw new bhBlobException("Address already taken.");
+-		}
+-		
+-		m_createCellTransaction.performOperations();
+-		
+-		//--- DRK > Add coordinate and pop user back into database.
+-		bhServerCellAddressMapping mapping = m_createCellTransaction.getMapping();
+-		m_user.addOwnedCell(mapping);
+-		blobManager.putBlob(m_session, m_user);
+-	}
+-	
+-	public bhServerUser getUser()
+-	{
+-		return m_user;
+-	}
+-
+-	@Override
+-	protected void onSuccess()
+-	{
+-		m_createCellTransaction.onSuccess();
+-	}
+-}
+diff --git a/src/b33hive/server/handlers/blobxn/bhBlobTransaction_ClearCell.java b/src/b33hive/server/handlers/blobxn/bhBlobTransaction_ClearCell.java
+deleted file mode 100644
+index a6796ae..0000000
+--- a/src/b33hive/server/handlers/blobxn/bhBlobTransaction_ClearCell.java
++++ /dev/null
+@@ -1,78 +0,0 @@
+-package b33hive.server.handlers.blobxn;
+-
+-import java.util.logging.Level;
+-import java.util.logging.Logger;
+-
+-import b33hive.server.app.bhS_ServerApp;
+-import b33hive.server.data.blob.bhA_BlobTransaction;
+-import b33hive.server.data.blob.bhBlobException;
+-import b33hive.server.data.blob.bhBlobManagerFactory;
+-import b33hive.server.data.blob.bhE_BlobCacheLevel;
+-import b33hive.server.data.blob.bhI_BlobManager;
+-import b33hive.server.entities.bhE_GridType;
+-import b33hive.server.entities.bhServerCell;
+-import b33hive.server.entities.bhServerGrid;
+-import b33hive.server.structs.bhServerCellAddress;
+-import b33hive.server.structs.bhServerCellAddressMapping;
+-import b33hive.server.structs.bhServerGridCoordinate;
+-import b33hive.shared.entities.bhE_CodeType;
+-import b33hive.shared.structs.bhCellAddress;
+-
+-public class bhBlobTransaction_ClearCell extends bhA_BlobTransaction
+-{
+-	private static final Logger s_logger = Logger.getLogger(bhBlobTransaction_ClearCell.class.getName());
+-	
+-	private final bhServerCellAddress m_address;
+-	
+-	public bhBlobTransaction_ClearCell(bhServerCellAddress address)
+-	{
+-		m_address = address;
+-	}
+-	
+-	@Override
+-	protected void performOperations() throws bhBlobException
+-	{
+-		bhI_BlobManager blobManager = bhBlobManagerFactory.getInstance().create(bhE_BlobCacheLevel.MEMCACHE, bhE_BlobCacheLevel.PERSISTENT);
+-		
+-		bhServerGrid activeGrid = blobManager.getBlob(bhE_GridType.ACTIVE, bhServerGrid.class);
+-		
+-		if( activeGrid == null || activeGrid.getSize() == 0 )
+-		{
+-			throw new bhBlobException("Grid was not supposed to be null or empty.");
+-		}
+-		
+-		bhServerCellAddressMapping mapping = null;
+-		
+-		if( m_address != null && m_address.isValid() )
+-		{
+-			mapping = blobManager.getBlob(m_address, bhServerCellAddressMapping.class);
+-			
+-			if( mapping == null )
+-			{
+-				throw new bhBlobException("Could not find mapping for the address: " + m_address.getRawAddress());
+-			}
+-		}
+-		else
+-		{
+-			throw new bhBlobException("Null or invalid address given.");
+-		}
+-		
+-		bhServerCell cell = blobManager.getBlob(mapping, bhServerCell.class);
+-		
+-		if( cell == null )
+-		{
+-			throw new bhBlobException("Could not find cell at mapping: " + mapping);
+-		}
+-		
+-		cell.setCode(bhE_CodeType.SOURCE, null);
+-		cell.setCode(bhE_CodeType.SPLASH, null);
+-		cell.setCode(bhE_CodeType.COMPILED, null);
+-		
+-		blobManager.putBlob(mapping, cell);
+-	}
+-
+-	@Override
+-	protected void onSuccess()
+-	{
+-	}
+-}
+diff --git a/src/b33hive/server/handlers/blobxn/bhBlobTransaction_CreateCell.java b/src/b33hive/server/handlers/blobxn/bhBlobTransaction_CreateCell.java
+deleted file mode 100644
+index 19aa348..0000000
+--- a/src/b33hive/server/handlers/blobxn/bhBlobTransaction_CreateCell.java
++++ /dev/null
+@@ -1,172 +0,0 @@
+-package b33hive.server.handlers.blobxn;
+-
+-import java.util.HashMap;
+-import java.util.Map;
+-import java.util.logging.Level;
+-import java.util.logging.Logger;
+-
+-import b33hive.server.account.bhUserSession;
+-import b33hive.server.app.bhS_ServerApp;
+-import b33hive.server.data.blob.bhA_BlobTransaction;
+-import b33hive.server.data.blob.bhBlobException;
+-import b33hive.server.data.blob.bhBlobManagerFactory;
+-import b33hive.server.data.blob.bhE_BlobCacheLevel;
+-import b33hive.server.data.blob.bhI_Blob;
+-import b33hive.server.data.blob.bhI_BlobKeySource;
+-import b33hive.server.data.blob.bhI_BlobManager;
+-import b33hive.server.entities.bhE_GridType;
+-import b33hive.server.entities.bhServerCell;
+-import b33hive.server.entities.bhServerGrid;
+-import b33hive.server.entities.bhServerUser;
+-import b33hive.server.structs.bhServerCellAddress;
+-import b33hive.server.structs.bhServerCellAddressMapping;
+-import b33hive.server.structs.bhServerCodePrivileges;
+-import b33hive.server.structs.bhServerGridCoordinate;
+-import b33hive.shared.structs.bhCodePrivileges;
+-import b33hive.shared.structs.bhE_CellAddressParseError;
+-import b33hive.shared.structs.bhGridCoordinate;
+-
+-public class bhBlobTransaction_CreateCell extends bhA_BlobTransaction
+-{
+-	private static final Logger s_logger = Logger.getLogger(bhBlobTransaction_CreateCell.class.getName());
+-	
+-	private static final int INVALID_GRID_SIZE = -1;
+-	
+-	private int m_newGridSize = INVALID_GRID_SIZE;
+-	private bhServerGrid m_grid = null;
+-	private bhServerCellAddressMapping m_mapping = null;
+-	private final bhServerCellAddress m_address;
+-	private final bhGridCoordinate m_preference;
+-	private final bhServerCodePrivileges m_privileges;
+-	
+-	bhBlobTransaction_CreateCell(bhServerCellAddress cellAddress, bhGridCoordinate preference, bhServerCodePrivileges privileges)
+-	{
+-		//--- DRK > debug code
+-		//preference = preference != null ? preference : new bhServerGridCoordinate(0, 4);
+-		
+-		m_privileges = privileges; 
+-		m_address = cellAddress;
+-		m_preference = preference;
+-	}
+-	
+-	public boolean didGridGrow()
+-	{
+-		return m_newGridSize != INVALID_GRID_SIZE;
+-	}
+-	
+-	public int getNewGridSize()
+-	{
+-		return m_newGridSize;
+-	}
+-	
+-	public bhServerGrid getGrid()
+-	{
+-		return m_grid;
+-	}
+-	
+-	protected void clear()
+-	{
+-		m_newGridSize = INVALID_GRID_SIZE;
+-		m_grid = null;
+-		m_mapping = null;
+-	}
+-	
+-	protected bhServerCellAddress getAddress()
+-	{
+-		return m_address;
+-	}
+-	
+-	protected bhServerCellAddressMapping getMapping()
+-	{
+-		return m_mapping;
+-	}
+-
+-	@Override
+-	protected void performOperations() throws bhBlobException
+-	{
+-		if( m_address.getParseError() != bhE_CellAddressParseError.NO_ERROR )
+-		{
+-			throw new bhBlobException("Address has a parse error! " + m_address);
+-		}
+-		
+-		this.clear();
+-		
+-		bhI_BlobManager blobManager = bhBlobManagerFactory.getInstance().create(bhE_BlobCacheLevel.PERSISTENT);
+-		
+-		//--- DRK > Make sure grid exists.
+-		m_grid = blobManager.getBlob(bhE_GridType.ACTIVE, bhServerGrid.class);
+-		if( m_grid == null )
+-		{
+-			throw new bhBlobException("Grid should have been created before any user or cell is created.");
+-		}
+-		
+-		//--- DRK > Try to find a free coordinate.
+-		int oldSize = m_grid.getSize();
+-		bhServerGridCoordinate freeCoord = null;
+-		try
+-		{
+-			freeCoord = m_grid.findFreeCoordinate(bhS_ServerApp.GRID_EXPANSION_DELTA, m_preference);
+-		}
+-		catch(bhServerGrid.GridException e)
+-		{
+-			s_logger.log(Level.SEVERE, "", e);
+-			
+-			throw new bhBlobException(e);
+-		}
+-		
+-		//--- DRK > Put the grid back into the database and see if the grid has grown.
+-		blobManager.putBlob(bhE_GridType.ACTIVE, m_grid);
+-		int newSize = m_grid.getSize();
+-		if( newSize != oldSize )
+-		{
+-			m_newGridSize = newSize;
+-		}
+-		
+-		//--- DRK > Add cell address to the database.
+-		m_mapping = new bhServerCellAddressMapping(bhE_GridType.ACTIVE, freeCoord);
+-		blobManager.putBlob(m_address, m_mapping);
+-		
+-		//--- DRK > Add an empty cell to the database.
+-		bhServerCell cell = m_privileges != null ? new bhServerCell(m_address, m_privileges) : new bhServerCell(m_address);
+-		blobManager.putBlob(m_mapping, cell);
+-		
+-		//TODO: All of the above "puts" might be doable in a batch...google docs say no because of different blob types, but I suspect the docs are out of date.
+-	}
+-	
+-	@Override
+-	protected void onSuccess()
+-	{
+-		bhI_BlobManager blobManager = bhBlobManagerFactory.getInstance().create(bhE_BlobCacheLevel.MEMCACHE);
+-		
+-		//--- DRK > We only update the grid if it grew...we only care that a grid of appropriate size is cached,
+-		//---		not a grid with accurate cell ownerships.  We only need that when we create a new user or add
+-		//---		a cell to an existing user's account, and in that case we bypass the cache to ensure a fresh copy (see above).
+-		if( this.didGridGrow() )
+-		{
+-			Map<bhI_BlobKeySource, bhI_Blob> values = new HashMap<bhI_BlobKeySource, bhI_Blob>();
+-			
+-			values.put(m_address, m_mapping);
+-			values.put(bhE_GridType.ACTIVE, m_grid);
+-			
+-			try
+-			{
+-				blobManager.putBlobsAsync(values);
+-			}
+-			catch(bhBlobException e)
+-			{
+-				s_logger.log(Level.WARNING, "Could not cache batch data from create user blob transaction.", e);
+-			}
+-		}
+-		else
+-		{
+-			try
+-			{
+-				blobManager.putBlobAsync(m_address, m_mapping);
+-			}
+-			catch(bhBlobException e)
+-			{
+-				s_logger.log(Level.WARNING, "Could not cache address mapping from create user blob transaction.", e);
+-			}
+-		}
+-	}
+-}
+diff --git a/src/b33hive/server/handlers/blobxn/bhBlobTransaction_CreateUser.java b/src/b33hive/server/handlers/blobxn/bhBlobTransaction_CreateUser.java
+deleted file mode 100644
+index 70b7be9..0000000
+--- a/src/b33hive/server/handlers/blobxn/bhBlobTransaction_CreateUser.java
++++ /dev/null
+@@ -1,98 +0,0 @@
+-package b33hive.server.handlers.blobxn;
+-
+-import java.util.ArrayList;
+-import java.util.HashMap;
+-import java.util.Map;
+-import java.util.logging.Level;
+-import java.util.logging.Logger;
+-
+-import b33hive.server.account.bhUserSession;
+-import b33hive.server.app.bhS_ServerApp;
+-import b33hive.server.data.blob.bhA_BlobTransaction;
+-import b33hive.server.data.blob.bhBlobException;
+-import b33hive.server.data.blob.bhBlobManagerFactory;
+-import b33hive.server.data.blob.bhE_BlobCacheLevel;
+-import b33hive.server.data.blob.bhI_Blob;
+-import b33hive.server.data.blob.bhI_BlobKeySource;
+-import b33hive.server.data.blob.bhI_BlobManager;
+-import b33hive.server.entities.bhS_BlobKeyPrefix;
+-import b33hive.server.entities.bhServerCell;
+-import b33hive.server.entities.bhServerGrid;
+-import b33hive.server.entities.bhServerUser;
+-import b33hive.server.structs.bhServerCellAddress;
+-import b33hive.server.structs.bhServerCellAddressMapping;
+-import b33hive.server.structs.bhServerGridCoordinate;
+-import b33hive.shared.structs.bhCellAddress;
+-import b33hive.shared.structs.bhCellAddressMapping;
+-
+-public class bhBlobTransaction_CreateUser extends bhA_BlobTransaction
+-{
+-	private static final Logger s_logger = Logger.getLogger(bhBlobTransaction_CreateUser.class.getName());
+-	
+-	private final bhUserSession	m_session;
+-	
+-	private bhServerUser m_user = null;
+-	
+-	private final bhBlobTransaction_CreateCell m_createCellTransaction;
+-	
+-	public bhBlobTransaction_CreateUser(bhUserSession session, boolean createHomeCell)
+-	{
+-		m_createCellTransaction = createHomeCell ? new bhBlobTransaction_CreateCell(new bhServerCellAddress(session.getUsername()), null, null) : null;
+-		
+-		m_session = session;
+-	}
+-	
+-	@Override
+-	protected void performOperations() throws bhBlobException
+-	{
+-		m_user = null;
+-		
+-		if( m_createCellTransaction != null )
+-		{
+-			m_createCellTransaction.performOperations();
+-		}
+-		
+-		bhI_BlobManager blobManager = bhBlobManagerFactory.getInstance().create(bhE_BlobCacheLevel.PERSISTENT);
+-		
+-		//--- DRK > Add a user to the database.
+-		m_user = new bhServerUser();
+-		
+-		if( m_createCellTransaction != null )
+-		{
+-			bhServerCellAddressMapping mapping = m_createCellTransaction.getMapping();
+-			m_user.addOwnedCell(mapping);
+-		}
+-		
+-		blobManager.putBlob(m_session, m_user);
+-	}
+-	
+-	public bhServerUser getUser()
+-	{
+-		return m_user;
+-	}
+-
+-	@Override
+-	protected void onSuccess()
+-	{
+-		if( m_createCellTransaction != null )
+-		{
+-			m_createCellTransaction.onSuccess();
+-		}
+-	}
+-	
+-	
+-	public boolean didGridGrow()
+-	{
+-		return m_createCellTransaction.didGridGrow();
+-	}
+-	
+-	public int getNewGridSize()
+-	{
+-		return m_createCellTransaction.getNewGridSize();
+-	}
+-	
+-	public bhServerGrid getGrid()
+-	{
+-		return m_createCellTransaction.getGrid();
+-	}
+-}
+diff --git a/src/b33hive/server/handlers/blobxn/bhBlobTransaction_DeactivateCell.java b/src/b33hive/server/handlers/blobxn/bhBlobTransaction_DeactivateCell.java
+deleted file mode 100644
+index 31599b8..0000000
+--- a/src/b33hive/server/handlers/blobxn/bhBlobTransaction_DeactivateCell.java
++++ /dev/null
+@@ -1,140 +0,0 @@
+-package b33hive.server.handlers.blobxn;
+-
+-import java.util.logging.Level;
+-import java.util.logging.Logger;
+-
+-import b33hive.server.app.bhS_ServerApp;
+-import b33hive.server.data.blob.bhA_BlobTransaction;
+-import b33hive.server.data.blob.bhBlobException;
+-import b33hive.server.data.blob.bhBlobManagerFactory;
+-import b33hive.server.data.blob.bhE_BlobCacheLevel;
+-import b33hive.server.data.blob.bhI_BlobManager;
+-import b33hive.server.entities.bhE_GridType;
+-import b33hive.server.entities.bhServerCell;
+-import b33hive.server.entities.bhServerGrid;
+-import b33hive.server.structs.bhServerCellAddress;
+-import b33hive.server.structs.bhServerCellAddressMapping;
+-import b33hive.server.structs.bhServerGridCoordinate;
+-import b33hive.shared.structs.bhCellAddress;
+-
+-public class bhBlobTransaction_DeactivateCell extends bhA_BlobTransaction
+-{
+-	private static final Logger s_logger = Logger.getLogger(bhBlobTransaction_DeactivateCell.class.getName());
+-	
+-	private final bhServerCellAddress m_address;
+-	private final bhServerCellAddressMapping m_mapping;
+-	
+-	private bhServerCellAddressMapping m_newMapping;
+-	
+-	public bhBlobTransaction_DeactivateCell(bhServerCellAddress address)
+-	{
+-		m_address = address;
+-		m_mapping = null;
+-	}
+-	
+-	public bhBlobTransaction_DeactivateCell(bhServerCellAddressMapping mapping)
+-	{
+-		m_address = null;
+-		m_mapping = mapping;
+-	}
+-	
+-	public bhServerCellAddressMapping getNewMapping()
+-	{
+-		return m_newMapping;
+-	}
+-	
+-	@Override
+-	protected void performOperations() throws bhBlobException
+-	{
+-		m_newMapping = null;
+-		
+-		bhI_BlobManager blobManager = bhBlobManagerFactory.getInstance().create(bhE_BlobCacheLevel.MEMCACHE, bhE_BlobCacheLevel.PERSISTENT);
+-		
+-		bhServerGrid activeGrid = blobManager.getBlob(bhE_GridType.ACTIVE, bhServerGrid.class);
+-		
+-		if( activeGrid == null || activeGrid.getSize() == 0 )
+-		{
+-			throw new bhBlobException("Grid was not supposed to be null or empty.");
+-		}
+-		
+-		bhServerCellAddress addressToDelete = null;
+-		bhServerCellAddressMapping mappingToDelete = null;
+-		
+-		if( m_address != null )
+-		{
+-			addressToDelete = m_address;
+-			mappingToDelete = blobManager.getBlob(addressToDelete, bhServerCellAddressMapping.class);
+-			
+-			if( mappingToDelete == null )
+-			{
+-				throw new bhBlobException("Could not find mapping for the address: " + addressToDelete.getRawAddress());
+-			}
+-		}
+-		else
+-		{
+-			mappingToDelete = m_mapping;
+-		}
+-		
+-		bhServerCell cell = blobManager.getBlob(mappingToDelete, bhServerCell.class);
+-		
+-		if( cell == null )
+-		{
+-			throw new bhBlobException("Could not find cell at mapping: " + mappingToDelete);
+-		}
+-		
+-		if( addressToDelete == null )
+-		{
+-			addressToDelete = cell.getAddress();
+-		}
+-		else
+-		{
+-			if( !addressToDelete.isEqualTo(cell.getAddress()) )
+-			{
+-				throw new bhBlobException("Address provided and address found in cell didn't match...something's really messed up.");
+-			}
+-		}
+-		
+-		blobManager.deleteBlob(addressToDelete, bhServerCellAddressMapping.class);
+-		blobManager.deleteBlob(mappingToDelete, bhServerCell.class);
+-		
+-		activeGrid.markCoordinateAvailable(mappingToDelete.getCoordinate());
+-		
+-		blobManager.putBlob(bhE_GridType.ACTIVE, activeGrid);
+-		
+-		
+-		/*blobManager = bhBlobManagerFactory.getInstance().create(bhE_BlobCacheLevel.PERSISTENT);
+-		
+-		//--- DRK > Make sure inactive grid exists.
+-		bhServerGrid inactiveGrid = blobManager.getBlob(bhE_GridType.INACTIVE, bhServerGrid.class);
+-		if( inactiveGrid == null )
+-		{
+-			throw new bhBlobException("Inactive grid should have been created before any user or cell is created.");
+-		}
+-		
+-		//--- DRK > Try to find a free coordinate.
+-		int oldSize = inactiveGrid.getSize();
+-		bhServerGridCoordinate freeCoord = null;
+-		try
+-		{
+-			freeCoord = inactiveGrid.findFreeCoordinate(bhS_ServerApp.GRID_EXPANSION_DELTA, null);
+-		}
+-		catch(bhServerGrid.GridException e)
+-		{
+-			s_logger.log(Level.SEVERE, "", e);
+-			
+-			throw new bhBlobException(e);
+-		}
+-		
+-		//--- DRK > Put the grid back into the database.
+-		blobManager.putBlob(bhE_GridType.INACTIVE, inactiveGrid);
+-		
+-		//--- DRK > Create the inactive mapping and dump into db.
+-		m_newMapping = new bhServerCellAddressMapping(bhE_GridType.INACTIVE, freeCoord);
+-		blobManager.putBlob(m_newMapping, cell);*/
+-	}
+-
+-	@Override
+-	protected void onSuccess()
+-	{
+-	}
+-}
+diff --git a/src/b33hive/server/handlers/blobxn/bhBlobTransaction_DeactivateUserCells.java b/src/b33hive/server/handlers/blobxn/bhBlobTransaction_DeactivateUserCells.java
+deleted file mode 100644
+index 068a7c7..0000000
+--- a/src/b33hive/server/handlers/blobxn/bhBlobTransaction_DeactivateUserCells.java
++++ /dev/null
+@@ -1,86 +0,0 @@
+-package b33hive.server.handlers.blobxn;
+-
+-import java.util.ArrayList;
+-import java.util.HashMap;
+-import java.util.Iterator;
+-import java.util.Map;
+-import java.util.logging.Level;
+-import java.util.logging.Logger;
+-
+-import b33hive.server.account.bhUserSession;
+-import b33hive.server.app.bhS_ServerApp;
+-import b33hive.server.data.blob.bhA_BlobTransaction;
+-import b33hive.server.data.blob.bhBlobException;
+-import b33hive.server.data.blob.bhBlobManagerFactory;
+-import b33hive.server.data.blob.bhE_BlobCacheLevel;
+-import b33hive.server.data.blob.bhE_BlobTransactionType;
+-import b33hive.server.data.blob.bhI_Blob;
+-import b33hive.server.data.blob.bhI_BlobKeySource;
+-import b33hive.server.data.blob.bhI_BlobManager;
+-import b33hive.server.entities.bhE_GridType;
+-import b33hive.server.entities.bhS_BlobKeyPrefix;
+-import b33hive.server.entities.bhServerCell;
+-import b33hive.server.entities.bhServerGrid;
+-import b33hive.server.entities.bhServerUser;
+-import b33hive.server.structs.bhServerCellAddress;
+-import b33hive.server.structs.bhServerCellAddressMapping;
+-import b33hive.server.structs.bhServerGridCoordinate;
+-import b33hive.shared.structs.bhCellAddress;
+-import b33hive.shared.structs.bhCellAddressMapping;
+-import b33hive.shared.structs.bhGridCoordinate;
+-
+-public class bhBlobTransaction_DeactivateUserCells extends bhA_BlobTransaction
+-{
+-	private static final Logger s_logger = Logger.getLogger(bhBlobTransaction_DeactivateUserCells.class.getName());
+-	
+-	private final bhUserSession	m_session;
+-	
+-	public bhBlobTransaction_DeactivateUserCells(bhUserSession session)
+-	{
+-		m_session = session;
+-	}
+-	
+-	@Override
+-	protected void performOperations() throws bhBlobException
+-	{
+-		bhI_BlobManager blobManager = bhBlobManagerFactory.getInstance().create(bhE_BlobCacheLevel.PERSISTENT);
+-		
+-		bhServerUser user = blobManager.getBlob(m_session, bhServerUser.class);
+-		
+-		if( user == null )
+-		{
+-			throw new bhBlobException("User came up null.");
+-		}
+-
+-		ArrayList<bhServerCellAddressMapping> mappingsForDeactivatedCells = new ArrayList<bhServerCellAddressMapping>();
+-		Iterator<bhServerCellAddressMapping> iterator = user.getOwnedCells();
+-		while( iterator.hasNext() )
+-		{
+-			bhServerCellAddressMapping mapping = iterator.next();
+-			
+-			if( mapping.getGridType() != bhE_GridType.ACTIVE )
+-			{
+-				return;
+-			}
+-			
+-			bhBlobTransaction_DeactivateCell deactivateCellTransaction = new bhBlobTransaction_DeactivateCell(mapping);
+-			deactivateCellTransaction.performOperations();
+-			
+-			//mappingsForDeactivatedCells.add(deactivateCellTransaction.getNewMapping());
+-			
+-			iterator.remove();
+-		}
+-		
+-		for( int i = 0; i < mappingsForDeactivatedCells.size(); i++ )
+-		{
+-			user.addOwnedCell(mappingsForDeactivatedCells.get(i));
+-		}
+-		
+-		blobManager.deleteBlob(m_session, bhServerUser.class);
+-	}
+-
+-	@Override
+-	protected void onSuccess()
+-	{
+-	}
+-}
+diff --git a/src/b33hive/server/handlers/blobxn/bhBlobTransaction_SetCellAddress.java b/src/b33hive/server/handlers/blobxn/bhBlobTransaction_SetCellAddress.java
+deleted file mode 100644
+index 223578c..0000000
+--- a/src/b33hive/server/handlers/blobxn/bhBlobTransaction_SetCellAddress.java
++++ /dev/null
+@@ -1,73 +0,0 @@
+-package b33hive.server.handlers.blobxn;
+-
+-import java.util.logging.Level;
+-import java.util.logging.Logger;
+-
+-import b33hive.server.app.bhS_ServerApp;
+-import b33hive.server.data.blob.bhA_BlobTransaction;
+-import b33hive.server.data.blob.bhBlobException;
+-import b33hive.server.data.blob.bhBlobManagerFactory;
+-import b33hive.server.data.blob.bhE_BlobCacheLevel;
+-import b33hive.server.data.blob.bhI_BlobManager;
+-import b33hive.server.entities.bhE_GridType;
+-import b33hive.server.entities.bhServerCell;
+-import b33hive.server.entities.bhServerGrid;
+-import b33hive.server.structs.bhServerCellAddress;
+-import b33hive.server.structs.bhServerCellAddressMapping;
+-import b33hive.server.structs.bhServerGridCoordinate;
+-import b33hive.shared.entities.bhE_CodeType;
+-import b33hive.shared.structs.bhCellAddress;
+-import b33hive.shared.structs.bhGridCoordinate;
+-
+-public class bhBlobTransaction_SetCellAddress extends bhA_BlobTransaction
+-{
+-	private static final Logger s_logger = Logger.getLogger(bhBlobTransaction_SetCellAddress.class.getName());
+-	
+-	private final bhServerCellAddressMapping m_mapping;
+-	private final bhServerCellAddress m_address;
+-	
+-	public bhBlobTransaction_SetCellAddress(bhServerCellAddressMapping mapping, bhServerCellAddress address)
+-	{
+-		m_mapping = mapping;
+-		m_address = address;
+-	}
+-	
+-	@Override
+-	protected void performOperations() throws bhBlobException
+-	{
+-		bhI_BlobManager blobManager = bhBlobManagerFactory.getInstance().create(bhE_BlobCacheLevel.MEMCACHE, bhE_BlobCacheLevel.PERSISTENT);
+-		
+-		bhServerGrid activeGrid = blobManager.getBlob(bhE_GridType.ACTIVE, bhServerGrid.class);
+-		
+-		if( activeGrid == null || activeGrid.getSize() == 0 )
+-		{
+-			throw new bhBlobException("Grid was not supposed to be null or empty.");
+-		}
+-		
+-		bhServerCell cell;
+-		try
+-		{
+-			cell = blobManager.getBlob(m_mapping, bhServerCell.class);
+-			
+-			if( cell == null )
+-			{
+-				throw new bhBlobException("Expected cell at mapping.");
+-			}
+-		}
+-		catch(bhBlobException e)
+-		{
+-			throw new bhBlobException("Problem confirming cell at mapping.");
+-		}
+-		
+-		blobManager.putBlob(m_address, m_mapping);
+-		
+-		cell.setAddress(m_address);
+-		
+-		blobManager.putBlob(m_mapping, cell);
+-	}
+-
+-	@Override
+-	protected void onSuccess()
+-	{
+-	}
+-}
+diff --git a/src/b33hive/server/handlers/blobxn/bhBlobTransaction_SetCellPrivileges.java b/src/b33hive/server/handlers/blobxn/bhBlobTransaction_SetCellPrivileges.java
+deleted file mode 100644
+index 0cf5aab..0000000
+--- a/src/b33hive/server/handlers/blobxn/bhBlobTransaction_SetCellPrivileges.java
++++ /dev/null
+@@ -1,72 +0,0 @@
+-package b33hive.server.handlers.blobxn;
+-
+-import java.util.logging.Level;
+-import java.util.logging.Logger;
+-
+-import b33hive.server.app.bhS_ServerApp;
+-import b33hive.server.data.blob.bhA_BlobTransaction;
+-import b33hive.server.data.blob.bhBlobException;
+-import b33hive.server.data.blob.bhBlobManagerFactory;
+-import b33hive.server.data.blob.bhE_BlobCacheLevel;
+-import b33hive.server.data.blob.bhI_BlobManager;
+-import b33hive.server.entities.bhE_GridType;
+-import b33hive.server.entities.bhServerCell;
+-import b33hive.server.entities.bhServerGrid;
+-import b33hive.server.structs.bhServerCellAddress;
+-import b33hive.server.structs.bhServerCellAddressMapping;
+-import b33hive.server.structs.bhServerGridCoordinate;
+-import b33hive.shared.entities.bhE_CodeType;
+-import b33hive.shared.structs.bhCellAddress;
+-import b33hive.shared.structs.bhCodePrivileges;
+-import b33hive.shared.structs.bhGridCoordinate;
+-
+-public class bhBlobTransaction_SetCellPrivileges extends bhA_BlobTransaction
+-{
+-	private static final Logger s_logger = Logger.getLogger(bhBlobTransaction_SetCellPrivileges.class.getName());
+-	
+-	private final bhServerCellAddressMapping m_mapping;
+-	private final bhCodePrivileges m_privileges;
+-	
+-	public bhBlobTransaction_SetCellPrivileges(bhServerCellAddressMapping mapping, bhCodePrivileges privileges)
+-	{
+-		m_mapping = mapping;
+-		m_privileges = privileges;
+-	}
+-	
+-	@Override
+-	protected void performOperations() throws bhBlobException
+-	{
+-		bhI_BlobManager blobManager = bhBlobManagerFactory.getInstance().create(bhE_BlobCacheLevel.MEMCACHE, bhE_BlobCacheLevel.PERSISTENT);
+-		
+-		bhServerGrid activeGrid = blobManager.getBlob(bhE_GridType.ACTIVE, bhServerGrid.class);
+-		
+-		if( activeGrid == null || activeGrid.getSize() == 0 )
+-		{
+-			throw new bhBlobException("Grid was not supposed to be null or empty.");
+-		}
+-		
+-		bhServerCell cell;
+-		try
+-		{
+-			cell = blobManager.getBlob(m_mapping, bhServerCell.class);
+-			
+-			if( cell == null )
+-			{
+-				throw new bhBlobException("Expected cell at mapping.");
+-			}
+-		}
+-		catch(bhBlobException e)
+-		{
+-			throw new bhBlobException("Problem confirming cell at mapping.");
+-		}
+-		
+-		cell.getCodePrivileges().copy(m_privileges);
+-		
+-		blobManager.putBlob(m_mapping, cell);
+-	}
+-
+-	@Override
+-	protected void onSuccess()
+-	{
+-	}
+-}
+diff --git a/src/b33hive/server/transaction/bhJsonHelperProvider.java b/src/b33hive/server/transaction/bhJsonHelperProvider.java
+deleted file mode 100644
+index 48c579a..0000000
+--- a/src/b33hive/server/transaction/bhJsonHelperProvider.java
++++ /dev/null
+@@ -1,36 +0,0 @@
+-package b33hive.server.transaction;
+-
+-import b33hive.shared.json.bhJsonHelper;
+-import b33hive.shared.reflection.bhI_Class;
+-
+-public class bhJsonHelperProvider implements bhI_Class<bhJsonHelper>
+-{
+-	private static bhJsonHelperProvider s_instance = null;
+-	private final ThreadLocal<bhJsonHelper> m_threadLocal = new ThreadLocal<bhJsonHelper>();
+-	
+-	static void startUp()
+-	{
+-		s_instance = new bhJsonHelperProvider();
+-	}
+-	
+-	public static bhJsonHelperProvider getInstance()
+-	{
+-		return s_instance;
+-	}
+-	
+-	@Override
+-	public bhJsonHelper newInstance()
+-	{
+-		return m_threadLocal.get();
+-	}
+-	
+-	public void startScope(boolean verbose)
+-	{
+-		m_threadLocal.set(new bhJsonHelper(verbose));
+-	}
+-	
+-	public void endScope()
+-	{
+-		m_threadLocal.remove();
+-	}
+-}

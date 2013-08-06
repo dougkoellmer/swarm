@@ -7,6 +7,7 @@ import javax.servlet.ServletContext;
 
 import b33hive.server.account.bhE_Role;
 import b33hive.server.account.bhUserSession;
+import b33hive.server.account.bh_s;
 import b33hive.server.data.blob.bhBlobException;
 import b33hive.server.data.blob.bhBlobManagerFactory;
 import b33hive.server.data.blob.bhE_BlobCacheLevel;
@@ -38,8 +39,8 @@ public class refreshHomeCells implements bhI_RequestHandler
 	@Override
 	public void handleRequest(bhTransactionContext context, bhTransactionRequest request, bhTransactionResponse response)
 	{
-		bhI_BlobManager blobManager = bhBlobManagerFactory.getInstance().create(bhE_BlobCacheLevel.values());
-		bhUserSession session = bhSessionManager.getInstance().getSession(request, response);
+		bhI_BlobManager blobManager = bh_s.blobMngrFactory.create(bhE_BlobCacheLevel.values());
+		bhUserSession session = bh_s.sessionMngr.getSession(request, response);
 		
 		bhServerUser user = null;
 		try

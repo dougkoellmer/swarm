@@ -2,6 +2,7 @@ package b33hive.client.states;
 
 import java.util.ArrayList;
 
+import b33hive.client.app.bh_c;
 import b33hive.client.entities.bhBufferCell;
 import b33hive.client.entities.bhA_ClientUser;
 import b33hive.client.managers.bhCellAddressManager;
@@ -34,6 +35,7 @@ import b33hive.shared.transaction.bhE_ResponseError;
 import b33hive.shared.transaction.bhE_TelemetryRequestPath;
 import b33hive.shared.transaction.bhTransactionRequest;
 import b33hive.shared.transaction.bhTransactionResponse;
+
 
 /**
  * ...
@@ -265,13 +267,17 @@ public class StateMachine_Base extends bhA_StateMachine implements bhI_Transacti
 	@Override
 	protected void didEnter(bhA_StateConstructor constructor)
 	{
-		bhClientTransactionManager.getInstance().addHandler(this);
+		final bhClientAccountManager accountManager = bh_c.accountMngr;
+		final bhUserManager userManager = bh_c.userMngr;
+		final bhGridManager gridManager = bh_c.gridMngr;
+		final bhClientTransactionManager transactionManager = bh_c.txnMngr;
 		
-		bhClientTransactionManager.getInstance().addBatchListener(m_batchListener);
+		transactionManager.addHandler(this);
+		transactionManager.addBatchListener(m_batchListener);
 		
-		bhClientAccountManager.getInstance().start();
+		accountManager.start();
 		
-		bhUserManager.getInstance().start(new bhUserManager.I_Listener()
+		userManager.start(new bhUserManager.I_Listener()
 		{
 			@Override
 			public void onUserPopulated()
@@ -298,7 +304,7 @@ public class StateMachine_Base extends bhA_StateMachine implements bhI_Transacti
 			}
 		});
 		
-		bhGridManager.getInstance().start(new bhGridManager.I_Listener()
+		gridManager.start(new bhGridManager.I_Listener()
 		{
 			@Override
 			public void onGridResize()
@@ -307,23 +313,28 @@ public class StateMachine_Base extends bhA_StateMachine implements bhI_Transacti
 			}
 		});
 		
-		bhClientAccountManager.getInstance().addDelegate(m_accountManagerDelegate);
+		accountManager.addDelegate(m_accountManagerDelegate);
 	}
 	
 	@Override
 	protected void willExit()
 	{
-		bhClientAccountManager.getInstance().removeDelegate(m_accountManagerDelegate);
+		final bhClientAccountManager accountManager = bh_c.accountMngr;
+		final bhUserManager userManager = bh_c.userMngr;
+		final bhGridManager gridManager = bh_c.gridMngr;
+		final bhClientTransactionManager transactionManager = bh_c.txnMngr;
 		
-		bhGridManager.getInstance().stop();
+		accountManager.removeDelegate(m_accountManagerDelegate);
 		
-		bhUserManager.getInstance().stop();
+		gridManager.stop();
 		
-		bhClientAccountManager.getInstance().stop();
+		userManager.stop();
 		
-		bhClientTransactionManager.getInstance().removeBatchListener(m_batchListener);
+		accountManager.stop();
 		
-		bhClientTransactionManager.getInstance().removeHandler(this);
+		transactionManager.removeBatchListener(m_batchListener);
+		
+		transactionManager.removeHandler(this);
 	}
 	
 	@Override

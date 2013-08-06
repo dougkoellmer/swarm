@@ -1,5 +1,6 @@
 package b33hive.client.ui.widget;
 
+import b33hive.client.app.bh_c;
 import b33hive.client.input.bhClickManager;
 import b33hive.client.input.bhI_ClickHandler;
 import com.google.gwt.dom.client.Style.Cursor;
@@ -49,7 +50,7 @@ public class bhCheckBox extends FlowPanel
 			this.setText(text);
 		}
 		
-		bhClickManager.getInstance().addClickHandler(m_clickCatcher, new bhI_ClickHandler()
+		bh_c.clickMngr.addClickHandler(m_clickCatcher, new bhI_ClickHandler()
 		{
 			@Override
 			public void onClick()

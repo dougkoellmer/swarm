@@ -1,10 +1,12 @@
 package b33hive.server.handlers.normal;
 
 import b33hive.server.account.bhE_Role;
+import b33hive.server.account.bh_s;
 import b33hive.server.session.bhSessionManager;
 import b33hive.server.structs.bhServerGridCoordinate;
 import b33hive.server.transaction.bhI_RequestHandler;
 import b33hive.server.transaction.bhTransactionContext;
+import b33hive.shared.app.bh;
 import b33hive.shared.code.bhA_CodeCompiler;
 import b33hive.shared.code.bhCompilerResult;
 import b33hive.shared.entities.bhE_CodeSafetyLevel;
@@ -13,14 +15,14 @@ import b33hive.shared.structs.bhCode;
 import b33hive.shared.structs.bhCodePrivileges;
 import b33hive.shared.transaction.bhTransactionRequest;
 import b33hive.shared.transaction.bhTransactionResponse;
-import b33hive.shared.utils.bhU_Singletons;
+
 
 public class previewCode implements bhI_RequestHandler
 {
 	@Override
 	public void handleRequest(bhTransactionContext context, bhTransactionRequest request, bhTransactionResponse response)
 	{
-		if( !bhSessionManager.getInstance().isAuthorized(request, response, bhE_Role.USER) )
+		if( !bh_s.sessionMngr.isAuthorized(request, response, bhE_Role.USER) )
 		{
 			return;
 		}
@@ -44,9 +46,7 @@ public class previewCode implements bhI_RequestHandler
 		
 		bhCode sourceCode = new bhCode(request.getJson(), bhE_CodeType.SOURCE);
 		
-		bhA_CodeCompiler compiler = bhU_Singletons.get(bhA_CodeCompiler.class);
-		
-		bhCompilerResult result = compiler.compile(sourceCode, privileges, coordinate.writeString());
+		bhCompilerResult result = bh.codeCompiler.compile(sourceCode, privileges, coordinate.writeString());
 		
 		result.writeJson(response.getJson());
 	}

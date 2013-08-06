@@ -14,18 +14,11 @@ class bhLocalBlobCache
 		}
 	}
 	
-	private static bhLocalBlobCache s_instance;
-	
 	private final ThreadLocal<Context> m_context = new ThreadLocal<Context>();
 	
 	bhLocalBlobCache()
 	{
 		
-	}
-	
-	static void startUp()
-	{
-		s_instance = new bhLocalBlobCache();
 	}
 	
 	void createContext()
@@ -36,11 +29,6 @@ class bhLocalBlobCache
 	void deleteContext()
 	{
 		m_context.remove();
-	}
-	
-	static bhLocalBlobCache getInstance()
-	{
-		return s_instance;
 	}
 	
 	private HashMap<String, bhI_Blob> getCache(boolean forceCreateIfInContext)

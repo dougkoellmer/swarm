@@ -6,9 +6,12 @@ import java.util.logging.Logger;
 
 import javax.servlet.ServletContext;
 
+import com.b33hive.server.app.bhS_ServerApp;
+
 import b33hive.server.account.bhE_Role;
 import b33hive.server.account.bhUserSession;
-import b33hive.server.app.bhS_ServerApp;
+import b33hive.server.account.bh_s;
+import b33hive.server.blobxn.bhBlobTransaction_CreateUser;
 import b33hive.server.data.blob.bhBlobException;
 import b33hive.server.data.blob.bhBlobManagerFactory;
 import b33hive.server.data.blob.bhE_BlobCacheLevel;
@@ -20,7 +23,6 @@ import b33hive.server.entities.bhE_GridType;
 import b33hive.server.entities.bhServerGrid;
 import b33hive.server.entities.bhServerUser;
 import b33hive.server.handlers.bhU_Handler;
-import b33hive.server.handlers.blobxn.bhBlobTransaction_CreateUser;
 import b33hive.server.session.bhSessionManager;
 import b33hive.server.structs.bhServerCellAddress;
 import b33hive.server.structs.bhServerCodePrivileges;
@@ -51,9 +53,9 @@ public class createGrid implements bhI_RequestHandler
 	@Override
 	public void handleRequest(bhTransactionContext context, bhTransactionRequest request, bhTransactionResponse response)
 	{		
-		bhUserSession session = bhSessionManager.getInstance().getSession(request, response);
+		bhUserSession session = bh_s.sessionMngr.getSession(request, response);
 		
-		bhI_BlobManager blobManager = bhBlobManagerFactory.getInstance().create(bhE_BlobCacheLevel.values());
+		bhI_BlobManager blobManager = bh_s.blobMngrFactory.create(bhE_BlobCacheLevel.values());
 		
 		bhServerGrid activeGrid = null;
 		

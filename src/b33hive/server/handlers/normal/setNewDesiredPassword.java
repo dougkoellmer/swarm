@@ -13,6 +13,7 @@ import b33hive.server.account.bhE_Role;
 import b33hive.server.account.bhS_ServerAccount;
 import b33hive.server.account.bhServerAccountManager;
 import b33hive.server.account.bhUserSession;
+import b33hive.server.account.bh_s;
 import b33hive.server.session.bhSessionManager;
 import b33hive.server.transaction.bhI_RequestHandler;
 import b33hive.server.transaction.bhTransactionContext;
@@ -33,7 +34,7 @@ public class setNewDesiredPassword implements bhI_RequestHandler
 	public void handleRequest(bhTransactionContext context, bhTransactionRequest request, bhTransactionResponse response)
 	{
 		//--- DRK > Just a sanity check...probably meaningless.
-		bhUserSession session = bhSessionManager.getInstance().getSession(request, response);
+		bhUserSession session = bh_s.sessionMngr.getSession(request, response);
 		if( session != null )
 		{
 			response.setError(bhE_ResponseError.BAD_STATE);

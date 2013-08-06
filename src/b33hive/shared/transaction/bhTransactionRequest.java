@@ -1,5 +1,6 @@
 package b33hive.shared.transaction;
 
+import b33hive.shared.app.bh;
 import b33hive.shared.app.bhA_App;
 import b33hive.shared.app.bhS_App;
 import b33hive.shared.json.bhE_JsonKey;
@@ -142,11 +143,11 @@ public class bhTransactionRequest extends bhA_TransactionObject
 	{
 		super.writeJson(json);
 		
-		bhRequestPathManager.getInstance().putToJson(json, m_path);
+		bh.requestPathMngr.putToJson(json, m_path);
 		
 		if( m_serverVersion != null )
 		{
-			bhJsonHelper.getInstance().putInt(json, bhE_JsonKey.serverVersion, m_serverVersion);
+			bh.jsonFactory.getHelper().putInt(json, bhE_JsonKey.serverVersion, m_serverVersion);
 		}
 	}
 	
@@ -155,9 +156,9 @@ public class bhTransactionRequest extends bhA_TransactionObject
 	{
 		super.readJson(json);
 		
-		m_path = bhRequestPathManager.getInstance().getFromJson(json);
+		m_path = bh.requestPathMngr.getFromJson(json);
 		
-		Integer serverVersion = bhJsonHelper.getInstance().getInt(json, bhE_JsonKey.serverVersion);
+		Integer serverVersion = bh.jsonFactory.getHelper().getInt(json, bhE_JsonKey.serverVersion);
 		
 		m_serverVersion = serverVersion;
 	}

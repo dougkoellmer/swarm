@@ -8,6 +8,7 @@ import b33hive.client.transaction.bhClientTransactionManager;
 import b33hive.client.transaction.bhI_AsynchronousRequestDispatcher;
 import b33hive.client.transaction.bhI_ResponseCallbacks;
 import b33hive.client.transaction.bhTransactionRequestBatch;
+import b33hive.shared.app.bh;
 import b33hive.shared.app.bhS_App;
 import b33hive.shared.debugging.bhU_Debug;
 import b33hive.shared.json.bhA_JsonFactory;
@@ -117,7 +118,7 @@ public class bhGwtRequestDispatcher implements bhI_AsynchronousRequestDispatcher
 			return;
 		}
 		
-		bhI_JsonObject responseJson = bhA_JsonFactory.getInstance().createJsonObject(nativeResponse.getText());
+		bhI_JsonObject responseJson = bh.jsonFactory.createJsonObject(nativeResponse.getText());
 		m_reusedResponse.readJson(responseJson);
 		
 		if( !(request instanceof bhTransactionRequestBatch) )
@@ -135,7 +136,7 @@ public class bhGwtRequestDispatcher implements bhI_AsynchronousRequestDispatcher
 			
 			bhTransactionRequestBatch batch = (bhTransactionRequestBatch) request;
 
-			bhI_JsonArray responseList = bhJsonHelper.getInstance().getJsonArray(responseJson, bhE_JsonKey.responseList);
+			bhI_JsonArray responseList = bh.jsonFactory.getHelper().getJsonArray(responseJson, bhE_JsonKey.responseList);
 			
 			m_callbacks.onResponseReceived(batch, responseList);
 		}

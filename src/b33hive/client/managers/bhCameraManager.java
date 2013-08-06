@@ -14,8 +14,6 @@ public class bhCameraManager
 	private static final double SNAP_TOLERANCE = .00001;
 	private static final Logger s_logger = Logger.getLogger(bhCameraManager.class.getName());
 	
-	private static bhCameraManager s_instance = null;
-	
 	private final bhPoint m_cameraOrigin = new bhPoint();
 	private final bhPoint m_targetPosition = new bhPoint();
 	private final bhVector m_diffVector = new bhVector();
@@ -41,12 +39,6 @@ public class bhCameraManager
 		m_snapTimeRange = snapTimeRange;
 		
 		m_camera = camera;
-		s_instance = this; // kinda hacky...eh
-	}
-	
-	public static bhCameraManager getInstance()
-	{
-		return s_instance;
 	}
 	
 	public bhPoint getTargetPosition()
@@ -196,13 +188,11 @@ public class bhCameraManager
 	//--- DRK > NOTE: Must make sure to manually update the cell buffer manager if necessary after this call.
 	protected void setCameraPosition(bhPoint point, boolean enforceZConstraints)
 	{
-		bhCamera camera = bhCamera.getInstance();
-		
 		m_targetPosition.copy(point);
 		
 		if( enforceZConstraints )
 		{
-			double maxZ = camera.calcMaxZ();
+			double maxZ = m_camera.calcMaxZ();
 			
 			if( m_targetPosition.getZ() > maxZ )
 			{
@@ -214,9 +204,9 @@ public class bhCameraManager
 			}
 		}
 		
-		camera.getPosition().copy(m_targetPosition);
+		m_camera.getPosition().copy(m_targetPosition);
 		
-		camera.update();
+		m_camera.update();
 		
 		m_cameraOrigin.copy(m_targetPosition);
 		
@@ -232,9 +222,7 @@ public class bhCameraManager
 	{
 		if( m_cameraAtRestFrameCount >= 1 )
 		{
-			bhCamera camera = bhCamera.getInstance();
-			
-			bhU_Debug.ASSERT(m_targetPosition.isEqualTo(camera.getPosition(), bhTolerance.EXACT), "isCameraAtRest1");
+			bhU_Debug.ASSERT(m_targetPosition.isEqualTo(m_camera.getPosition(), bhTolerance.EXACT), "isCameraAtRest1");
 			
 			return true;
 		}

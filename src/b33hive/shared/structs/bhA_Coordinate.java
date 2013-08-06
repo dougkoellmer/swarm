@@ -6,7 +6,8 @@ import b33hive.shared.json.bhE_JsonKey;
 import b33hive.shared.json.bhI_JsonArray;
 import b33hive.shared.json.bhI_JsonObject;
 import b33hive.shared.json.bhJsonHelper;
-import b33hive.shared.utils.bhU_Singletons;
+
+import b33hive.shared.app.bh;
 import b33hive.shared.debugging.bhU_Logging;
 
 public abstract class bhA_Coordinate extends bhA_JsonEncodable
@@ -194,18 +195,18 @@ public abstract class bhA_Coordinate extends bhA_JsonEncodable
 	@Override
 	public void writeJson(bhI_JsonObject json)
 	{
-		bhA_JsonFactory jsonFactory = bhU_Singletons.get(bhA_JsonFactory.class);
+		bhA_JsonFactory jsonFactory = bh.jsonFactory;
 		bhI_JsonArray components = jsonFactory.createJsonArray();
 		components.addDouble(getX());
 		components.addDouble(getY());
 		components.addDouble(getZ());
-		bhJsonHelper.getInstance().putJsonArray(json, bhE_JsonKey.pointComponents, components);
+		bh.jsonFactory.getHelper().putJsonArray(json, bhE_JsonKey.pointComponents, components);
 	}
 	
 	@Override
 	public void readJson(bhI_JsonObject json)
 	{
-		bhI_JsonArray components = bhJsonHelper.getInstance().getJsonArray(json, bhE_JsonKey.pointComponents);
+		bhI_JsonArray components = bh.jsonFactory.getHelper().getJsonArray(json, bhE_JsonKey.pointComponents);
 		if( components != null )
 		{
 			for( int i = 0; i < 3 && i < components.getSize(); i++ )
@@ -217,7 +218,7 @@ public abstract class bhA_Coordinate extends bhA_JsonEncodable
 	
 	public static boolean isReadable(bhI_JsonObject json)
 	{
-		return bhJsonHelper.getInstance().containsAllKeys(json, bhE_JsonKey.pointComponents);
+		return bh.jsonFactory.getHelper().containsAllKeys(json, bhE_JsonKey.pointComponents);
 	}
 	
 	@Override

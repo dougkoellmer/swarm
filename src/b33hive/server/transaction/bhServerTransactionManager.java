@@ -31,8 +31,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONException;
 
+import com.b33hive.server.app.bhServerApp;
+
 import b33hive.server.account.bhAccountDatabase;
-import b33hive.server.app.bhServerApp;
+import b33hive.server.app.bhA_ServerJsonFactory;
 import b33hive.server.data.blob.bhBlobManagerFactory;
 import b33hive.server.session.bhSessionManager;
 import b33hive.server.telemetry.bhTelemetryDatabase;
@@ -58,33 +60,18 @@ import b33hive.shared.transaction.bhTransactionResponse;
 import b33hive.shared.transaction.bhU_RequestBatch;
 
 public class bhServerTransactionManager
-{	
-	private static bhServerTransactionManager s_instance = null;
-	
+{
 	private static final Logger s_logger = Logger.getLogger(bhServerTransactionManager.class.getName());
 	
 	private final HashMap<Integer, bhI_RequestHandler> m_handlers = new HashMap<Integer, bhI_RequestHandler>();
 	private final HashSet<Integer> m_debugResponseErrorPaths = new HashSet<Integer>();
 	private final ArrayList<bhI_DeferredRequestHandler> m_deferredHandlers = new ArrayList<bhI_DeferredRequestHandler>();
 	private final ArrayList<bhI_TransactionScopeListener> m_scopeListeners = new ArrayList<bhI_TransactionScopeListener>();
+	private final bhA_ServerJsonFactory m_jsonFactory;
 	
-	private bhServerTransactionManager()
+	public bhServerTransactionManager(bhA_ServerJsonFactory jsonFactory)
 	{
-		
-	}
-	
-	public static void startUp()
-	{
-		s_instance = new bhServerTransactionManager();
-		bhRequestPathManager.startUp(bhS_App.VERBOSE_TRANSACTIONS);
-		
-		bhRequestPathManager.getInstance().register(bhE_ReservedRequestPath.values());
-		
-		bhJsonHelperProvider.startUp();
-		
-		bhJsonHelper.startUp(bhJsonHelperProvider.getInstance());
-		
-		bhInlineTransactionManager.startUp();
+		m_jsonFactory = jsonFactory;
 	}
 	
 	public bhI_RequestHandler getRequestHandler(bhI_RequestPath path)
@@ -110,16 +97,6 @@ public class bhServerTransactionManager
 	public void addScopeListener(bhI_TransactionScopeListener listener)
 	{
 		m_scopeListeners.add(listener);
-		
-		bhInlineTransactionManager.getInstance().addScopeListener(bhBlobManagerFactory.getInstance());
-		bhInlineTransactionManager.getInstance().addScopeListener(bhSessionManager.getInstance());
-		bhInlineTransactionManager.getInstance().addScopeListener(bhAccountDatabase.getInstance());
-		bhInlineTransactionManager.getInstance().addScopeListener(bhTelemetryDatabase.getInstance());
-	}
-	
-	public static bhServerTransactionManager getInstance()
-	{
-		return s_instance;
 	}
 	
 	private void createEarlyOutResponse(bhE_ResponseError responseError, bhI_JsonObject responseJson)
@@ -131,7 +108,7 @@ public class bhServerTransactionManager
 	
 	public void handleRequestFromClient(final Object nativeRequest, final Object nativeResponse, Object nativeContext, bhI_JsonObject requestJson, bhI_JsonObject responseJson, boolean verboseJson)
 	{
-		bhJsonHelperProvider.getInstance().startScope(verboseJson);
+		m_jsonFactory.startScope();
 		
 		//--- DRK > Early out for problems with request json.
 		if( requestJson == null )
@@ -288,21 +265,21 @@ public class bhServerTransactionManager
 		}
 		finally
 		{
+			if( responseToReturn == null )
+			{
+				responseToReturn = new bhTransactionResponse();
+				responseToReturn.setError(bhE_ResponseError.SERVER_EXCEPTION);
+			}
+			
+			responseToReturn.writeJson(responseJson);
+			
+			m_jsonFactory.endScope();
+			
 			for( int i = 0; i < m_scopeListeners.size(); i++ )
 			{
 				m_scopeListeners.get(i).onExitScope();
 			}
 		}
-		
-		if( responseToReturn == null )
-		{
-			responseToReturn = new bhTransactionResponse();
-			responseToReturn.setError(bhE_ResponseError.SERVER_EXCEPTION);
-		}
-		
-		responseToReturn.writeJson(responseJson);
-		
-		bhJsonHelperProvider.getInstance().endScope();
 	}
 	
 	/**

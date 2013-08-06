@@ -17,10 +17,14 @@ import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Transaction;
 
 class bhBlobManager_LocalCache extends bhA_BlobManagerWithCache
-{	
-	bhBlobManager_LocalCache(bhI_BlobManager wrappedManager)
+{
+	private final bhLocalBlobCache m_localCache;
+	
+	bhBlobManager_LocalCache(bhBlobTemplateManager templateMngr, bhLocalBlobCache localCache, bhI_BlobManager wrappedManager)
 	{
-		super(wrappedManager);
+		super(templateMngr, wrappedManager);
+		
+		m_localCache = localCache;
 	}
 	
 	protected bhE_BlobCacheLevel getCacheLevel()
@@ -41,7 +45,6 @@ class bhBlobManager_LocalCache extends bhA_BlobManagerWithCache
 	protected Map<bhI_BlobKeySource, bhI_Blob> getBlobsFromCache(Map<bhI_BlobKeySource, Class<? extends bhI_Blob>> values) throws bhBlobException
 	{
 		Map<bhI_BlobKeySource, bhI_Blob> toReturn = null;
-		bhBlobTemplateManager templateManager = bhBlobTemplateManager.getInstance();
 		
 		Iterator<bhI_BlobKeySource> iterator = values.keySet().iterator();
 		while( iterator.hasNext() )
@@ -49,11 +52,11 @@ class bhBlobManager_LocalCache extends bhA_BlobManagerWithCache
 			bhI_BlobKeySource keySource = iterator.next();
 			Class<? extends bhI_Blob> blobType = values.get(keySource);
 			
-			bhI_Blob blobTemplate = templateManager.getTemplate(blobType);
+			bhI_Blob blobTemplate = m_templateMngr.getTemplate(blobType);
 			
 			String generatedKey = keySource.createBlobKey(blobTemplate);
 			
-			bhI_Blob cachedBlob = bhLocalBlobCache.getInstance().getBlob(generatedKey);
+			bhI_Blob cachedBlob = m_localCache.getBlob(generatedKey);
 			
 			if( cachedBlob != null )
 			{
@@ -70,19 +73,19 @@ class bhBlobManager_LocalCache extends bhA_BlobManagerWithCache
 	@Override
 	protected void putBlobIntoCache(String generatedKey, bhI_Blob blob) throws bhBlobException
 	{
-		bhLocalBlobCache.getInstance().putBlob(generatedKey, blob);
+		m_localCache.putBlob(generatedKey, blob);
 	}
 
 	@Override
 	protected <T extends bhI_Blob> bhI_Blob getBlobFromCache(String generatedKey, Class<? extends T> blobType) throws bhBlobException
 	{
-		return bhLocalBlobCache.getInstance().getBlob(generatedKey);
+		return m_localCache.getBlob(generatedKey);
 	}
 	
 	@Override
 	protected void deleteBlobFromCache(String generatedKey) throws bhBlobException
 	{
-		bhLocalBlobCache.getInstance().deleteBlob(generatedKey);
+		m_localCache.deleteBlob(generatedKey);
 	}
 
 	@Override
@@ -108,7 +111,7 @@ class bhBlobManager_LocalCache extends bhA_BlobManagerWithCache
 		while( iterator.hasNext() )
 		{
 			bhI_BlobKeySource keySource = iterator.next();
-			bhI_Blob blob = bhBlobTemplateManager.getInstance().getTemplate(values.get(keySource));
+			bhI_Blob blob = m_templateMngr.getTemplate(values.get(keySource));
 			
 			if( !isCacheable(blob) )
 			{

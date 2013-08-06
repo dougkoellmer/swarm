@@ -3,6 +3,7 @@ package b33hive.client.structs;
 import b33hive.shared.account.bhE_SignUpCredentialType;
 import b33hive.shared.account.bhSignUpCredentials;
 import b33hive.shared.account.bhU_Account;
+import b33hive.shared.app.bh;
 import b33hive.shared.json.bhA_JsonEncodable;
 import b33hive.shared.json.bhA_JsonFactory;
 import b33hive.shared.json.bhE_JsonKey;
@@ -55,20 +56,20 @@ public class bhAccountInfo extends bhA_JsonEncodable
 	@Override
 	public void writeJson(bhI_JsonObject json)
 	{
-		bhI_JsonArray creds = bhA_JsonFactory.getInstance().createJsonArray();
+		bhI_JsonArray creds = bh.jsonFactory.createJsonArray();
 		
 		for( int i = 0; i < m_type.length; i++ )
 		{
 			creds.addString(m_type[i]);
 		}
 		
-		bhJsonHelper.getInstance().putJsonArray(json, bhE_JsonKey.accountInfo, creds);
+		bh.jsonFactory.getHelper().putJsonArray(json, bhE_JsonKey.accountInfo, creds);
 	}
 
 	@Override
 	public void readJson(bhI_JsonObject json)
 	{
-		bhI_JsonArray info = bhJsonHelper.getInstance().getJsonArray(json, bhE_JsonKey.accountInfo);
+		bhI_JsonArray info = bh.jsonFactory.getHelper().getJsonArray(json, bhE_JsonKey.accountInfo);
 		
 		for( int i = 0; i < info.getSize(); i++ )
 		{

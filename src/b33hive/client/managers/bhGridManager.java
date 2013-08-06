@@ -1,5 +1,6 @@
 package b33hive.client.managers;
 
+import b33hive.client.app.bh_c;
 import b33hive.client.entities.bhClientGrid;
 import b33hive.client.states.StateMachine_Base;
 import b33hive.client.structs.bhAccountInfo;
@@ -23,35 +24,23 @@ public class bhGridManager implements bhI_TransactionResponseHandler
 	
 	private I_Listener m_listener = null;
 	
-	private static bhGridManager s_instance = null;
-
-	public static void startUp()
-	{
-		s_instance = new bhGridManager();
-	}
-	
-	public static bhGridManager getInstance()
-	{
-		return s_instance;
-	}
-	
 	public void start(I_Listener listener)
 	{
 		m_listener = listener;
 		
-		bhClientTransactionManager.getInstance().addHandler(this);
+		bh_c.txnMngr.addHandler(this);
 	}
 	
 	public void stop()
 	{
 		m_listener = null;
 		
-		bhClientTransactionManager.getInstance().removeHandler(this);
+		bh_c.txnMngr.removeHandler(this);
 	}
 	
 	public void getGridData(bhE_TransactionAction action)
 	{
-		bhClientTransactionManager.getInstance().performAction(action, bhE_RequestPath.getGridData);
+		bh_c.txnMngr.performAction(action, bhE_RequestPath.getGridData);
 	}
 	
 	void updateGridFromJson(bhI_JsonObject json)

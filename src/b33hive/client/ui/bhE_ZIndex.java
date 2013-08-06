@@ -40,18 +40,23 @@ public enum bhE_ZIndex
 	TOOL_TIP_4,
 	TOOL_TIP_5;
 	
+	private int getZIndex()
+	{
+		return this.ordinal();
+	}
+	
 	public void assignTo(IsWidget widget)
 	{
-		widget.asWidget().getElement().getStyle().setZIndex(this.ordinal());
+		widget.asWidget().getElement().getStyle().setZIndex(this.getZIndex());
 	}
 	
 	public void assignTo(IsWidget widget, Enum offset)
 	{
-		widget.asWidget().getElement().getStyle().setZIndex(this.ordinal() + offset.ordinal());
+		widget.asWidget().getElement().getStyle().setZIndex(this.getZIndex() + offset.ordinal());
 	}
 	
 	public void assignTo(Element element, Enum offset)
 	{
-		element.getStyle().setZIndex(this.ordinal() + offset.ordinal());
+		element.getStyle().setZIndex(this.getZIndex() + offset.ordinal());
 	}
 }

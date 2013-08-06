@@ -1,5 +1,6 @@
 package b33hive.client.states;
 
+import b33hive.client.app.bh_c;
 import b33hive.client.states.camera.StateMachine_Camera;
 import b33hive.client.transaction.bhE_ResponseErrorControl;
 import b33hive.client.transaction.bhE_ResponseSuccessControl;
@@ -13,6 +14,7 @@ import b33hive.shared.statemachine.bhA_StateContainer;
 import b33hive.shared.statemachine.bhA_StateConstructor;
 import b33hive.shared.transaction.bhTransactionRequest;
 import b33hive.shared.transaction.bhTransactionResponse;
+
 
 
 /**
@@ -72,13 +74,15 @@ public class StateContainer_Base extends bhA_StateContainer implements bhI_Trans
 	@Override
 	protected void didEnter(bhA_StateConstructor constructor)
 	{
-		bhClientTransactionManager.getInstance().addHandler(this);
+		final bhClientTransactionManager transactionManager = bh_c.txnMngr;
+		transactionManager.addHandler(this);
 	}
 	
 	@Override
 	protected void willExit()
 	{
-		bhClientTransactionManager.getInstance().removeHandler(this);
+		final bhClientTransactionManager transactionManager = bh_c.txnMngr;
+		transactionManager.removeHandler(this);
 	}
 	
 	@Override

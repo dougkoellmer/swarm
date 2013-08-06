@@ -6,6 +6,7 @@ import b33hive.client.states.account.State_AccountStatusPending;
 import b33hive.client.states.account.State_SignInOrUp;
 import b33hive.client.ui.bhConsoleBlocker;
 import b33hive.client.ui.bhSplitPanel;
+import b33hive.client.ui.bh_view;
 import b33hive.client.ui.tooltip.bhToolTipManager;
 import b33hive.client.ui.widget.bhButton;
 import b33hive.client.ui.widget.bhDefaultButton;
@@ -76,7 +77,7 @@ public class bhSignInOrUpPanel extends FlowPanel implements bhI_StateEventListen
 		int signInHeight = m_signIn.getOffsetHeight();
 		int signUpHeight = m_signUp.getOffsetHeight();
 		int thisHeight = this.getOffsetHeight();
-		int thisWidth = (int) bhSplitPanel.getInstance().getTabPanelWidth(); // sigh...
+		int thisWidth = (int) bh_view.splitPanel.getTabPanelWidth(); // sigh...
 		int minLayoutHeight = 3 * MIN_SUB_PANEL_MARGIN + signInHeight + signUpHeight;
 		int minLayoutWidth = subPanelWidth;
 		int left = thisWidth/2 - subPanelWidth/2;

@@ -29,24 +29,12 @@ public class bhAccountDatabase extends bhA_SqlDatabase
 	{
 		CURRENT, NEW;
 	}
-	
-	private static bhAccountDatabase s_instance = null;
 
 	private final static Logger s_logger = Logger.getLogger(bhAccountDatabase.class.getName());
 
-	private bhAccountDatabase()
+	bhAccountDatabase(String database)
 	{
-		super(bhS_Sql.HOST + "bh_accounts");
-	}
-
-	public static void startUp()
-	{
-		s_instance = new bhAccountDatabase();
-	}
-
-	public static bhAccountDatabase getInstance()
-	{
-		return s_instance;
+		super(database);
 	}
 
 	public void addAccount(int id, String email, String username, byte[] passwordHash, byte[] passwordSalt, bhE_Role role) throws SQLException

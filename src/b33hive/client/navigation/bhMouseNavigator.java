@@ -2,6 +2,7 @@ package b33hive.client.navigation;
 
 import java.util.logging.Logger;
 
+import b33hive.client.app.bh_c;
 import b33hive.client.entities.bhCamera;
 import b33hive.client.entities.bhBufferCell;
 import b33hive.client.entities.bhClientGrid;
@@ -136,7 +137,7 @@ public class bhMouseNavigator implements bhI_UIElement, bhMouse.I_Listener
 				
 				m_flickSmoother.clear();
 				mousePointToWorld(m_grabPoint);
-				m_lastWorldPoint.copy(bhCamera.getInstance().getPosition());
+				m_lastWorldPoint.copy(bh_c.camera.getPosition());
 				
 				m_mouseWentDownOnViewedCell = false;
 				
@@ -179,7 +180,7 @@ public class bhMouseNavigator implements bhI_UIElement, bhMouse.I_Listener
 					{
 						m_utilVector.scaleByNumber(3);
 						m_utilVector.setZ(0.0);
-						m_utilPoint1.copy(bhCameraManager.getInstance().getTargetPosition());
+						m_utilPoint1.copy(bh_c.cameraMngr.getTargetPosition());
 						m_utilPoint1.translate(m_utilVector);
 						
 						m_setTargetArgs.initialize(m_utilPoint1, false);
@@ -205,7 +206,7 @@ public class bhMouseNavigator implements bhI_UIElement, bhMouse.I_Listener
 					}
 				}
 				
-				bhCamera camera = bhCamera.getInstance();
+				bhCamera camera = bh_c.camera;
 				bhPoint cameraPosition = m_utilPoint1;
 				cameraPosition.copy(camera.getPosition());
 				
@@ -315,7 +316,7 @@ public class bhMouseNavigator implements bhI_UIElement, bhMouse.I_Listener
 	
 	private void screenToWorld(bhPoint screenPoint, bhPoint outPoint)
 	{
-		bhCamera camera = bhCamera.getInstance();
+		bhCamera camera = bh_c.camera;
 		
 		outPoint.set(0, 0, 0);
 		camera.calcWorldPoint(screenPoint, outPoint);
@@ -394,7 +395,7 @@ public class bhMouseNavigator implements bhI_UIElement, bhMouse.I_Listener
 	
 	private void updateMouse()
 	{
-		bhCamera camera = bhCamera.getInstance();
+		bhCamera camera = bh_c.camera;
 
 		updateMouseGridCoord(); // DRK > NOTE: This must be updated every frame, even with mouse still, mouse can still be moving in the world.
 		

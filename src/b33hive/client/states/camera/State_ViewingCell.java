@@ -4,6 +4,7 @@ import b33hive.client.input.bhBrowserHistoryManager;
 import b33hive.client.managers.bhCellAddressManager;
 import b33hive.client.managers.bhCellCodeManager;
 import b33hive.client.managers.bhUserManager;
+import b33hive.client.app.bh_c;
 import b33hive.client.entities.bhBufferCell;
 import b33hive.client.entities.bhA_ClientUser;
 import b33hive.client.entities.bhE_CellNuke;
@@ -27,6 +28,7 @@ import b33hive.shared.structs.bhCellAddress;
 import b33hive.shared.structs.bhCellAddressMapping;
 import b33hive.shared.structs.bhGridCoordinate;
 import b33hive.shared.structs.bhPoint;
+
 
 
 /**
@@ -115,13 +117,15 @@ public class State_ViewingCell extends bhA_State implements bhI_StateEventListen
 		{
 			//--- DRK > Try to get address ourselves...very well could turn up null.
 			bhCellAddressMapping mapping = new bhCellAddressMapping(cell.getCoordinate());
-			bhCellAddressManager.getInstance().getCellAddress(mapping, bhE_TransactionAction.QUEUE_REQUEST);
+			bhCellAddressManager addyManager = bh_c.addressMngr;
+			addyManager.getCellAddress(mapping, bhE_TransactionAction.QUEUE_REQUEST);
 		}
 		
 		codeManager.populateCell(cell, localCodeRepo, 1, false, true, bhE_CodeType.SPLASH);
 		codeManager.populateCell(cell, localCodeRepo, 1, false, true, bhE_CodeType.COMPILED);
-		 
-		bhClientTransactionManager.getInstance().flushRequestQueue();
+		
+		bhClientTransactionManager txnMngr = bh_c.txnMngr;
+		txnMngr.flushRequestQueue();
 	}
 
 	public bhBufferCell getCell()
@@ -149,7 +153,8 @@ public class State_ViewingCell extends bhA_State implements bhI_StateEventListen
 		//--- DRK > This ensures that any "preview" operations performed get cleared out.
 		//---		My programmer senses are tingling on this one, telling me it might be a
 		//---		hacky solution, at least as far as readability.
-		bhA_ClientUser user = bhUserManager.getInstance().getUser();
+		bhUserManager userMngr = bh_c.userMngr;
+		bhA_ClientUser user = userMngr.getUser();
 		user.tryPopulatingCell(m_cell.getCoordinate(), bhE_CodeType.COMPILED, m_cell);
 		
 		m_cell = null;

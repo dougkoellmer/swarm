@@ -2,13 +2,14 @@ package b33hive.shared.account;
 
 import java.util.Locale;
 
+import b33hive.shared.app.bh;
 import b33hive.shared.json.bhA_JsonEncodable;
 import b33hive.shared.json.bhA_JsonFactory;
 import b33hive.shared.json.bhE_JsonKey;
 import b33hive.shared.json.bhI_JsonArray;
 import b33hive.shared.json.bhI_JsonObject;
 import b33hive.shared.json.bhJsonHelper;
-import b33hive.shared.utils.bhU_Singletons;
+
 
 public class bhSignInCredentials extends bhA_AccountCredentials
 {
@@ -68,15 +69,14 @@ public class bhSignInCredentials extends bhA_AccountCredentials
 		
 		bhU_Account.cropPassword(m_credentials, bhE_SignInCredentialType.PASSWORD.ordinal());
 		
-		bhA_JsonFactory jsonFactory = bhU_Singletons.get(bhA_JsonFactory.class);
-		bhI_JsonArray creds = jsonFactory.createJsonArray();
+		bhI_JsonArray creds = bh.jsonFactory.createJsonArray();
 		
 		for( int i = 0; i < m_credentials.length; i++ )
 		{
 			creds.addString(m_credentials[i]);
 		}
 		
-		bhJsonHelper.getInstance().putJsonArray(json, bhE_JsonKey.signInCredentials, creds);
+		bh.jsonFactory.getHelper().putJsonArray(json, bhE_JsonKey.signInCredentials, creds);
 	}
 
 	@Override
@@ -86,7 +86,7 @@ public class bhSignInCredentials extends bhA_AccountCredentials
 		
 		super.readJson(json);
 		
-		bhI_JsonArray creds = bhJsonHelper.getInstance().getJsonArray(json, bhE_JsonKey.signInCredentials);
+		bhI_JsonArray creds = bh.jsonFactory.getHelper().getJsonArray(json, bhE_JsonKey.signInCredentials);
 		
 		for( int i = 0; i < creds.getSize(); i++ )
 		{

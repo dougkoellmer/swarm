@@ -1,5 +1,6 @@
 package b33hive.shared.entities;
 
+import b33hive.shared.app.bh;
 import b33hive.shared.app.bhS_App;
 import b33hive.shared.json.bhA_JsonEncodable;
 import b33hive.shared.json.bhE_JsonKey;
@@ -55,7 +56,7 @@ public abstract class bhA_Grid extends bhA_JsonEncodable
 	@Override
 	public void readJson(bhI_JsonObject json)
 	{
-		Integer size = bhJsonHelper.getInstance().getInt(json, bhE_JsonKey.gridSize);
+		Integer size = bh.jsonFactory.getHelper().getInt(json, bhE_JsonKey.gridSize);
 		
 		if( size != null )
 		{	
@@ -66,6 +67,6 @@ public abstract class bhA_Grid extends bhA_JsonEncodable
 	@Override
 	public void writeJson(bhI_JsonObject json)
 	{
-		bhJsonHelper.getInstance().putInt(json, bhE_JsonKey.gridSize, m_size);
+		bh.jsonFactory.getHelper().putInt(json, bhE_JsonKey.gridSize, m_size);
 	}
 }

@@ -16,10 +16,11 @@ import org.apache.commons.io.IOUtils;
 import org.json.JSONException;
 
 import b33hive.server.thirdparty.json.bhServerJsonObject;
+import b33hive.shared.app.bh;
 import b33hive.shared.json.bhA_JsonFactory;
 import b33hive.shared.json.bhI_JsonObject;
 import b33hive.shared.transaction.bhS_Transaction;
-import b33hive.shared.utils.bhU_Singletons;
+
 
 public class bhU_Servlet
 {
@@ -105,8 +106,7 @@ public class bhU_Servlet
 			}
 		}
 		
-		bhA_JsonFactory jsonFactory = bhU_Singletons.get(bhA_JsonFactory.class);
-		bhI_JsonObject requestJson = jsonString == null ? null : jsonFactory.createJsonObject(jsonString);
+		bhI_JsonObject requestJson = jsonString == null ? null : bh.jsonFactory.createJsonObject(jsonString);
 		
 		return requestJson;
 	}

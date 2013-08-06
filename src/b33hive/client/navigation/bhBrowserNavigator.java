@@ -2,6 +2,7 @@ package b33hive.client.navigation;
 
 import java.util.logging.Logger;
 
+import b33hive.client.app.bh_c;
 import b33hive.client.entities.bhBufferCell;
 import b33hive.client.entities.bhCamera;
 import b33hive.client.input.bhBrowserHistoryManager;
@@ -183,7 +184,7 @@ public class bhBrowserNavigator implements bhI_StateEventListener
 							//---		This should get rid of things like url parameters, hash tags, etc.,
 							//---		if for some strange reason the user put them there.
 							m_pushHistoryStateForFloating = false;
-							m_historyManager.setState(FLOATING_STATE_PATH, bhCamera.getInstance().getPosition());
+							m_historyManager.setState(FLOATING_STATE_PATH, bh_c.camera.getPosition());
 						}
 					}
 					
@@ -322,7 +323,7 @@ public class bhBrowserNavigator implements bhI_StateEventListener
 					
 					if( m_historyManager.getCurrentState() == null )
 					{
-						m_historyManager.setState(FLOATING_STATE_PATH, bhCamera.getInstance().getPosition());
+						m_historyManager.setState(FLOATING_STATE_PATH, bh_c.camera.getPosition());
 					}
 					else
 					{
@@ -349,7 +350,7 @@ public class bhBrowserNavigator implements bhI_StateEventListener
 						
 						if( m_lastSnapAction != null )
 						{
-							m_historyManager.pushState(FLOATING_STATE_PATH, bhCamera.getInstance().getPosition());
+							m_historyManager.pushState(FLOATING_STATE_PATH, bh_c.camera.getPosition());
 							
 							m_stateAlreadyPushedForViewingExit = true;
 						}
@@ -365,9 +366,9 @@ public class bhBrowserNavigator implements bhI_StateEventListener
 				{
 					if( event.getState().isEntered() ) // just to make sure
 					{
-						if( bhCameraManager.getInstance().didCameraJustComeToRest() )
+						if( bh_c.cameraMngr.didCameraJustComeToRest() )
 						{
-							this.setPositionForFloatingState(event.getState(), bhCamera.getInstance().getPosition(), true);
+							this.setPositionForFloatingState(event.getState(), bh_c.camera.getPosition(), true);
 						}
 					}
 				}
@@ -392,7 +393,7 @@ public class bhBrowserNavigator implements bhI_StateEventListener
 						bhA_State state = bhA_State.getEnteredInstance(StateMachine_Camera.class);
 						if( state != null && state.getUpdateCount() > 0 ) // dunno why it would be null, just being paranoid before a deploy
 						{
-							this.setPositionForFloatingState(event.getState(), bhCamera.getInstance().getPosition(), true);
+							this.setPositionForFloatingState(event.getState(), bh_c.camera.getPosition(), true);
 						}
 						
 						m_receivedFloatingStateEntered = false;
@@ -436,7 +437,7 @@ public class bhBrowserNavigator implements bhI_StateEventListener
 					{
 						//--- DRK > This takes care of the case where a user navigates to a cell with a valid address format
 						//---		through the url bar, but the address can't be resolved, so we just wipe the url bar completely.
-						m_historyManager.setState(FLOATING_STATE_PATH, bhCamera.getInstance().getPosition());
+						m_historyManager.setState(FLOATING_STATE_PATH, bh_c.camera.getPosition());
 					}
 				}
 				else if( event.getAction() == StateMachine_Camera.SnapToAddress.class ||

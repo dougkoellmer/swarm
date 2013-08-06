@@ -3,24 +3,12 @@ package b33hive.server.data.blob;
 import java.util.HashMap;
 
 class bhBlobTemplateManager
-{
-	private static bhBlobTemplateManager s_instance = null;
-	
+{	
 	private final HashMap<Class<? extends bhI_Blob>, bhI_Blob> m_templates = new HashMap<Class<? extends bhI_Blob>, bhI_Blob>();
 	
-	private bhBlobTemplateManager()
+	bhBlobTemplateManager()
 	{
 		
-	}
-	
-	static void startUp()
-	{
-		s_instance = new bhBlobTemplateManager();
-	}
-	
-	static bhBlobTemplateManager getInstance()
-	{
-		return s_instance;
 	}
 	
 	private synchronized bhI_Blob registerTemplate(Class<? extends bhI_Blob> T) throws bhBlobException

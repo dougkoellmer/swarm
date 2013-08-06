@@ -3,6 +3,7 @@ package b33hive.client.transaction;
 import java.util.ArrayList;
 
 import b33hive.client.js.bhU_Native;
+import b33hive.shared.app.bh;
 import b33hive.shared.debugging.bhU_Debug;
 import b33hive.shared.json.bhA_JsonFactory;
 import b33hive.shared.json.bhI_JsonArray;
@@ -128,7 +129,7 @@ public class bhInlineRequestDispatcher implements bhI_RequestDispatcher
 				
 				if( transaction != null )
 				{
-					responseBatch = responseBatch == null ? bhA_JsonFactory.getInstance().createJsonArray() : responseBatch;
+					responseBatch = responseBatch == null ? bh.jsonFactory.createJsonArray() : responseBatch;
 					inlineRequestBatch = inlineRequestBatch == null ? new bhTransactionRequestBatch() : inlineRequestBatch;
 					
 					inlineRequestBatch.addRequest(transaction.m_request);

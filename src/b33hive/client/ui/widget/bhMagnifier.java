@@ -2,6 +2,7 @@ package b33hive.client.ui.widget;
 
 import java.util.logging.Logger;
 
+import b33hive.client.app.bh_c;
 import b33hive.client.entities.bhCamera;
 import b33hive.client.input.bhClickManager;
 import b33hive.client.input.bhI_ClickHandler;
@@ -115,7 +116,7 @@ public class bhMagnifier extends FlowPanel implements bhI_StateEventListener
 		m_zoomIn.setEnabled(false);
 		m_slider.setEnabled(false);
 		
-		bhToolTipManager toolTipper = bhToolTipManager.getInstance();
+		bhToolTipManager toolTipper = bh_c.toolTipMngr;
 		toolTipper.addTip(m_zoomIn, new bhToolTipConfig(bhE_ToolTipType.MOUSE_OVER, "Zoom In"));
 		toolTipper.addTip(m_zoomOut, new bhToolTipConfig(bhE_ToolTipType.MOUSE_OVER, "Zoom Out"));
 		toolTipper.addTip(m_dragger, new bhToolTipConfig(bhE_ToolTipType.MOUSE_OVER, "Drag'n'Zoom"));
@@ -124,7 +125,7 @@ public class bhMagnifier extends FlowPanel implements bhI_StateEventListener
 		
 		this.add(innerContainer);
 		
-		bhClickManager.getInstance().addClickHandler(m_zoomIn, new bhI_ClickHandler()
+		bh_c.clickMngr.addClickHandler(m_zoomIn, new bhI_ClickHandler()
 		{
 			public void onClick()
 			{
@@ -147,7 +148,7 @@ public class bhMagnifier extends FlowPanel implements bhI_StateEventListener
 			}
 		});
 		
-		bhClickManager.getInstance().addClickHandler(m_zoomOut, new bhI_ClickHandler()
+		bh_c.clickMngr.addClickHandler(m_zoomOut, new bhI_ClickHandler()
 		{
 			public void onClick()
 			{
@@ -283,7 +284,7 @@ public class bhMagnifier extends FlowPanel implements bhI_StateEventListener
 			//--- DRK > Pretty hacky, but I can't figure out how to "forward" the event up the DOM so tooltip can get it.
 			if( event instanceof MouseUpEvent )
 			{
-				bhToolTipManager.getInstance().onMouseUp((MouseUpEvent)event);
+				bh_c.toolTipMngr.onMouseUp((MouseUpEvent)event);
 			}
 			
 			double mouseY = relativeY;
@@ -313,7 +314,7 @@ public class bhMagnifier extends FlowPanel implements bhI_StateEventListener
 	
 	private void setDraggerPositionFromCamera()
 	{
-		bhCamera camera = bhCamera.getInstance();
+		bhCamera camera = bh_c.camera;
 		double maxZ = camera.calcMaxZ();
 		double ratio = camera.getPosition().getZ() / maxZ;
 		ratio = bhU_Math.clamp(ratio, 0, 1); // window resizes can make camera be temporarily zoomed out further than its max constraint.
@@ -360,7 +361,7 @@ public class bhMagnifier extends FlowPanel implements bhI_StateEventListener
 		
 		if( moveCamera )
 		{
-			bhCamera camera = bhCamera.getInstance();
+			bhCamera camera = bh_c.camera;
 			double maxZ = camera.calcMaxZ();
 			m_utilPoint.copy(camera.getPosition());
 			m_utilPoint.setZ((ratio*ratio)*maxZ);

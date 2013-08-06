@@ -1,6 +1,7 @@
 package b33hive.shared.transaction;
 
 import b33hive.shared.json.bhE_JsonKey;
+import b33hive.shared.app.bh;
 import b33hive.shared.json.bhI_JsonObject;
 import b33hive.shared.json.bhJsonHelper;
 
@@ -70,13 +71,13 @@ public class bhTransactionResponse extends bhA_TransactionObject
 			super.writeJson(json);
 		}
 		
-		bhJsonHelper.getInstance().putEnum(json, bhE_JsonKey.responseError, m_error);
+		bh.jsonFactory.getHelper().putEnum(json, bhE_JsonKey.responseError, m_error);
 	}
 	
 	@Override
 	public void readJson(bhI_JsonObject json)
 	{
-		m_error = bhJsonHelper.getInstance().getEnum(json, bhE_JsonKey.responseError, bhE_ResponseError.values());
+		m_error = bh.jsonFactory.getHelper().getEnum(json, bhE_JsonKey.responseError, bhE_ResponseError.values());
 		
 		if( m_error == bhE_ResponseError.NO_ERROR )
 		{

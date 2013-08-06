@@ -20,6 +20,7 @@ import org.apache.commons.codec.net.URLCodec;
 import b33hive.server.account.bhE_Role;
 import b33hive.server.account.bhS_ServerAccount;
 import b33hive.server.account.bhUserSession;
+import b33hive.server.account.bh_s;
 import b33hive.server.data.blob.bhBlobException;
 import b33hive.server.data.blob.bhBlobManagerFactory;
 import b33hive.server.data.blob.bhE_BlobCacheLevel;
@@ -28,20 +29,19 @@ import b33hive.server.data.blob.bhI_BlobKeySource;
 import b33hive.server.data.blob.bhI_BlobManager;
 import b33hive.server.data.blob.bhU_Serialization;
 import b33hive.server.transaction.bhI_TransactionScopeListener;
+import b33hive.shared.app.bh;
 import b33hive.shared.debugging.bhU_Debug;
 import b33hive.shared.json.bhA_JsonFactory;
 import b33hive.shared.json.bhI_JsonObject;
 import b33hive.shared.transaction.bhE_ResponseError;
 import b33hive.shared.transaction.bhTransactionRequest;
 import b33hive.shared.transaction.bhTransactionResponse;
-import b33hive.shared.utils.bhU_Singletons;
+
 
 public class bhSessionManager implements bhI_TransactionScopeListener
 {
 	private static final Logger s_logger = Logger.getLogger(bhSessionManager.class.getName());
-	
-	private static bhSessionManager s_instance = null;
-	
+		
 	private final URLCodec m_urlCodec = new URLCodec(); // thread safe
 	
 	private bhI_BlobManager m_blobManager;
@@ -50,19 +50,9 @@ public class bhSessionManager implements bhI_TransactionScopeListener
 	
 	private final bhUserSession m_nullSession = new bhUserSession();
 	
-	private bhSessionManager()
+	public bhSessionManager()
 	{
-		m_blobManager = bhBlobManagerFactory.getInstance().create(bhE_BlobCacheLevel.MEMCACHE, bhE_BlobCacheLevel.PERSISTENT);
-	}
-	
-	public static void startUp()
-	{
-		s_instance = new bhSessionManager();
-	}
-	
-	public static bhSessionManager getInstance()
-	{
-		return s_instance;
+		m_blobManager = bh_s.blobMngrFactory.create(bhE_BlobCacheLevel.MEMCACHE, bhE_BlobCacheLevel.PERSISTENT);
 	}
 	
 	private bhSessionCookieValue createSessionCookieValue(bhTransactionResponse response, bhUserSession userSession, bhE_SessionType type)
@@ -127,7 +117,7 @@ public class bhSessionManager implements bhI_TransactionScopeListener
 			//--- DRK > Just being safe here in case someone is spamming invalid cookie data.
 			try
 			{
-				bhA_JsonFactory jsonFactory = bhU_Singletons.get(bhA_JsonFactory.class);
+				bhA_JsonFactory jsonFactory = bh.jsonFactory;
 				bhI_JsonObject json = jsonFactory.createJsonObject(cookieValueJson);
 				cookieValue = new bhSessionCookieValue(json, type);
 			}

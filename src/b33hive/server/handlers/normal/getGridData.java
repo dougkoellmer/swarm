@@ -2,7 +2,9 @@ package b33hive.server.handlers.normal;
 
 import java.util.logging.Logger;
 
-import b33hive.server.app.bhS_ServerApp;
+import com.b33hive.server.app.bhS_ServerApp;
+
+import b33hive.server.account.bh_s;
 import b33hive.server.data.blob.bhBlobException;
 import b33hive.server.data.blob.bhBlobManagerFactory;
 import b33hive.server.data.blob.bhE_BlobCacheLevel;
@@ -23,7 +25,7 @@ public class getGridData implements bhI_RequestHandler
 	@Override
 	public void handleRequest(bhTransactionContext context, bhTransactionRequest request, bhTransactionResponse response)
 	{
-		bhI_BlobManager blobManager = bhBlobManagerFactory.getInstance().create(bhE_BlobCacheLevel.values());
+		bhI_BlobManager blobManager = bh_s.blobMngrFactory.create(bhE_BlobCacheLevel.values());
 		
 		bhServerGrid grid = null;
 		

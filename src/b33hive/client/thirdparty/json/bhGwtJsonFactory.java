@@ -3,6 +3,7 @@ package b33hive.client.thirdparty.json;
 import b33hive.shared.json.bhA_JsonFactory;
 import b33hive.shared.json.bhI_JsonArray;
 import b33hive.shared.json.bhI_JsonObject;
+import b33hive.shared.json.bhJsonHelper;
 import b33hive.shared.reflection.bhI_Class;
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
@@ -28,6 +29,13 @@ public class bhGwtJsonFactory extends bhA_JsonFactory
 		}
 	};
 	
+	private final bhJsonHelper m_jsonHelper;
+	
+	public bhGwtJsonFactory(boolean verboseKeys)
+	{
+		m_jsonHelper = new bhJsonHelper(verboseKeys);
+	}
+	
 	@Override
 	public bhI_Class<? extends bhI_JsonObject> getJsonObjectClass()
 	{
@@ -52,5 +60,11 @@ public class bhGwtJsonFactory extends bhA_JsonFactory
 	public bhI_Class<? extends bhI_JsonArray> getJsonArrayClass()
 	{
 		return m_arrayClass;
+	}
+
+	@Override
+	public bhJsonHelper getHelper()
+	{
+		return m_jsonHelper;
 	}
 }

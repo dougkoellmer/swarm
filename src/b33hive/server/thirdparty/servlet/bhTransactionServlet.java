@@ -13,14 +13,16 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONException;
 
+import b33hive.server.account.bh_s;
 import b33hive.server.transaction.bhServerTransactionManager;
+import b33hive.shared.app.bh;
 import b33hive.shared.app.bhS_App;
 import b33hive.shared.json.bhA_JsonFactory;
 import b33hive.shared.json.bhI_JsonObject;
 import b33hive.shared.transaction.bhS_Transaction;
 import b33hive.shared.transaction.bhTransactionRequest;
 import b33hive.shared.transaction.bhTransactionResponse;
-import b33hive.shared.utils.bhU_Singletons;
+
 
 public class bhTransactionServlet extends bhA_BaseServlet
 {
@@ -43,11 +45,10 @@ public class bhTransactionServlet extends bhA_BaseServlet
 		//bhU_Servlet.simulateLag(1000);
 		//bhU_Servlet.simulateException(true);
 		
-		bhA_JsonFactory jsonFactory = bhU_Singletons.get(bhA_JsonFactory.class);
 		bhI_JsonObject requestJson = bhU_Servlet.getRequestJson(nativeRequest, isGet);
-		bhI_JsonObject responseJson = jsonFactory.createJsonObject();
+		bhI_JsonObject responseJson = bh.jsonFactory.createJsonObject();
 		
-		bhServerTransactionManager.getInstance().handleRequestFromClient(nativeRequest, nativeResponse, this.getServletContext(), requestJson, responseJson, bhS_App.VERBOSE_TRANSACTIONS);
+		bh_s.txnMngr.handleRequestFromClient(nativeRequest, nativeResponse, this.getServletContext(), requestJson, responseJson, bhS_App.VERBOSE_TRANSACTIONS);
 		
 		bhU_Servlet.writeJsonResponse(responseJson, nativeResponse.getWriter());
 		

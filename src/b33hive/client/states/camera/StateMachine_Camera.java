@@ -3,6 +3,7 @@ package b33hive.client.states.camera;
 
 import java.util.logging.Logger;
 
+import b33hive.client.app.bh_c;
 import b33hive.client.code.bhCompilerErrorMessageGenerator;
 import b33hive.client.entities.bhCamera;
 import b33hive.client.managers.bhCellCodeManager;
@@ -66,9 +67,9 @@ public class StateMachine_Camera extends bhA_StateMachine implements bhI_StateEv
 	 */
 	static class CameraManager extends bhCameraManager
 	{
-		CameraManager(bhCamera camera)
+		CameraManager(bhCamera camera, double minSnapTime, double snapTimeRange)
 		{
-			super(camera);
+			super(camera, minSnapTime, snapTimeRange);
 		}
 		
 		@Override
@@ -144,11 +145,10 @@ public class StateMachine_Camera extends bhA_StateMachine implements bhI_StateEv
 		@Override
 		public void perform(bhA_ActionArgs args)
 		{
-			Args castArgs = (Args) args;
-			
-			bhCamera.getInstance().setViewRect(castArgs.m_dimensions[0], castArgs.m_dimensions[1]);
-			
+			Args args_cast = (Args) args;
 			StateMachine_Camera machine = this.getState();
+			
+			machine.getCamera().setViewRect(args_cast.m_dimensions[0], args_cast.m_dimensions[1]);
 			
 			machine.updateBufferManager();
 			
@@ -402,7 +402,7 @@ public class StateMachine_Camera extends bhA_StateMachine implements bhI_StateEv
 				return false;
 			}
 			
-			if( bhCellAddressManager.getInstance().isWaitingOnResponse(address) )
+			if( bh_c.addressMngr.isWaitingOnResponse(address) )
 			{
 				return false;
 			}
@@ -508,6 +508,7 @@ public class StateMachine_Camera extends bhA_StateMachine implements bhI_StateEv
 	private PendingSnap m_pendingSnap = null;
 	
 	private final CameraManager m_cameraManager;
+	private final bhCamera m_camera;
 	
 	private static final Logger s_logger = Logger.getLogger(StateMachine_Camera.class.getName());
 
@@ -515,9 +516,14 @@ public class StateMachine_Camera extends bhA_StateMachine implements bhI_StateEv
 	
 	private final bhCellAddressManagerListener m_addressManagerListener = new bhCellAddressManagerListener(this);
 	
-	public StateMachine_Camera()
+	public StateMachine_Camera(double minSnapTime, double snapTimeRange)
 	{
-		m_cameraManager = new CameraManager(bhCamera.getInstance());
+		m_camera = new bhCamera();
+		m_cameraManager = new CameraManager(m_camera, minSnapTime, snapTimeRange);
+		
+		//TODO(DRK): Not the biggest fan of setting these this way...
+		bh_c.camera = m_camera;
+		bh_c.cameraMngr = m_cameraManager;
 		
 		bhA_Action.register(new SetCameraViewSize());
 		bhA_Action.register(new SnapToAddress());
@@ -526,14 +532,19 @@ public class StateMachine_Camera extends bhA_StateMachine implements bhI_StateEv
 		bhA_Action.register(new SetCameraTarget());
 		bhA_Action.register(new SetInitialPosition());
 		
-		bhA_ClientUser user = bhUserManager.getInstance().getUser();
+		bhA_ClientUser user = bh_c.userMngr.getUser();
 		m_codeRepo.addSource(user);
 		m_codeRepo.addSource(bhCellCodeCache.getInstance());
 	}
 	
+	public bhCamera getCamera()
+	{
+		return m_camera;
+	}
+	
 	private void snapToCellAddress(bhCellAddress address)
 	{
-		bhCellAddressManager addressManager = bhCellAddressManager.getInstance();
+		bhCellAddressManager addressManager = bh_c.addressMngr;
 		bhA_State currentState = this.getCurrentState();
 		
 		if( currentState instanceof State_GettingMapping )
@@ -547,7 +558,7 @@ public class StateMachine_Camera extends bhA_StateMachine implements bhI_StateEv
 				machine_setState(this, State_CameraFloating.class);
 				
 				//TODO: Might want to ease the camera instead of stopping it short.
-				m_cameraManager.internal_setTargetPosition(bhCamera.getInstance().getPosition(), false);
+				m_cameraManager.internal_setTargetPosition(bh_c.camera.getPosition(), false);
 			}
 			
 			State_GettingMapping.Constructor constructor = new State_GettingMapping.Constructor(address);
@@ -606,7 +617,7 @@ public class StateMachine_Camera extends bhA_StateMachine implements bhI_StateEv
 	{
 		//--- DRK > Not enforcing z constraints here because UI probably hasn't told us camera view size yet.
 		
-		bhA_ClientUser user = bhUserManager.getInstance().getUser();
+		bhA_ClientUser user = bh_c.userMngr.getUser();
 		m_cameraManager.setCameraPosition(user.getLastPosition(), false);
 
 		bhCellCodeManager.getInstance().start(new bhCellCodeManager.I_SyncOrPreviewDelegate()
@@ -648,7 +659,7 @@ public class StateMachine_Camera extends bhA_StateMachine implements bhI_StateEv
 			}
 		});
 		
-		bhCellAddressManager.getInstance().start(m_addressManagerListener);
+		bh_c.addressMngr.start(m_addressManagerListener);
 	}
 	
 	@Override
@@ -697,7 +708,7 @@ public class StateMachine_Camera extends bhA_StateMachine implements bhI_StateEv
 			
 			int options = bhF_BufferUpdateOption.CREATE_VISUALIZATIONS;
 			
-			bhCellBufferManager.getInstance().update(bhClientGrid.getInstance(), bhCamera.getInstance(), compiledStaticHtmlSource, options);
+			bhCellBufferManager.getInstance().update(bhClientGrid.getInstance(), bh_c.camera, compiledStaticHtmlSource, options);
 			
 			//--- DRK > As soon as target cell comes into sight, we start trying to populate
 			//---		it with compiled_dynamic and source html from the snapping state's html source(s).
@@ -720,13 +731,13 @@ public class StateMachine_Camera extends bhA_StateMachine implements bhI_StateEv
 		else
 		{
 			int options = bhF_BufferUpdateOption.ALL;
-			bhCellBufferManager.getInstance().update(bhClientGrid.getInstance(), bhCamera.getInstance(), m_codeRepo, options);
+			bhCellBufferManager.getInstance().update(bhClientGrid.getInstance(), bh_c.camera, m_codeRepo, options);
 		}
 	}
 	
 	protected void willExit()
 	{
-		bhCellAddressManager.getInstance().stop();
+		bh_c.addressMngr.stop();
 		
 		bhCellCodeManager.getInstance().stop();
 	}
@@ -760,7 +771,7 @@ public class StateMachine_Camera extends bhA_StateMachine implements bhI_StateEv
 			{
 				if( event.getAction() == StateMachine_Base.OnGridResize.class )
 				{
-					bhCamera.getInstance().onGridSizeChanged();
+					bh_c.camera.onGridSizeChanged();
 					
 					updateBufferManager();
 				}

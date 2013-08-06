@@ -1,6 +1,7 @@
 package b33hive.client.ui.cell;
 
-import b33hive.client.app.bhS_ClientApp;
+import b33hive.client.app.bhAppConfig;
+import b33hive.client.app.bh_c;
 import b33hive.client.entities.bhCamera;
 import b33hive.client.entities.bhBufferCell;
 import b33hive.client.entities.bhE_CodeStatus;
@@ -12,6 +13,7 @@ import b33hive.client.states.camera.State_ViewingCell;
 import b33hive.client.states.code.State_EditingCode;
 import b33hive.client.ui.bhE_ZIndex;
 import b33hive.client.ui.bhI_UIElement;
+import b33hive.client.ui.bh_view;
 import b33hive.client.ui.tooltip.bhE_ToolTipType;
 import b33hive.client.ui.tooltip.bhToolTipConfig;
 import b33hive.client.ui.tooltip.bhToolTipManager;
@@ -60,10 +62,14 @@ public class bhVisualCellHud extends FlowPanel implements bhI_UIElement
 
 	private boolean m_waitingForBeingRefreshableAgain = false;
 	
+	private final bhAppConfig m_appConfig;
+	
 	private final StateMachine_Camera.SetCameraTarget.Args m_args_SetCameraTarget = new StateMachine_Camera.SetCameraTarget.Args();
 	
-	public bhVisualCellHud(Panel parent)
+	public bhVisualCellHud(Panel parent, bhAppConfig appConfig)
 	{
+		m_appConfig = appConfig;
+		
 		this.addStyleName("bh_cell_hud");
 		
 		bhE_ZIndex.CELL_HUD.assignTo(this);
@@ -109,20 +115,20 @@ public class bhVisualCellHud extends FlowPanel implements bhI_UIElement
 			}
 		});*/
 		
-		bhClickManager.getInstance().addClickHandler(m_refresh, new bhI_ClickHandler()
+		bh_c.clickMngr.addClickHandler(m_refresh, new bhI_ClickHandler()
 		{
 			@Override
 			public void onClick()
 			{
 				if( !m_refresh.isEnabled() )  return;
 				
-				bhVisualCellManager.getInstance().clearAlerts();
+				bh_view.cellMngr.clearAlerts();
 				
 				bhA_Action.perform(State_ViewingCell.Refresh.class);
 			}
 		});
 		
-		bhClickManager.getInstance().addClickHandler(m_close, new bhI_ClickHandler()
+		bh_c.clickMngr.addClickHandler(m_close, new bhI_ClickHandler()
 		{
 			@Override
 			public void onClick()
@@ -140,14 +146,14 @@ public class bhVisualCellHud extends FlowPanel implements bhI_UIElement
 				bhGridCoordinate coord = cell.getCoordinate();
 				
 				coord.calcCenterPoint(s_utilPoint1, 1);
-				s_utilPoint1.incZ(bhS_ClientApp.VIEWING_CELL_CLOSE_BUTTON_DISTANCE_OFFSET);
+				s_utilPoint1.incZ(m_appConfig.backOffDistance);
 				
 				m_args_SetCameraTarget.setPoint(s_utilPoint1);
 				bhA_Action.perform(StateMachine_Camera.SetCameraTarget.class, m_args_SetCameraTarget);
 			}
 		});
 		
-		bhToolTipManager toolTipper = bhToolTipManager.getInstance();
+		bhToolTipManager toolTipper = bh_c.toolTipMngr;
 		
 		//toolTipper.addTip(m_back, new bhToolTipConfig(bhE_ToolTipType.MOUSE_OVER, "Go back."));
 		//toolTipper.addTip(m_forward, new bhToolTipConfig(bhE_ToolTipType.MOUSE_OVER, "Go forward."));
@@ -172,13 +178,13 @@ public class bhVisualCellHud extends FlowPanel implements bhI_UIElement
 	
 	private void updatePosition(State_ViewingCell state)
 	{
-		bhCamera camera = bhCamera.getInstance();
+		bhCamera camera = bh_c.camera;
 		bhBufferCell cell = ((State_ViewingCell)state).getCell();
 		bhGridCoordinate coord = cell.getCoordinate();
 		coord.calcPoint(s_utilPoint1, 1);
 		camera.calcScreenPoint(s_utilPoint1, s_utilPoint2);
 		this.getElement().getStyle().setLeft(s_utilPoint2.getX(), Unit.PX);
-		double y = s_utilPoint2.getY()-bhS_ClientApp.CELL_HUD_HEIGHT-bhS_App.CELL_SPACING_PIXEL_COUNT;
+		double y = s_utilPoint2.getY()-m_appConfig.cellHudHeight-bhS_App.CELL_SPACING_PIXEL_COUNT;
 		y -= 3; // account for margin...sigh
 		this.getElement().getStyle().setTop(y, Unit.PX);
 	}

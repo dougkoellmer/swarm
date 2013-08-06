@@ -1,5 +1,6 @@
 package b33hive.server.handlers.normal;
 
+import b33hive.server.account.bh_s;
 import b33hive.server.data.blob.bhBlobException;
 import b33hive.server.data.blob.bhBlobManagerFactory;
 import b33hive.server.data.blob.bhE_BlobCacheLevel;
@@ -27,7 +28,7 @@ public class getCellAddressMapping implements bhI_RequestHandler
 		
 		if( parseError == bhE_CellAddressParseError.NO_ERROR )
 		{
-			bhI_BlobManager blobManager = bhBlobManagerFactory.getInstance().create(bhE_BlobCacheLevel.values());
+			bhI_BlobManager blobManager = bh_s.blobMngrFactory.create(bhE_BlobCacheLevel.values());
 			
 			bhServerCellAddressMapping addressMapping = null;
 			

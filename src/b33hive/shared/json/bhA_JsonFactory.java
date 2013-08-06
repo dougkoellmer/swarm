@@ -15,6 +15,8 @@ public abstract class bhA_JsonFactory
 		return this.getJsonArrayClass().newInstance();
 	}
 	
+	public abstract bhJsonHelper getHelper();
+	
 	public abstract bhI_JsonObject createJsonObject(String data);
 	
 	public abstract bhI_JsonArray createJsonArray(String data);

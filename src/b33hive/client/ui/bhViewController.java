@@ -2,6 +2,8 @@ package b33hive.client.ui;
 
 import java.util.ArrayList;
 
+import b33hive.client.app.bhAppConfig;
+import b33hive.client.app.bh_c;
 import b33hive.client.input.bhMouse;
 import b33hive.client.navigation.bhMasterNavigator;
 import b33hive.client.navigation.bhMouseNavigator;
@@ -28,48 +30,45 @@ import com.google.gwt.user.client.ui.RootPanel;
  * ...
  * @author 
  */
-public class bhUIController extends Object implements bhI_StateEventListener
-{
-	private static final bhUIController s_instance = new bhUIController();
-	
+public class bhViewController extends Object implements bhI_StateEventListener
+{	
 	private final ArrayList<bhI_UIElement> m_listeners = new ArrayList<bhI_UIElement>();
+	private final bhViewConfig m_viewConfig;
+	private final bhAppConfig m_appConfig;
 	
-	private static void startUpInitialUI()
+	public bhViewController(bhViewConfig config, bhAppConfig appConfig)
 	{
-		s_instance.m_listeners.add(new bhDialogManager(RootPanel.get()));
-		s_instance.m_listeners.add(new bhInitialSyncScreen());
+		m_viewConfig = config;
+		m_appConfig = appConfig;
 	}
 	
-	private static void shutDownInitialUI()
+	private void startUpInitialUI()
 	{
-		s_instance.m_listeners.remove(s_instance.m_listeners.size()-1);
+		m_listeners.add(new bhDialogManager(RootPanel.get()));
+		m_listeners.add(new bhInitialSyncScreen());
 	}
 	
-	private static void startUpCoreUI()
+	private void shutDownInitialUI()
 	{
-		bhSplitPanel splitPanel = bhSplitPanel.getInstance();
-		bhVisualCellContainer cellContainer = splitPanel.getCellContainer();
+		m_listeners.remove(m_listeners.size()-1);
+	}
+	
+	private void startUpCoreUI()
+	{
+		bh_view.splitPanel = new bhSplitPanel(m_viewConfig);
+		bhVisualCellContainer cellContainer = bh_view.splitPanel.getCellContainer();
 		
 		bhMouse mouse = new bhMouse(cellContainer.getMouseEnabledLayer());
 		
 		// TODO: Clean this up so that all this crap doesn't add itself to parent containers in constructors.
-		s_instance.m_listeners.add(new bhMasterNavigator(mouse));
-		s_instance.m_listeners.add(new bhVisualCellManager(cellContainer.getCellContainerLayer()));
-		s_instance.m_listeners.add(splitPanel);
-		s_instance.m_listeners.add(new bhVisualCellHighlight(cellContainer.getCellContainerLayer()));
-		s_instance.m_listeners.add(new bhVisualCellFocuser(cellContainer.getCellContainerLayer()));
-		s_instance.m_listeners.add(new bhVisualCellHud((Panel)cellContainer));
+		m_listeners.add(bh_c.navigator = new bhMasterNavigator(mouse));
+		m_listeners.add(bh_view.cellMngr = new bhVisualCellManager(cellContainer.getCellContainerLayer()));
+		m_listeners.add(bh_view.splitPanel);
+		m_listeners.add(new bhVisualCellHighlight(cellContainer.getCellContainerLayer()));
+		m_listeners.add(new bhVisualCellFocuser(cellContainer.getCellContainerLayer()));
+		m_listeners.add(new bhVisualCellHud((Panel)cellContainer, m_appConfig));
 		
-		RootLayoutPanel.get().add(splitPanel);
-	}
-	
-	public static bhUIController getInstance()
-	{
-		return s_instance;
-	}
-	
-	public bhUIController()
-	{
+		RootLayoutPanel.get().add(bh_view.splitPanel);
 	}
 	
 	public void onStateEvent(bhStateEvent event)
@@ -91,7 +90,7 @@ public class bhUIController extends Object implements bhI_StateEventListener
 		{
 			if( event.getState() instanceof StateMachine_Base )
 			{
-				bhToolTipManager.getInstance().update(event.getState().getLastTimeStep());
+				bh_c.toolTipMngr.update(event.getState().getLastTimeStep());
 			}
 		}
 		

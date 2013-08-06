@@ -1,6 +1,7 @@
 package b33hive.client.states.account;
 
 
+import b33hive.client.app.bh_c;
 import b33hive.client.managers.bhClientAccountManager;
 import b33hive.client.managers.bhGridManager;
 import b33hive.client.managers.bhUserManager;
@@ -27,6 +28,8 @@ import b33hive.shared.transaction.bhE_RequestPath;
 import b33hive.shared.transaction.bhE_ResponseError;
 import b33hive.shared.transaction.bhTransactionRequest;
 import b33hive.shared.transaction.bhTransactionResponse;
+
+
 import com.google.gwt.http.client.RequestBuilder;
 
 
@@ -43,7 +46,7 @@ public class State_SignInOrUp extends bhA_State
 		{
 			bhSignInCredentials creds = ((SignIn.Args) args).m_creds;
 			
-			bhClientAccountManager manager = bhClientAccountManager.getInstance();
+			bhClientAccountManager manager = bh_c.accountMngr;
 			manager.setNewDesiredPassword(creds);
 			
 			machine_pushState(this.getState().getParent(), State_AccountStatusPending.class);	
@@ -79,8 +82,11 @@ public class State_SignInOrUp extends bhA_State
 		{
 			bhSignInCredentials creds = ((Args) args).m_creds;
 
-			bhClientAccountManager.getInstance().signIn(creds, bhE_TransactionAction.QUEUE_REQUEST);
-			bhUserManager.getInstance().populateUser(bhE_TransactionAction.QUEUE_REQUEST_AND_FLUSH);
+			bhUserManager userManager = bh_c.userMngr;
+			bhClientAccountManager accountManager = bh_c.accountMngr;
+			
+			accountManager.signIn(creds, bhE_TransactionAction.QUEUE_REQUEST);
+			userManager.populateUser(bhE_TransactionAction.QUEUE_REQUEST_AND_FLUSH);
 			
 			machine_pushState(this.getState().getParent(), State_AccountStatusPending.class);			
 		}
@@ -133,8 +139,11 @@ public class State_SignInOrUp extends bhA_State
 		{
 			bhSignUpCredentials creds = ((Args) args).m_creds;
 
-			bhClientAccountManager.getInstance().signUp(creds, bhE_TransactionAction.QUEUE_REQUEST);
-			bhUserManager.getInstance().populateUser(bhE_TransactionAction.QUEUE_REQUEST_AND_FLUSH);
+			bhUserManager userManager = bh_c.userMngr;
+			bhClientAccountManager accountManager = bh_c.accountMngr;
+			
+			accountManager.signUp(creds, bhE_TransactionAction.QUEUE_REQUEST);
+			userManager.populateUser(bhE_TransactionAction.QUEUE_REQUEST_AND_FLUSH);
 
 			machine_pushState(this.getState().getParent(), State_AccountStatusPending.class);	
 		}

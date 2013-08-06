@@ -1,12 +1,14 @@
-package b33hive.server.handlers.blobxn;
+package b33hive.server.blobxn;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.b33hive.server.app.bhS_ServerApp;
+
 import b33hive.server.account.bhUserSession;
-import b33hive.server.app.bhS_ServerApp;
+import b33hive.server.account.bh_s;
 import b33hive.server.data.blob.bhA_BlobTransaction;
 import b33hive.server.data.blob.bhBlobException;
 import b33hive.server.data.blob.bhBlobManagerFactory;
@@ -91,7 +93,7 @@ public class bhBlobTransaction_CreateCell extends bhA_BlobTransaction
 		
 		this.clear();
 		
-		bhI_BlobManager blobManager = bhBlobManagerFactory.getInstance().create(bhE_BlobCacheLevel.PERSISTENT);
+		bhI_BlobManager blobManager = bh_s.blobMngrFactory.create(bhE_BlobCacheLevel.PERSISTENT);
 		
 		//--- DRK > Make sure grid exists.
 		m_grid = blobManager.getBlob(bhE_GridType.ACTIVE, bhServerGrid.class);
@@ -136,7 +138,7 @@ public class bhBlobTransaction_CreateCell extends bhA_BlobTransaction
 	@Override
 	protected void onSuccess()
 	{
-		bhI_BlobManager blobManager = bhBlobManagerFactory.getInstance().create(bhE_BlobCacheLevel.MEMCACHE);
+		bhI_BlobManager blobManager = bh_s.blobMngrFactory.create(bhE_BlobCacheLevel.MEMCACHE);
 		
 		//--- DRK > We only update the grid if it grew...we only care that a grid of appropriate size is cached,
 		//---		not a grid with accurate cell ownerships.  We only need that when we create a new user or add

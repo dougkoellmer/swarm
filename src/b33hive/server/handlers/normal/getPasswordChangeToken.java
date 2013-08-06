@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletRequest;
 import b33hive.server.account.bhS_ServerAccount;
 import b33hive.server.account.bhServerAccountManager;
 import b33hive.server.account.bhUserSession;
+import b33hive.server.account.bh_s;
 import b33hive.server.data.blob.bhBlobException;
 import b33hive.server.data.blob.bhBlobManagerFactory;
 import b33hive.server.data.blob.bhE_BlobCacheLevel;
@@ -17,6 +18,7 @@ import b33hive.server.structs.bhServerCellAddressMapping;
 import b33hive.server.telemetry.bhTelemetryDatabase;
 import b33hive.server.transaction.bhI_RequestHandler;
 import b33hive.server.transaction.bhTransactionContext;
+import b33hive.shared.app.bh;
 import b33hive.shared.app.bhS_App;
 import b33hive.shared.json.bhE_JsonKey;
 import b33hive.shared.json.bhJsonHelper;
@@ -31,7 +33,7 @@ public class getPasswordChangeToken implements bhI_RequestHandler
 	@Override
 	public void handleRequest(bhTransactionContext context, bhTransactionRequest request, bhTransactionResponse response)
 	{
-		bhSessionManager sessionManager = bhSessionManager.getInstance();
+		bhSessionManager sessionManager = bh_s.sessionMngr;
 		HttpServletRequest nativeRequest = (HttpServletRequest) request.getNativeRequest();
 		
 		String passwordChangeToken = nativeRequest.getParameter(bhS_ServerAccount.PASSWORD_CHANGE_TOKEN_PARAMETER_NAME);
@@ -44,10 +46,9 @@ public class getPasswordChangeToken implements bhI_RequestHandler
 				sessionManager.endSession(request, response);
 			}
 			
-			bhServerAccountManager accountManager = bhServerAccountManager.getInstance();
-			if( accountManager.isPasswordChangeTokenValid(passwordChangeToken) )
+			if( bh_s.accountMngr.isPasswordChangeTokenValid(passwordChangeToken) )
 			{
-				bhJsonHelper.getInstance().putString(response.getJson(), bhE_JsonKey.passwordChangeToken, passwordChangeToken);
+				bh.jsonFactory.getHelper().putString(response.getJson(), bhE_JsonKey.passwordChangeToken, passwordChangeToken);
 			}
 			else
 			{

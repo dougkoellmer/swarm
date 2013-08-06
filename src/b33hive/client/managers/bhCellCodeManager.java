@@ -3,6 +3,7 @@ package b33hive.client.managers;
 import java.util.HashSet;
 import java.util.logging.Logger;
 
+import b33hive.client.app.bh_c;
 import b33hive.client.entities.bhBufferCell;
 import b33hive.client.entities.bhA_ClientUser;
 import b33hive.client.entities.bhE_CellNuke;
@@ -15,6 +16,7 @@ import b33hive.client.transaction.bhE_ResponseSuccessControl;
 import b33hive.client.transaction.bhE_TransactionAction;
 import b33hive.client.transaction.bhI_TransactionResponseHandler;
 import b33hive.client.transaction.bhClientTransactionManager;
+import b33hive.shared.app.bh;
 import b33hive.shared.app.bhS_App;
 import b33hive.shared.code.bhCompilerResult;
 import b33hive.shared.code.bhE_CompilationStatus;
@@ -34,7 +36,7 @@ import b33hive.shared.transaction.bhE_RequestPath;
 import b33hive.shared.transaction.bhI_RequestPath;
 import b33hive.shared.transaction.bhTransactionRequest;
 import b33hive.shared.transaction.bhTransactionResponse;
-import b33hive.shared.utils.bhU_Singletons;
+
 
 import com.google.gwt.http.client.RequestBuilder;
 
@@ -78,21 +80,24 @@ public class bhCellCodeManager implements bhI_TransactionResponseHandler
 	
 	public void start(I_SyncOrPreviewDelegate syncOrPreviewErrorDelegate)
 	{
-		bhClientTransactionManager.getInstance().addHandler(this);
+		bhClientTransactionManager txnMngr = bh_c.txnMngr;
+		txnMngr.addHandler(this);
 		
 		m_syncOrPreviewErrorDelegate = syncOrPreviewErrorDelegate;
 	}
 	
 	public void stop()
 	{
-		bhClientTransactionManager.getInstance().removeHandler(this);
+		bhClientTransactionManager txnMngr = bh_c.txnMngr;
+		txnMngr.removeHandler(this);
 		
 		m_syncOrPreviewErrorDelegate = null;
 	}
 	
 	public void flush()
 	{
-		bhClientTransactionManager.getInstance().flushRequestQueue();
+		bhClientTransactionManager txnMngr = bh_c.txnMngr;
+		txnMngr.flushRequestQueue();
 	}
 	
 	private void preparePostQuery(bhGridCoordinate coord)
@@ -138,15 +143,14 @@ public class bhCellCodeManager implements bhI_TransactionResponseHandler
 		bhTransactionRequest request = new bhTransactionRequest(bhE_RequestPath.syncCode);
 		sourceCode.writeJson(request.getJson());
 		coord.writeJson(request.getJson());
-		
-		bhClientTransactionManager transactionManager = bhClientTransactionManager.getInstance();
-		transactionManager.makeRequest(request);
+
+		bh_c.txnMngr.makeRequest(request);
 
 		bhCode compiledCode = new bhCode(sourceCode.getRawCode(), bhE_CodeType.COMPILED);
 		compiledCode.setSafetyLevel(bhE_CodeSafetyLevel.REQUIRES_DYNAMIC_SANDBOX);
 		cell.onSyncStart(sourceCode, compiledCode);
 		
-		bhUserManager userManager = bhU_Singletons.get(bhUserManager.class);
+		bhUserManager userManager = bh_c.userMngr;
 		bhA_ClientUser user = userManager.getUser();
 		user.onSyncStart(coord, compiledCode);
 		
@@ -167,13 +171,14 @@ public class bhCellCodeManager implements bhI_TransactionResponseHandler
 	private boolean isSyncing(bhGridCoordinate coord)
 	{
 		preparePostQuery(coord);
+		bhClientTransactionManager txnMngr = bh_c.txnMngr;
 		
-		return bhClientTransactionManager.getInstance().containsDispatchedRequest(bhE_RequestPath.syncCode, m_postQuery);
+		return txnMngr.containsDispatchedRequest(bhE_RequestPath.syncCode, m_postQuery);
 	}
 	
 	public void populateCell(bhBufferCell cell, bhI_LocalCodeRepository localHtmlSource, int cellSize, boolean recycled, boolean communicateWithServer, bhE_CodeType eType)
 	{
-		bhClientTransactionManager transactionManager = bhClientTransactionManager.getInstance();
+		bhClientTransactionManager txnMngr = bh_c.txnMngr;
 		
 		bhGridCoordinate absCoord = cell.getCoordinate();
 		
@@ -224,14 +229,14 @@ public class bhCellCodeManager implements bhI_TransactionResponseHandler
 						//---		(5) Since a cell's state is somewhat transient and doesn't know that a transaction is already out, we track it here.
 						//---		(6) Cell gets its status set correctly to WAITING_ON_CODE without another transaction going out.
 						prepareGetQuery(cell.getCoordinate(), eType);
-						if( !transactionManager.containsDispatchedRequest(bhE_RequestPath.getCode, m_getQuery) )
+						if( !txnMngr.containsDispatchedRequest(bhE_RequestPath.getCode, m_getQuery) )
 						{
 							bhTransactionRequest request = new bhTransactionRequest(bhE_RequestPath.getCode);
 							
 							cell.getCoordinate().writeJson(request.getJson());
-							bhJsonHelper.getInstance().putInt(request.getJson(), bhE_JsonKey.codeType, eType.ordinal());
+							bh.jsonFactory.getHelper().putInt(request.getJson(), bhE_JsonKey.codeType, eType.ordinal());
 							
-							bhClientTransactionManager.getInstance().queueRequest(request);
+							txnMngr.queueRequest(request);
 						}
 					
 						cell.onServerRequest(eType);
@@ -253,10 +258,10 @@ public class bhCellCodeManager implements bhI_TransactionResponseHandler
 		m_utilCoord.readJson(request.getJson());
 		m_utilCell.getCoordinate().copy(m_utilCoord);
 
-		bhUserManager userManager = bhU_Singletons.get(bhUserManager.class);
+		bhUserManager userManager = bh_c.userMngr;
 		bhA_ClientUser user = userManager.getUser();
 		
-		int typeOrdinal = bhJsonHelper.getInstance().getInt(request.getJson(), bhE_JsonKey.codeType);
+		int typeOrdinal = bh.jsonFactory.getHelper().getInt(request.getJson(), bhE_JsonKey.codeType);
 		bhE_CodeType eHtmlType = bhE_CodeType.values()[typeOrdinal];
 		bhCode code = m_utilCell.getCode(eHtmlType);
 		
@@ -327,7 +332,7 @@ public class bhCellCodeManager implements bhI_TransactionResponseHandler
 		}
 		else if( request.getPath() == bhE_RequestPath.syncCode )
 		{
-			bhUserManager userManager = bhU_Singletons.get(bhUserManager.class);
+			bhUserManager userManager = bh_c.userMngr;
 			bhA_ClientUser user = userManager.getUser();
 			m_utilCoord.readJson(request.getJson());
 			
@@ -415,7 +420,9 @@ public class bhCellCodeManager implements bhI_TransactionResponseHandler
 	private void assertNotPosting(bhGridCoordinate coord)
 	{
 		preparePostQuery(m_utilCoord);
-		bhU_Debug.ASSERT(!bhClientTransactionManager.getInstance().containsDispatchedRequest(bhE_RequestPath.syncCode, m_postQuery), "assertNotPosting1");
+		bhClientTransactionManager txnMngr = bh_c.txnMngr;
+		
+		bhU_Debug.ASSERT(!txnMngr.containsDispatchedRequest(bhE_RequestPath.syncCode, m_postQuery), "assertNotPosting1");
 	}
 	
 	private void cell_onServerError(bhGridCoordinate coordinate, bhE_CodeType eCodeType, boolean isSync)
@@ -450,7 +457,7 @@ public class bhCellCodeManager implements bhI_TransactionResponseHandler
 	{
 		if( response.getError() == bhE_ResponseError.REDUNDANT )  return;
 		
-		int typeOrdinal = bhJsonHelper.getInstance().getInt(request.getJson(), bhE_JsonKey.codeType);
+		int typeOrdinal = bh.jsonFactory.getHelper().getInt(request.getJson(), bhE_JsonKey.codeType);
 		bhE_CodeType eCodeType = bhE_CodeType.values()[typeOrdinal];
 		
 		m_utilCoord.readJson(request.getJson());
@@ -487,7 +494,7 @@ public class bhCellCodeManager implements bhI_TransactionResponseHandler
 				return bhE_ResponseErrorControl.BREAK;
 			}
 
-			bhUserManager userManager = bhU_Singletons.get(bhUserManager.class);
+			bhUserManager userManager = bh_c.userMngr;
 			bhA_ClientUser user = userManager.getUser();
 			
 			m_utilCoord.readJson(request.getJson());

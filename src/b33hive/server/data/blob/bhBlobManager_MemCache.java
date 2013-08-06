@@ -26,9 +26,9 @@ class bhBlobManager_MemCache extends bhA_BlobManagerWithCache
 {
 	private static final Logger s_logger = Logger.getLogger(bhBlobManager_MemCache.class.getName());
 	
-	bhBlobManager_MemCache(bhI_BlobManager wrappedManager)
+	bhBlobManager_MemCache(bhBlobTemplateManager templateMngr, bhI_BlobManager wrappedManager)
 	{
-		super(wrappedManager);
+		super(templateMngr, wrappedManager);
 	}
 	
 	protected bhE_BlobCacheLevel getCacheLevel()
@@ -106,7 +106,7 @@ class bhBlobManager_MemCache extends bhA_BlobManagerWithCache
 		while( iterator.hasNext() )
 		{
 			bhI_BlobKeySource keySource = iterator.next();
-			bhI_Blob blob = bhBlobTemplateManager.getInstance().getTemplate(values.get(keySource));
+			bhI_Blob blob = m_templateMngr.getTemplate(values.get(keySource));
 			
 			if( !isCacheable(blob) )
 			{
@@ -170,7 +170,6 @@ class bhBlobManager_MemCache extends bhA_BlobManagerWithCache
 	protected Map<bhI_BlobKeySource, bhI_Blob> getBlobsFromCache(Map<bhI_BlobKeySource, Class<? extends bhI_Blob>> values) throws bhBlobException
 	{
 		ArrayList<String> generatedKeys = new ArrayList<String>();
-		bhBlobTemplateManager templateManager = bhBlobTemplateManager.getInstance();
 		Map<String, bhBlobTuple> generatedKeysToTuples = new HashMap<String, bhBlobTuple>();
 		
 		Iterator<? extends bhI_BlobKeySource> keySourceIterator = values.keySet().iterator();
@@ -178,7 +177,7 @@ class bhBlobManager_MemCache extends bhA_BlobManagerWithCache
 		{
 			bhI_BlobKeySource keySource = keySourceIterator.next();
 			Class<? extends bhI_Blob> blobType = values.get(keySource);
-			bhI_Blob blobTemplate = templateManager.getTemplate(blobType);
+			bhI_Blob blobTemplate = m_templateMngr.getTemplate(blobType);
 			
 			String generatedKey = keySource.createBlobKey(blobTemplate);
 			generatedKeys.add(keySource.createBlobKey(blobTemplate));

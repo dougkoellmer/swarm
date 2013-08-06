@@ -2,6 +2,8 @@ package b33hive.shared.json;
 
 import java.util.ArrayList;
 
+import b33hive.shared.app.bh;
+
 public class bhJsonQuery
 {
 	protected static class Condition
@@ -53,7 +55,7 @@ public class bhJsonQuery
 			}
 			else
 			{
-				Object value = bhJsonHelper.getInstance().getObject(json, m_keySource);
+				Object value = bh.jsonFactory.getHelper().getObject(json, m_keySource);
 				
 				if( value == null && m_value == null )
 				{

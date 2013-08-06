@@ -7,6 +7,7 @@ import javax.servlet.ServletContext;
 
 import b33hive.server.account.bhE_Role;
 import b33hive.server.account.bhUserSession;
+import b33hive.server.account.bh_s;
 import b33hive.server.data.blob.bhBlobException;
 import b33hive.server.data.blob.bhBlobManagerFactory;
 import b33hive.server.data.blob.bhE_BlobCacheLevel;
@@ -23,8 +24,6 @@ import b33hive.shared.structs.bhGetCellAddressResult;
 import b33hive.shared.transaction.bhE_ResponseError;
 import b33hive.shared.transaction.bhTransactionRequest;
 import b33hive.shared.transaction.bhTransactionResponse;
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.*;
 
 public class sessionQueryTest implements bhI_RequestHandler
@@ -35,12 +34,12 @@ public class sessionQueryTest implements bhI_RequestHandler
 	public void handleRequest(bhTransactionContext context, bhTransactionRequest request, bhTransactionResponse response)
 	{
 		//--- DRK > debug handler, so just doing basic security check.
-		if( !bhSessionManager.getInstance().isAuthorized(request, response, bhE_Role.ADMIN) )
+		if( !bh_s.sessionMngr.isAuthorized(request, response, bhE_Role.ADMIN) )
 		{
 			return;
 		}
 		
-		bhUserSession session = bhSessionManager.getInstance().getSession(request, response);
+		bhUserSession session = bh_s.sessionMngr.getSession(request, response);
 		
 		int accountId = session.getAccountId();
 		

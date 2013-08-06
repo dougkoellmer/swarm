@@ -23,8 +23,6 @@ public class bhCamera
 
 	private double m_cachedMaxZ = DIRTY_VALUE;
 	
-	private static final bhCamera s_instance = new bhCamera();
-	
 	public bhCamera()
 	{
 	}
@@ -56,11 +54,6 @@ public class bhCamera
 		m_cachedMaxZ = m_cachedMaxZ < bhS_App.MIN_MAX_Z ? bhS_App.MIN_MAX_Z : m_cachedMaxZ;
 		
 		return m_cachedMaxZ;*/
-	}
-	
-	public static bhCamera getInstance()
-	{
-		return s_instance;
 	}
 
 	public double calcDistanceRatio()

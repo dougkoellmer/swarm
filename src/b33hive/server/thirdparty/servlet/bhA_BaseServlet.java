@@ -7,7 +7,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import b33hive.server.app.bhServerApp;
+import com.b33hive.server.app.bhServerApp;
+
 
 @SuppressWarnings("serial")
 public abstract class bhA_BaseServlet extends HttpServlet

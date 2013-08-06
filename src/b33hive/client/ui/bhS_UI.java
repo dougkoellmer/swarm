@@ -14,6 +14,8 @@ public class bhS_UI
 	
 	public static final int MAGIC_TEXT_INPUT_PADDING = 2;
 	
+	public static final int MAGIC_UI_SPACING = 4;
+	
 	public static final int TOOL_TIP_NOTIFICATION_DURATION = 3; // seconds
 	
 	public static final double CELL_FOCUSER_MAX_ALPHA = .85;

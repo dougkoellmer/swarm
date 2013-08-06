@@ -1,5 +1,6 @@
 package b33hive.client.managers;
 
+import b33hive.client.app.bh_c;
 import b33hive.client.entities.bhBufferCell;
 import b33hive.client.entities.bhA_ClientUser;
 import b33hive.client.structs.bhCellAddressCache;
@@ -8,6 +9,7 @@ import b33hive.client.transaction.bhE_ResponseSuccessControl;
 import b33hive.client.transaction.bhE_TransactionAction;
 import b33hive.client.transaction.bhI_TransactionResponseHandler;
 import b33hive.client.transaction.bhClientTransactionManager;
+import b33hive.shared.app.bh;
 import b33hive.shared.json.bhMutableJsonQuery;
 import b33hive.shared.structs.bhCellAddress;
 import b33hive.shared.structs.bhCellAddressMapping;
@@ -22,7 +24,7 @@ import b33hive.shared.transaction.bhE_RequestPath;
 import b33hive.shared.transaction.bhE_ResponseError;
 import b33hive.shared.transaction.bhTransactionRequest;
 import b33hive.shared.transaction.bhTransactionResponse;
-import b33hive.shared.utils.bhU_Singletons;
+
 
 public class bhCellAddressManager implements bhI_TransactionResponseHandler
 {
@@ -69,32 +71,35 @@ public class bhCellAddressManager implements bhI_TransactionResponseHandler
 	
 	public void start(I_Listener listener)
 	{
-		bhClientTransactionManager.getInstance().addHandler(this);
+		bhClientTransactionManager txnMngr = bh_c.txnMngr;
+		
+		txnMngr.addHandler(this);
 		
 		m_listener = listener;
 	}
 	
 	public void stop()
 	{
-		bhClientTransactionManager.getInstance().removeHandler(this);
+		bhClientTransactionManager txnMngr = bh_c.txnMngr;
+		txnMngr.removeHandler(this);
 		
 		m_listener = null;
 	}
 	
 	public boolean isWaitingOnResponse(bhCellAddressMapping mapping)
 	{
-		bhClientTransactionManager transactionManager = bhClientTransactionManager.getInstance();
+		bhClientTransactionManager txnMngr = bh_c.txnMngr;
 		m_query.setCondition(0, mapping);
 		
-		return transactionManager.containsDispatchedRequest(bhE_RequestPath.getCellAddress, m_query);
+		return txnMngr.containsDispatchedRequest(bhE_RequestPath.getCellAddress, m_query);
 	}
 	
 	public boolean isWaitingOnResponse(bhCellAddress address)
 	{
-		bhClientTransactionManager transactionManager = bhClientTransactionManager.getInstance();
+		bhClientTransactionManager txnMngr = bh_c.txnMngr;
 		m_query.setCondition(0, address);
 		
-		return transactionManager.containsDispatchedRequest(bhE_RequestPath.getCellAddressMapping, m_query);
+		return txnMngr.containsDispatchedRequest(bhE_RequestPath.getCellAddressMapping, m_query);
 	}
 	
 	public void getCellAddress(bhGridCoordinate coordinate, bhE_TransactionAction action)
@@ -126,7 +131,7 @@ public class bhCellAddressManager implements bhI_TransactionResponseHandler
 		}
 		
 		//--- DRK > Try to get address from user.
-		bhUserManager userManager = bhU_Singletons.get(bhUserManager.class);
+		bhUserManager userManager = bh_c.userMngr;
 		bhA_ClientUser user = userManager.getUser();
 		address = user.getCellAddress(mapping);
 		if( address != null )
@@ -150,8 +155,8 @@ public class bhCellAddressManager implements bhI_TransactionResponseHandler
 		//--- DRK > If all else fails, we have to contact server.
 		if( !isWaitingOnResponse(mapping) )
 		{
-			bhClientTransactionManager transactionManager = bhClientTransactionManager.getInstance();
-			transactionManager.performAction(action, bhE_RequestPath.getCellAddress, mapping);
+			bhClientTransactionManager txnMngr = bh_c.txnMngr;
+			txnMngr.performAction(action, bhE_RequestPath.getCellAddress, mapping);
 		}
 	}
 	
@@ -177,7 +182,7 @@ public class bhCellAddressManager implements bhI_TransactionResponseHandler
 		}
 		
 		//--- DRK > Try to get mapping from user.
-		bhUserManager userManager = bhU_Singletons.get(bhUserManager.class);
+		bhUserManager userManager = bh_c.userMngr;
 		bhA_ClientUser user = userManager.getUser();
 		mapping = user.getCellAddressMapping(address);
 		if( mapping != null )
@@ -201,8 +206,8 @@ public class bhCellAddressManager implements bhI_TransactionResponseHandler
 		//--- DRK > If all else fails, we must contact server.
 		if( !isWaitingOnResponse(address) )
 		{
-			bhClientTransactionManager transactionManager = bhClientTransactionManager.getInstance();
-			transactionManager.performAction(action, bhE_RequestPath.getCellAddressMapping, address);
+			bhClientTransactionManager txnMngr = bh_c.txnMngr;
+			txnMngr.performAction(action, bhE_RequestPath.getCellAddressMapping, address);
 		}
 	}
 	

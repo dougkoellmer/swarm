@@ -1,6 +1,7 @@
 package b33hive.shared.structs;
 
 import b33hive.shared.utils.bhU_BitTricks;
+import b33hive.shared.app.bh;
 import b33hive.shared.debugging.bhU_Debug;
 import b33hive.shared.entities.bhE_CodeSafetyLevel;
 import b33hive.shared.entities.bhE_CodeType;
@@ -100,9 +101,9 @@ public class bhCode extends bhA_JsonEncodable
 	@Override
 	public void writeJson(bhI_JsonObject json)
 	{
-		bhJsonHelper.getInstance().putString(json, bhE_JsonKey.rawCode, m_rawCode);
-		bhJsonHelper.getInstance().putInt(json, bhE_JsonKey.standInFlags, m_standInFlags);
-		bhJsonHelper.getInstance().putEnum(json, bhE_JsonKey.codeSafetyLevel, m_safetyLevel);
+		bh.jsonFactory.getHelper().putString(json, bhE_JsonKey.rawCode, m_rawCode);
+		bh.jsonFactory.getHelper().putInt(json, bhE_JsonKey.standInFlags, m_standInFlags);
+		bh.jsonFactory.getHelper().putEnum(json, bhE_JsonKey.codeSafetyLevel, m_safetyLevel);
 	}
 
 	@Override
@@ -110,10 +111,10 @@ public class bhCode extends bhA_JsonEncodable
 	{
 		m_standInFlags = 0x0;
 		
-		m_rawCode = bhJsonHelper.getInstance().getString(json, bhE_JsonKey.rawCode);
+		m_rawCode = bh.jsonFactory.getHelper().getString(json, bhE_JsonKey.rawCode);
 		
-		m_standInFlags = bhJsonHelper.getInstance().getInt(json, bhE_JsonKey.standInFlags);
+		m_standInFlags = bh.jsonFactory.getHelper().getInt(json, bhE_JsonKey.standInFlags);
 		
-		m_safetyLevel = bhJsonHelper.getInstance().getEnum(json, bhE_JsonKey.codeSafetyLevel, bhE_CodeSafetyLevel.values());
+		m_safetyLevel = bh.jsonFactory.getHelper().getEnum(json, bhE_JsonKey.codeSafetyLevel, bhE_CodeSafetyLevel.values());
 	}
 }

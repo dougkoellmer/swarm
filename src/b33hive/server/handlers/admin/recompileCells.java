@@ -7,9 +7,11 @@ import java.util.logging.Logger;
 
 import javax.servlet.ServletContext;
 
+import com.b33hive.server.app.bhS_ServerApp;
+
 import b33hive.server.account.bhE_Role;
 import b33hive.server.account.bhUserSession;
-import b33hive.server.app.bhS_ServerApp;
+import b33hive.server.account.bh_s;
 import b33hive.server.data.blob.bhBlobException;
 import b33hive.server.data.blob.bhBlobManagerFactory;
 import b33hive.server.data.blob.bhE_BlobCacheLevel;
@@ -50,7 +52,7 @@ public class recompileCells implements bhI_RequestHandler
 	@Override
 	public void handleRequest(bhTransactionContext context, bhTransactionRequest request, bhTransactionResponse response)
 	{
-		bhI_BlobManager blobManager = bhBlobManagerFactory.getInstance().create(bhE_BlobCacheLevel.PERSISTENT);
+		bhI_BlobManager blobManager = bh_s.blobMngrFactory.create(bhE_BlobCacheLevel.PERSISTENT);
 		
 		bhServerGrid grid = null;
 		

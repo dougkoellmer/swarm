@@ -1,6 +1,6 @@
 package b33hive.client.states.camera;
 
-import b33hive.client.app.bhS_ClientApp;
+import b33hive.client.app.bh_c;
 import b33hive.client.entities.bhCamera;
 import b33hive.client.managers.bhCellBuffer;
 import b33hive.client.entities.bhBufferCell;
@@ -11,6 +11,7 @@ import b33hive.client.entities.bhE_CellNuke;
 import b33hive.client.input.bhBrowserHistoryManager;
 import b33hive.client.managers.bhCellAddressManager;
 import b33hive.client.managers.bhCellCodeManager;
+import b33hive.client.managers.bhClientAccountManager;
 import b33hive.client.managers.bhF_BufferUpdateOption;
 import b33hive.client.managers.bhUserManager;
 import b33hive.client.states.StateMachine_Base;
@@ -35,6 +36,7 @@ import b33hive.shared.structs.bhCellAddress;
 import b33hive.shared.structs.bhCellAddressMapping;
 import b33hive.shared.structs.bhGridCoordinate;
 import b33hive.shared.structs.bhPoint;
+
 
 public class State_CameraSnapping extends bhA_State implements bhI_StateEventListener
 {
@@ -75,9 +77,14 @@ public class State_CameraSnapping extends bhA_State implements bhI_StateEventLis
 	private boolean m_hasRequestedSourceCode = false;
 	private boolean m_hasRequestedCompiledCode = false;
 	
-	public State_CameraSnapping()
+	private final double m_cellHudHeight;
+	
+	public State_CameraSnapping(double cellHudHeight)
 	{
-		bhA_ClientUser user = bhUserManager.getInstance().getUser();
+		m_cellHudHeight = cellHudHeight;
+		
+		bhUserManager userManager = bh_c.userMngr;
+		bhA_ClientUser user = userManager.getUser();
 		
 		m_externalCompiledStaticCodeRepo.addSource(user);
 		m_externalCompiledStaticCodeRepo.addSource(m_snapBufferManager);
@@ -106,7 +113,7 @@ public class State_CameraSnapping extends bhA_State implements bhI_StateEventLis
 		
 		m_targetGridCoordinate.copy(targetCoordinate);
 		m_targetGridCoordinate.calcCenterPoint(m_utilPoint, 1);
-		m_utilPoint.incY(-bhS_ClientApp.CELL_HUD_HEIGHT/2);
+		m_utilPoint.incY(-m_cellHudHeight/2);
 		
 		m_snapCamera.getPosition().copy(m_utilPoint);
 		
@@ -126,7 +133,8 @@ public class State_CameraSnapping extends bhA_State implements bhI_StateEventLis
 		{
 			//--- DRK > Try to get address ourselves...could turn up null.
 			bhCellAddressMapping mapping = new bhCellAddressMapping(m_targetGridCoordinate);
-			bhCellAddressManager.getInstance().getCellAddress(mapping, bhE_TransactionAction.QUEUE_REQUEST);
+			bhCellAddressManager addyManager = bh_c.addressMngr;
+			addyManager.getCellAddress(mapping, bhE_TransactionAction.QUEUE_REQUEST);
 		}
 		
 		requestCodeForTargetCell();
@@ -230,7 +238,7 @@ public class State_CameraSnapping extends bhA_State implements bhI_StateEventLis
 		
 		m_targetGridCoordinate.set(-1, -1);
 		
-		bhCamera camera = bhCamera.getInstance();
+		bhCamera camera = bh_c.camera;
 		
 		m_snapCamera.setViewRect(camera.getViewWidth(), camera.getViewHeight());
 		
@@ -310,7 +318,7 @@ public class State_CameraSnapping extends bhA_State implements bhI_StateEventLis
 			{
 				if( event.getAction() == StateMachine_Camera.SetCameraViewSize.class )
 				{
-					bhCamera camera = bhCamera.getInstance();
+					bhCamera camera = bh_c.camera;
 					m_snapCamera.setViewRect(camera.getViewWidth(), camera.getViewHeight());
 					
 					this.updateSnapBufferManager(true);

@@ -35,8 +35,8 @@ public class renameCell implements bhI_RequestHandler
 	@Override
 	public void handleRequest(bhTransactionContext context, bhTransactionRequest request, bhTransactionResponse response)
 	{
-		String oldRawAddress = bhJsonHelper.getInstance().getString(request.getJson(), bhE_JsonKey.oldCellAddress);
-		String newRawAddress = bhJsonHelper.getInstance().getString(request.getJson(), bhE_JsonKey.newCellAddress);
+		String oldRawAddress = bh.jsonFactory.getHelper().getString(request.getJson(), bhE_JsonKey.oldCellAddress);
+		String newRawAddress = bh.jsonFactory.getHelper().getString(request.getJson(), bhE_JsonKey.newCellAddress);
 		
 		bhServerCellAddress oldAddress = new bhServerCellAddress(oldRawAddress);
 		bhServerCellAddress newAddress = new bhServerCellAddress(newRawAddress);

@@ -1,4 +1,4 @@
-package b33hive.server.handlers.blobxn;
+package b33hive.server.blobxn;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,8 +6,10 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.b33hive.server.app.bhS_ServerApp;
+
 import b33hive.server.account.bhUserSession;
-import b33hive.server.app.bhS_ServerApp;
+import b33hive.server.account.bh_s;
 import b33hive.server.data.blob.bhA_BlobTransaction;
 import b33hive.server.data.blob.bhBlobException;
 import b33hive.server.data.blob.bhBlobManagerFactory;
@@ -87,7 +89,7 @@ private static final Logger s_logger = Logger.getLogger(bhBlobTransaction_AddCel
 		}
 		
 		//--- DRK > Do a get that we'll use to perform some sanity checks.
-		bhI_BlobManager blobManager = bhBlobManagerFactory.getInstance().create(bhE_BlobCacheLevel.PERSISTENT);
+		bhI_BlobManager blobManager = bh_s.blobMngrFactory.create(bhE_BlobCacheLevel.PERSISTENT);
 		HashMap<bhI_BlobKeySource, Class<? extends bhI_Blob>> existanceQuery = new HashMap<bhI_BlobKeySource, Class<? extends bhI_Blob>>();
 		existanceQuery.put(m_session, bhServerUser.class);
 		existanceQuery.put(address, bhServerCellAddressMapping.class);

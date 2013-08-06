@@ -1,5 +1,6 @@
 package b33hive.client.ui.cell;
 
+import b33hive.client.app.bh_c;
 import b33hive.client.entities.bhCamera;
 import b33hive.client.managers.bhCellBuffer;
 import b33hive.client.managers.bhCellBufferManager;
@@ -10,6 +11,7 @@ import b33hive.client.ui.bhE_ZIndex;
 import b33hive.client.ui.bhI_UIElement;
 import b33hive.client.ui.bhS_UI;
 import b33hive.client.ui.bhU_UI;
+import b33hive.client.ui.bh_view;
 import b33hive.shared.app.bhS_App;
 import b33hive.shared.utils.bhU_Math;
 import b33hive.shared.statemachine.bhA_Action;
@@ -62,7 +64,7 @@ public class bhVisualCellHighlight extends FlowPanel implements bhI_UIElement
 		bhCellBuffer buffer = bhCellBufferManager.getInstance().getDisplayBuffer();
 		int cellSize = buffer.getCellSize();
 		
-		bhCamera camera = bhCamera.getInstance();
+		bhCamera camera = bh_c.camera;
 		bhPoint basePoint = null;
 		double highlightScaling = camera.calcDistanceRatio();
 		
@@ -75,7 +77,7 @@ public class bhVisualCellHighlight extends FlowPanel implements bhI_UIElement
 		//---		between the highlight and the actual mouse coordinate position for near-cell-boundary cases, but it's zoomed 
 		//---		out enough that it doesn't really matter...you'd really have to look for it to notice a discrepancy.
 		
-		bhVisualCellManager cellManager = bhVisualCellManager.getInstance();
+		bhVisualCellManager cellManager = bh_view.cellMngr;
 		double lastScaling = cellManager.getLastScaling();
 		bhPoint lastBasePoint = cellManager.getLastBasePoint();
 		

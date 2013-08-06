@@ -2,6 +2,7 @@ package b33hive.client.ui;
 
 import java.util.logging.Logger;
 
+import b33hive.client.app.bh_c;
 import b33hive.client.input.bhClickManager;
 import b33hive.client.input.bhI_ClickHandler;
 import b33hive.client.managers.bhClientAccountManager;
@@ -39,10 +40,8 @@ public class bhSplitPanel extends SplitLayoutPanel implements bhI_UIElement
 {
 	private static final Logger s_logger = Logger.getLogger(bhSplitPanel.class.getName());
 	
-	private static final bhSplitPanel s_instance = new bhSplitPanel();
-	
 	private final bhTabPanel m_tabPanel = new bhTabPanel();
-	private final bhVisualCellContainer m_cellContainer = new bhVisualCellContainer();
+	private final bhVisualCellContainer m_cellContainer;
 	
 	private final bhSpriteButton m_panelButton = new bhSpriteButton(null);
 	
@@ -65,9 +64,11 @@ public class bhSplitPanel extends SplitLayoutPanel implements bhI_UIElement
 	private boolean m_justTweened = false;
 	private boolean m_reloadCaptchaASAP = false;
 	
-	private bhSplitPanel()
+	bhSplitPanel(bhViewConfig config)
 	{
 		super((int) PARENT_SPLITTER_WIDTH);
+		
+		m_cellContainer = new bhVisualCellContainer(config);
 		
 		this.addStyleName("split_panel");
 		
@@ -123,7 +124,7 @@ public class bhSplitPanel extends SplitLayoutPanel implements bhI_UIElement
 		});
 		
 		//--- DRK > Initiates an open/close animation.
-		bhClickManager.getInstance().addClickHandler(m_panelButton, new bhI_ClickHandler()
+		bh_c.clickMngr.addClickHandler(m_panelButton, new bhI_ClickHandler()
 		{
 			@Override
 			public void onClick()
@@ -159,11 +160,6 @@ public class bhSplitPanel extends SplitLayoutPanel implements bhI_UIElement
 		RootPanel.get().add(m_panelButton);
 	}
 	
-	public static bhSplitPanel getInstance()
-	{
-		return s_instance;
-	}
-	
 	public double getTabPanelWidth()
 	{
 		return m_tabPanelWidth;
@@ -176,7 +172,7 @@ public class bhSplitPanel extends SplitLayoutPanel implements bhI_UIElement
 	
 	private void setToggleButton(boolean openArrow)
 	{
-		bhToolTipManager toolTipper = bhToolTipManager.getInstance();
+		bhToolTipManager toolTipper = bh_c.toolTipMngr;
 		
 		if( openArrow )
 		{
@@ -282,7 +278,7 @@ public class bhSplitPanel extends SplitLayoutPanel implements bhI_UIElement
 	
 								bhE_ToolTipMood severity = responseType.isGood() ? bhE_ToolTipMood.PAT_ON_BACK : bhE_ToolTipMood.OOPS;
 								bhToolTipConfig config = new bhToolTipConfig(bhE_ToolTipType.NOTIFICATION, alignment, text, severity);
-								bhToolTipManager.getInstance().addTip(m_panelButton, config);
+								bh_c.toolTipMngr.addTip(m_panelButton, config);
 							}
 						}
 					}
@@ -315,7 +311,7 @@ public class bhSplitPanel extends SplitLayoutPanel implements bhI_UIElement
 		m_tabPanel.onStateEvent(event);
 		m_cellContainer.onStateEvent(event);
 		
-		//--- DRK > Doing this here so tabpanel has a chance to first attach recaptcha to DOM.
+		//--- DRK > Doing this here, after forwarding event to tabpanel, so it has a chance to first attach recaptcha to DOM.
 		if( m_reloadCaptchaASAP )
 		{
 			if( event.getType() != bhE_StateEventType.DID_UPDATE )
@@ -323,7 +319,7 @@ public class bhSplitPanel extends SplitLayoutPanel implements bhI_UIElement
 				if( bhA_State.isForegrounded(State_SignInOrUp.class) )
 				{
 					m_reloadCaptchaASAP = false;
-					bhRecaptchaWrapper.getInstance().loadNewImage();
+					bh_c.recaptchaWrapper.loadNewImage();
 				}
 			}
 		}

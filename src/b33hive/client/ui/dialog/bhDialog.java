@@ -1,5 +1,6 @@
 package b33hive.client.ui.dialog;
 
+import b33hive.client.app.bh_c;
 import b33hive.client.input.bhClickManager;
 import b33hive.client.input.bhI_ClickHandler;
 import b33hive.client.states.State_AsyncDialog;
@@ -63,7 +64,7 @@ public class bhDialog extends AbsolutePanel
 		
 		m_header.addStyleName("bh_dialog_header");
 		
-		bhClickManager.getInstance().addClickHandler(m_okButton, new bhI_ClickHandler()
+		bh_c.clickMngr.addClickHandler(m_okButton, new bhI_ClickHandler()
 		{
 			@Override
 			public void onClick()

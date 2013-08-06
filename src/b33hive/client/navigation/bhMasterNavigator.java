@@ -23,4 +23,14 @@ public class bhMasterNavigator implements bhI_UIElement
 		m_mouseNavigator.onStateEvent(event);
 		m_browserNavigator.onStateEvent(event);
 	}
+	
+	public bhBrowserNavigator getBrowserNavigator()
+	{
+		return m_browserNavigator;
+	}
+	
+	public bhMouseNavigator getMouseNavigator()
+	{
+		return m_mouseNavigator;
+	}
 }

@@ -3,7 +3,7 @@ package b33hive.client.ui.tabs.code;
 import b33hive.shared.debugging.bhU_Debug;
 import com.google.gwt.user.client.Element;
 
-public class bhHtmlSandbox
+public class bhCellSandbox
 {
 	public interface I_StartUpCallback
 	{
@@ -14,7 +14,7 @@ public class bhHtmlSandbox
 	
 	private boolean m_isRunning = false;
 	
-	public bhHtmlSandbox(I_StartUpCallback callback, String apiNamespace)
+	public bhCellSandbox(I_StartUpCallback callback, String apiNamespace)
 	{
 		m_cajaWrapper = new bhCajaWrapper(callback, apiNamespace);
 	}

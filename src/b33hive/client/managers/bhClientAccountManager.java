@@ -2,6 +2,7 @@ package b33hive.client.managers;
 
 import java.util.ArrayList;
 
+import b33hive.client.app.bh_c;
 import b33hive.client.managers.bhCellCodeManager.I_SyncOrPreviewDelegate;
 import b33hive.client.states.StateMachine_Base;
 import b33hive.client.states.State_AsyncDialog;
@@ -15,6 +16,7 @@ import b33hive.shared.account.bhSignInCredentials;
 import b33hive.shared.account.bhSignInValidationResult;
 import b33hive.shared.account.bhSignUpCredentials;
 import b33hive.shared.account.bhSignUpValidationResult;
+import b33hive.shared.app.bh;
 import b33hive.shared.debugging.bhU_Debug;
 import b33hive.shared.entities.bhE_EditingPermission;
 import b33hive.shared.json.bhA_JsonEncodable;
@@ -177,12 +179,12 @@ public class bhClientAccountManager implements bhI_TransactionResponseHandler
 	
 	public void start()
 	{
-		bhClientTransactionManager.getInstance().addHandler(this);
+		bh_c.txnMngr.addHandler(this);
 	}
 	
 	public void stop()
 	{
-		bhClientTransactionManager.getInstance().removeHandler(this);
+		bh_c.txnMngr.removeHandler(this);
 	}
 	
 	public bhSignUpValidationResult checkOutLatestBadSignUpResult()
@@ -212,7 +214,7 @@ public class bhClientAccountManager implements bhI_TransactionResponseHandler
 		bhTransactionRequest request = new bhTransactionRequest(bhE_RequestPath.signUp);
 		credentials.writeJson(request.getJson());
 		
-		bhClientTransactionManager.getInstance().performAction(action, request);
+		bh_c.txnMngr.performAction(action, request);
 	}
 	
 	public void init(bhI_Callback callback)
@@ -225,8 +227,8 @@ public class bhClientAccountManager implements bhI_TransactionResponseHandler
 			return;
 		}
 
-		bhClientTransactionManager.getInstance().performAction(bhE_TransactionAction.QUEUE_REQUEST, bhE_RequestPath.getAccountInfo);
-		bhClientTransactionManager.getInstance().performAction(bhE_TransactionAction.QUEUE_REQUEST_AND_FLUSH, bhE_RequestPath.getPasswordChangeToken);
+		bh_c.txnMngr.performAction(bhE_TransactionAction.QUEUE_REQUEST, bhE_RequestPath.getAccountInfo);
+		bh_c.txnMngr.performAction(bhE_TransactionAction.QUEUE_REQUEST_AND_FLUSH, bhE_RequestPath.getPasswordChangeToken);
 	}
 	
 	public void setNewDesiredPassword(bhSignInCredentials creds)
@@ -239,7 +241,7 @@ public class bhClientAccountManager implements bhI_TransactionResponseHandler
 			return;
 		}
 		
-		bhClientTransactionManager.getInstance().makeRequest(bhE_RequestPath.setNewDesiredPassword, creds);
+		bh_c.txnMngr.makeRequest(bhE_RequestPath.setNewDesiredPassword, creds);
 	}
 	
 	
@@ -256,13 +258,13 @@ public class bhClientAccountManager implements bhI_TransactionResponseHandler
 		
 		if( m_passwordChangeToken != null )
 		{
-			bhJsonHelper.getInstance().putString(request.getJson(), bhE_JsonKey.passwordChangeToken, m_passwordChangeToken);
+			bh.jsonFactory.getHelper().putString(request.getJson(), bhE_JsonKey.passwordChangeToken, m_passwordChangeToken);
 		}
 		
-		bhClientTransactionManager.getInstance().performAction(bhE_TransactionAction.QUEUE_REQUEST, request);
+		bh_c.txnMngr.performAction(bhE_TransactionAction.QUEUE_REQUEST, request);
 		
 		action = action == bhE_TransactionAction.MAKE_REQUEST ? bhE_TransactionAction.QUEUE_REQUEST_AND_FLUSH : action;
-		bhClientTransactionManager.getInstance().performAction(action, bhE_RequestPath.getAccountInfo);
+		bh_c.txnMngr.performAction(action, bhE_RequestPath.getAccountInfo);
 	}
 	
 	public void signOut()
@@ -276,7 +278,7 @@ public class bhClientAccountManager implements bhI_TransactionResponseHandler
 		
 		bhTransactionRequest request = new bhTransactionRequest(bhE_RequestPath.signOut);
 
-		bhClientTransactionManager.getInstance().makeRequest(request);
+		bh_c.txnMngr.makeRequest(request);
 	}
 	
 	public boolean isWaitingOnServer()
@@ -286,7 +288,7 @@ public class bhClientAccountManager implements bhI_TransactionResponseHandler
 	
 	public E_WaitReason getWaitReason()
 	{
-		bhClientTransactionManager manager = bhClientTransactionManager.getInstance();
+		bhClientTransactionManager manager = bh_c.txnMngr;
 		
 		if( manager.containsDispatchedRequest(bhE_RequestPath.signIn) )
 		{
@@ -313,7 +315,7 @@ public class bhClientAccountManager implements bhI_TransactionResponseHandler
 	{
 		if( request.getPath() == bhE_RequestPath.getAccountInfo )
 		{
-			bhClientTransactionManager manager = bhClientTransactionManager.getInstance();
+			bhClientTransactionManager manager = bh_c.txnMngr;
 			
 			if( manager.hasPreviousBatchResponse(bhE_RequestPath.signIn) )
 			{				
@@ -397,7 +399,7 @@ public class bhClientAccountManager implements bhI_TransactionResponseHandler
 		else if( request.getPath() == bhE_RequestPath.getPasswordChangeToken )
 		{
 			 //--- DRK > Can be (usually is) null.
-			m_passwordChangeToken = bhJsonHelper.getInstance().getString(response.getJson(), bhE_JsonKey.passwordChangeToken);
+			m_passwordChangeToken = bh.jsonFactory.getHelper().getString(response.getJson(), bhE_JsonKey.passwordChangeToken);
 			
 			if( m_passwordChangeToken == null )
 			{
@@ -429,7 +431,7 @@ public class bhClientAccountManager implements bhI_TransactionResponseHandler
 	{
 		if( request.getPath() == bhE_RequestPath.getAccountInfo )
 		{
-			bhClientTransactionManager manager = bhClientTransactionManager.getInstance();
+			bhClientTransactionManager manager = bh_c.txnMngr;
 			
 			if( manager.hasPreviousBatchResponse(bhE_RequestPath.signIn) )
 			{

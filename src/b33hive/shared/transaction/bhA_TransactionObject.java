@@ -1,11 +1,12 @@
 package b33hive.shared.transaction;
 
+import b33hive.shared.app.bh;
 import b33hive.shared.json.bhA_JsonEncodable;
 import b33hive.shared.json.bhA_JsonFactory;
 import b33hive.shared.json.bhE_JsonKey;
 import b33hive.shared.json.bhI_JsonObject;
 import b33hive.shared.json.bhJsonHelper;
-import b33hive.shared.utils.bhU_Singletons;
+
 
 public abstract class bhA_TransactionObject extends bhA_JsonEncodable
 {
@@ -38,7 +39,7 @@ public abstract class bhA_TransactionObject extends bhA_JsonEncodable
 	{		
 		if ( m_jsonArgs == null )
 		{
-			bhA_JsonFactory jsonFactory = bhU_Singletons.get(bhA_JsonFactory.class);
+			bhA_JsonFactory jsonFactory = bh.jsonFactory;
 			m_jsonArgs = jsonFactory.createJsonObject();
 		}
 		
@@ -68,13 +69,13 @@ public abstract class bhA_TransactionObject extends bhA_JsonEncodable
 	{
 		if( m_jsonArgs != null )
 		{
-			bhJsonHelper.getInstance().putJsonObject(json, bhE_JsonKey.requestArgs, m_jsonArgs);
+			bh.jsonFactory.getHelper().putJsonObject(json, bhE_JsonKey.requestArgs, m_jsonArgs);
 		}
 	}
 	
 	@Override
 	public void readJson(bhI_JsonObject json)
 	{
-		m_jsonArgs = bhJsonHelper.getInstance().getJsonObject(json, bhE_JsonKey.requestArgs);
+		m_jsonArgs = bh.jsonFactory.getHelper().getJsonObject(json, bhE_JsonKey.requestArgs);
 	}
 }

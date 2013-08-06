@@ -2,6 +2,7 @@ package b33hive.client.managers;
 
 import java.util.Iterator;
 
+import b33hive.client.app.bh_c;
 import b33hive.client.entities.bhBufferCell;
 import b33hive.client.entities.bhCamera;
 import b33hive.client.entities.bhClientGrid;
@@ -20,6 +21,7 @@ import b33hive.client.transaction.bhE_ResponseSuccessControl;
 import b33hive.client.transaction.bhI_ResponseBatchListener;
 import b33hive.client.transaction.bhI_TransactionResponseHandler;
 import b33hive.client.transaction.bhClientTransactionManager;
+import b33hive.shared.app.bh;
 import b33hive.shared.debugging.bhU_Debug;
 import b33hive.shared.entities.bhE_CodeType;
 import b33hive.shared.json.bhE_JsonKey;
@@ -33,7 +35,7 @@ import b33hive.shared.transaction.bhE_RequestPath;
 import b33hive.shared.transaction.bhE_ResponseError;
 import b33hive.shared.transaction.bhTransactionRequest;
 import b33hive.shared.transaction.bhTransactionResponse;
-import b33hive.shared.utils.bhU_Singletons;
+
 
 public class bhUserManager implements bhI_TransactionResponseHandler, bhClientAccountManager.I_Delegate, bhI_ResponseBatchListener
 {
@@ -67,8 +69,8 @@ public class bhUserManager implements bhI_TransactionResponseHandler, bhClientAc
 	
 	public void start(I_Listener listener)
 	{
-		bhClientTransactionManager.getInstance().addHandler(this);
-		bhClientTransactionManager.getInstance().addBatchListener(this);
+		bh_c.txnMngr.addHandler(this);
+		bh_c.txnMngr.addBatchListener(this);
 		m_accountManager.addDelegate(this);
 		
 		m_listener = listener;
@@ -79,8 +81,8 @@ public class bhUserManager implements bhI_TransactionResponseHandler, bhClientAc
 		m_listener = null;
 		
 		m_accountManager.removeDelegate(this);
-		bhClientTransactionManager.getInstance().removeBatchListener(this);
-		bhClientTransactionManager.getInstance().removeHandler(this);
+		bh_c.txnMngr.removeBatchListener(this);
+		bh_c.txnMngr.removeHandler(this);
 	}
 	
 	public bhA_ClientUser getUser()
@@ -90,19 +92,19 @@ public class bhUserManager implements bhI_TransactionResponseHandler, bhClientAc
 	
 	public void getPosition(bhE_TransactionAction action)
 	{
-		bhClientTransactionManager.getInstance().performAction(action, bhE_RequestPath.getStartingPosition);
+		bh_c.txnMngr.performAction(action, bhE_RequestPath.getStartingPosition);
 	}
 	
 	public void populateUser(bhE_TransactionAction action)
 	{
-		bhClientTransactionManager.getInstance().performAction(action, bhE_RequestPath.getUserData);
+		bh_c.txnMngr.performAction(action, bhE_RequestPath.getUserData);
 	}
 	
 	private void onGetUserDataSuccess(bhTransactionResponse response)
 	{
 		bhA_ClientUser user = m_user;
 		user.readJson(response.getJson());
-		Boolean createdUser = bhJsonHelper.getInstance().getBoolean(response.getJson(), bhE_JsonKey.createdUser);
+		Boolean createdUser = bh.jsonFactory.getHelper().getBoolean(response.getJson(), bhE_JsonKey.createdUser);
 		createdUser = createdUser != null ? createdUser : false; // can be null when reading inline transaction from the page and the user is already created.
 		
 		Iterator<? extends bhUserCell> cellIterator = user.getCells();
@@ -129,7 +131,7 @@ public class bhUserManager implements bhI_TransactionResponseHandler, bhClientAc
 				//---		make sure everything's house-cleaned before the user moves in.
 				//---		Note that this code will have to be placed elsewhere if/when cells are taken
 				//---		manually in the future, and not implicitly when creating the user.
-				bhCellCodeManager codeManager = bhU_Singletons.get(bhCellCodeManager.class);
+				bhCellCodeManager codeManager = bh_c.codeMngr;
 				codeManager.nukeFromOrbit(userCell.getCoordinate(), bhE_CellNuke.EVERYTHING);
 				userCell.setCode(bhE_CodeType.SOURCE, new bhCode("", bhE_CodeType.SOURCE));
 				userCell.setCode(bhE_CodeType.SPLASH, new bhCode("", bhE_CodeType.SPLASH));
@@ -149,7 +151,7 @@ public class bhUserManager implements bhI_TransactionResponseHandler, bhClientAc
 				
 				//--- DRK > This will just loop back into the user to find the cell address that we now know,
 				//---		and then instantly let the View know about it. No transaction should go out.
-				bhCellAddressManager addressManager = bhU_Singletons.get(bhCellAddressManager.class);
+				bhCellAddressManager addressManager = bh_c.addressMngr;
 				addressManager.getCellAddress(userCell.getCoordinate(), bhE_TransactionAction.MAKE_REQUEST);
 			}
 			else
@@ -244,7 +246,7 @@ public class bhUserManager implements bhI_TransactionResponseHandler, bhClientAc
 			case SIGN_UP_SUCCESS:
 			case PASSWORD_CONFIRM_SUCCESS:
 			{
-				if( bhClientTransactionManager.getInstance().isInBatch() )
+				if( bh_c.txnMngr.isInBatch() )
 				{
 					m_authenticatedInBatch = true;
 				}
@@ -256,7 +258,7 @@ public class bhUserManager implements bhI_TransactionResponseHandler, bhClientAc
 			case SIGN_UP_FAILURE:
 			case PASSWORD_CONFIRM_FAILURE:
 			{
-				if( bhClientTransactionManager.getInstance().isInBatch() )
+				if( bh_c.txnMngr.isInBatch() )
 				{
 					m_failedToAuthenticateInBatch = true;
 				}
@@ -272,7 +274,7 @@ public class bhUserManager implements bhI_TransactionResponseHandler, bhClientAc
 		
 		if( user.isPopulated() )
 		{
-			bhClientTransactionManager.getInstance().cancelRequestsByPath(bhE_RequestPath.getUserData);
+			bh_c.txnMngr.cancelRequestsByPath(bhE_RequestPath.getUserData);
 			
 			user.clearAllLocalChanges();
 			

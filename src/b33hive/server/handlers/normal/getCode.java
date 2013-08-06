@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 
+import b33hive.shared.app.bh;
+import b33hive.server.account.bh_s;
 import b33hive.server.data.blob.bhBlobException;
 import b33hive.server.data.blob.bhBlobManagerFactory;
 import b33hive.server.data.blob.bhE_BlobCacheLevel;
@@ -83,7 +85,7 @@ public class getCode implements bhI_RequestHandler, bhI_DeferredRequestHandler
 			return;
 		}
 		
-		bhI_BlobManager blobManager = bhBlobManagerFactory.getInstance().create(bhE_BlobCacheLevel.values());
+		bhI_BlobManager blobManager = bh_s.blobMngrFactory.create(bhE_BlobCacheLevel.values());
 		
 		bhServerCell persistedCell = null;
 		
@@ -98,7 +100,7 @@ public class getCode implements bhI_RequestHandler, bhI_DeferredRequestHandler
 			return;
 		}
 
-		bhE_CodeType eCodeType = bhJsonHelper.getInstance().getEnum(request.getJson(), bhE_JsonKey.codeType, bhE_CodeType.values());
+		bhE_CodeType eCodeType = bh.jsonFactory.getHelper().getEnum(request.getJson(), bhE_JsonKey.codeType, bhE_CodeType.values());
 		
 		writeResponse(eCodeType, persistedCell, response);
 	}
@@ -163,7 +165,7 @@ public class getCode implements bhI_RequestHandler, bhI_DeferredRequestHandler
 			return;
 		}
 
-		bhI_BlobManager blobManager = bhBlobManagerFactory.getInstance().create(bhE_BlobCacheLevel.values());
+		bhI_BlobManager blobManager = bh_s.blobMngrFactory.create(bhE_BlobCacheLevel.values());
 		
 		Map<bhI_BlobKeySource, bhI_Blob> result = null;
 		bhE_ResponseError error = bhE_ResponseError.NO_ERROR;
@@ -194,7 +196,7 @@ public class getCode implements bhI_RequestHandler, bhI_DeferredRequestHandler
 				continue;
 			}
 			
-			bhE_CodeType eCodeType = bhJsonHelper.getInstance().getEnum(request.getJson(), bhE_JsonKey.codeType, bhE_CodeType.values());
+			bhE_CodeType eCodeType = bh.jsonFactory.getHelper().getEnum(request.getJson(), bhE_JsonKey.codeType, bhE_CodeType.values());
 
 			if( result == null )
 			{

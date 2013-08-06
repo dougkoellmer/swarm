@@ -14,6 +14,7 @@ import b33hive.server.structs.bhDate;
 import b33hive.server.structs.bhServerCellAddressMapping;
 import b33hive.server.structs.bhServerGridCoordinate;
 import b33hive.server.structs.bhServerPoint;
+import b33hive.shared.app.bh;
 import b33hive.shared.entities.bhA_User;
 import b33hive.shared.entities.bhE_EditingPermission;
 import b33hive.shared.json.bhA_JsonFactory;
@@ -24,7 +25,7 @@ import b33hive.shared.json.bhJsonHelper;
 import b33hive.shared.structs.bhCellAddressMapping;
 import b33hive.shared.structs.bhGridCoordinate;
 import b33hive.shared.structs.bhPoint;
-import b33hive.shared.utils.bhU_Singletons;
+
 
 
 /**
@@ -147,7 +148,7 @@ public class bhServerUser extends bhA_User implements bhI_Blob
 	@Override
 	public void writeJson(bhI_JsonObject json)
 	{
-		bhA_JsonFactory jsonFactory = bhU_Singletons.get(bhA_JsonFactory.class);
+		bhA_JsonFactory jsonFactory = bh.jsonFactory;
 		bhI_JsonArray ownedCoordinates = jsonFactory.createJsonArray();
 		for( int i = 0; i < m_ownedCells.size(); i++ )
 		{
@@ -162,6 +163,6 @@ public class bhServerUser extends bhA_User implements bhI_Blob
 			ownedCoordinates.addObject(coordJson);
 		}
 		
-		bhJsonHelper.getInstance().putJsonArray(json, bhE_JsonKey.ownedCoordinates, ownedCoordinates);
+		bh.jsonFactory.getHelper().putJsonArray(json, bhE_JsonKey.ownedCoordinates, ownedCoordinates);
 	}
 }

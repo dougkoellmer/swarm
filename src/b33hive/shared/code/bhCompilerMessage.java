@@ -1,5 +1,6 @@
 package b33hive.shared.code;
 
+import b33hive.shared.app.bh;
 import b33hive.shared.json.bhA_JsonEncodable;
 import b33hive.shared.json.bhE_JsonKey;
 import b33hive.shared.json.bhI_JsonObject;
@@ -41,16 +42,16 @@ public class bhCompilerMessage extends bhA_JsonEncodable
 	@Override
 	public void writeJson(bhI_JsonObject json)
 	{
-		bhJsonHelper.getInstance().putString(json, bhE_JsonKey.compilerErrorMessage, m_message);
-		bhJsonHelper.getInstance().putEnum(json, bhE_JsonKey.compilerErrorLevel, m_level);
+		bh.jsonFactory.getHelper().putString(json, bhE_JsonKey.compilerErrorMessage, m_message);
+		bh.jsonFactory.getHelper().putEnum(json, bhE_JsonKey.compilerErrorLevel, m_level);
 		m_range.writeJson(json);
 	}
 
 	@Override
 	public void readJson(bhI_JsonObject json)
 	{
-		m_message = bhJsonHelper.getInstance().getString(json, bhE_JsonKey.compilerErrorMessage);
-		m_level = bhJsonHelper.getInstance().getEnum(json, bhE_JsonKey.compilerErrorLevel, bhE_CompilerMessageLevel.values());
+		m_message = bh.jsonFactory.getHelper().getString(json, bhE_JsonKey.compilerErrorMessage);
+		m_level = bh.jsonFactory.getHelper().getEnum(json, bhE_JsonKey.compilerErrorLevel, bhE_CompilerMessageLevel.values());
 		
 		m_range = new bhFileRange(json);
 	}

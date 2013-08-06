@@ -59,7 +59,7 @@ public class signUp implements bhI_RequestHandler
 				
 				if( result.isEverythingOk/*STILL?*/() )
 				{
-					bhSessionManager.getInstance().startSession(userSession, response, creds.rememberMe());
+					bh_s.sessionMngr.startSession(userSession, response, creds.rememberMe());
 				}
 			}
 		}

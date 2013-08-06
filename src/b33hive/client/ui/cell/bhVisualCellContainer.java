@@ -18,13 +18,13 @@ import b33hive.client.states.*;
 import b33hive.client.states.camera.StateMachine_Camera;
 import b33hive.client.states.camera.State_GettingMapping;
 import b33hive.client.states.camera.State_ViewingCell;
-import b33hive.client.app.bhS_ClientApp;
+import b33hive.client.app.bhAppConfig;
+import b33hive.client.app.bh_c;
 import b33hive.client.entities.bhBufferCell;
 import b33hive.client.entities.bhCamera;
 import b33hive.client.entities.bhClientGrid;
 import b33hive.client.managers.bhCellBufferManager;
 import b33hive.client.navigation.bhMouseNavigator;
-import b33hive.shared.bhU_BitTricks;
 import b33hive.shared.app.bhS_App;
 import b33hive.shared.statemachine.bhA_Action;
 import b33hive.shared.statemachine.bhA_State;
@@ -51,10 +51,7 @@ public class bhVisualCellContainer extends FlowPanel implements ResizeHandler, b
 	private static final bhPoint s_utilPoint1 = new bhPoint();
 	private static final bhPoint s_utilPoint2 = new bhPoint();
 	
-	private static final double MIN_WIDTH = bhS_App.CELL_PIXEL_COUNT;
-	private static final double MIN_HEIGHT = (bhS_App.CELL_PIXEL_COUNT + bhS_ClientApp.CELL_HUD_HEIGHT);
-	
-	private bhMagnifier m_magnifier = new bhMagnifier();
+	private final bhMagnifier m_magnifier;
 	
 	private final FlowPanel m_cellContainerInner = new FlowPanel();
 	private final FlowPanel m_splashGlass = new FlowPanel();
@@ -70,8 +67,10 @@ public class bhVisualCellContainer extends FlowPanel implements ResizeHandler, b
 	
 	private final StateMachine_Camera.SetCameraViewSize.Args m_args_SetCameraViewSize = new StateMachine_Camera.SetCameraViewSize.Args();
 	
-	public bhVisualCellContainer()
+	public bhVisualCellContainer(bhViewConfig config)
 	{
+		m_magnifier = new bhMagnifier(config.magnifierTickCount);
+		
 		m_splashGlass.addStyleName("bh_splash_glass");
 		m_cellContainerInner.addStyleName("bh_cell_container_inner");
 		this.addStyleName("bh_cell_container");
@@ -149,7 +148,7 @@ public class bhVisualCellContainer extends FlowPanel implements ResizeHandler, b
 			return;
 		}
 		
-		bhCamera camera = bhCamera.getInstance();
+		bhCamera camera = bh_c.camera;
 	
 		double gridPixels = grid.calcPixelWidth();
 		
@@ -194,8 +193,8 @@ public class bhVisualCellContainer extends FlowPanel implements ResizeHandler, b
 			{
 				if( event.getState() instanceof StateMachine_Camera )
 				{
-					double width = bhSplitPanel.getInstance().getCellPanelWidth();
-					double x = bhSplitPanel.getInstance().getTabPanelWidth();
+					double width = bh_view.splitPanel.getCellPanelWidth();
+					double x = bh_view.splitPanel.getTabPanelWidth();
 					double height = RootPanel.get().getOffsetHeight();
 					
 					m_args_SetCameraViewSize.set(width, height);
@@ -265,8 +264,8 @@ public class bhVisualCellContainer extends FlowPanel implements ResizeHandler, b
 				{
 					m_showingMappingNotFound = false;
 					
-					bhToolTipManager.getInstance().removeTip(this);
-					bhToolTipManager.getInstance().addTip(this, m_gettingAddressTipConfig);
+					bh_c.toolTipMngr.removeTip(this);
+					bh_c.toolTipMngr.addTip(this, m_gettingAddressTipConfig);
 				}
 				
 				break;
@@ -278,7 +277,7 @@ public class bhVisualCellContainer extends FlowPanel implements ResizeHandler, b
 				{
 					if( !m_showingMappingNotFound )
 					{
-						bhToolTipManager.getInstance().removeTip(this);
+						bh_c.toolTipMngr.removeTip(this);
 					}
 					
 					m_showingMappingNotFound = false;
@@ -295,8 +294,8 @@ public class bhVisualCellContainer extends FlowPanel implements ResizeHandler, b
 					
 					if( args.getType() != State_GettingMapping.OnResponse.E_Type.ON_FOUND )
 					{
-						bhToolTipManager.getInstance().removeTip(this);
-						bhToolTipManager.getInstance().addTip(this, m_mappingNotFoundTipConfig);
+						bh_c.toolTipMngr.removeTip(this);
+						bh_c.toolTipMngr.addTip(this, m_mappingNotFoundTipConfig);
 						
 						m_showingMappingNotFound = true;
 					}
@@ -323,7 +322,7 @@ public class bhVisualCellContainer extends FlowPanel implements ResizeHandler, b
 		
 		m_statusAlignment.setMasterRect(null);
 		
-		bhToolTipManager.getInstance().onTipMove(this);
+		bh_c.toolTipMngr.onTipMove(this);
 	}
 
 	@Override

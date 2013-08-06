@@ -1,5 +1,6 @@
 package b33hive.shared.debugging;
 
+import b33hive.shared.app.bh;
 import b33hive.shared.json.bhA_JsonEncodable;
 import b33hive.shared.json.bhE_JsonKey;
 import b33hive.shared.json.bhI_JsonEncodable;
@@ -25,14 +26,14 @@ public class bhTelemetryAssert extends bhA_JsonEncodable
 	@Override
 	public void writeJson(bhI_JsonObject json)
 	{
-		bhJsonHelper.getInstance().putString(json, bhE_JsonKey.assertMessage, m_message);
-		bhJsonHelper.getInstance().putString(json, bhE_JsonKey.platform, m_platform);
+		bh.jsonFactory.getHelper().putString(json, bhE_JsonKey.assertMessage, m_message);
+		bh.jsonFactory.getHelper().putString(json, bhE_JsonKey.platform, m_platform);
 	}
 
 	@Override
 	public void readJson(bhI_JsonObject json)
 	{
-		m_message = bhJsonHelper.getInstance().getString(json, bhE_JsonKey.assertMessage);
-		m_platform = bhJsonHelper.getInstance().getString(json, bhE_JsonKey.platform);
+		m_message = bh.jsonFactory.getHelper().getString(json, bhE_JsonKey.assertMessage);
+		m_platform = bh.jsonFactory.getHelper().getString(json, bhE_JsonKey.platform);
 	}
 }

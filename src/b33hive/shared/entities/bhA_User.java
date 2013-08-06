@@ -2,6 +2,7 @@ package b33hive.shared.entities;
 
 import java.util.Iterator;
 
+import b33hive.shared.app.bh;
 import b33hive.shared.json.bhA_JsonEncodable;
 import b33hive.shared.json.bhA_JsonFactory;
 import b33hive.shared.json.bhE_JsonKey;
@@ -37,9 +38,9 @@ public abstract class bhA_User extends bhA_JsonEncodable
 		//--- DRK > For now not concerned with last position...not sure how it should behave.
 		//getLastPosition().readJson(json);
 		
-		bhI_JsonArray jsonCells = bhJsonHelper.getInstance().getJsonArray(json, bhE_JsonKey.ownedCoordinates);
+		bhI_JsonArray jsonCells = bh.jsonFactory.getHelper().getJsonArray(json, bhE_JsonKey.ownedCoordinates);
 		
-		bhJsonHelper.getInstance().putEnum(json, bhE_JsonKey.editingPermission, m_editingPermission);
+		bh.jsonFactory.getHelper().putEnum(json, bhE_JsonKey.editingPermission, m_editingPermission);
 		
 		for( int i = 0; i < jsonCells.getSize(); i++ )
 		{

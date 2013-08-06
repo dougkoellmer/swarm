@@ -12,11 +12,11 @@ public class signOut implements bhI_RequestHandler
 	@Override
 	public void handleRequest(bhTransactionContext context, bhTransactionRequest request, bhTransactionResponse response)
 	{
-		if( !bhSessionManager.getInstance().isAuthorized(request, response, bhE_Role.USER) )
+		if( !bh_s.sessionMngr.isAuthorized(request, response, bhE_Role.USER) )
 		{
 			return;
 		}
 		
-		bhSessionManager.getInstance().endSession(request, response);
+		bh_s.sessionMngr.endSession(request, response);
 	}
 }

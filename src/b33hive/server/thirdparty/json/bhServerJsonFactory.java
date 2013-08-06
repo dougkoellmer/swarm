@@ -1,16 +1,44 @@
 package b33hive.server.thirdparty.json;
 
+import java.util.logging.Logger;
+
 import org.json.JSONException;
+
+import com.b33hive.server.app.bhServerApp;
 
 import b33hive.client.thirdparty.json.bhGwtJsonArray;
 import b33hive.client.thirdparty.json.bhGwtJsonObject;
+import b33hive.server.app.bhA_ServerJsonFactory;
+import b33hive.server.transaction.bhI_TransactionScopeListener;
 import b33hive.shared.json.bhA_JsonFactory;
 import b33hive.shared.json.bhI_JsonArray;
 import b33hive.shared.json.bhI_JsonObject;
+import b33hive.shared.json.bhJsonHelper;
 import b33hive.shared.reflection.bhI_Class;
 
-public class bhServerJsonFactory extends bhA_JsonFactory
+public class bhServerJsonFactory extends bhA_ServerJsonFactory
 {
+	private static final Logger s_logger = Logger.getLogger(bhServerJsonFactory.class.getName());
+	
+	private final ThreadLocal<bhJsonHelper> m_threadLocal = new ThreadLocal<bhJsonHelper>();
+	
+	private final boolean m_verboseKeys;
+	
+	public bhServerJsonFactory(boolean verboseKeys)
+	{
+		m_verboseKeys = verboseKeys;
+	}
+	
+	public void startScope()
+	{
+		m_threadLocal.set(new bhJsonHelper(m_verboseKeys));
+	}
+	
+	public void endScope()
+	{
+		m_threadLocal.remove();
+	}
+	
 	private final bhI_Class<bhI_JsonObject> m_objectClass = new bhI_Class<bhI_JsonObject>()
 	{
 		@Override
@@ -71,5 +99,20 @@ public class bhServerJsonFactory extends bhA_JsonFactory
 		}
 		
 		return null;
+	}
+
+	@Override
+	public bhJsonHelper getHelper()
+	{
+		bhJsonHelper helper = m_threadLocal.get();
+		
+		if( helper == null )
+		{
+			s_logger.severe("Didn't expect json helper to be null.");
+			
+			helper = new bhJsonHelper(m_verboseKeys);
+		}
+		
+		return helper;
 	}
 }

@@ -1,5 +1,6 @@
 package b33hive.client.ui.tabs.account;
 
+import b33hive.client.app.bh_c;
 import b33hive.client.ui.tooltip.bhE_ToolTipType;
 import b33hive.client.ui.tooltip.bhToolTipConfig;
 import b33hive.client.ui.tooltip.bhToolTipManager;
@@ -18,7 +19,7 @@ public class bhStaySignedInCheckbox extends bhCheckBox
 		this.setSize("100px", "20px"); // TODO: no, no, no
 		
 		bhToolTipConfig config = new bhToolTipConfig(bhE_ToolTipType.MOUSE_OVER, "Remembers you.");
-		bhToolTipManager.getInstance().addTip(this.getClickCatcher(), config);
+		bh_c.toolTipMngr.addTip(this.getClickCatcher(), config);
 		
 		//this.get
 		//this.getElement().getStyle().setCursor(Cursor.);

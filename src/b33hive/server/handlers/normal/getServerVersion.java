@@ -15,6 +15,7 @@ import b33hive.server.structs.bhServerCellAddressMapping;
 import b33hive.server.telemetry.bhTelemetryDatabase;
 import b33hive.server.transaction.bhI_RequestHandler;
 import b33hive.server.transaction.bhTransactionContext;
+import b33hive.shared.app.bh;
 import b33hive.shared.app.bhS_App;
 import b33hive.shared.json.bhE_JsonKey;
 import b33hive.shared.json.bhJsonHelper;
@@ -29,6 +30,6 @@ public class getServerVersion implements bhI_RequestHandler
 	@Override
 	public void handleRequest(bhTransactionContext context, bhTransactionRequest request, bhTransactionResponse response)
 	{
-		bhJsonHelper.getInstance().putInt(response.getJson(), bhE_JsonKey.serverVersion, bhS_App.SERVER_VERSION);
+		bh.jsonFactory.getHelper().putInt(response.getJson(), bhE_JsonKey.serverVersion, bhS_App.SERVER_VERSION);
 	}
 }

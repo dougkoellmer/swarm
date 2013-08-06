@@ -1,6 +1,7 @@
 package b33hive.shared.structs;
 
 import b33hive.shared.json.bhA_JsonEncodable;
+import b33hive.shared.app.bh;
 import b33hive.shared.json.bhE_JsonKey;
 import b33hive.shared.json.bhI_JsonObject;
 import b33hive.shared.json.bhJsonHelper;
@@ -54,13 +55,13 @@ public class bhGetCellAddressMappingResult extends bhA_JsonEncodable
 			m_mapping.writeJson(json);
 		}
 		
-		bhJsonHelper.getInstance().putEnum(json, bhE_JsonKey.getCellAddressMappingError, m_error);
+		bh.jsonFactory.getHelper().putEnum(json, bhE_JsonKey.getCellAddressMappingError, m_error);
 	}
 
 	@Override
 	public void readJson(bhI_JsonObject json)
 	{
-		m_error = bhJsonHelper.getInstance().getEnum(json, bhE_JsonKey.getCellAddressMappingError, bhE_GetCellAddressMappingError.values());
+		m_error = bh.jsonFactory.getHelper().getEnum(json, bhE_JsonKey.getCellAddressMappingError, bhE_GetCellAddressMappingError.values());
 		
 		if( m_error == bhE_GetCellAddressMappingError.NO_ERROR )
 		{

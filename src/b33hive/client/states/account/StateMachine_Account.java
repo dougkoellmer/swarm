@@ -1,5 +1,6 @@
 package b33hive.client.states.account;
 
+import b33hive.client.app.bh_c;
 import b33hive.client.managers.bhClientAccountManager;
 import b33hive.client.managers.bhClientAccountManager.E_ResponseType;
 import b33hive.client.states.StateMachine_Base;
@@ -10,6 +11,7 @@ import b33hive.shared.debugging.bhU_Debug;
 import b33hive.shared.statemachine.bhA_State;
 import b33hive.shared.statemachine.bhA_StateMachine;
 import b33hive.shared.statemachine.bhA_StateConstructor;
+
 
 
 /**
@@ -33,7 +35,7 @@ public class StateMachine_Account extends bhA_StateMachine
 		@Override
 		public void onAuthenticationError()
 		{
-			bhClientAccountManager accountManager = bhClientAccountManager.getInstance();
+			bhClientAccountManager accountManager = bh_c.accountMngr;
 			
 			//--- DRK > Not entering this if block should be an extremely fringe, practically impossible case.
 			//---		It's still *technically* possible though, so we don't want to clear the spinner if we're still
@@ -69,7 +71,7 @@ public class StateMachine_Account extends bhA_StateMachine
 	@Override
 	protected void didForeground(Class<? extends bhA_State> revealingState, Object[] args)
 	{
-		bhClientAccountManager accountManager = bhClientAccountManager.getInstance();
+		bhClientAccountManager accountManager = bh_c.accountMngr;
 		
 		accountManager.addDelegate(m_accountManagerDelegate);
 		
@@ -102,7 +104,7 @@ public class StateMachine_Account extends bhA_StateMachine
 	{
 		bhU_Debug.ASSERT(this.isForegrounded(), "popBlockerAndSetState1");
 		
-		bhClientAccountManager accountManager = bhClientAccountManager.getInstance();
+		bhClientAccountManager accountManager = bh_c.accountMngr;
 		
 		machine_beginBatch(this);
 	
@@ -134,7 +136,7 @@ public class StateMachine_Account extends bhA_StateMachine
 	@Override 
 	protected void willBackground(Class<? extends bhA_State> blockingState)
 	{
-		bhClientAccountManager accountManager = bhClientAccountManager.getInstance();
+		bhClientAccountManager accountManager = bh_c.accountMngr;
 		
 		accountManager.removeDelegate(m_accountManagerDelegate);
 		

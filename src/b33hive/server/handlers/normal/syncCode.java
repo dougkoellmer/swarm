@@ -41,13 +41,13 @@ public class syncCode implements bhI_RequestHandler
 	
 	private boolean isAuthorized(bhI_BlobManager blobManager, bhServerCellAddressMapping mapping, bhTransactionRequest request, bhTransactionResponse response)
 	{
-		if( !bhSessionManager.getInstance().isAuthorized(request, response, bhE_Role.USER) )
+		if( !bh_s.sessionMngr.isAuthorized(request, response, bhE_Role.USER) )
 		{
 			return false;
 		}
 
 		//--- DRK > Have to do a further checking here to make sure user owns this cell.
-		bhUserSession session = bhSessionManager.getInstance().getSession(request, response);
+		bhUserSession session = bh_s.sessionMngr.getSession(request, response);
 		
 		//--- DRK > Used to have this check here...don't see why we shouldn't also
 		//---		force admins to own their own cells too.
@@ -87,7 +87,7 @@ public class syncCode implements bhI_RequestHandler
 		bhServerCellAddressMapping mapping = new bhServerCellAddressMapping(bhE_GridType.ACTIVE);
 		mapping.readJson(request.getJson());
 		boolean isSandbox = isSandBox(mapping);
-		bhI_BlobManager blobManager = bhBlobManagerFactory.getInstance().create(bhE_BlobCacheLevel.PERSISTENT);
+		bhI_BlobManager blobManager = bh_s.blobMngrFactory.create(bhE_BlobCacheLevel.PERSISTENT);
 		
 		if( !isSandbox )
 		{

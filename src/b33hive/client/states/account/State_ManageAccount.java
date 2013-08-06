@@ -1,6 +1,7 @@
 package b33hive.client.states.account;
 
 
+import b33hive.client.app.bh_c;
 import b33hive.client.managers.bhClientAccountManager;
 import b33hive.shared.account.bhSignInCredentials;
 import b33hive.shared.account.bhSignInValidator;
@@ -9,6 +10,7 @@ import b33hive.shared.statemachine.bhA_Action;
 import b33hive.shared.statemachine.bhA_ActionArgs;
 import b33hive.shared.statemachine.bhA_State;
 import b33hive.shared.statemachine.bhA_StateConstructor;
+
 
 
 /**
@@ -22,7 +24,8 @@ public class State_ManageAccount extends bhA_State
 		@Override
 		public void perform(bhA_ActionArgs args)
 		{
-			bhClientAccountManager.getInstance().signOut();
+			bhClientAccountManager accountManager = bh_c.accountMngr;
+			accountManager.signOut();
 			
 			machine_pushState(this.getState().getParent(), State_AccountStatusPending.class);			
 		}
@@ -36,7 +39,8 @@ public class State_ManageAccount extends bhA_State
 		@Override
 		public boolean isPerformable(bhA_ActionArgs args)
 		{
-			return bhClientAccountManager.getInstance().isSignedIn();
+			bhClientAccountManager accountManager = bh_c.accountMngr;
+			return accountManager.isSignedIn();
 		}
 	}
 	

@@ -17,7 +17,7 @@ public class bhBlobTransactionManager
 		s_instance = new bhBlobTransactionManager();
 	}
 	
-	private bhBlobTransactionManager()
+	bhBlobTransactionManager()
 	{
 		
 	}

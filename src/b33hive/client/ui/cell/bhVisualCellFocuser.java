@@ -2,6 +2,7 @@ package b33hive.client.ui.cell;
 
 import java.util.logging.Logger;
 
+import b33hive.client.app.bh_c;
 import b33hive.client.entities.bhCamera;
 import b33hive.client.entities.bhBufferCell;
 import b33hive.client.managers.bhCellBuffer;
@@ -210,7 +211,7 @@ public class bhVisualCellFocuser extends FlowPanel implements bhI_UIElement
 	private double calcCameraDistanceToTarget()
 	{
 		StateMachine_Camera cameraController = bhA_State.getEnteredInstance(StateMachine_Camera.class);
-		bhPoint cameraPoint = bhCamera.getInstance().getPosition();
+		bhPoint cameraPoint = bh_c.camera.getPosition();
 		bhPoint cameraTarget = cameraController.getCameraManager().getTargetPosition();
 		return cameraTarget.calcDistanceTo(cameraPoint);
 	}

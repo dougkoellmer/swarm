@@ -3,6 +3,7 @@ package b33hive.client.states.code;
 import b33hive.client.managers.bhCellCodeManager;
 import b33hive.client.managers.bhClientAccountManager;
 import b33hive.client.managers.bhUserManager;
+import b33hive.client.app.bh_c;
 import b33hive.client.code.bhCompilerErrorMessageGenerator;
 import b33hive.client.entities.bhBufferCell;
 import b33hive.client.entities.bhA_ClientUser;
@@ -73,7 +74,7 @@ public class State_EditingCode extends bhA_State
 			State_ViewingCell viewingState = (State_ViewingCell) bhA_State.getForegroundedInstance(State_ViewingCell.class);
 			bhBufferCell viewedCell = viewingState.getCell();
 			
-			bhA_ClientUser user = bhUserManager.getInstance().getUser();
+			bhA_ClientUser user = bh_c.userMngr.getUser();
 			
 			user.onSourceCodeChanged(viewedCell.getCoordinate(), code);
 		}
@@ -89,7 +90,7 @@ public class State_EditingCode extends bhA_State
 			}
 
 			//--- DRK > Just to make extra sure.
-			bhA_ClientUser user = bhUserManager.getInstance().getUser();
+			bhA_ClientUser user = bh_c.userMngr.getUser();
 			if( !user.isEditable(state.getCell().getCoordinate()))
 			{
 				return false;
@@ -133,10 +134,10 @@ public class State_EditingCode extends bhA_State
 		bhBufferCell viewedCell = viewingState.getCell();
 		bhGridCoordinate coord = viewedCell.getCoordinate();
 		
-		bhA_ClientUser user = bhUserManager.getInstance().getUser();
+		bhA_ClientUser user = bh_c.userMngr.getUser();
 		bhCode sourceCode = user.getCode(coord, bhE_CodeType.SOURCE);
 		
-		bhCompilerResult compilerResult = bhA_CodeCompiler.getInstance().compile(sourceCode, viewedCell.getCodePrivileges(), /*namespace=*/null);
+		bhCompilerResult compilerResult = bh_c.codeCompiler.compile(sourceCode, viewedCell.getCodePrivileges(), /*namespace=*/null);
 		
 		if( compilerResult.getStatus() == bhE_CompilationStatus.NO_ERROR )
 		{
@@ -177,7 +178,7 @@ public class State_EditingCode extends bhA_State
 			return false;
 		}
 		
-		bhA_ClientUser user = bhUserManager.getInstance().getUser();
+		bhA_ClientUser user = bh_c.userMngr.getUser();
 		if( !user.isCellOwner(state.getCell().getCoordinate()) )
 		{
 			return false;
@@ -195,7 +196,7 @@ public class State_EditingCode extends bhA_State
 		
 		//--- DRK > There are other mechanisms in place to prevent syncing/previewing from clashing with
 		//---		account management transactions, but the more the merrier I say.
-		bhClientAccountManager.E_WaitReason waitReason = bhClientAccountManager.getInstance().getWaitReason();
+		bhClientAccountManager.E_WaitReason waitReason = bh_c.accountMngr.getWaitReason();
 		switch(waitReason)
 		{
 			case SIGNING_IN:

@@ -2,6 +2,7 @@ package b33hive.client.ui.tabs;
 
 import java.util.logging.Logger;
 
+import b33hive.client.app.bh_c;
 import b33hive.client.input.bhClickManager;
 import b33hive.client.input.bhI_ClickHandler;
 import b33hive.client.managers.bhClientAccountManager;
@@ -116,7 +117,7 @@ public class bhTabPanel extends AbsolutePanel implements bhI_UIElement
 		bhButtonWithText tab = new bhButtonWithText();
 		tab.addStyleName("bh_tab");
 		tab.setText(tabTitle); 
-		bhClickManager.getInstance().addClickHandler(tab, new bhI_ClickHandler()
+		bh_c.clickMngr.addClickHandler(tab, new bhI_ClickHandler()
 		{
 			public void onClick()
 			{
@@ -125,7 +126,7 @@ public class bhTabPanel extends AbsolutePanel implements bhI_UIElement
 			}
 		});
 		
-		bhToolTipManager.getInstance().addTip(tab, new bhToolTipConfig(bhE_ToolTipType.MOUSE_OVER, toolTipText));
+		bh_c.toolTipMngr.addTip(tab, new bhToolTipConfig(bhE_ToolTipType.MOUSE_OVER, toolTipText));
 		
 		m_tabContainer.add(tab);
 		
@@ -195,9 +196,9 @@ public class bhTabPanel extends AbsolutePanel implements bhI_UIElement
 	
 	private void updateAccountTabToolTip()
 	{
-		bhToolTipManager tipManager = bhToolTipManager.getInstance();
+		bhToolTipManager tipManager = bh_c.toolTipMngr;
 		
-		if( bhClientAccountManager.getInstance().isSignedIn() )
+		if( bh_c.accountMngr.isSignedIn() )
 		{
 			tipManager.addTip(m_accountTabButton, new bhToolTipConfig(bhE_ToolTipType.MOUSE_OVER, "Manage your account."));
 		}
@@ -257,7 +258,7 @@ public class bhTabPanel extends AbsolutePanel implements bhI_UIElement
 								bhAlignmentDefinition alignment = bhU_Alignment.createHorRightVerCenter(bhS_UI.TOOl_TIP_PADDING);
 								bhE_ToolTipMood severity = responseType.isGood() ? bhE_ToolTipMood.PAT_ON_BACK : bhE_ToolTipMood.OOPS;
 								bhToolTipConfig config = new bhToolTipConfig(bhE_ToolTipType.NOTIFICATION, alignment, text, severity);
-								bhToolTipManager.getInstance().addTip(m_accountTabButton, config);
+								bh_c.toolTipMngr.addTip(m_accountTabButton, config);
 							}
 						}
 					}

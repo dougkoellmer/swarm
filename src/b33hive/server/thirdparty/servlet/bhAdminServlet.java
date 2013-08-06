@@ -15,16 +15,18 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONException;
 
 import b33hive.server.account.bhE_Role;
+import b33hive.server.account.bh_s;
+import b33hive.server.app.bhA_ServerJsonFactory;
 import b33hive.server.session.bhSessionManager;
-import b33hive.server.transaction.bhJsonHelperProvider;
 import b33hive.server.transaction.bhServerTransactionManager;
+import b33hive.shared.app.bh;
 import b33hive.shared.app.bhS_App;
 import b33hive.shared.json.bhA_JsonFactory;
 import b33hive.shared.json.bhI_JsonObject;
 import b33hive.shared.transaction.bhS_Transaction;
 import b33hive.shared.transaction.bhTransactionRequest;
 import b33hive.shared.transaction.bhTransactionResponse;
-import b33hive.shared.utils.bhU_Singletons;
+
 
 public class bhAdminServlet extends bhA_BaseServlet
 {
@@ -44,29 +46,28 @@ public class bhAdminServlet extends bhA_BaseServlet
 	
 	private void doGetOrPost(HttpServletRequest nativeRequest, HttpServletResponse nativeResponse, boolean isGet) throws ServletException, IOException
 	{
-		bhJsonHelperProvider.getInstance().startScope(bhS_App.VERBOSE_TRANSACTIONS);
+		((bhA_ServerJsonFactory)bh_s.jsonFactory).startScope();
 		
-		if( !bhSessionManager.getInstance().isAuthorized(nativeRequest, nativeResponse, bhE_Role.ADMIN) )
+		if( !bh_s.sessionMngr.isAuthorized(nativeRequest, nativeResponse, bhE_Role.ADMIN) )
 		{
-			bhJsonHelperProvider.getInstance().endScope();
+			((bhA_ServerJsonFactory)bh_s.jsonFactory).endScope();
 			
 			bhU_Servlet.redirectToMainPage(nativeResponse);
 			
 			return;
 		}
-		
-		bhJsonHelperProvider.getInstance().endScope();
+
+		((bhA_ServerJsonFactory)bh_s.jsonFactory).endScope();
 		
 		nativeResponse.setContentType("text/html");
 		
-		bhA_JsonFactory jsonFactory = bhU_Singletons.get(bhA_JsonFactory.class);
 		bhI_JsonObject requestJson = null;
 		String requestJsonString = "";
 		
 		if( !isGet )
 		{
 			requestJsonString = nativeRequest.getParameter("json");
-			requestJson = requestJsonString == null ? null : jsonFactory.createJsonObject(requestJsonString);
+			requestJson = requestJsonString == null ? null : bh.jsonFactory.createJsonObject(requestJsonString);
 		}
 		
 		PrintWriter writer = nativeResponse.getWriter();
@@ -78,10 +79,9 @@ public class bhAdminServlet extends bhA_BaseServlet
 		
 		if( !isGet )
 		{
+			bhI_JsonObject responseJson = bh.jsonFactory.createJsonObject();
 			
-			bhI_JsonObject responseJson = jsonFactory.createJsonObject();
-			
-			bhServerTransactionManager.getInstance().handleRequestFromClient(nativeRequest, nativeResponse, this.getServletContext(), requestJson, responseJson, true);
+			bh_s.txnMngr.handleRequestFromClient(nativeRequest, nativeResponse, this.getServletContext(), requestJson, responseJson, true);
 			
 			bhU_Servlet.writeJsonResponse(responseJson, nativeResponse.getWriter());
 		}

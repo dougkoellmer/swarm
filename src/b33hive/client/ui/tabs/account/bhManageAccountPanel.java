@@ -1,12 +1,14 @@
 package b33hive.client.ui.tabs.account;
 
-import b33hive.client.app.bhS_ClientApp;
+import b33hive.client.app.bh_c;
 import b33hive.client.input.bhClickManager;
 import b33hive.client.input.bhI_ClickHandler;
 import b33hive.client.managers.bhClientAccountManager;
 import b33hive.client.states.account.State_ManageAccount;
 import b33hive.client.structs.bhAccountInfo;
+import b33hive.client.ui.bhS_UI;
 import b33hive.client.ui.bhSplitPanel;
+import b33hive.client.ui.bh_view;
 import b33hive.client.ui.tabs.bhTabPanel;
 import b33hive.client.ui.tooltip.bhE_ToolTipType;
 import b33hive.client.ui.tooltip.bhToolTipConfig;
@@ -54,9 +56,9 @@ public class bhManageAccountPanel extends FlowPanel implements bhI_StateEventLis
 		
 		m_signOutButton.setText("Sign Out");
 		
-		bhToolTipManager.getInstance().addTip(m_signOutButton, new bhToolTipConfig(bhE_ToolTipType.MOUSE_OVER, "Don't do it!"));
+		bh_c.toolTipMngr.addTip(m_signOutButton, new bhToolTipConfig(bhE_ToolTipType.MOUSE_OVER, "Don't do it!"));
 		
-		bhClickManager.getInstance().addClickHandler(m_signOutButton, new bhI_ClickHandler()
+		bh_c.clickMngr.addClickHandler(m_signOutButton, new bhI_ClickHandler()
 		{
 			@Override
 			public void onClick()
@@ -95,8 +97,8 @@ public class bhManageAccountPanel extends FlowPanel implements bhI_StateEventLis
 	
 	private void updateLayout()
 	{
-		double contentHeight = RootPanel.get().getOffsetHeight() - bhTabPanel.TAB_HEIGHT*2 - bhS_ClientApp.MAGIC_UI_SPACING*2;
-		m_contentPanel.setSize(bhSplitPanel.getInstance().getTabPanelWidth() + "px", contentHeight + "px");
+		double contentHeight = RootPanel.get().getOffsetHeight() - bhTabPanel.TAB_HEIGHT*2 - bhS_UI.MAGIC_UI_SPACING*2;
+		m_contentPanel.setSize(bh_view.splitPanel.getTabPanelWidth() + "px", contentHeight + "px");
 	}
 
 	@Override
@@ -108,7 +110,7 @@ public class bhManageAccountPanel extends FlowPanel implements bhI_StateEventLis
 			{
 				if( event.getState() instanceof State_ManageAccount )
 				{
-					bhAccountInfo info = bhClientAccountManager.getInstance().getAccountInfo();
+					bhAccountInfo info = bh_c.accountMngr.getAccountInfo();
 					String username = info.get(bhAccountInfo.Type.USERNAME);
 					String welcomeText = "Welcome, " + username + ".";
 					String href = bhU_Code.transformPathToJavascript(username);

@@ -2,6 +2,8 @@ package b33hive.client.ui.tabs.code;
 
 import java.util.logging.Logger;
 
+import b33hive.client.app.bhS_Client;
+import b33hive.client.app.bh_c;
 import b33hive.client.entities.bhBufferCell;
 import b33hive.client.entities.bhA_ClientUser;
 import b33hive.client.input.bhClickManager;
@@ -14,7 +16,9 @@ import b33hive.client.states.code.State_EditingCode;
 import b33hive.client.states.code.State_EditingCodeBlocker;
 import b33hive.client.ui.bhConsoleBlocker;
 import b33hive.client.ui.bhI_UIElement;
+import b33hive.client.ui.bhS_UI;
 import b33hive.client.ui.bhSplitPanel;
+import b33hive.client.ui.bh_view;
 import b33hive.client.ui.cell.bhVisualCellManager;
 import b33hive.client.ui.tabs.bhI_TabContent;
 import b33hive.client.ui.tabs.bhTabPanel;
@@ -86,19 +90,19 @@ public class bhCodeEditorTab extends AbsolutePanel implements bhI_TabContent, bh
 			}
 		};
 		
-		bhToolTipManager tipManager = bhToolTipManager.getInstance();
+		bhToolTipManager tipManager = bh_c.toolTipMngr;
 		
-		bhClickManager.getInstance().addClickHandler(m_saveButton, commitHandler);
+		bh_c.clickMngr.addClickHandler(m_saveButton, commitHandler);
 		m_saveButton.setText("Save");
 		m_saveButton.setEnabled(false);
 		tipManager.addTip(m_saveButton, new bhToolTipConfig(bhE_ToolTipType.MOUSE_OVER, "Save your cell and push it live. [Ctrl-S]"));
 		
-		bhClickManager.getInstance().addClickHandler(m_previewButton, previewHandler);
+		bh_c.clickMngr.addClickHandler(m_previewButton, previewHandler);
 		m_previewButton.setText("Preview");
 		m_previewButton.setEnabled(false);
 		tipManager.addTip(m_previewButton, new bhToolTipConfig(bhE_ToolTipType.MOUSE_OVER, "Preview your cell without saving. [Ctrl-P]"));
 		
-		m_characterCountLabel.getElement().getStyle().setMarginLeft(bhS_ClientApp.MAGIC_UI_SPACING*2, Unit.PX);
+		m_characterCountLabel.getElement().getStyle().setMarginLeft(bhS_UI.MAGIC_UI_SPACING*2, Unit.PX);
 		m_characterCountLabel.setWordWrap(false);
 		
 		m_buttonTray.add(m_characterCountLabel);
@@ -123,7 +127,7 @@ public class bhCodeEditorTab extends AbsolutePanel implements bhI_TabContent, bh
 			return;
 		}
 		
-		bhVisualCellManager.getInstance().clearAlerts();
+		bh_view.cellMngr.clearAlerts();
 		
 		onChange(); // one last time to make sure all changes are provided to the machine.
 		
@@ -137,7 +141,7 @@ public class bhCodeEditorTab extends AbsolutePanel implements bhI_TabContent, bh
 			return;
 		}
 		
-		bhVisualCellManager.getInstance().clearAlerts();
+		bh_view.cellMngr.clearAlerts();
 		
 		onChange(); // one last time to make sure all changes are provided to the machine.
 		
@@ -146,8 +150,8 @@ public class bhCodeEditorTab extends AbsolutePanel implements bhI_TabContent, bh
 	
 	private void updateLayout()
 	{
-		double editorHeight = RootPanel.get().getOffsetHeight() - bhTabPanel.TAB_HEIGHT*2 - bhS_ClientApp.MAGIC_UI_SPACING*2;
-		m_editor.setSize(bhSplitPanel.getInstance().getTabPanelWidth() + "px", editorHeight + "px");
+		double editorHeight = RootPanel.get().getOffsetHeight() - bhTabPanel.TAB_HEIGHT*2 - bhS_UI.MAGIC_UI_SPACING*2;
+		m_editor.setSize(bh_view.splitPanel.getTabPanelWidth() + "px", editorHeight + "px");
 		
 		m_editor.updateLayout();
 	}

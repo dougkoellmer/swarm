@@ -3,11 +3,12 @@ package b33hive.client.ui.cell;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
+import b33hive.client.app.bh_c;
 import b33hive.client.entities.bhI_BufferCellListener;
 import b33hive.client.ui.bhE_ZIndex;
 import b33hive.client.ui.bhS_UI;
 import b33hive.client.ui.bhU_UI;
-import b33hive.client.ui.tabs.code.bhHtmlSandbox;
+import b33hive.client.ui.tabs.code.bhCellSandbox;
 import b33hive.client.ui.tabs.code.bhI_CodeLoadListener;
 import b33hive.client.ui.widget.bhUIBlocker;
 import b33hive.shared.app.bhS_App;
@@ -234,9 +235,7 @@ public class bhVisualCell extends AbsolutePanel implements bhI_BufferCellListene
 
 		this.allowUserSelect(true);
 		
-		bhHtmlSandbox sandbox = bhHtmlSandbox.getInstance();
-		
-		sandbox.allowScrolling(m_contentPanel.getElement(), true);
+		bh_c.cellSandbox.allowScrolling(m_contentPanel.getElement(), true);
 	}
 	
 	@Override
@@ -248,14 +247,12 @@ public class bhVisualCell extends AbsolutePanel implements bhI_BufferCellListene
 		
 		this.allowUserSelect(false);
 		
-		bhHtmlSandbox sandbox = bhHtmlSandbox.getInstance();
-		
-		if( sandbox.isRunning() )
+		if( bh_c.cellSandbox.isRunning() )
 		{
-			sandbox.stop();
+			bh_c.cellSandbox.stop();
 		}
 		
-		sandbox.allowScrolling(m_contentPanel.getElement(), false);
+		bh_c.cellSandbox.allowScrolling(m_contentPanel.getElement(), false);
 	}
 	
 	public void popUp()
@@ -312,8 +309,6 @@ public class bhVisualCell extends AbsolutePanel implements bhI_BufferCellListene
 	{
 		this.setStatusHtml(null, false);
 		
-		bhHtmlSandbox sandbox = bhHtmlSandbox.getInstance();
-		
 		if( code.getSafetyLevel() == bhE_CodeSafetyLevel.SAFE )
 		{
 			this.insertSafeHtml(code.getRawCode());
@@ -322,7 +317,7 @@ public class bhVisualCell extends AbsolutePanel implements bhI_BufferCellListene
 		{
 			this.setStatusHtml(null, false);
 			
-			sandbox.insertStaticHtml(m_contentPanel.getElement(), code.getRawCode(), idClass);
+			bh_c.cellSandbox.insertStaticHtml(m_contentPanel.getElement(), code.getRawCode(), idClass);
 		}
 		else if( code.getSafetyLevel() == bhE_CodeSafetyLevel.REQUIRES_DYNAMIC_SANDBOX )
 		{
@@ -333,12 +328,12 @@ public class bhVisualCell extends AbsolutePanel implements bhI_BufferCellListene
 			//---		character count or something.
 			//this.setStatusText("Initializing...", true);
 			
-			if( sandbox.isRunning() )
+			if( bh_c.cellSandbox.isRunning() )
 			{
-				sandbox.stop();
+				bh_c.cellSandbox.stop();
 			}
 			
-			sandbox.start(m_contentPanel.getElement(), code.getRawCode(), null, idClass, m_codeLoadListener);
+			bh_c.cellSandbox.start(m_contentPanel.getElement(), code.getRawCode(), null, idClass, m_codeLoadListener);
 		}
 	}
 	

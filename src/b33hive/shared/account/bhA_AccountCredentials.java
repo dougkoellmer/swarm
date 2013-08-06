@@ -1,5 +1,6 @@
 package b33hive.shared.account;
 
+import b33hive.shared.app.bh;
 import b33hive.shared.json.bhA_JsonEncodable;
 import b33hive.shared.json.bhE_JsonKey;
 import b33hive.shared.json.bhI_JsonObject;
@@ -28,12 +29,12 @@ public abstract class bhA_AccountCredentials extends bhA_JsonEncodable
 	@Override
 	public void readJson(bhI_JsonObject json)
 	{
-		m_rememberMe = bhJsonHelper.getInstance().getBoolean(json, bhE_JsonKey.rememberMe);
+		m_rememberMe = bh.jsonFactory.getHelper().getBoolean(json, bhE_JsonKey.rememberMe);
 	}
 	
 	@Override
 	public void writeJson(bhI_JsonObject json)
 	{
-		bhJsonHelper.getInstance().putBoolean(json, bhE_JsonKey.rememberMe, m_rememberMe);
+		bh.jsonFactory.getHelper().putBoolean(json, bhE_JsonKey.rememberMe, m_rememberMe);
 	}
 }

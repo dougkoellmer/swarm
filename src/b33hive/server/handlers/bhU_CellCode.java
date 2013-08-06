@@ -4,9 +4,11 @@ import java.util.ConcurrentModificationException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.b33hive.server.app.bhS_ServerApp;
+
 import b33hive.server.account.bhE_Role;
 import b33hive.server.account.bhUserSession;
-import b33hive.server.app.bhS_ServerApp;
+import b33hive.server.account.bh_s;
 import b33hive.server.data.blob.bhBlobException;
 import b33hive.server.data.blob.bhBlobManagerFactory;
 import b33hive.server.data.blob.bhE_BlobCacheLevel;
@@ -25,6 +27,7 @@ import b33hive.server.structs.bhServerCode;
 import b33hive.server.structs.bhServerGridCoordinate;
 import b33hive.server.transaction.bhServerTransactionManager;
 import b33hive.server.transaction.bhTransactionContext;
+import b33hive.shared.app.bh;
 import b33hive.shared.app.bhS_App;
 import b33hive.shared.code.bhA_CodeCompiler;
 import b33hive.shared.code.bhCompilerResult;
@@ -39,7 +42,7 @@ import b33hive.shared.transaction.bhE_RequestPath;
 import b33hive.shared.transaction.bhE_ResponseError;
 import b33hive.shared.transaction.bhTransactionRequest;
 import b33hive.shared.transaction.bhTransactionResponse;
-import b33hive.shared.utils.bhU_Singletons;
+
 
 public final class bhU_CellCode
 {
@@ -108,9 +111,7 @@ public final class bhU_CellCode
 	{
 		cell.setCode(bhE_CodeType.SOURCE, sourceCode); // DRK > may be redundant.
 		
-		bhA_CodeCompiler compiler = bhU_Singletons.get(bhA_CodeCompiler.class);
-		
-		bhCompilerResult result = compiler.compile(sourceCode, cell.getCodePrivileges(), mapping.writeString());
+		bhCompilerResult result = bh.codeCompiler.compile(sourceCode, cell.getCodePrivileges(), mapping.writeString());
 		
 		if( result.getStatus() == bhE_CompilationStatus.NO_ERROR )
 		{
@@ -137,7 +138,7 @@ public final class bhU_CellCode
 		//--- DRK > Here we attempt to delete this cell from memcache so that subsequent requests for this cell get a fresh copy.
 		//---		Note that we could put a fresh copy in memcache, but we don't know how popular this cell is, and memcache
 		//---		space is potentially very limited. Therefore we let user demand determine when/if this cell gets cached.
-		bhI_BlobManager blobManager = bhBlobManagerFactory.getInstance().create(bhE_BlobCacheLevel.MEMCACHE);
+		bhI_BlobManager blobManager = bh_s.blobMngrFactory.create(bhE_BlobCacheLevel.MEMCACHE);
 		try
 		{
 			blobManager.deleteBlobAsync(mapping, bhServerCell.class);

@@ -4,24 +4,21 @@ import b33hive.server.transaction.bhI_TransactionScopeListener;
 
 public class bhBlobManagerFactory implements bhI_TransactionScopeListener
 {
-	private static bhBlobManagerFactory s_instance = null;
+	private final bhLocalBlobCache m_localCache = new bhLocalBlobCache();
+	private final bhBlobTransactionManager m_txnMngr = new bhBlobTransactionManager();
+	private final bhBlobTemplateManager m_templateMngr = new bhBlobTemplateManager();
 	
-	public static void startUp()
+	public bhBlobManagerFactory()
 	{
-		s_instance = new bhBlobManagerFactory();
-		
-		bhBlobTransactionManager.startUp();
-		bhBlobTemplateManager.startUp();
-		bhLocalBlobCache.startUp();
 	}
 	
 	private bhI_BlobManager createInstance(bhE_BlobCacheLevel cacheLevel, bhI_BlobManager wrappedManager)
 	{
 		switch( cacheLevel )
 		{
-			case LOCAL:			return new bhBlobManager_LocalCache(wrappedManager);
-			case MEMCACHE:  	return new bhBlobManager_MemCache(wrappedManager);
-			case PERSISTENT:	return new bhBlobManager_Persistent();
+			case LOCAL:			return new bhBlobManager_LocalCache(m_templateMngr, m_localCache, wrappedManager);
+			case MEMCACHE:  	return new bhBlobManager_MemCache(m_templateMngr, wrappedManager);
+			case PERSISTENT:	return new bhBlobManager_Persistent(m_templateMngr);
 		}
 		
 		return null;
@@ -55,38 +52,27 @@ public class bhBlobManagerFactory implements bhI_TransactionScopeListener
 		return private_getInstance(cacheChain);
 	}
 	
-	/**
-	 * Cache level should be in order from most transient cache, to most persistent cache.
-	 * 
-	 * @param cacheChain
-	 * @return
-	 */
-	public static bhBlobManagerFactory getInstance()
-	{
-		return s_instance;
-	}
-
 	@Override
 	public void onEnterScope()
 	{
-		bhLocalBlobCache.getInstance().deleteContext();
+		m_localCache.deleteContext();
 	}
 
 	@Override
 	public void onBatchStart()
 	{
-		bhLocalBlobCache.getInstance().createContext();
+		m_localCache.createContext();
 	}
 
 	@Override
 	public void onBatchEnd()
 	{
-		bhLocalBlobCache.getInstance().deleteContext();
+		m_localCache.deleteContext();
 	}
 
 	@Override
 	public void onExitScope()
 	{
-		bhLocalBlobCache.getInstance().deleteContext();
+		m_localCache.deleteContext();
 	}
 }

@@ -2,30 +2,19 @@ package b33hive.shared.transaction;
 
 import java.util.HashMap;
 
+import b33hive.shared.app.bh;
 import b33hive.shared.json.bhE_JsonKey;
 import b33hive.shared.json.bhI_JsonObject;
 import b33hive.shared.json.bhJsonHelper;
 
 public class bhRequestPathManager
 {
-	private static bhRequestPathManager s_instance = null;
-	
 	private final HashMap<Integer, bhI_RequestPath> m_intToPath = new HashMap<Integer, bhI_RequestPath>();
 	private final HashMap<String, bhI_RequestPath> m_nameToPath = new HashMap<String, bhI_RequestPath>();
 	
 	private final boolean m_verboseRequestPaths;
 	
-	public static void startUp(boolean verboseRequestPaths)
-	{
-		s_instance = new bhRequestPathManager(verboseRequestPaths);
-	}
-	
-	public static bhRequestPathManager getInstance()
-	{
-		return s_instance;
-	}
-	
-	bhRequestPathManager(boolean verboseRequestPaths)
+	public bhRequestPathManager(boolean verboseRequestPaths)
 	{
 		m_verboseRequestPaths = verboseRequestPaths;
 	}
@@ -48,23 +37,23 @@ public class bhRequestPathManager
 	{
 		if( m_verboseRequestPaths )
 		{
-			bhJsonHelper.getInstance().putString(json, bhE_JsonKey.requestPath, path.getName());
+			bh.jsonFactory.getHelper().putString(json, bhE_JsonKey.requestPath, path.getName());
 		}
 		else
 		{
-			bhJsonHelper.getInstance().putInt(json, bhE_JsonKey.requestPath, path.getId());
+			bh.jsonFactory.getHelper().putInt(json, bhE_JsonKey.requestPath, path.getId());
 		}
 	}
 	
 	public bhI_RequestPath getFromJson(bhI_JsonObject json)
 	{
-		Integer id = bhJsonHelper.getInstance().getInt(json, bhE_JsonKey.requestPath);
+		Integer id = bh.jsonFactory.getHelper().getInt(json, bhE_JsonKey.requestPath);
 		if( id != null )
 		{
 			return m_intToPath.get(id);
 		}
 		
-		String name = bhJsonHelper.getInstance().getString(json, bhE_JsonKey.requestPath);
+		String name = bh.jsonFactory.getHelper().getString(json, bhE_JsonKey.requestPath);
 		if( name != null )
 		{
 			return m_nameToPath.get(name);

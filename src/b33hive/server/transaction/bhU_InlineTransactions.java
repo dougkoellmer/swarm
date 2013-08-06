@@ -11,9 +11,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspWriter;
 
+import com.b33hive.server.app.bhS_ServerApp;
+
 import b33hive.server.account.bhS_ServerAccount;
 import b33hive.server.account.bhUserSession;
-import b33hive.server.app.bhS_ServerApp;
+import b33hive.server.account.bh_s;
 import b33hive.server.data.blob.bhBlobException;
 import b33hive.server.data.blob.bhBlobManagerFactory;
 import b33hive.server.data.blob.bhE_BlobCacheLevel;
@@ -54,7 +56,7 @@ public class bhU_InlineTransactions
 		
 		//--- DRK > Servlet mappings can't be regexes, so the next best thing is for the main b33hive jsp servlet
 		//---		to catch all paths and then do the regex itself. Technically speaking we don't *have* to redirect here. 
-		//---		It's done so that "private" servlet mappings can have the same behavior...redirecting to the main page.
+		//---		It's done so that hitting "private" servlet mappings have the same behavior as invalid addresses.
 		if( parseError != bhE_CellAddressParseError.NO_ERROR && parseError != bhE_CellAddressParseError.EMPTY )
 		{
 			bhU_Servlet.redirectToMainPage(nativeResponse);
@@ -64,7 +66,7 @@ public class bhU_InlineTransactions
 			return;
 		}
 		
-		bhInlineTransactionManager transactionManager = bhInlineTransactionManager.getInstance();
+		bhInlineTransactionManager transactionManager = bh_s.inlineTxnMngr;
 		
 		try
 		{
@@ -88,8 +90,7 @@ public class bhU_InlineTransactions
 			
 			bhTransactionRequest dummyRequest = new bhTransactionRequest(nativeRequest);
 			bhTransactionResponse dummyResponse = new bhTransactionResponse(nativeResponse);
-			bhSessionManager sessionManager = bhSessionManager.getInstance();
-			bhUserSession session = sessionManager.getSession(dummyRequest, dummyResponse);
+			bhUserSession session = bh_s.sessionMngr.getSession(dummyRequest, dummyResponse);
 			boolean isSessionActive = session != null;
 			
 			transactionManager.makeInlineRequest(bhE_RequestPath.getPasswordChangeToken);
@@ -115,7 +116,7 @@ public class bhU_InlineTransactions
 				makeUserRequest = false;
 			}
 			
-			bhI_BlobManager blobManager = bhBlobManagerFactory.getInstance().create(bhE_BlobCacheLevel.MEMCACHE, bhE_BlobCacheLevel.PERSISTENT);
+			bhI_BlobManager blobManager = bh_s.blobMngrFactory.create(bhE_BlobCacheLevel.MEMCACHE, bhE_BlobCacheLevel.PERSISTENT);
 			Map<bhI_BlobKeySource, bhI_Blob> blobBatchResult = null;
 			
 			try

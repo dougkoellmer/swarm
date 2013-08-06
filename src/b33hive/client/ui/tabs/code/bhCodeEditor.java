@@ -2,6 +2,7 @@ package b33hive.client.ui.tabs.code;
 
 import java.util.logging.Logger;
 
+import b33hive.client.app.bh_c;
 import b33hive.client.entities.bhA_ClientUser;
 import b33hive.client.managers.bhClientAccountManager;
 import b33hive.client.managers.bhUserManager;
@@ -78,7 +79,7 @@ public class bhCodeEditor extends FlowPanel implements bhI_StateEventListener
 	
 	private void toggleActiveCodeMirrorInstance(State_ViewingCell viewingState )
 	{
-		bhA_ClientUser user = bhUserManager.getInstance().getUser();
+		bhA_ClientUser user = bh_c.userMngr.getUser();
 		
 		if( user.isCellOwner(viewingState.getCell().getCoordinate()) )
 		{

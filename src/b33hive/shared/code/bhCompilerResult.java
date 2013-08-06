@@ -3,6 +3,7 @@ package b33hive.shared.code;
 import java.util.ArrayList;
 import java.util.List;
 
+import b33hive.shared.app.bh;
 import b33hive.shared.debugging.bhU_Debug;
 import b33hive.shared.entities.bhE_CodeType;
 import b33hive.shared.json.bhA_JsonEncodable;
@@ -122,7 +123,7 @@ public class bhCompilerResult extends bhA_JsonEncodable
 		
 		if( m_compilerMessages != null )
 		{
-			bhJsonHelper.getInstance().putList(json, bhE_JsonKey.compilationErrors, m_compilerMessages);
+			bh.jsonFactory.getHelper().putList(json, bhE_JsonKey.compilationErrors, m_compilerMessages);
 		}
 		else
 		{
@@ -136,7 +137,7 @@ public class bhCompilerResult extends bhA_JsonEncodable
 			m_status = bhE_CompilationStatus.COMPILER_EXCEPTION;
 		}
 		
-		bhJsonHelper.getInstance().putEnum(json, bhE_JsonKey.compilationStatusCode, m_status);
+		bh.jsonFactory.getHelper().putEnum(json, bhE_JsonKey.compilationStatusCode, m_status);
 	}
 
 	@Override
@@ -146,9 +147,9 @@ public class bhCompilerResult extends bhA_JsonEncodable
 		
 		m_codeCell.readJson(json);
 		
-		m_status = bhJsonHelper.getInstance().getEnum(json, bhE_JsonKey.compilationStatusCode, bhE_CompilationStatus.values());
+		m_status = bh.jsonFactory.getHelper().getEnum(json, bhE_JsonKey.compilationStatusCode, bhE_CompilationStatus.values());
 		
-		bhI_JsonArray compilerMessageJsonArray = bhJsonHelper.getInstance().getJsonArray(json, bhE_JsonKey.compilationErrors);
+		bhI_JsonArray compilerMessageJsonArray = bh.jsonFactory.getHelper().getJsonArray(json, bhE_JsonKey.compilationErrors);
 		
 		if( compilerMessageJsonArray != null )
 		{

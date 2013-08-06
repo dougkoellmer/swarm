@@ -8,6 +8,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspWriter;
 
+import b33hive.server.account.bh_s;
+import b33hive.server.app.bhA_ServerJsonFactory;
 import b33hive.shared.app.bhS_App;
 import b33hive.shared.json.bhI_JsonEncodable;
 import b33hive.shared.transaction.bhE_RequestPath;
@@ -36,24 +38,16 @@ public class bhInlineTransactionManager
 	
 	private final ArrayList<bhI_TransactionScopeListener> m_scopeListeners = new ArrayList<bhI_TransactionScopeListener>();
 	
-	private bhInlineTransactionManager()
+	private final bhA_ServerJsonFactory m_jsonFactory;
+	
+	public bhInlineTransactionManager(bhA_ServerJsonFactory jsonFactory)
 	{
-		
+		m_jsonFactory = jsonFactory;
 	}
 	
 	public void addScopeListener(bhI_TransactionScopeListener listener)
 	{
 		m_scopeListeners.add(listener);
-	}
-	
-	public static void startUp()
-	{
-		s_instance = new bhInlineTransactionManager();
-	}
-	
-	public static bhInlineTransactionManager getInstance()
-	{
-		return s_instance;
 	}
 	
 	public void beginBatch(Writer out, HttpServletRequest request, HttpServletResponse response) throws IOException
@@ -62,7 +56,7 @@ public class bhInlineTransactionManager
 		out.write("var bh_rl = [];");
 		m_context.set(new Context(out, request, response));
 		
-		bhJsonHelperProvider.getInstance().startScope(bhS_App.VERBOSE_TRANSACTIONS);
+		m_jsonFactory.startScope();
 		
 		for( int i = 0; i < m_scopeListeners.size(); i++ )
 		{
@@ -75,7 +69,7 @@ public class bhInlineTransactionManager
 	{
 		m_context.remove();
 		
-		bhJsonHelperProvider.getInstance().endScope();
+		m_jsonFactory.endScope();
 		
 		for( int i = 0; i < m_scopeListeners.size(); i++ )
 		{
@@ -95,7 +89,7 @@ public class bhInlineTransactionManager
 	
 	public void makeInlineRequest(bhTransactionRequest request, bhTransactionResponse response) throws IOException
 	{
-		bhServerTransactionManager.getInstance().callRequestHandler(new bhTransactionContext(false, null), request, response);
+		bh_s.txnMngr.callRequestHandler(new bhTransactionContext(false, null), request, response);
 		
 		writeInlineTransaction(request, response);
 	}

@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 import org.joda.time.DateTime;
 
 import b33hive.server.account.bhAccountDatabase.E_PasswordType;
+import b33hive.server.data.sql.bhA_SqlDatabase;
 import b33hive.shared.account.bhE_SignInCredentialType;
 import b33hive.shared.account.bhE_SignInValidationError;
 import b33hive.shared.account.bhE_SignUpCredentialType;
@@ -29,26 +30,22 @@ public class bhServerAccountManager
 {
 	private static final Logger s_logger = Logger.getLogger(bhServerAccountManager.class.getName());
 	
-	private static bhServerAccountManager s_instance = null;
-	
 	private static final String[] RESERVED_USERNAMES =
 	{
 		"admin",
 		"_ah" // some app engine services potentially require this as a path...not sure, but just being safe.
 	};
 	
-	private bhServerAccountManager()
+	private final bhAccountDatabase m_accountDb;
+	
+	public bhServerAccountManager(String accountDatabase)
 	{
+		m_accountDb = new bhAccountDatabase(accountDatabase);
 	}
 	
-	public static void startUp()
+	public bhA_SqlDatabase getAccountDb()
 	{
-		s_instance = new bhServerAccountManager();
-	}
-	
-	public static bhServerAccountManager getInstance()
-	{
-		return s_instance;
+		return m_accountDb;
 	}
 	
 	//TODO: profanity filter?
@@ -89,7 +86,7 @@ public class bhServerAccountManager
 		
 		try
 		{
-			if( bhAccountDatabase.getInstance().isPasswordChangeTokenValid(tokenBytes, time) )
+			if( m_accountDb.isPasswordChangeTokenValid(tokenBytes, time) )
 			{
 				return true;
 			}
@@ -110,8 +107,6 @@ public class bhServerAccountManager
 	{
 		String email				= credentials.get(bhE_SignInCredentialType.EMAIL);
 		String plainTextPassword	= credentials.get(bhE_SignInCredentialType.PASSWORD);
-		
-    	bhAccountDatabase database = bhAccountDatabase.getInstance();
     	
     	byte[] passwordSalt = bhU_Hashing.calcRandomSaltBytes(bhS_ServerAccount.PASSWORD_SALT_BYTE_LENGTH);
 		byte[] passwordHash = bhU_Hashing.hashWithSalt(plainTextPassword, passwordSalt);
@@ -120,7 +115,7 @@ public class bhServerAccountManager
     	try
     	{
     		Timestamp time = new Timestamp(new java.util.Date().getTime());
-    		if( database.setNewDesiredPassword(email, passwordHash, passwordSalt, changeToken, time) )
+    		if( m_accountDb.setNewDesiredPassword(email, passwordHash, passwordSalt, changeToken, time) )
     		{
     			return bhU_Hashing.convertBytesToUrlSafeString(changeToken);
     		}
@@ -153,8 +148,6 @@ public class bhServerAccountManager
 			return null;
 		}
 		
-		bhAccountDatabase database = bhAccountDatabase.getInstance();
-		
 		Random random = new Random();
 		int id = random.nextInt(Integer.MAX_VALUE);
 		byte[] passwordSalt = bhU_Hashing.calcRandomSaltBytes(bhS_ServerAccount.PASSWORD_SALT_BYTE_LENGTH);
@@ -167,7 +160,7 @@ public class bhServerAccountManager
 		{
 			try
 			{
-				database.addAccount(id, email, username, passwordHash, passwordSalt, role);
+				m_accountDb.addAccount(id, email, username, passwordHash, passwordSalt, role);
 				
 				bhUserSession userSession = new bhUserSession(id, username, role);
 				
@@ -183,7 +176,7 @@ public class bhServerAccountManager
 					
 					try
 					{
-						flags = database.containsSignUpCredentials(email, username);
+						flags = m_accountDb.containsSignUpCredentials(email, username);
 					}
 					catch(SQLException e2)
 					{
@@ -262,11 +255,9 @@ public class bhServerAccountManager
     	String email				= credentials.get(bhE_SignInCredentialType.EMAIL);
 		String plainTextPassword	= credentials.get(bhE_SignInCredentialType.PASSWORD);
 		
-    	bhAccountDatabase database = bhAccountDatabase.getInstance();
-    	
     	try
     	{
-	        byte[] salt = database.getPasswordSalt(email, E_PasswordType.NEW);
+	        byte[] salt = m_accountDb.getPasswordSalt(email, E_PasswordType.NEW);
 	        
 	        if( salt == null )
 	        {
@@ -278,7 +269,7 @@ public class bhServerAccountManager
 	        	Timestamp time = getPasswordChangeTokenTimestamp();
 	        	byte[] changeTokenBytes = bhU_Hashing.convertHashStringToBytes(passwordResetToken);
 	            
-	        	bhUserSession userSession = database.confirmNewPassword(email, passwordHash, salt, changeTokenBytes, time);
+	        	bhUserSession userSession = m_accountDb.confirmNewPassword(email, passwordHash, salt, changeTokenBytes, time);
 	        	
 	            if (userSession == null)
 	            {
@@ -298,29 +289,27 @@ public class bhServerAccountManager
     	return null;
     }
 
-	public bhUserSession attemptSignIn(bhSignInValidationResult outResult, bhSignInCredentials credentials)
+	public bhUserSession attemptSignIn(bhSignInValidationResult result_out, bhSignInCredentials credentials)
     {
     	String email				= credentials.get(bhE_SignInCredentialType.EMAIL);
 		String plainTextPassword	= credentials.get(bhE_SignInCredentialType.PASSWORD);
-		
-    	bhAccountDatabase database = bhAccountDatabase.getInstance();
-    	
+	
     	try
     	{
-	        byte[] salt = database.getPasswordSalt(email, E_PasswordType.CURRENT);
+	        byte[] salt = m_accountDb.getPasswordSalt(email, E_PasswordType.CURRENT);
 	        
 	        if( salt == null )
 	        {
-	        	outResult.setBadCombinationError();
+	        	result_out.setBadCombinationError();
 	        }
 	        else
 	        {
 	        	byte[] passwordHash	= bhU_Hashing.hashWithSalt(plainTextPassword, salt);
 	            
-	        	bhUserSession userSession = database.containsSignInCredentials(email, passwordHash);
+	        	bhUserSession userSession = m_accountDb.containsSignInCredentials(email, passwordHash);
 	            if (userSession == null)
 	            {
-	            	outResult.setBadCombinationError();
+	            	result_out.setBadCombinationError();
 	            }
 	            
 	            return userSession;
@@ -329,7 +318,7 @@ public class bhServerAccountManager
     	catch(SQLException e)
     	{
     		s_logger.log(Level.SEVERE, "Could not sign user in.", e);
-    		outResult.setResponseError();
+    		result_out.setResponseError();
     	}
     	
     	return null;

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import b33hive.client.app.bhS_Client;
+import b33hive.client.app.bh_c;
 import b33hive.client.entities.bhCamera;
 import b33hive.client.entities.bhBufferCell;
 import b33hive.client.managers.bhCellBuffer;
@@ -52,8 +53,6 @@ public class bhVisualCellManager implements bhI_UIElement, bhI_CellPoolDelegate
 		}
 	};
 	
-	private static bhVisualCellManager s_instance = null;
-	
 	private Panel m_container = null;
 	
 	private final bhPoint m_utilPoint1 = new bhPoint();
@@ -78,8 +77,6 @@ public class bhVisualCellManager implements bhI_UIElement, bhI_CellPoolDelegate
 		m_container = container;
 		
 		bhCellPool.getInstance().setDelegate(this);
-		
-		s_instance = this;
 
 		m_alertDialog = new bhDialog(256, 164, new bhDialog.I_Delegate()
 		{
@@ -124,11 +121,6 @@ public class bhVisualCellManager implements bhI_UIElement, bhI_CellPoolDelegate
 				}
 			}
 		});
-	}
-	
-	public static bhVisualCellManager getInstance()
-	{
-		return s_instance;
 	}
 	
 	private void processRemovals()
@@ -223,7 +215,7 @@ public class bhVisualCellManager implements bhI_UIElement, bhI_CellPoolDelegate
 		int bufferWidth = cellBuffer.getWidth();
 		int bufferHeight = cellBuffer.getHeight();
 		
-		bhCamera camera = bhCamera.getInstance();
+		bhCamera camera = bh_c.camera;
 		
 		double distanceRatio = camera.calcDistanceRatio();
 		

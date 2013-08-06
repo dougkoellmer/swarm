@@ -2,35 +2,23 @@ package b33hive.shared.json;
 
 import java.util.List;
 
-import b33hive.shared.utils.bhU_Singletons;
+
 import b33hive.shared.utils.bhU_TypeConversion;
+import b33hive.shared.app.bh;
 import b33hive.shared.reflection.bhI_Class;
 
 public class bhJsonHelper
 {
-	private final boolean m_isVerbose;
+	private final boolean m_verboseKeys;
 	
-	private static bhI_Class<bhJsonHelper> s_instanceProvider;
-	
-	public bhJsonHelper(boolean isVerbose)
+	public bhJsonHelper(boolean verboseKeys)
 	{
-		m_isVerbose = isVerbose;
-	}
-	
-	public static void startUp(bhI_Class<bhJsonHelper> instanceProvider)
-	{
-		s_instanceProvider = instanceProvider;
-	}
-	
-	public static bhJsonHelper getInstance()
-	{
-		return s_instanceProvider.newInstance();
+		m_verboseKeys = verboseKeys;
 	}
 	
 	public boolean isVerbose()
 	{
-		// TODO: Somehow implement this so that for development, you can easily turn on verbose mode to debug json problems.
-		return m_isVerbose;
+		return m_verboseKeys;
 	}
 	
 	private String getString(bhI_JsonKeySource key)
@@ -142,7 +130,7 @@ public class bhJsonHelper
 	
 	public void putList(bhI_JsonObject json, bhI_JsonKeySource key, List<? extends Object> list)
 	{
-		bhA_JsonFactory jsonFactory = bhU_Singletons.get(bhA_JsonFactory.class);
+		bhA_JsonFactory jsonFactory = bh.jsonFactory;
 		bhI_JsonArray array = jsonFactory.createJsonArray();
 		
 		for( int i = 0; i < list.size(); i++ )
@@ -160,7 +148,7 @@ public class bhJsonHelper
 	
 	public void putJavaVarArgs(bhI_JsonObject json, bhI_JsonKeySource key, Object ... values)
 	{
-		bhA_JsonFactory jsonFactory = bhU_Singletons.get(bhA_JsonFactory.class);
+		bhA_JsonFactory jsonFactory = bh.jsonFactory;
 		bhI_JsonArray array = jsonFactory.createJsonArray();
 		
 		for( int i = 0; i < values.length; i++ )

@@ -10,11 +10,13 @@ import java.util.Map;
 abstract class bhA_BlobManagerWithCache extends bhA_BlobManager
 {
 	private final bhI_BlobManager m_wrappedManager;
+	protected final bhBlobTemplateManager m_templateMngr;
 	
-	bhA_BlobManagerWithCache(bhI_BlobManager wrappedManager)
+	bhA_BlobManagerWithCache(bhBlobTemplateManager templateMngr, bhI_BlobManager wrappedManager)
 	{
 		super();
 		
+		m_templateMngr = templateMngr;
 		m_wrappedManager = wrappedManager;
 	}
 	
@@ -56,8 +58,7 @@ abstract class bhA_BlobManagerWithCache extends bhA_BlobManager
 	@Override
 	public final <T extends bhI_Blob> T getBlob(bhI_BlobKeySource keySource, Class<? extends T> blobType) throws bhBlobException
 	{
-		bhBlobTemplateManager templateManager = bhBlobTemplateManager.getInstance();
-		bhI_Blob template = templateManager.getTemplate(blobType);
+		bhI_Blob template = m_templateMngr.getTemplate(blobType);
 		
 		String generatedKey = keySource.createBlobKey(template);
 		bhI_Blob cachedBlob = this.getBlobFromCache(generatedKey, blobType);
@@ -82,7 +83,7 @@ abstract class bhA_BlobManagerWithCache extends bhA_BlobManager
 	@Override
 	public final void deleteBlob(bhI_BlobKeySource keySource, Class<? extends bhI_Blob> blobType) throws bhBlobException
 	{
-		bhI_Blob blobTemplate = bhBlobTemplateManager.getInstance().getTemplate(blobType);
+		bhI_Blob blobTemplate = m_templateMngr.getTemplate(blobType);
 		
 		this.deleteBlobFromCache(keySource.createBlobKey(blobTemplate));
 		

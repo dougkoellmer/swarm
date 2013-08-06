@@ -1,5 +1,6 @@
 package b33hive.shared.structs; 
 
+import b33hive.shared.app.bh;
 import b33hive.shared.app.bhS_App;
 import b33hive.shared.json.bhA_JsonEncodable;
 import b33hive.shared.json.bhA_JsonFactory;
@@ -7,7 +8,7 @@ import b33hive.shared.json.bhE_JsonKey;
 import b33hive.shared.json.bhI_JsonArray;
 import b33hive.shared.json.bhI_JsonObject;
 import b33hive.shared.json.bhJsonHelper;
-import b33hive.shared.utils.bhU_Singletons;
+
 
 /**
  * ...
@@ -167,17 +168,17 @@ public class bhGridCoordinate extends bhA_JsonEncodable
 	@Override
 	public void writeJson(bhI_JsonObject json)
 	{
-		bhA_JsonFactory jsonFactory = bhU_Singletons.get(bhA_JsonFactory.class);
+		bhA_JsonFactory jsonFactory = bh.jsonFactory;
 		bhI_JsonArray components = jsonFactory.createJsonArray();
 		components.addInt(getM());
 		components.addInt(getN());
-		bhJsonHelper.getInstance().putJsonArray(json, bhE_JsonKey.coordComponents, components);
+		bh.jsonFactory.getHelper().putJsonArray(json, bhE_JsonKey.coordComponents, components);
 	}
 	
 	@Override
 	public void readJson(bhI_JsonObject json)
 	{
-		bhI_JsonArray components = bhJsonHelper.getInstance().getJsonArray(json, bhE_JsonKey.coordComponents);
+		bhI_JsonArray components = bh.jsonFactory.getHelper().getJsonArray(json, bhE_JsonKey.coordComponents);
 		if( components != null )
 		{
 			for( int i = 0; i < 2 && i < components.getSize(); i++ )
@@ -190,7 +191,7 @@ public class bhGridCoordinate extends bhA_JsonEncodable
 	@Override
 	public boolean isEqualTo(bhI_JsonObject json)
 	{
-		bhI_JsonArray components = bhJsonHelper.getInstance().getJsonArray(json, bhE_JsonKey.coordComponents);
+		bhI_JsonArray components = bh.jsonFactory.getHelper().getJsonArray(json, bhE_JsonKey.coordComponents);
 		
 		if( components == null )  return false;
 		
@@ -209,7 +210,7 @@ public class bhGridCoordinate extends bhA_JsonEncodable
 	
 	public static boolean isReadable(bhI_JsonObject json)
 	{
-		return bhJsonHelper.getInstance().containsAllKeys(json, bhE_JsonKey.coordComponents);
+		return bh.jsonFactory.getHelper().containsAllKeys(json, bhE_JsonKey.coordComponents);
 	}
 	
 	@Override

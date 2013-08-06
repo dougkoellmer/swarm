@@ -7,6 +7,7 @@ import b33hive.server.account.bhU_Hashing;
 import b33hive.server.data.blob.bhI_Blob;
 import b33hive.server.data.blob.bhI_BlobKeySource;
 import b33hive.server.data.blob.bhU_Blob;
+import b33hive.shared.app.bh;
 import b33hive.shared.json.bhA_JsonEncodable;
 import b33hive.shared.json.bhI_JsonKeySource;
 import b33hive.shared.json.bhI_JsonObject;
@@ -66,17 +67,17 @@ class bhSessionCookieValue extends bhA_JsonEncodable implements bhI_BlobKeySourc
 	@Override
 	public void writeJson(bhI_JsonObject json)
 	{
-		bhJsonHelper.getInstance().putString(json, JsonKey.TOKEN, m_token);
-		bhJsonHelper.getInstance().putInt(json, JsonKey.ACCOUNT_ID, m_accountId);
-		bhJsonHelper.getInstance().putString(json, JsonKey.TOKEN_SALT, m_tokenSalt);
+		bh.jsonFactory.getHelper().putString(json, JsonKey.TOKEN, m_token);
+		bh.jsonFactory.getHelper().putInt(json, JsonKey.ACCOUNT_ID, m_accountId);
+		bh.jsonFactory.getHelper().putString(json, JsonKey.TOKEN_SALT, m_tokenSalt);
 	}
 
 	@Override
 	public void readJson(bhI_JsonObject json)
 	{
-		m_token = bhJsonHelper.getInstance().getString(json, JsonKey.TOKEN);
-		m_accountId = bhJsonHelper.getInstance().getInt(json, JsonKey.ACCOUNT_ID);
-		m_tokenSalt = bhJsonHelper.getInstance().getString(json, JsonKey.TOKEN_SALT);
+		m_token = bh.jsonFactory.getHelper().getString(json, JsonKey.TOKEN);
+		m_accountId = bh.jsonFactory.getHelper().getInt(json, JsonKey.ACCOUNT_ID);
+		m_tokenSalt = bh.jsonFactory.getHelper().getString(json, JsonKey.TOKEN_SALT);
 		
 		m_hashedToken = bhU_Hashing.hashWithSalt(m_token, m_tokenSalt);
 	}

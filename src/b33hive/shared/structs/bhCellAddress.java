@@ -2,6 +2,7 @@ package b33hive.shared.structs;
 
 import java.util.ArrayList;
 
+import b33hive.shared.app.bh;
 import b33hive.shared.app.bhS_App;
 import b33hive.shared.account.bhE_SignUpValidationError;
 import b33hive.shared.account.bhI_SignUpCredentialValidator;
@@ -171,19 +172,19 @@ public class bhCellAddress extends bhA_JsonEncodable
 	@Override
 	public void writeJson(bhI_JsonObject json)
 	{
-		bhJsonHelper.getInstance().putString(json, bhE_JsonKey.rawCellAddress, m_rawAddress);
+		bh.jsonFactory.getHelper().putString(json, bhE_JsonKey.rawCellAddress, m_rawAddress);
 	}
 
 	@Override
 	public void readJson(bhI_JsonObject json)
 	{
-		this.init(bhJsonHelper.getInstance().getString(json, bhE_JsonKey.rawCellAddress));
+		this.init(bh.jsonFactory.getHelper().getString(json, bhE_JsonKey.rawCellAddress));
 	}
 	
 	@Override
 	public boolean isEqualTo(bhI_JsonObject json)
 	{
-		String rawAddress = bhJsonHelper.getInstance().getString(json, bhE_JsonKey.rawCellAddress);
+		String rawAddress = bh.jsonFactory.getHelper().getString(json, bhE_JsonKey.rawCellAddress);
 		
 		if( rawAddress != null )
 		{

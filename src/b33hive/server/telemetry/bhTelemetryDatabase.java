@@ -18,21 +18,9 @@ public class bhTelemetryDatabase extends bhA_SqlDatabase
 {
 	private final static Logger s_logger = Logger.getLogger(bhTelemetryDatabase.class.getName());
 	
-	private static bhTelemetryDatabase s_instance;
-	
-	private bhTelemetryDatabase()
+	public bhTelemetryDatabase(String database)
 	{
-		super(bhS_Sql.HOST + "bh_telemetry");
-	}
-	
-	public static void startUp()
-	{
-		s_instance = new bhTelemetryDatabase();
-	}
-	
-	public static bhTelemetryDatabase getInstance()
-	{
-		return s_instance;
+		super(database);
 	}
 	
 	public void put(bhI_SqlEncodable sqlEncodable)

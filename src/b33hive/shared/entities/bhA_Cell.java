@@ -1,6 +1,7 @@
 package b33hive.shared.entities;
 
 import b33hive.server.structs.bhServerCode;
+import b33hive.shared.app.bh;
 import b33hive.shared.json.bhA_JsonEncodable;
 import b33hive.shared.json.bhE_JsonKey;
 import b33hive.shared.json.bhI_JsonKeySource;
@@ -160,7 +161,7 @@ public abstract class bhA_Cell extends bhA_JsonEncodable
 		{
 			if( m_code[i] != null )
 			{
-				bhJsonHelper.getInstance().putJsonObject(json, bhE_CodeType.values()[i].getJsonKey(), m_code[i].writeJson());
+				bh.jsonFactory.getHelper().putJsonObject(json, bhE_CodeType.values()[i].getJsonKey(), m_code[i].writeJson());
 			}
 		}
 	}
@@ -186,7 +187,7 @@ public abstract class bhA_Cell extends bhA_JsonEncodable
 		{
 			bhI_JsonKeySource key = bhE_CodeType.values()[i].getJsonKey();
 			
-			bhI_JsonObject jsonForCode = bhJsonHelper.getInstance().getJsonObject(json, key);
+			bhI_JsonObject jsonForCode = bh.jsonFactory.getHelper().getJsonObject(json, key);
 
 			if( jsonForCode != null )
 			{

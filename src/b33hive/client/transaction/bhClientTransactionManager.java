@@ -42,9 +42,7 @@ import com.google.gwt.user.client.rpc.RpcRequestBuilder;
 public class bhClientTransactionManager
 {	
 	private static final Logger s_logger = Logger.getLogger(bhClientTransactionManager.class.getName());
-	
-	private static bhClientTransactionManager s_instance;
-	
+		
 	private final bhListenerManager<bhI_TransactionResponseHandler> m_handlers = new bhListenerManager<bhI_TransactionResponseHandler>();
 	private final bhListenerManager<bhI_ResponseBatchListener> m_batchListeners = new bhListenerManager<bhI_ResponseBatchListener>();
 	
@@ -85,15 +83,8 @@ public class bhClientTransactionManager
 		}
 	};
 	
-	private bhClientTransactionManager() 
+	public bhClientTransactionManager() 
 	{
-		
-	}
-	
-	public static void startUp()
-	{
-		s_instance = new bhClientTransactionManager();
-		bhRequestPathManager.startUp(bhS_App.VERBOSE_TRANSACTIONS);
 	}
 	
 	public void setSynchronousRequestRouter(bhI_RequestDispatcher router)
@@ -157,11 +148,6 @@ public class bhClientTransactionManager
 	public boolean isInBatch()
 	{
 		return m_isInsideBatch;
-	}
-	
-	public static bhClientTransactionManager getInstance()
-	{
-		return s_instance;
 	}
 	
 	public void queueRequest(bhE_RequestPath path, bhI_JsonEncodable jsonEncodable)

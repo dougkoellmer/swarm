@@ -1,12 +1,13 @@
 package b33hive.shared.account;
 
+import b33hive.shared.app.bh;
 import b33hive.shared.json.bhA_JsonEncodable;
 import b33hive.shared.json.bhA_JsonFactory;
 import b33hive.shared.json.bhE_JsonKey;
 import b33hive.shared.json.bhI_JsonArray;
 import b33hive.shared.json.bhI_JsonObject;
 import b33hive.shared.json.bhJsonHelper;
-import b33hive.shared.utils.bhU_Singletons;
+
 
 public class bhSignInValidationResult extends bhA_JsonEncodable
 {
@@ -67,15 +68,14 @@ public class bhSignInValidationResult extends bhA_JsonEncodable
 	@Override
 	public void writeJson(bhI_JsonObject json)
 	{
-		bhA_JsonFactory jsonFactory = bhU_Singletons.get(bhA_JsonFactory.class);
-		bhI_JsonArray errors = jsonFactory.createJsonArray();
+		bhI_JsonArray errors = bh.jsonFactory.createJsonArray();
 		
 		for( int i = 0; i < m_errors.length; i++ )
 		{
 			errors.addInt(m_errors[i].ordinal());
 		}
 		
-		bhJsonHelper.getInstance().putJsonArray(json, bhE_JsonKey.signInValidationErrors, errors);
+		bh.jsonFactory.getHelper().putJsonArray(json, bhE_JsonKey.signInValidationErrors, errors);
 	}
 
 	@Override
@@ -83,7 +83,7 @@ public class bhSignInValidationResult extends bhA_JsonEncodable
 	{
 		init();
 		
-		bhI_JsonArray errors = bhJsonHelper.getInstance().getJsonArray(json, bhE_JsonKey.signInValidationErrors);
+		bhI_JsonArray errors = bh.jsonFactory.getHelper().getJsonArray(json, bhE_JsonKey.signInValidationErrors);
 		
 		for( int i = 0; i < errors.getSize(); i++ )
 		{

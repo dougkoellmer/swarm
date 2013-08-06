@@ -1,5 +1,6 @@
 package b33hive.client.ui.tabs.account;
 
+import b33hive.client.app.bh_c;
 import b33hive.client.input.bhClickManager;
 import b33hive.client.input.bhI_ClickHandler;
 import b33hive.client.managers.bhClientAccountManager;
@@ -79,15 +80,15 @@ public class bhSignInPanel extends VerticalPanel implements bhI_StateEventListen
 		m_stack.setWidth("100%");
 		m_button.addStyleName("bh_signin_button");
 		
-		bhToolTipManager.getInstance().addTip(m_button, new bhToolTipConfig(bhE_ToolTipType.MOUSE_OVER, "Do it!"));
-		bhToolTipManager.getInstance().addTip(m_changePassword, new bhToolTipConfig(bhE_ToolTipType.MOUSE_OVER,
+		bh_c.toolTipMngr.addTip(m_button, new bhToolTipConfig(bhE_ToolTipType.MOUSE_OVER, "Do it!"));
+		bh_c.toolTipMngr.addTip(m_changePassword, new bhToolTipConfig(bhE_ToolTipType.MOUSE_OVER,
 				"If you forgot your password, enter a new one along with your e-mail, then click here."));
 		
 		FlowPanel passwordResetContainer = new FlowPanel();
 		m_changePassword.setHref("javascript:void(0)");
 		m_changePassword.setText("change");
 		m_changePassword.addStyleName("bh_js_anchor");
-		bhClickManager.getInstance().addClickHandler(m_changePassword, new bhI_ClickHandler()
+		bh_c.clickMngr.addClickHandler(m_changePassword, new bhI_ClickHandler()
 		{
 			@Override
 			public void onClick()
@@ -162,7 +163,7 @@ public class bhSignInPanel extends VerticalPanel implements bhI_StateEventListen
 			});
 		}
 		
-		bhClickManager.getInstance().addClickHandler(m_button, new bhI_ClickHandler()
+		bh_c.clickMngr.addClickHandler(m_button, new bhI_ClickHandler()
 		{
 			@Override
 			public void onClick()
@@ -328,7 +329,7 @@ public class bhSignInPanel extends VerticalPanel implements bhI_StateEventListen
 			{
 				if( event.getState() instanceof State_SignInOrUp )
 				{
-					bhClientAccountManager accountManager = bhClientAccountManager.getInstance();
+					bhClientAccountManager accountManager = bh_c.accountMngr;
 					bhSignInValidationResult result = accountManager.checkOutLatestBadSignInResult();
 					if( result != null )
 					{

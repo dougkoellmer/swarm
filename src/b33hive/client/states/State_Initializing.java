@@ -1,6 +1,7 @@
 package b33hive.client.states;
 
 import b33hive.client.app.bhPlatformInfo;
+import b33hive.client.app.bh_c;
 import b33hive.client.entities.bhClientGrid;
 import b33hive.client.entities.bhA_ClientUser;
 import b33hive.client.managers.bhClientAccountManager;
@@ -22,7 +23,7 @@ import b33hive.shared.statemachine.bhA_StateConstructor;
 import b33hive.shared.transaction.bhE_RequestPath;
 import b33hive.shared.transaction.bhTransactionRequest;
 import b33hive.shared.transaction.bhTransactionResponse;
-import b33hive.shared.utils.bhU_Singletons;
+
 
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.user.client.Window;
@@ -63,10 +64,10 @@ public class State_Initializing extends bhA_State implements bhI_TransactionResp
 	@Override
 	protected void didEnter(bhA_StateConstructor constructor)
 	{
-		final bhClientAccountManager accountManager = bhU_Singletons.get(bhClientAccountManager.class);
-		final bhUserManager userManager = bhU_Singletons.get(bhUserManager.class);
-		final bhGridManager gridManager = bhU_Singletons.get(bhGridManager.class);
-		final bhClientTransactionManager transactionManager = bhU_Singletons.get(bhClientTransactionManager.class);
+		final bhClientAccountManager accountManager = bh_c.accountMngr;
+		final bhUserManager userManager = bh_c.userMngr;
+		final bhGridManager gridManager = bh_c.gridMngr;
+		final bhClientTransactionManager transactionManager = bh_c.txnMngr;
 		
 		//--- DRK > Do an initial transaction to see if user is signed in...this is synchronous.
 		accountManager.init(new bhI_Callback()
@@ -89,7 +90,7 @@ public class State_Initializing extends bhA_State implements bhI_TransactionResp
 					//m_requiredSuccessCount++;
 				}
 
-				bhClientTransactionManager.getInstance().flushRequestQueue();
+				transactionManager.flushRequestQueue();
 			}
 		});
 	}
@@ -112,8 +113,9 @@ public class State_Initializing extends bhA_State implements bhI_TransactionResp
 			machine_setState(getParent(), StateContainer_Base.class);
 			
 			StateMachine_Base baseController = bhA_State.getEnteredInstance(StateMachine_Base.class);
-				
-			bhClientAccountManager.E_PasswordChangeTokenState resetTokenState = bhClientAccountManager.getInstance().getPasswordChangeTokenState();
+			
+			bhClientAccountManager accountManager = bh_c.accountMngr;
+			bhClientAccountManager.E_PasswordChangeTokenState resetTokenState = accountManager.getPasswordChangeTokenState();
 			
 			if( resetTokenState == bhClientAccountManager.E_PasswordChangeTokenState.INVALID )
 			{
@@ -160,7 +162,8 @@ public class State_Initializing extends bhA_State implements bhI_TransactionResp
 	@Override
 	protected void willExit()
 	{
-		bhClientTransactionManager.getInstance().removeHandler(this);
+		final bhClientTransactionManager transactionManager = bh_c.txnMngr;
+		transactionManager.removeHandler(this);
 		
 		m_successCount = 0;
 	}

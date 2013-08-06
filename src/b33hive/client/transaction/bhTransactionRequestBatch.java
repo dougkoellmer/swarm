@@ -2,6 +2,7 @@ package b33hive.client.transaction;
 
 import java.util.ArrayList;
 
+import b33hive.shared.app.bh;
 import b33hive.shared.json.bhA_JsonFactory;
 import b33hive.shared.json.bhE_JsonKey;
 import b33hive.shared.json.bhI_JsonArray;
@@ -130,7 +131,7 @@ public class bhTransactionRequestBatch extends bhTransactionRequest
 	{
 		super.writeJson(json);
 		
-		final bhI_JsonArray requestList = bhA_JsonFactory.getInstance().createJsonArray();
+		final bhI_JsonArray requestList = bh.jsonFactory.createJsonArray();
 		
 		for ( int i = 0; i < m_requestList.size(); i++ )
 		{
@@ -143,6 +144,6 @@ public class bhTransactionRequestBatch extends bhTransactionRequest
 			}
 		}
 		
-		bhJsonHelper.getInstance().putJsonArray(json, bhE_JsonKey.requestList, requestList);
+		bh.jsonFactory.getHelper().putJsonArray(json, bhE_JsonKey.requestList, requestList);
 	}
 }

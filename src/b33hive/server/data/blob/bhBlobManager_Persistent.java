@@ -22,8 +22,11 @@ import com.google.appengine.api.datastore.Transaction;
 
 class bhBlobManager_Persistent extends bhA_BlobManager
 {
-	bhBlobManager_Persistent()
+	private final bhBlobTemplateManager m_templateMngr;
+	
+	bhBlobManager_Persistent(bhBlobTemplateManager templateMngr)
 	{
+		m_templateMngr = templateMngr;
 	}
 	
 	private Entity createEntityForPut(bhI_BlobKeySource keySource, bhI_Blob blob) throws bhBlobException
@@ -103,7 +106,7 @@ class bhBlobManager_Persistent extends bhA_BlobManager
 	{
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		
-		bhI_Blob blobTemplate = bhBlobTemplateManager.getInstance().getTemplate(T);
+		bhI_Blob blobTemplate = m_templateMngr.getTemplate(T);
 		
 		Key keyObject = KeyFactory.createKey(blobTemplate.getKind(), keySource.createBlobKey(blobTemplate));
 	
@@ -148,7 +151,7 @@ class bhBlobManager_Persistent extends bhA_BlobManager
 		{
 			bhI_BlobKeySource keySource = keySourceIterator.next();
 			Class<? extends bhI_Blob> nextBlobType = values.get(keySource);
-			bhI_Blob blobTemplate = bhBlobTemplateManager.getInstance().getTemplate(nextBlobType);
+			bhI_Blob blobTemplate = m_templateMngr.getTemplate(nextBlobType);
 			
 			String generatedKey = keySource.createBlobKey(blobTemplate);
 			generatedKeysToTuples.put(generatedKey, new bhBlobTuple(keySource, nextBlobType));
@@ -252,7 +255,7 @@ class bhBlobManager_Persistent extends bhA_BlobManager
 	{
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		
-		bhI_Blob blobTemplate = bhBlobTemplateManager.getInstance().getTemplate(blobType);
+		bhI_Blob blobTemplate = m_templateMngr.getTemplate(blobType);
 		
 		Key keyObject = KeyFactory.createKey(blobTemplate.getKind(), keySource.createBlobKey(blobTemplate));
 	
@@ -280,7 +283,7 @@ class bhBlobManager_Persistent extends bhA_BlobManager
 			throw new bhBlobException("Can't delete within transaction.");
 		}
 		
-		bhI_Blob blobTemplate = bhBlobTemplateManager.getInstance().getTemplate(blobType);
+		bhI_Blob blobTemplate = m_templateMngr.getTemplate(blobType);
 		
 		Key keyObject = KeyFactory.createKey(blobTemplate.getKind(), keySource.createBlobKey(blobTemplate));
 	
@@ -302,7 +305,7 @@ class bhBlobManager_Persistent extends bhA_BlobManager
 		while( iterator.hasNext() )
 		{
 			bhI_BlobKeySource keySource = iterator.next();
-			bhI_Blob blob = bhBlobTemplateManager.getInstance().getTemplate(values.get(keySource));
+			bhI_Blob blob = m_templateMngr.getTemplate(values.get(keySource));
 			
 			Key keyObject = KeyFactory.createKey(blob.getKind(), keySource.createBlobKey(blob));
 			
@@ -360,7 +363,7 @@ class bhBlobManager_Persistent extends bhA_BlobManager
 	{
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		
-		bhI_Blob blobTemplate = bhBlobTemplateManager.getInstance().getTemplate(query.getBlobType());
+		bhI_Blob blobTemplate = m_templateMngr.getTemplate(query.getBlobType());
 		
 		/*Query query = new Query(blobTemplate.getKind());
 		FilterOperator filter = new FilterOperator();

@@ -1,5 +1,6 @@
 package b33hive.shared.code;
 
+import b33hive.shared.app.bh;
 import b33hive.shared.json.bhA_JsonEncodable;
 import b33hive.shared.json.bhE_JsonKey;
 import b33hive.shared.json.bhI_JsonArray;
@@ -43,14 +44,14 @@ public class bhFileRange extends bhA_JsonEncodable
 	@Override
 	public void writeJson(bhI_JsonObject json)
 	{
-		bhJsonHelper.getInstance().putJavaVarArgs(json, bhE_JsonKey.fileRange, (Object[])m_range);
+		bh.jsonFactory.getHelper().putJavaVarArgs(json, bhE_JsonKey.fileRange, (Object[])m_range);
 	}
 
 	@Override
 	public void readJson(bhI_JsonObject json)
 	{
 		m_range = new Integer[4];
-		bhI_JsonArray range = bhJsonHelper.getInstance().getJsonArray(json, bhE_JsonKey.fileRange);
+		bhI_JsonArray range = bh.jsonFactory.getHelper().getJsonArray(json, bhE_JsonKey.fileRange);
 		
 		for( int i = 0; i < range.getSize(); i++ )
 		{

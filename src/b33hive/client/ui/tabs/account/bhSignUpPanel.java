@@ -3,10 +3,10 @@ package b33hive.client.ui.tabs.account;
 import java.util.logging.Logger;
 
 import b33hive.client.managers.bhClientAccountManager;
+import b33hive.client.app.bh_c;
 import b33hive.client.input.bhClickManager;
 import b33hive.client.input.bhI_ClickHandler;
 import b33hive.client.js.bhU_Native;
-import b33hive.client.recaptcha.bhRecaptchaWrapper;
 import b33hive.client.states.StateMachine_Base;
 import b33hive.client.states.StateMachine_Tabs;
 import b33hive.client.states.account.State_AccountStatusPending;
@@ -108,7 +108,7 @@ public class bhSignUpPanel extends VerticalPanel implements bhI_StateEventListen
 		m_panel.addStyleName("bh_signuporin_sub_panel");
 		m_stack.setWidth("100%");
 		
-		bhToolTipManager.getInstance().addTip(m_button, new bhToolTipConfig(bhE_ToolTipType.MOUSE_OVER, "Do it now!"));
+		bh_c.toolTipMngr.addTip(m_button, new bhToolTipConfig(bhE_ToolTipType.MOUSE_OVER, "Do it now!"));
 		
 		Element recaptchaResponseFieldElement = Document.get().getElementById("recaptcha_response_field");
 		recaptchaResponseFieldElement.removeFromParent();
@@ -134,7 +134,7 @@ public class bhSignUpPanel extends VerticalPanel implements bhI_StateEventListen
 		m_captchaHelp.setHref("javascript:Recaptcha.showhelp()");
 		m_reloadCaptcha.setHref("javascript:Recaptcha.reload('t')");
 		
-		bhClickManager.getInstance().addClickHandler(m_reloadCaptcha, new bhI_ClickHandler()
+		bh_c.clickMngr.addClickHandler(m_reloadCaptcha, new bhI_ClickHandler()
 		{
 			@Override
 			public void onClick()
@@ -159,7 +159,7 @@ public class bhSignUpPanel extends VerticalPanel implements bhI_StateEventListen
 		bhAlignmentDefinition alignment = bhU_Alignment.createHorRightVerCenter(bhS_UI.TOOl_TIP_PADDING);
 		alignment.setPadding(bhE_AlignmentType.MASTER_ANCHOR_VERTICAL, -1.0);
 		
-		bhToolTipManager toolTipper = bhToolTipManager.getInstance();
+		bhToolTipManager toolTipper = bh_c.toolTipMngr;
 		bhToolTipConfig config = null;
 		
 		config = new bhToolTipConfig(bhE_ToolTipType.FOCUS, alignment, "Uniquely identifies you.  Invisible to others.");
@@ -266,7 +266,7 @@ public class bhSignUpPanel extends VerticalPanel implements bhI_StateEventListen
 			});
 		}
 		
-		bhClickManager.getInstance().addClickHandler(m_button, new bhI_ClickHandler()
+		bh_c.clickMngr.addClickHandler(m_button, new bhI_ClickHandler()
 		{
 			@Override
 			public void onClick()
@@ -328,8 +328,8 @@ public class bhSignUpPanel extends VerticalPanel implements bhI_StateEventListen
 		if( canSubmit )
 		{
 			boolean rememberMe = m_checkbox.isChecked();
-			String captchaResponse = bhRecaptchaWrapper.getInstance().getResponse();
-			String captchaChallenge = bhRecaptchaWrapper.getInstance().getChallenge();
+			String captchaResponse = bh_c.recaptchaWrapper.getResponse();
+			String captchaChallenge = bh_c.recaptchaWrapper.getChallenge();
 			String[] args = {m_inputs[0].getText(), m_inputs[1].getText(), m_inputs[2].getText(), captchaResponse, captchaChallenge};
 			bhSignUpCredentials creds = new bhSignUpCredentials(rememberMe, args);
 			
@@ -362,7 +362,7 @@ public class bhSignUpPanel extends VerticalPanel implements bhI_StateEventListen
 	
 	private void updateToolTips()
 	{
-		bhToolTipManager toolTipper = bhToolTipManager.getInstance();
+		bhToolTipManager toolTipper = bh_c.toolTipMngr;
 		
 		for( int i = 0; i < m_inputs.length; i++ )
 		{
@@ -384,7 +384,7 @@ public class bhSignUpPanel extends VerticalPanel implements bhI_StateEventListen
 			{
 				if( event.getState() instanceof State_SignInOrUp )
 				{
-					bhClientAccountManager accountManager = bhClientAccountManager.getInstance();
+					bhClientAccountManager accountManager = bh_c.accountMngr;
 					bhSignUpValidationResult result = accountManager.checkOutLatestBadSignUpResult();
 					
 					if( result != null )

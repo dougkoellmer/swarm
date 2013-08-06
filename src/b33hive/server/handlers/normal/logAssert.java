@@ -3,6 +3,7 @@ package b33hive.server.handlers.normal;
 import javax.servlet.http.HttpServletRequest;
 
 import b33hive.server.account.bhUserSession;
+import b33hive.server.account.bh_s;
 import b33hive.server.data.blob.bhBlobException;
 import b33hive.server.data.blob.bhBlobManagerFactory;
 import b33hive.server.data.blob.bhE_BlobCacheLevel;
@@ -26,13 +27,13 @@ public class logAssert implements bhI_RequestHandler
 	@Override
 	public void handleRequest(bhTransactionContext context, bhTransactionRequest request, bhTransactionResponse response)
 	{
-		bhUserSession session = bhSessionManager.getInstance().getSession(request, response);
+		bhUserSession session = bh_s.sessionMngr.getSession(request, response);
 		
 		int accountId = session != null ? session.getAccountId() : -1;
 		String ip = ((HttpServletRequest) request.getNativeRequest()).getRemoteAddr();
 		
 		bhServerTelemetryAssert telemetryAssert = new bhServerTelemetryAssert(request.getJson(), ip, accountId);
 		
-		bhTelemetryDatabase.getInstance().put(telemetryAssert);
+		bh_s.telemetryDb.put(telemetryAssert);
 	}
 }

@@ -2,6 +2,7 @@ package b33hive.client.states.code;
 
 import b33hive.client.managers.bhCellCodeManager;
 import b33hive.client.managers.bhUserManager;
+import b33hive.client.app.bh_c;
 import b33hive.client.entities.bhBufferCell;
 import b33hive.client.entities.bhA_ClientUser;
 import b33hive.client.entities.bhE_CodeStatus;
@@ -125,7 +126,7 @@ public class StateMachine_EditingCode extends bhA_StateMachine implements bhI_St
 				State_ViewingCell viewingState = (State_ViewingCell) cameraState;
 				bhBufferCell viewedCell = viewingState.getCell();
 				bhGridCoordinate coord = viewedCell.getCoordinate();
-				bhA_ClientUser user = bhUserManager.getInstance().getUser();
+				bhA_ClientUser user = bh_c.userMngr.getUser();
 				
 				if( user.isCellOwner(coord) )
 				{
@@ -141,7 +142,7 @@ public class StateMachine_EditingCode extends bhA_StateMachine implements bhI_St
 				
 				if( m_code == null )
 				{
-					bhClientTransactionManager manager = bhClientTransactionManager.getInstance();
+					bhClientTransactionManager manager = bh_c.txnMngr;
 					bhCellCodeManager populator = bhCellCodeManager.getInstance();
 					
 					if( viewedCell.getStatus(bhE_CodeType.SOURCE) != bhE_CodeStatus.HAS_CODE )

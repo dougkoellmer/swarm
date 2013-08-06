@@ -1,6 +1,8 @@
 package b33hive.client.ui;
 
 import b33hive.client.app.bhPlatformInfo;
+import b33hive.client.app.bh_c;
+
 import com.google.gwt.user.client.Element;
 
 /**
@@ -65,7 +67,7 @@ public class bhU_UI
 	
 	public static String createTranslateTransform(double xValue, double yValue)
 	{
-		if( bhPlatformInfo.getInstance().has3dTransforms() )
+		if( bh_c.platformInfo.has3dTransforms() )
 		{
 			return "translate3d("+xValue+"px,"+yValue+"px, 0px)";
 		}
@@ -77,7 +79,7 @@ public class bhU_UI
 	
 	public static String createScaleTransform(double xScale, double yScale)
 	{
-		if( bhPlatformInfo.getInstance().has3dTransforms() )
+		if( bh_c.platformInfo.has3dTransforms() )
 		{
 			return "scale3d("+xScale+","+yScale+", 1)";
 		}
@@ -89,7 +91,7 @@ public class bhU_UI
 	
 	public static String createRotate2dTransform(double degrees)
 	{
-		if( bhPlatformInfo.getInstance().has3dTransforms() )
+		if( bh_c.platformInfo.has3dTransforms() )
 		{
 			return "rotate3d(0, 0, 1, "+degrees+"deg)";
 		}
@@ -110,7 +112,7 @@ public class bhU_UI
 	
 	public static void setTransform(Element element, String transform)
 	{
-		String transformProperty = bhPlatformInfo.getInstance().getTransformProperty();
+		String transformProperty = bh_c.platformInfo.getTransformProperty();
 		element.getStyle().setProperty(transformProperty, transform);
 		
 		/*for( int i = 0; i < TRANSFORM_PROPERTIES.length; i++ )
