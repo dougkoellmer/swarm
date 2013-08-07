@@ -1,6 +1,5 @@
 package b33hive.client.managers;
 
-import b33hive.client.app.bhS_ClientApp;
 import b33hive.shared.app.bhS_App;
 import b33hive.shared.structs.bhGridCoordinate;
 import b33hive.shared.structs.bhLinkedListNode;
@@ -11,7 +10,7 @@ public class bhHistoryManager
 	private static final bhHistoryManager s_instance = new bhHistoryManager();
 	
 	// TODO: Genericize the queue.
-	private final bhQueue m_coords = new bhQueue(bhS_ClientApp.MAX_HISTORY);
+	private final bhQueue m_coords = new bhQueue(S_ClientApp.MAX_HISTORY);
 	
 	private bhLinkedListNode m_currentNode = null;
 	

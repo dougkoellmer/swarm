@@ -1,6 +1,5 @@
 package b33hive.client.navigation;
 
-import com.b33hive.client.app.bhS_ClientApp;
 
 import b33hive.client.input.bhMouse;
 import b33hive.client.ui.bhI_UIElement;
@@ -11,10 +10,10 @@ public class bhMasterNavigator implements bhI_UIElement
 	private final bhMouseNavigator m_mouseNavigator;
 	private final bhBrowserNavigator m_browserNavigator;
 	
-	public bhMasterNavigator(bhMouse mouse)
+	public bhMasterNavigator(bhMouse mouse, double floatingHistoryStateFreq_seconds)
 	{
 		m_mouseNavigator = new bhMouseNavigator(mouse);
-		m_browserNavigator = new bhBrowserNavigator(bhS_ClientApp.SET_HISTORY_STATE_MIN_FREQUENCY);
+		m_browserNavigator = new bhBrowserNavigator(floatingHistoryStateFreq_seconds);
 	}
 
 	@Override

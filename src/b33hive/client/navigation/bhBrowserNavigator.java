@@ -64,9 +64,9 @@ public class bhBrowserNavigator implements bhI_StateEventListener
 	
 	private final double m_floatingHistoryUpdateRate;
 	
-	bhBrowserNavigator(double floatingHistoryUpdateRate)
+	bhBrowserNavigator(double floatingHistoryUpdateRate_seconds)
 	{
-		m_floatingHistoryUpdateRate = floatingHistoryUpdateRate;
+		m_floatingHistoryUpdateRate = floatingHistoryUpdateRate_seconds;
 		
 		m_args_SnapToCoordinate.setUserData(this.getClass());
 		m_args_SetCameraTarget.setUserData(this.getClass());

@@ -3,8 +3,6 @@ package b33hive.server.blobxn;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.b33hive.server.app.bhS_ServerApp;
-
 import b33hive.server.account.bh_s;
 import b33hive.server.data.blob.bhA_BlobTransaction;
 import b33hive.server.data.blob.bhBlobException;

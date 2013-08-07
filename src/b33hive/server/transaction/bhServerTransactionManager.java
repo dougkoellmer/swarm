@@ -31,8 +31,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONException;
 
-import com.b33hive.server.app.bhServerApp;
-
 import b33hive.server.account.bhAccountDatabase;
 import b33hive.server.app.bhA_ServerJsonFactory;
 import b33hive.server.data.blob.bhBlobManagerFactory;

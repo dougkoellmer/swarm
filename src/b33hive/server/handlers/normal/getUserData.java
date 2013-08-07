@@ -3,7 +3,6 @@ package b33hive.server.handlers.normal;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.b33hive.server.app.bhS_ServerApp;
 
 import b33hive.server.account.bhE_Role;
 import b33hive.server.account.bhUserSession;
@@ -68,7 +67,7 @@ public class getUserData implements bhI_RequestHandler
 			try
 			{
 				bhBlobTransaction_CreateUser createUserTransaction = new bhBlobTransaction_CreateUser(userSession, true);
-				createUserTransaction.perform(bhE_BlobTransactionType.MULTI_BLOB_TYPE, bhS_ServerApp.MAX_BLOB_CONCURRENCY_ATTEMPTS);
+				createUserTransaction.perform(bhE_BlobTransactionType.MULTI_BLOB_TYPE, S_ServerApp.MAX_BLOB_CONCURRENCY_ATTEMPTS);
 				
 				//--- DRK > Not a huge fan of this method of letting client know that grid size changed.
 				//---		Better would be if I could let client know through batch system, but I can't figure

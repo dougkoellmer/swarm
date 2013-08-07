@@ -4,8 +4,6 @@ import java.util.logging.Logger;
 
 import org.json.JSONException;
 
-import com.b33hive.server.app.bhServerApp;
-
 import b33hive.client.thirdparty.json.bhGwtJsonArray;
 import b33hive.client.thirdparty.json.bhGwtJsonObject;
 import b33hive.server.app.bhA_ServerJsonFactory;

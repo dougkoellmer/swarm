@@ -5,9 +5,6 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
-import com.b33hive.client.app.bhClientApp;
-import com.b33hive.client.app.bhS_ClientApp;
-import com.b33hive.client.entities.ClientUser;
 import com.google.gwt.logging.client.TextLogFormatter;
 import com.google.gwt.user.client.Timer;
 
@@ -103,7 +100,7 @@ public class bhA_ClientApp extends bhA_App implements bhI_TimeSource
 					showUnsupportedBrowserError();
 				}
 			}
-		}, bhS_ClientApp.APP_ID);
+		}, m_appConfig.appId);
 	}
 	
 	protected void entryPoint_continued()
@@ -135,10 +132,10 @@ public class bhA_ClientApp extends bhA_App implements bhI_TimeSource
 		bh.jsonFactory = new bhGwtJsonFactory(bhS_App.VERBOSE_TRANSACTIONS);
 		bh.codeCompiler = new bhClientCodeCompiler();
 		bh_c.recaptchaWrapper = new bhRecaptchaWrapper();
-		bh_c.addressMngr = new bhCellAddressManager(bhS_ClientApp.ADDRESS_CACHE_SIZE, bhS_ClientApp.ADDRESS_CACHE_EXPIRATION, this);
+		bh_c.addressMngr = new bhCellAddressManager(m_appConfig.addressCacheSize, m_appConfig.addressCacheExpiration_seconds, this);
 		bh_c.toolTipMngr = new bhToolTipManager(platform != bhE_Platform.IOS, bhS_UI.TOOL_TIP_DELAY);
 		bh_c.accountMngr = new bhClientAccountManager();
-		bh_c.codeCache = new bhCellCodeCache(bhS_ClientApp.CODE_CACHE_SIZE, bhS_ClientApp.CODE_CACHE_EXPIRATION, this);
+		bh_c.codeCache = new bhCellCodeCache(m_appConfig.codeCacheSize, m_appConfig.codeCacheExpiration_seconds, this);
 		bh_c.userMngr = new bhUserManager(bh_c.accountMngr, bh_c.codeCache, m_appConfig.user);
 		bh_c.gridMngr = new bhGridManager();
 		bh.requestPathMngr = new bhRequestPathManager(bhS_App.VERBOSE_TRANSACTIONS);

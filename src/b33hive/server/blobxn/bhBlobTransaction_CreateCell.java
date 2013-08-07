@@ -5,8 +5,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.b33hive.server.app.bhS_ServerApp;
-
 import b33hive.server.account.bhUserSession;
 import b33hive.server.account.bh_s;
 import b33hive.server.data.blob.bhA_BlobTransaction;
@@ -107,7 +105,7 @@ public class bhBlobTransaction_CreateCell extends bhA_BlobTransaction
 		bhServerGridCoordinate freeCoord = null;
 		try
 		{
-			freeCoord = m_grid.findFreeCoordinate(bhS_ServerApp.GRID_EXPANSION_DELTA, m_preference);
+			freeCoord = m_grid.findFreeCoordinate(S_ServerApp.GRID_EXPANSION_DELTA, m_preference);
 		}
 		catch(bhServerGrid.GridException e)
 		{

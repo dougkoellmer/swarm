@@ -5,8 +5,6 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.b33hive.server.app.bhServerApp;
-import com.b33hive.server.homecells.bhHomeCellCreator;
 import com.google.appengine.api.rdbms.AppEngineDriver;
 
 import b33hive.server.account.bhAccountDatabase;
@@ -98,7 +96,7 @@ public abstract class bhA_ServerApp extends bhA_App
 		bh_s.telemetryDb = new bhTelemetryDatabase(appConfig.telemetryDatabase);
 		
 		addClientHandlers();
-		addAdminHandlers(bhHomeCellCreator.class);
+		addAdminHandlers(appConfig.T_homeCellCreator);
 		addTelemetryHandlers();
 		//addDebugHandlers();
 		//addDebugPathResponseErrors();

@@ -11,8 +11,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspWriter;
 
-import com.b33hive.server.app.bhS_ServerApp;
-
 import b33hive.server.account.bhS_ServerAccount;
 import b33hive.server.account.bhUserSession;
 import b33hive.server.account.bh_s;
@@ -191,7 +189,7 @@ public class bhU_InlineTransactions
 				(new bhGridCoordinate()).calcCenterPoint(startingPosition, 1);
 			}
 			
-			startingPosition.setZ(bhS_ServerApp.DEFAULT_STARTING_Z);
+			startingPosition.setZ(S_ServerApp.DEFAULT_STARTING_Z);
 			transactionManager.makeInlineRequestWithResponse(bhE_RequestPath.getStartingPosition, startingPosition);
 		}
 		finally

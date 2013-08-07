@@ -5,8 +5,6 @@ import java.util.logging.Logger;
 
 import javax.servlet.ServletContext;
 
-import com.b33hive.server.app.bhS_ServerApp;
-
 import b33hive.server.account.bhE_Role;
 import b33hive.server.account.bhUserSession;
 import b33hive.server.blobxn.bhBlobTransaction_DeactivateUserCells;
