@@ -9,6 +9,7 @@ import b33hive.client.managers.bhClientAccountManager;
 import b33hive.client.managers.bhGridManager;
 import b33hive.client.managers.bhUserManager;
 import b33hive.client.navigation.bhMasterNavigator;
+import b33hive.client.structs.bhCellCodeCache;
 import b33hive.client.thirdparty.captcha.bhRecaptchaWrapper;
 import b33hive.client.transaction.bhClientTransactionManager;
 import b33hive.client.ui.tabs.code.bhCellSandbox;
@@ -31,4 +32,6 @@ public class bh_c extends bh
 	public static bhMasterNavigator navigator;
 	public static bhCamera camera;
 	public static bhCameraManager cameraMngr;
+	public static bhCellCodeCache codeCache;
+	public static bhA_ClientApp app;
 }

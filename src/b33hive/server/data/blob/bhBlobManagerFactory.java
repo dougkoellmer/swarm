@@ -10,6 +10,7 @@ public class bhBlobManagerFactory implements bhI_TransactionScopeListener
 	
 	public bhBlobManagerFactory()
 	{
+		bhBlobTransactionManager.startUp(); // TODO(DRK): Shouldn't be singleton.
 	}
 	
 	private bhI_BlobManager createInstance(bhE_BlobCacheLevel cacheLevel, bhI_BlobManager wrappedManager)

@@ -126,7 +126,7 @@ public class bhU_InlineTransactions
 			catch(bhBlobException e)
 			{
 				// doing nothing for now and retrying things individually below.
-				s_logger.severe("batch get error: " + e);
+				s_logger.severe("batch get error: " + e + e.getCause());
 			}
 			
 			if( blobBatchResult != null )

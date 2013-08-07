@@ -9,6 +9,7 @@ import net.tanesha.recaptcha.ReCaptchaResponse;
 import b33hive.server.account.bhS_ServerRecaptcha;
 import b33hive.server.account.bhServerAccountManager;
 import b33hive.server.account.bhUserSession;
+import b33hive.server.account.bh_s;
 import b33hive.server.session.bhSessionManager;
 import b33hive.server.transaction.bhI_RequestHandler;
 import b33hive.server.transaction.bhTransactionContext;
@@ -53,7 +54,7 @@ public class signUp implements bhI_RequestHandler
 			
 			if( result.isEverythingOk/*Still?*/() )
 			{
-				bhServerAccountManager accountManager = bhServerAccountManager.getInstance();
+				bhServerAccountManager accountManager = bh_s.accountMngr;
 				
 				bhUserSession userSession = accountManager.attemptSignUp(result, creds);
 				

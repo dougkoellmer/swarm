@@ -1,6 +1,7 @@
 package b33hive.server.handlers.normal;
 
 import b33hive.server.account.bhE_Role;
+import b33hive.server.account.bh_s;
 import b33hive.server.session.bhSessionManager;
 import b33hive.server.transaction.bhI_RequestHandler;
 import b33hive.server.transaction.bhTransactionContext;

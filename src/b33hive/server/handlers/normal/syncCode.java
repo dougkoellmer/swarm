@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 
 import b33hive.server.account.bhE_Role;
 import b33hive.server.account.bhUserSession;
+import b33hive.server.account.bh_s;
 import b33hive.server.data.blob.bhBlobException;
 import b33hive.server.data.blob.bhBlobManagerFactory;
 import b33hive.server.data.blob.bhE_BlobCacheLevel;

@@ -20,20 +20,12 @@ public class bhCellCodeCache implements bhI_LocalCodeRepository
 		}
 	}
 	
-	private static bhCellCodeCache s_instance = null;
-	
 	//private final bhLRUCache m_cache = new bhLRUCache(bhS_ClientApp.CODE_CACHE_SIZE, bhS_ClientApp.CODE_CACHE_EXPIRATION, bhClientApp.getInstance());
 	private final bhLRUCache m_cache;
 	
-	public bhCellCodeCache(int cacheSize, int cacheExpiration, bhI_TimeSource timeSource) 
+	public bhCellCodeCache(int cacheSize, double cacheExpiration, bhI_TimeSource timeSource) 
 	{
 		m_cache = new bhLRUCache(cacheSize, cacheExpiration, timeSource);
-		s_instance = this;
-	}
-	
-	public static bhCellCodeCache getInstance()
-	{
-		return s_instance;
 	}
 	
 	public void cacheCell(bhA_Cell cell)

@@ -64,7 +64,7 @@ public class bhUserManager implements bhI_TransactionResponseHandler, bhClientAc
 		m_user = user;
 		
 		m_localCodeRepo.addSource(bhCellBufferManager.getInstance());
-		m_localCodeRepo.addSource(bhCellCodeCache.getInstance());
+		m_localCodeRepo.addSource(bh_c.codeCache);
 	}
 	
 	public void start(I_Listener listener)
@@ -318,8 +318,7 @@ public class bhUserManager implements bhI_TransactionResponseHandler, bhClientAc
 				
 				//--- DRK > Just dumping all we can into other local code repositories
 				//---		because it won't be available in user object anymore.
-				bhCellCodeCache cache = bhCellCodeCache.getInstance();
-				cache.cacheCell(userCell);
+				bh_c.codeCache.cacheCell(userCell);
 			}
 			
 			user.onSignOut();

@@ -534,7 +534,7 @@ public class StateMachine_Camera extends bhA_StateMachine implements bhI_StateEv
 		
 		bhA_ClientUser user = bh_c.userMngr.getUser();
 		m_codeRepo.addSource(user);
-		m_codeRepo.addSource(bhCellCodeCache.getInstance());
+		m_codeRepo.addSource(bh_c.codeCache);
 	}
 	
 	public bhCamera getCamera()

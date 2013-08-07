@@ -36,6 +36,7 @@ import b33hive.client.states.camera.State_ViewingCell;
 import b33hive.client.states.code.StateMachine_EditingCode;
 import b33hive.client.states.code.State_EditingCode;
 import b33hive.client.states.code.State_EditingCodeBlocker;
+import b33hive.client.structs.bhCellCodeCache;
 import b33hive.client.thirdparty.captcha.bhRecaptchaWrapper;
 import b33hive.client.thirdparty.json.bhGwtJsonFactory;
 import b33hive.client.thirdparty.transaction.bhGwtRequestDispatcher;
@@ -67,7 +68,7 @@ public class bhA_ClientApp extends bhA_App implements bhI_TimeSource
 {
 	private static final Logger s_logger = Logger.getLogger(bhA_ClientApp.class.getName());	
 	
-	private final bhInlineRequestDispatcher m_synchronousRequestDispatcher;
+	private bhInlineRequestDispatcher m_synchronousRequestDispatcher;
 	private double m_lastTime = 0;
 	
 	private bhAppConfig m_appConfig;
@@ -77,7 +78,7 @@ public class bhA_ClientApp extends bhA_App implements bhI_TimeSource
 	{
 		super(bhE_AppEnvironment.CLIENT);
 		
-		m_synchronousRequestDispatcher = new bhInlineRequestDispatcher();
+		bh_c.app = this;
 	}
 	
 	protected void entryPoint(bhAppConfig appConfig, bhViewConfig viewConfig)
@@ -129,21 +130,23 @@ public class bhA_ClientApp extends bhA_App implements bhI_TimeSource
 			}
 		});
 		
-		//--- DRK > Start up a bunch of managers and services.
+		//--- DRK > Start up a bunch of shared managers and services.
 		bh_c.clickMngr = new bhClickManager();
 		bh.jsonFactory = new bhGwtJsonFactory(bhS_App.VERBOSE_TRANSACTIONS);
 		bh.codeCompiler = new bhClientCodeCompiler();
 		bh_c.recaptchaWrapper = new bhRecaptchaWrapper();
-		bh_c.addressMngr = new bhCellAddressManager(bhS_ClientApp.ADDRESS_CACHE_SIZE, bhS_ClientApp.ADDRESS_CACHE_EXPIRATION);
+		bh_c.addressMngr = new bhCellAddressManager(bhS_ClientApp.ADDRESS_CACHE_SIZE, bhS_ClientApp.ADDRESS_CACHE_EXPIRATION, this);
 		bh_c.toolTipMngr = new bhToolTipManager(platform != bhE_Platform.IOS, bhS_UI.TOOL_TIP_DELAY);
 		bh_c.accountMngr = new bhClientAccountManager();
 		bh_c.userMngr = new bhUserManager(bh_c.accountMngr, new ClientUser());
 		bh_c.gridMngr = new bhGridManager();
 		bh_c.txnMngr = new bhClientTransactionManager();
 		bh.requestPathMngr = new bhRequestPathManager(bhS_App.VERBOSE_TRANSACTIONS);
+		bh_c.codeCache = new bhCellCodeCache(bhS_ClientApp.CODE_CACHE_SIZE, bhS_ClientApp.CODE_CACHE_EXPIRATION, this);
 		
 		//--- DRK > Get transaction-related crap configured.
 		bh_c.requestPathMngr.register(bhE_RequestPath.values());
+		m_synchronousRequestDispatcher = new bhInlineRequestDispatcher();
 		bh_c.txnMngr.setSynchronousRequestRouter(m_synchronousRequestDispatcher);
 		bh_c.txnMngr.setAsynchronousRequestRouter(new bhGwtRequestDispatcher());
 
@@ -169,7 +172,7 @@ public class bhA_ClientApp extends bhA_App implements bhI_TimeSource
 		    });
 		}
 		
-		//--- DRK > Get timing and update loops going.
+		//--- DRK > Get timing and update loop going.
 		bhU_Time.startUp();
 		Timer timer = new Timer()
 		{

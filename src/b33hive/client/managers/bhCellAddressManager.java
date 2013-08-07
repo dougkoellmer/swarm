@@ -55,17 +55,10 @@ public class bhCellAddressManager implements bhI_TransactionResponseHandler
 	private final bhGetCellAddressMappingResult m_reusedMappingResult = new bhGetCellAddressMappingResult();
 	private final bhGetCellAddressResult m_reusedAddressResult = new bhGetCellAddressResult();
 	
-	public bhCellAddressManager(int cacheSize, double cacheExpiration )
+	public bhCellAddressManager(int cacheSize, double cacheExpiration, bhI_TimeSource timeSource)
 	{
-		m_cache = new bhCellAddressCache(cacheSize, cacheExpiration, new bhI_TimeSource()
-		{
-			@Override
-			public double getTime()
-			{
-				// TODO Auto-generated method stub
-				return 0;
-			}
-		});
+		m_cache = new bhCellAddressCache(cacheSize, cacheExpiration, timeSource);
+		
 		m_query.addCondition(null);
 	}
 	

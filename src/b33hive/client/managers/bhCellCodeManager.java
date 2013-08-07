@@ -115,7 +115,7 @@ public class bhCellCodeManager implements bhI_TransactionResponseHandler
 	{
 		if( nukeType == bhE_CellNuke.EVERYTHING )
 		{
-			bhCellCodeCache.getInstance().clear(coord);
+			bh_c.codeCache.clear(coord);
 		}
 		
 		//--- DRK > If not a user's cell, below we go about ensuring that the cell has all local code references cleared
@@ -300,7 +300,7 @@ public class bhCellCodeManager implements bhI_TransactionResponseHandler
 		{
 			//--- DRK > Should only use cache if we can't dump it in user.
 			//---		On sign out, user will dump all data into cache to preserve it.
-			bhCellCodeCache.getInstance().cacheCell(m_utilCell);
+			bh_c.codeCache.cacheCell(m_utilCell);
 		}
 		
 		bhCellBufferManager.Iterator iterator = bhCellBufferManager.getRegisteredInstances();
@@ -368,10 +368,9 @@ public class bhCellCodeManager implements bhI_TransactionResponseHandler
 				else
 				{
 					//--- DRK > Since user is no longer available, we dump this right into the cache.
-					bhCellCodeCache cache = bhCellCodeCache.getInstance();
-					cache.cacheCode(m_utilCoord, sourceCode, bhE_CodeType.SOURCE);
-					cache.cacheCode(m_utilCoord, splashScreenCode, bhE_CodeType.SPLASH);
-					cache.cacheCode(m_utilCoord, compiledCode, bhE_CodeType.COMPILED);
+					bh_c.codeCache.cacheCode(m_utilCoord, sourceCode, bhE_CodeType.SOURCE);
+					bh_c.codeCache.cacheCode(m_utilCoord, splashScreenCode, bhE_CodeType.SPLASH);
+					bh_c.codeCache.cacheCode(m_utilCoord, compiledCode, bhE_CodeType.COMPILED);
 				}
 				
 				//--- DRK > I think technically we need only supply the compiled html to the main display buffer in this case.

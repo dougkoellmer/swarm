@@ -52,8 +52,6 @@ public class bhCajaWrapper
 		
 		bhU_CellApi.registerApi(apiNamespace);
 		
-		tameApi(apiNamespace);
-		
 		initialize_native(this, apiNamespace);
 	}
 	

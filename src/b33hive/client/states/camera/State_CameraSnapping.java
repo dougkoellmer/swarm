@@ -88,11 +88,11 @@ public class State_CameraSnapping extends bhA_State implements bhI_StateEventLis
 		
 		m_externalCompiledStaticCodeRepo.addSource(user);
 		m_externalCompiledStaticCodeRepo.addSource(m_snapBufferManager);
-		m_externalCompiledStaticCodeRepo.addSource(bhCellCodeCache.getInstance());
+		m_externalCompiledStaticCodeRepo.addSource(bh_c.codeCache);
 		
 		m_internalCodeRepo.addSource(user);
 		m_internalCodeRepo.addSource(bhCellBufferManager.getInstance());
-		m_internalCodeRepo.addSource(bhCellCodeCache.getInstance());
+		m_internalCodeRepo.addSource(bh_c.codeCache);
 	}
 
 	void updateGridCoordinate(bhGridCoordinate targetCoordinate, bhCellAddress targetAddress_nullable)

@@ -82,7 +82,7 @@ public class bhSignInPanel extends VerticalPanel implements bhI_StateEventListen
 		
 		bh_c.toolTipMngr.addTip(m_button, new bhToolTipConfig(bhE_ToolTipType.MOUSE_OVER, "Do it!"));
 		bh_c.toolTipMngr.addTip(m_changePassword, new bhToolTipConfig(bhE_ToolTipType.MOUSE_OVER,
-				"If you forgot your password, enter a new one along with your e-mail, then click here."));
+				"Forgot your password? Enter a new one along with your e-mail, then click here."));
 		
 		FlowPanel passwordResetContainer = new FlowPanel();
 		m_changePassword.setHref("javascript:void(0)");

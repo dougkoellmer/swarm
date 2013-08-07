@@ -50,7 +50,7 @@ public class setNewDesiredPassword implements bhI_RequestHandler
 		
 		if( result.isEverythingOk() )
 		{
-			bhServerAccountManager accountManager = bhServerAccountManager.getInstance();
+			bhServerAccountManager accountManager = bh_s.accountMngr;
 			String changeToken = accountManager.setNewDesiredPassword(creds);
 			
 			if( changeToken != null )
