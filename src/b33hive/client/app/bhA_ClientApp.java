@@ -138,11 +138,11 @@ public class bhA_ClientApp extends bhA_App implements bhI_TimeSource
 		bh_c.addressMngr = new bhCellAddressManager(bhS_ClientApp.ADDRESS_CACHE_SIZE, bhS_ClientApp.ADDRESS_CACHE_EXPIRATION, this);
 		bh_c.toolTipMngr = new bhToolTipManager(platform != bhE_Platform.IOS, bhS_UI.TOOL_TIP_DELAY);
 		bh_c.accountMngr = new bhClientAccountManager();
-		bh_c.userMngr = new bhUserManager(bh_c.accountMngr, new ClientUser());
-		bh_c.gridMngr = new bhGridManager();
-		bh_c.txnMngr = new bhClientTransactionManager();
-		bh.requestPathMngr = new bhRequestPathManager(bhS_App.VERBOSE_TRANSACTIONS);
 		bh_c.codeCache = new bhCellCodeCache(bhS_ClientApp.CODE_CACHE_SIZE, bhS_ClientApp.CODE_CACHE_EXPIRATION, this);
+		bh_c.userMngr = new bhUserManager(bh_c.accountMngr, bh_c.codeCache, m_appConfig.user);
+		bh_c.gridMngr = new bhGridManager();
+		bh.requestPathMngr = new bhRequestPathManager(bhS_App.VERBOSE_TRANSACTIONS);
+		bh_c.txnMngr = new bhClientTransactionManager(bh.requestPathMngr);
 		
 		//--- DRK > Get transaction-related crap configured.
 		bh_c.requestPathMngr.register(bhE_RequestPath.values());

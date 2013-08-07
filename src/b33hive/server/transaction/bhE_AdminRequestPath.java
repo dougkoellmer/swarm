@@ -28,7 +28,7 @@ public enum bhE_AdminRequestPath implements bhI_RequestPath
 	@Override
 	public int getId()
 	{
-		return this.ordinal() + 1000000;
+		return this.ordinal() + 1000;
 	}
 
 	@Override

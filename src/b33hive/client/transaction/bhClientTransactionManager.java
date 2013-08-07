@@ -18,6 +18,7 @@ import b33hive.shared.json.bhJsonQuery;
 import b33hive.shared.json.bhJsonHelper;
 import b33hive.shared.transaction.bhA_TransactionObject;
 import b33hive.shared.transaction.bhE_RequestPath;
+import b33hive.shared.transaction.bhE_ReservedRequestPath;
 import b33hive.shared.transaction.bhE_ResponseError;
 import b33hive.shared.transaction.bhI_RequestPath;
 import b33hive.shared.transaction.bhRequestPathManager;
@@ -83,8 +84,9 @@ public class bhClientTransactionManager
 		}
 	};
 	
-	public bhClientTransactionManager() 
+	public bhClientTransactionManager(bhRequestPathManager requestPathMngr) 
 	{
+		requestPathMngr.register(bhE_ReservedRequestPath.values());
 	}
 	
 	public void setSynchronousRequestRouter(bhI_RequestDispatcher router)

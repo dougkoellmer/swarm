@@ -109,10 +109,10 @@ public class bhServerCodeCompiler extends bhA_CodeCompiler
 		{
 			SimpleMessageQueue cacheMq = new SimpleMessageQueue();
 			URI elSrc = URI.create(
-					"resource:///com/b33hive/server/code/"
+					"resource:///b33hive/server/code/"
 							+ "htmlall-elements.json");
 			URI attrSrc = URI.create(
-					"resource:///com/b33hive/server/code/"
+					"resource:///b33hive/server/code/"
 							+ "htmlall-attributes.json");
 			try
 			{

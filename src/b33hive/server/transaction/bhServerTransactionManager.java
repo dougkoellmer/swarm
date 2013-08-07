@@ -69,9 +69,11 @@ public class bhServerTransactionManager
 	private final ArrayList<bhI_TransactionScopeListener> m_scopeListeners = new ArrayList<bhI_TransactionScopeListener>();
 	private final bhA_ServerJsonFactory m_jsonFactory;
 	
-	public bhServerTransactionManager(bhA_ServerJsonFactory jsonFactory)
+	public bhServerTransactionManager(bhA_ServerJsonFactory jsonFactory, bhRequestPathManager requestPathMngr)
 	{
 		m_jsonFactory = jsonFactory;
+		
+		requestPathMngr.register(bhE_ReservedRequestPath.values());
 	}
 	
 	public bhI_RequestHandler getRequestHandler(bhI_RequestPath path)

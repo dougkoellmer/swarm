@@ -57,14 +57,16 @@ public class bhUserManager implements bhI_TransactionResponseHandler, bhClientAc
 	private final bhLocalCodeRepositoryWrapper m_localCodeRepo = new bhLocalCodeRepositoryWrapper();
 	
 	private final bhA_ClientUser m_user;
+	private final bhCellCodeCache m_codeCache;
 	
-	public bhUserManager(bhClientAccountManager accountManager, bhA_ClientUser user)
+	public bhUserManager(bhClientAccountManager accountManager, bhCellCodeCache codeCache, bhA_ClientUser user)
 	{
 		m_accountManager = accountManager;
+		m_codeCache = codeCache;
 		m_user = user;
 		
 		m_localCodeRepo.addSource(bhCellBufferManager.getInstance());
-		m_localCodeRepo.addSource(bh_c.codeCache);
+		m_localCodeRepo.addSource(m_codeCache);
 	}
 	
 	public void start(I_Listener listener)
@@ -318,7 +320,7 @@ public class bhUserManager implements bhI_TransactionResponseHandler, bhClientAc
 				
 				//--- DRK > Just dumping all we can into other local code repositories
 				//---		because it won't be available in user object anymore.
-				bh_c.codeCache.cacheCell(userCell);
+				m_codeCache.cacheCell(userCell);
 			}
 			
 			user.onSignOut();
