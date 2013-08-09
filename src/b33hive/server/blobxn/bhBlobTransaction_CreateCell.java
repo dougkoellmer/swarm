@@ -32,14 +32,18 @@ public class bhBlobTransaction_CreateCell extends bhA_BlobTransaction
 	
 	private static final int INVALID_GRID_SIZE = -1;
 	
-	private int m_newGridSize = INVALID_GRID_SIZE;
+	private boolean m_didGridGrow;
+	
+	private int m_gridWidth = INVALID_GRID_SIZE;
+	private int m_gridHeight = INVALID_GRID_SIZE;
+	
 	private bhServerGrid m_grid = null;
 	private bhServerCellAddressMapping m_mapping = null;
 	private final bhServerCellAddress m_address;
 	private final bhGridCoordinate m_preference;
 	private final bhServerCodePrivileges m_privileges;
 	
-	bhBlobTransaction_CreateCell(bhServerCellAddress cellAddress, bhGridCoordinate preference, bhServerCodePrivileges privileges)
+	public bhBlobTransaction_CreateCell(bhServerCellAddress cellAddress, bhGridCoordinate preference, bhServerCodePrivileges privileges)
 	{
 		//--- DRK > debug code
 		//preference = preference != null ? preference : new bhServerGridCoordinate(0, 4);
@@ -51,12 +55,17 @@ public class bhBlobTransaction_CreateCell extends bhA_BlobTransaction
 	
 	public boolean didGridGrow()
 	{
-		return m_newGridSize != INVALID_GRID_SIZE;
+		return m_didGridGrow;
 	}
 	
-	public int getNewGridSize()
+	public int getGridWidth()
 	{
-		return m_newGridSize;
+		return m_gridWidth;
+	}
+	
+	public int getGridHeight()
+	{
+		return m_gridHeight;
 	}
 	
 	public bhServerGrid getGrid()
@@ -66,7 +75,9 @@ public class bhBlobTransaction_CreateCell extends bhA_BlobTransaction
 	
 	protected void clear()
 	{
-		m_newGridSize = INVALID_GRID_SIZE;
+		m_didGridGrow = false;
+		m_gridWidth = INVALID_GRID_SIZE;
+		m_gridHeight = INVALID_GRID_SIZE;
 		m_grid = null;
 		m_mapping = null;
 	}
@@ -101,11 +112,13 @@ public class bhBlobTransaction_CreateCell extends bhA_BlobTransaction
 		}
 		
 		//--- DRK > Try to find a free coordinate.
-		int oldSize = m_grid.getSize();
+		int oldWidth = m_grid.getWidth();
+		int oldHeight = m_grid.getHeight();
+		
 		bhServerGridCoordinate freeCoord = null;
 		try
 		{
-			freeCoord = m_grid.findFreeCoordinate(S_ServerApp.GRID_EXPANSION_DELTA, m_preference);
+			freeCoord = m_grid.findFreeCoordinate(bh_s.app.getConfig().gridExpansionDelta, m_preference);
 		}
 		catch(bhServerGrid.GridException e)
 		{
@@ -116,10 +129,11 @@ public class bhBlobTransaction_CreateCell extends bhA_BlobTransaction
 		
 		//--- DRK > Put the grid back into the database and see if the grid has grown.
 		blobManager.putBlob(bhE_GridType.ACTIVE, m_grid);
-		int newSize = m_grid.getSize();
-		if( newSize != oldSize )
+		int newWidth = m_grid.getWidth();
+		int newHeight = m_grid.getHeight();
+		if( newWidth != oldWidth || newHeight != m_grid.getHeight() )
 		{
-			m_newGridSize = newSize;
+			m_didGridGrow = true;
 		}
 		
 		//--- DRK > Add cell address to the database.

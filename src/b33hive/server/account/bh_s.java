@@ -1,5 +1,6 @@
 package b33hive.server.account;
 
+import b33hive.server.app.bhA_ServerApp;
 import b33hive.server.data.blob.bhBlobManagerFactory;
 import b33hive.server.session.bhSessionManager;
 import b33hive.server.telemetry.bhTelemetryDatabase;
@@ -15,4 +16,5 @@ public class bh_s extends bh
 	public static bhSessionManager sessionMngr;
 	public static bhServerAccountManager accountMngr;
 	public static bhTelemetryDatabase telemetryDb;
+	public static bhA_ServerApp app;
 }

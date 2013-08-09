@@ -5,13 +5,13 @@ import java.util.logging.Logger;
 
 import b33hive.client.entities.bhCamera;
 import b33hive.client.entities.bhBufferCell;
-import b33hive.client.entities.bhClientGrid;
 import b33hive.client.entities.bhE_CodeStatus;
 import b33hive.client.structs.bhI_LocalCodeRepository;
 import b33hive.shared.app.bhS_App;
 import b33hive.shared.utils.bhU_BitTricks;
 import b33hive.shared.debugging.bhU_Debug;
 import b33hive.shared.entities.bhA_Cell;
+import b33hive.shared.entities.bhA_Grid;
 import b33hive.shared.entities.bhE_CodeSafetyLevel;
 import b33hive.shared.entities.bhE_CodeType;
 import b33hive.shared.structs.bhCode;
@@ -129,12 +129,12 @@ public class bhCellBufferManager implements bhI_LocalCodeRepository
 		m_backBuffer.drain();
 	}
 
-	public void update(bhClientGrid grid, bhCamera camera, bhI_LocalCodeRepository alternativeHtmlSource, int options__extends__bhF_BufferUpdateOption)
+	public void update(bhA_Grid grid, bhCamera camera, bhI_LocalCodeRepository alternativeCodeSource, int options__extends__bhF_BufferUpdateOption)
 	{
 		m_updateCount++;
 		
-		//--- DRK > Figure out how big each cell is relative to a normal tiny 512x512 cell.
-		int gridSize = grid.getSize();
+		//--- DRK > Figure out how big each cell is relative to a fully zoomed in cell.
+		/*int gridSize = grid.getSize();
 		int gridSizeUpperOf2 = gridSize == 0 ? 0 : bhU_BitTricks.calcUpperPowerOfTwo(gridSize);
 		double distanceRatio = camera.calcDistanceRatio();
 		int cellSize = 1;
@@ -145,10 +145,12 @@ public class bhCellBufferManager implements bhI_LocalCodeRepository
 		cellSize = (int) Math.floor(n);
 		cellSize = bhU_BitTricks.calcLowerPowerOfTwo(cellSize);
 		cellSize = cellSize <= 4 ? 1 : cellSize; // COMMENT OUT TO get correct cell sizes.
-		cellSize = cellSize > gridSizeUpperOf2 ? gridSizeUpperOf2 : cellSize;
+		cellSize = cellSize > gridSizeUpperOf2 ? gridSizeUpperOf2 : cellSize;*/
+		
+		int subCellCountAcross = 1;
 		
 		//--- DRK > Calculate maximum "raw" buffer position and size, not caring about constraints.
-		this.calcRawBufferDimensions(camera, grid, cellSize, m_utilCoord1, m_utilCoord2);
+		this.calcRawBufferDimensions(camera, grid, subCellCountAcross, m_utilCoord1, m_utilCoord2);
 		int newBufferWidth = m_utilCoord2.getM();
 		int newBufferHeight = m_utilCoord2.getN();
 		
@@ -156,18 +158,24 @@ public class bhCellBufferManager implements bhI_LocalCodeRepository
 		
 		//--- DRK > Constrain both the position and size of the buffer if necessary so it maps onto the grid in a minimal fashion.
 		//---		The following is capable of creating a buffer with zero cells, which is perfectly acceptable.
-		int remainder = cellSize > 0 ? gridSize % cellSize : 0;
-		int relativeGridSize = gridSize == 0 ? 0 : (gridSize - remainder) / cellSize;
-		relativeGridSize += remainder > 0 ? 1 : 0;
+		int gridWidthRemainder = subCellCountAcross > 0 ? grid.getWidth() % subCellCountAcross : 0;
+		int relativeGridWidth = grid.getWidth() == 0 ? 0 : (grid.getWidth() - gridWidthRemainder) / subCellCountAcross;
+		relativeGridWidth += gridWidthRemainder > 0 ? 1 : 0;
+		
+		int gridHeightRemainder = subCellCountAcross > 0 ? grid.getHeight() % subCellCountAcross : 0;
+		int relativeGridHeight = grid.getHeight() == 0 ? 0 : (grid.getHeight() - gridHeightRemainder) / subCellCountAcross;
+		relativeGridHeight += gridHeightRemainder > 0 ? 1 : 0;
+		
+		
 		if( m_utilCoord1.getM() < 0 )
 		{
 			newBufferWidth += m_utilCoord1.getM(); // lower the width
 			m_utilCoord1.setM(0);
 			newBufferWidth = newBufferWidth > 0 ? newBufferWidth : 0;
 		}
-		if( m_utilCoord1.getM() + newBufferWidth >= relativeGridSize )
+		if( m_utilCoord1.getM() + newBufferWidth >= relativeGridWidth )
 		{
-			newBufferWidth -= (m_utilCoord1.getM() + newBufferWidth) - relativeGridSize;
+			newBufferWidth -= (m_utilCoord1.getM() + newBufferWidth) - relativeGridWidth;
 			newBufferWidth = newBufferWidth > 0 ? newBufferWidth : 0;
 		}
 		if( m_utilCoord1.getN() < 0 )
@@ -176,9 +184,9 @@ public class bhCellBufferManager implements bhI_LocalCodeRepository
 			m_utilCoord1.setN(0);
 			newBufferHeight = newBufferHeight > 0 ? newBufferHeight : 0;
 		}
-		if( m_utilCoord1.getN() + newBufferHeight >= relativeGridSize )
+		if( m_utilCoord1.getN() + newBufferHeight >= relativeGridHeight )
 		{
-			newBufferHeight -= (m_utilCoord1.getN() + newBufferHeight) - relativeGridSize;
+			newBufferHeight -= (m_utilCoord1.getN() + newBufferHeight) - relativeGridHeight;
 			newBufferHeight = newBufferHeight > 0 ? newBufferHeight : 0;
 		}
 		
@@ -186,34 +194,36 @@ public class bhCellBufferManager implements bhI_LocalCodeRepository
 		//s_logger.severe("");
 		
 		m_backBuffer.setExtents(m_utilCoord1.getM(), m_utilCoord1.getN(), newBufferWidth, newBufferHeight);
-		m_backBuffer.setCellSize(cellSize);
-		m_backBuffer.imposeBuffer(m_displayBuffer, alternativeHtmlSource, options__extends__bhF_BufferUpdateOption);
+		m_backBuffer.setCellSize(subCellCountAcross);
+		m_backBuffer.imposeBuffer(grid, m_displayBuffer, alternativeCodeSource, options__extends__bhF_BufferUpdateOption);
 		
 		//s_logger.info(bhCellPool.getInstance().getAllocCount() + "");
 		
 		this.swapBuffers();
 	}
 	
-	private void calcRawBufferDimensions(bhCamera camera, bhClientGrid grid, int cellSize, bhGridCoordinate topLeft, bhGridCoordinate widthHeight)
+	private void calcRawBufferDimensions(bhCamera camera, bhA_Grid grid, int subCellCountDim, bhGridCoordinate topLeft_out, bhGridCoordinate widthHeight_out)
 	{
-		if( cellSize == 0 )
+		if( subCellCountDim == 0 )
 		{
-			topLeft.set(0, 0);
-			widthHeight.set(0,  0);
+			topLeft_out.set(0, 0);
+			widthHeight_out.set(0,  0);
 			
 			return;
 		}
 		
-		bhGridCoordinate coordOfCenterCell = topLeft;
+		bhGridCoordinate coordOfCenterCell = topLeft_out;
 		bhPoint worldPointOfCenterCell = m_utilPoint1;
 		bhPoint screenPointOfCenterCell = m_utilPoint2;
-		
-		double cellPlusSpacingPixels = bhS_App.CELL_PLUS_SPACING_PIXEL_COUNT * cellSize;
 		double distanceRatio = camera.calcDistanceRatio();
-		double scaledCellSize = (cellPlusSpacingPixels) * distanceRatio;
 		
-		coordOfCenterCell.setWithPoint(camera.getPosition(), cellPlusSpacingPixels);
-		worldPointOfCenterCell.set(coordOfCenterCell.getM()*cellPlusSpacingPixels, coordOfCenterCell.getN()*cellPlusSpacingPixels, 0.0);
+		double cellWidthPlusPadding = (grid.getWidth() + grid.getCellPadding()) * subCellCountDim;
+		double scaledCellWidth = (cellWidthPlusPadding) * distanceRatio;
+		double cellHeightPlusPadding = (grid.getHeight() + grid.getCellPadding()) * subCellCountDim;
+		double scaledCellHeight = (cellHeightPlusPadding) * distanceRatio;
+		
+		coordOfCenterCell.setWithPoint(camera.getPosition(), cellWidthPlusPadding, cellHeightPlusPadding);
+		worldPointOfCenterCell.set(coordOfCenterCell.getM()*cellWidthPlusPadding, coordOfCenterCell.getN()*cellHeightPlusPadding, 0.0);
 		worldPointOfCenterCell.floor();
 		camera.calcScreenPoint(worldPointOfCenterCell, screenPointOfCenterCell);
 		
@@ -222,19 +232,19 @@ public class bhCellBufferManager implements bhI_LocalCodeRepository
 		double screenWidth = camera.getViewWidth();
 		double screenHeight = camera.getViewHeight();
 		
-		int cellsToTheLeft = (int) (screenX < 0 ? 0 : Math.ceil(screenX / scaledCellSize));
-		int cellsToTheTop = (int) (screenY < 0 ? 0 : Math.ceil(screenY / scaledCellSize));
+		int cellsToTheLeft = (int) (screenX < 0 ? 0 : Math.ceil(screenX / scaledCellWidth));
+		int cellsToTheTop = (int) (screenY < 0 ? 0 : Math.ceil(screenY / scaledCellHeight));
 		
-		screenX += scaledCellSize;
-		screenY += scaledCellSize;
+		screenX += scaledCellWidth;
+		screenY += scaledCellHeight;
 		
-		int cellsToTheRight = (int) (screenX > screenWidth ? 0 : Math.ceil( (screenWidth-screenX) / scaledCellSize));
-		int cellsToTheBottom = (int) (screenY > screenHeight ? 0 : Math.ceil( (screenHeight-screenY) / scaledCellSize));
+		int cellsToTheRight = (int) (screenX > screenWidth ? 0 : Math.ceil( (screenWidth-screenX) / scaledCellWidth));
+		int cellsToTheBottom = (int) (screenY > screenHeight ? 0 : Math.ceil( (screenHeight-screenY) / scaledCellHeight));
 
-		topLeft.incM(-cellsToTheLeft);
-		topLeft.incN(-cellsToTheTop);
-		widthHeight.setM(cellsToTheLeft + 1 + cellsToTheRight);
-		widthHeight.setN(cellsToTheTop + 1 + cellsToTheBottom);
+		topLeft_out.incM(-cellsToTheLeft);
+		topLeft_out.incN(-cellsToTheTop);
+		widthHeight_out.setM(cellsToTheLeft + 1 + cellsToTheRight);
+		widthHeight_out.setN(cellsToTheTop + 1 + cellsToTheBottom);
 	}
 	
 	@Override

@@ -20,16 +20,13 @@ public class bhServerJsonFactory extends bhA_ServerJsonFactory
 	
 	private final ThreadLocal<bhJsonHelper> m_threadLocal = new ThreadLocal<bhJsonHelper>();
 	
-	private final boolean m_verboseKeys;
-	
-	public bhServerJsonFactory(boolean verboseKeys)
+	public bhServerJsonFactory()
 	{
-		m_verboseKeys = verboseKeys;
 	}
 	
-	public void startScope()
+	public void startScope(boolean verboseKeys)
 	{
-		m_threadLocal.set(new bhJsonHelper(m_verboseKeys));
+		m_threadLocal.set(new bhJsonHelper(verboseKeys));
 	}
 	
 	public void endScope()
@@ -108,7 +105,7 @@ public class bhServerJsonFactory extends bhA_ServerJsonFactory
 		{
 			s_logger.severe("Didn't expect json helper to be null.");
 			
-			helper = new bhJsonHelper(m_verboseKeys);
+			helper = new bhJsonHelper(false);
 		}
 		
 		return helper;

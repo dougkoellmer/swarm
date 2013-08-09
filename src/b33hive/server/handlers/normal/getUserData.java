@@ -67,14 +67,14 @@ public class getUserData implements bhI_RequestHandler
 			try
 			{
 				bhBlobTransaction_CreateUser createUserTransaction = new bhBlobTransaction_CreateUser(userSession, true);
-				createUserTransaction.perform(bhE_BlobTransactionType.MULTI_BLOB_TYPE, S_ServerApp.MAX_BLOB_CONCURRENCY_ATTEMPTS);
+				createUserTransaction.perform(bhE_BlobTransactionType.MULTI_BLOB_TYPE, 5);
 				
 				//--- DRK > Not a huge fan of this method of letting client know that grid size changed.
 				//---		Better would be if I could let client know through batch system, but I can't figure
 				//---		out how to make that efficient without completely spaghettifying server code.
 				if( createUserTransaction.didGridGrow() )
 				{
-					bhA_Grid dummyGrid = new bhA_Grid(createUserTransaction.getNewGridSize()){};
+					bhA_Grid dummyGrid = new bhA_Grid(createUserTransaction.getGridWidth(), createUserTransaction.getGridHeight()){};
 					
 					dummyGrid.writeJson(response.getJson());
 				}

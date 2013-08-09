@@ -46,7 +46,7 @@ public class bhAdminServlet extends bhA_BaseServlet
 	
 	private void doGetOrPost(HttpServletRequest nativeRequest, HttpServletResponse nativeResponse, boolean isGet) throws ServletException, IOException
 	{
-		((bhA_ServerJsonFactory)bh_s.jsonFactory).startScope();
+		((bhA_ServerJsonFactory)bh_s.jsonFactory).startScope(true);
 		
 		if( !bh_s.sessionMngr.isAuthorized(nativeRequest, nativeResponse, bhE_Role.ADMIN) )
 		{
@@ -56,36 +56,41 @@ public class bhAdminServlet extends bhA_BaseServlet
 			
 			return;
 		}
-
-		((bhA_ServerJsonFactory)bh_s.jsonFactory).endScope();
 		
-		nativeResponse.setContentType("text/html");
-		
-		bhI_JsonObject requestJson = null;
-		String requestJsonString = "";
-		
-		if( !isGet )
+		try
 		{
-			requestJsonString = nativeRequest.getParameter("json");
-			requestJson = requestJsonString == null ? null : bh.jsonFactory.createJsonObject(requestJsonString);
+			nativeResponse.setContentType("text/html");
+			
+			bhI_JsonObject requestJson = null;
+			String requestJsonString = "";
+			
+			if( !isGet )
+			{
+				requestJsonString = nativeRequest.getParameter("json");
+				requestJson = requestJsonString == null ? null : bh.jsonFactory.createJsonObject(requestJsonString);
+			}
+			
+			PrintWriter writer = nativeResponse.getWriter();
+			
+			writer.write("<form method='POST'>");
+			writer.write("<textarea style='width:400px; height:200px;' name='json'>"+requestJsonString+"</textarea>");
+			writer.write("<input type='submit' value='Submit'>");
+			writer.write("</form>");
+			
+			if( !isGet )
+			{
+				bhI_JsonObject responseJson = bh.jsonFactory.createJsonObject();
+				
+				bh_s.txnMngr.handleRequestFromClient(nativeRequest, nativeResponse, this.getServletContext(), requestJson, responseJson, true);
+				
+				bhU_Servlet.writeJsonResponse(responseJson, nativeResponse.getWriter());
+			}
+			
+			writer.flush();
 		}
-		
-		PrintWriter writer = nativeResponse.getWriter();
-		
-		writer.write("<form method='POST'>");
-		writer.write("<textarea style='width:400px; height:200px;' name='json'>"+requestJsonString+"</textarea>");
-		writer.write("<input type='submit' value='Submit'>");
-		writer.write("</form>");
-		
-		if( !isGet )
+		finally
 		{
-			bhI_JsonObject responseJson = bh.jsonFactory.createJsonObject();
-			
-			bh_s.txnMngr.handleRequestFromClient(nativeRequest, nativeResponse, this.getServletContext(), requestJson, responseJson, true);
-			
-			bhU_Servlet.writeJsonResponse(responseJson, nativeResponse.getWriter());
+			((bhA_ServerJsonFactory)bh_s.jsonFactory).endScope();
 		}
-		
-		writer.flush();
 	}
 }

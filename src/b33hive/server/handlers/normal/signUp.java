@@ -6,7 +6,6 @@ import net.tanesha.recaptcha.ReCaptcha;
 import net.tanesha.recaptcha.ReCaptchaFactory;
 import net.tanesha.recaptcha.ReCaptchaResponse;
 
-import b33hive.server.account.bhS_ServerRecaptcha;
 import b33hive.server.account.bhServerAccountManager;
 import b33hive.server.account.bhUserSession;
 import b33hive.server.account.bh_s;
@@ -15,7 +14,6 @@ import b33hive.server.transaction.bhI_RequestHandler;
 import b33hive.server.transaction.bhTransactionContext;
 import b33hive.shared.account.bhE_SignUpCredentialType;
 import b33hive.shared.account.bhE_SignUpValidationError;
-import b33hive.shared.account.bhS_Recaptcha;
 import b33hive.shared.account.bhSignUpCredentials;
 import b33hive.shared.account.bhSignUpValidationResult;
 import b33hive.shared.account.bhSignUpValidator;
@@ -24,14 +22,21 @@ import b33hive.shared.transaction.bhTransactionResponse;
 
 public class signUp implements bhI_RequestHandler
 {
-	private static void validateCaptcha(bhSignUpCredentials creds, bhSignUpValidationResult outResult, String remoteAddress)
+	private final String m_publicRecaptchaKey;
+	private final String m_privateRecaptchaKey;
+	
+	public signUp(String publicRecaptchaKey, String privateRecaptchaKey)
+	{
+		m_publicRecaptchaKey = publicRecaptchaKey;
+		m_privateRecaptchaKey = privateRecaptchaKey;
+	}
+	
+	private void validateCaptcha(bhSignUpCredentials creds, bhSignUpValidationResult outResult, String remoteAddress)
 	{
 		String captchaChallenge = creds.getCaptchaChallenge();
 		String captchaResponse = creds.get(bhE_SignUpCredentialType.CAPTCHA_RESPONSE);
-		String publicKey = bhS_Recaptcha.PUBLIC_KEY;
-		String privateKey = bhS_ServerRecaptcha.PRIVATE_KEY;
 		
-		ReCaptcha captcha = ReCaptchaFactory.newReCaptcha(publicKey, privateKey, false);
+		ReCaptcha captcha = ReCaptchaFactory.newReCaptcha(m_publicRecaptchaKey, m_privateRecaptchaKey, false);
         ReCaptchaResponse recaptchaResponse = captcha.checkAnswer(remoteAddress, captchaChallenge, captchaResponse);
 
         if ( !recaptchaResponse.isValid())

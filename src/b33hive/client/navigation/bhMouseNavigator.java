@@ -5,7 +5,6 @@ import java.util.logging.Logger;
 import b33hive.client.app.bh_c;
 import b33hive.client.entities.bhCamera;
 import b33hive.client.entities.bhBufferCell;
-import b33hive.client.entities.bhClientGrid;
 import b33hive.client.input.bhBrowserAddressManager;
 import b33hive.client.input.bhMouse;
 import b33hive.client.input.bhMouseEvent;
@@ -22,6 +21,7 @@ import b33hive.client.ui.cell.bhVisualCell;
 import b33hive.shared.utils.bhU_Math;
 import b33hive.shared.app.bhS_App;
 import b33hive.shared.debugging.bhU_Debug;
+import b33hive.shared.entities.bhA_Grid;
 import b33hive.shared.statemachine.bhA_Action;
 import b33hive.shared.statemachine.bhA_State;
 import b33hive.shared.statemachine.bhStateEvent;
@@ -324,10 +324,9 @@ public class bhMouseNavigator implements bhI_UIElement, bhMouse.I_Listener
 	
 	private void updateMouseGridCoord()
 	{
-		bhClientGrid grid = bhClientGrid.getInstance();
+		bhA_Grid grid = bh_c.gridMngr.getGrid();
 		double gridWidth = grid.calcPixelWidth();
 		double gridHeight = grid.calcPixelHeight();
-		
 		
 		mousePointToWorld(m_utilPoint2);
 		
@@ -354,7 +353,7 @@ public class bhMouseNavigator implements bhI_UIElement, bhMouse.I_Listener
 		//double modX = m_utilPoint2.getX() % cellSizePlusSpacing;
 		//double modY = m_utilPoint2.getY() % cellSizePlusSpacing;
 		
-		m_mouseGridCoord.setWithPoint(m_utilPoint2, bhS_App.CELL_PLUS_SPACING_PIXEL_COUNT);
+		m_mouseGridCoord.setWithPoint(m_utilPoint2, grid.getWidth() + grid.getCellPadding(), grid.getHeight() + grid.getCellPadding());
 		
 		/*if ( modX > bhS_App.CELL_PIXEL_COUNT || modY > bhS_App.CELL_PIXEL_COUNT )
 		{

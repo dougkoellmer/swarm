@@ -7,6 +7,7 @@ import b33hive.shared.app.bhS_App;
 import b33hive.shared.utils.bhU_Math;
 import b33hive.shared.debugging.bhU_Debug;
 import b33hive.shared.entities.bhA_Cell;
+import b33hive.shared.entities.bhA_Grid;
 import b33hive.shared.entities.bhE_CodeSafetyLevel;
 import b33hive.shared.entities.bhE_CodeType;
 import b33hive.shared.structs.bhCellAddress;
@@ -32,10 +33,21 @@ public class bhBufferCell extends bhA_Cell
 	private boolean m_hasBeenPreviewed = false;
 	
 	private bhCellAddress m_address = null;
+	private bhA_Grid m_grid = null;
 	
 	public bhBufferCell() 
 	{
 		this.setStatusAll(bhE_CodeStatus.NEEDS_CODE);
+	}
+	
+	public void init(bhA_Grid grid)
+	{
+		m_grid = grid;
+	}
+	
+	public bhA_Grid getGrid()
+	{
+		return m_grid;
 	}
 	
 	public bhCellAddress getCellAddress()
@@ -383,16 +395,17 @@ public class bhBufferCell extends bhA_Cell
 	
 	public boolean isTouchingPoint(bhPoint point)
 	{
-		double cellPixelCount = bhS_App.CELL_PLUS_SPACING_PIXEL_COUNT;
+		double cellWidthPlusPadding = m_grid.getCellWidth() + m_grid.getCellPadding();
+		double cellHeightPlusPadding = m_grid.getCellHeight() + m_grid.getCellPadding();
 		
 		if ( point.getZ() != 0 )  return false;
 		
-		this.getCoordinate().calcPoint(s_utilPoint, 1);
+		this.getCoordinate().calcPoint(s_utilPoint, m_grid.getCellWidth(), m_grid.getCellHeight(), m_grid.getCellPadding(), 1);
 		
 		if
 		(
-			bhU_Math.isWithin(point.getX(), s_utilPoint.getX(), s_utilPoint.getX() + cellPixelCount) &&
-			bhU_Math.isWithin(point.getY(), s_utilPoint.getY(), s_utilPoint.getY() + cellPixelCount)
+			bhU_Math.isWithin(point.getX(), s_utilPoint.getX(), s_utilPoint.getX() + cellWidthPlusPadding) &&
+			bhU_Math.isWithin(point.getY(), s_utilPoint.getY(), s_utilPoint.getY() + cellHeightPlusPadding)
 		)
 		{
 			return true;
@@ -436,5 +449,6 @@ public class bhBufferCell extends bhA_Cell
 		this.clear_private();
 		
 		this.m_visualization = null;
+		this.m_grid = null;
 	}
 }

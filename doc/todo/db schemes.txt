@@ -1,0 +1,41 @@
+CURRENT
+=======
+
+- USER stores grid coordinates of owned cells, and is keyed by account id
+
+- CELL stores cell content and privileges...also stores its own address, which I don't like in my gut, but does mean just one DB read to get both cell content and address...keyed by grid coordinate
+
+- MAPPING (address>coordinate)...just serves as a mapping, allowing you to get cell by address only....keyed by address
+
+- ADVANTAGES are that getting a cell at a certain coordinate, which should be a common operation, is 1 DB read...getting a cell by address is two DB reads
+
+- DISADVANTAGES are that changing a username is hairy...have to touch SQL, then remake the MAPPING, then modify the cell (change its stored address)....hmm...not that hairy actually...especially for sub-address cell names....just two blob operations
+
+- another is that just getting the cell's address from its coordinate requires reading a potentially large blob from the DB...may not be a practical concern, as you're likely getting a cell's code at the same time as its address, so things can be cached thread-locally.
+
+- moving a cell to another space on the grid involves reading/writing USER to change grid coordinate, then reading/writing MAPPING, then reading/writing GRID
+
+- "deleting" an account...have to delete/deactivate row from SQL, read USER, get all grid coordinates, delete USER, read/write grid (free up coordinates), get all CELLs and get addresses therefrom, delete all CELL blobs, then delete all MAPPINGs using cell addresses.....phew.
+
+- creating a cell involves reading/writing USER, then reading/writing GRID, then creating MAPPING
+
+
+
+THINGS TO DEFINITELY DO
+=======================
+
+- No matter how its stored (inside another blob like user, or whatever), should definitely have just one blob that takes place of multiple MAPPING blobs, i.e. for all a user's sub-addresses...not individual blobs for each sub-address-mapping....storing this in USER is a little problematic, because it's keyed by account id...meaning to get a grid coordinate from username, you'd first have to do a SQL read to get accountid
+
+
+
+
+THOUGHTS
+========
+
+- can store MULTI_MAPPING in USER, but then there's a SQL read to first get accountid by user name, then get USER blob...probably better just to have MULTI-MAPPING as its own blob.
+
+
+CELL KEYED BY ACCOUNTID + autoinc integer.
+==========================================
+
+- to get cell content by grid coordinate, would require a seperate

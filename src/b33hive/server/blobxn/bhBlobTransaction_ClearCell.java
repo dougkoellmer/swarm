@@ -36,7 +36,7 @@ public class bhBlobTransaction_ClearCell extends bhA_BlobTransaction
 		
 		bhServerGrid activeGrid = blobManager.getBlob(bhE_GridType.ACTIVE, bhServerGrid.class);
 		
-		if( activeGrid == null || activeGrid.getSize() == 0 )
+		if( activeGrid == null || activeGrid.getWidth() == 0 || activeGrid.getHeight() == 0 )
 		{
 			throw new bhBlobException("Grid was not supposed to be null or empty.");
 		}

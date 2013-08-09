@@ -1,7 +1,6 @@
 package b33hive.client.managers;
 
 import b33hive.client.app.bh_c;
-import b33hive.client.entities.bhClientGrid;
 import b33hive.client.states.StateMachine_Base;
 import b33hive.client.structs.bhAccountInfo;
 import b33hive.client.transaction.bhE_TransactionAction;
@@ -9,6 +8,7 @@ import b33hive.client.transaction.bhE_ResponseErrorControl;
 import b33hive.client.transaction.bhE_ResponseSuccessControl;
 import b33hive.client.transaction.bhI_TransactionResponseHandler;
 import b33hive.client.transaction.bhClientTransactionManager;
+import b33hive.shared.entities.bhA_Grid;
 import b33hive.shared.json.bhI_JsonObject;
 import b33hive.shared.transaction.bhE_RequestPath;
 import b33hive.shared.transaction.bhE_ResponseError;
@@ -23,6 +23,17 @@ public class bhGridManager implements bhI_TransactionResponseHandler
 	}
 	
 	private I_Listener m_listener = null;
+	private final bhA_Grid m_grid;
+	
+	public bhGridManager(bhA_Grid grid)
+	{
+		m_grid = grid;
+	}
+	
+	public bhA_Grid getGrid()
+	{
+		return m_grid;
+	}
 	
 	public void start(I_Listener listener)
 	{
@@ -45,13 +56,12 @@ public class bhGridManager implements bhI_TransactionResponseHandler
 	
 	void updateGridFromJson(bhI_JsonObject json)
 	{
-		bhClientGrid grid = bhClientGrid.getInstance();
+		int oldWidth = m_grid.getWidth();
+		int oldHeight = m_grid.getHeight();
 		
-		int oldSize = grid.getSize();
+		m_grid.readJson(json);
 		
-		grid.readJson(json);
-		
-		if( oldSize != grid.getSize() )
+		if( oldWidth != m_grid.getWidth() || oldHeight != m_grid.getHeight() )
 		{
 			m_listener.onGridResize();
 		}

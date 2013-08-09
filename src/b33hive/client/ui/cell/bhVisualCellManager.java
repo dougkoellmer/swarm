@@ -9,7 +9,6 @@ import b33hive.client.entities.bhCamera;
 import b33hive.client.entities.bhBufferCell;
 import b33hive.client.managers.bhCellBuffer;
 import b33hive.client.managers.bhCellBufferManager;
-import b33hive.client.entities.bhClientGrid;
 import b33hive.client.entities.bhI_BufferCellListener;
 import b33hive.client.states.StateMachine_Base;
 import b33hive.client.states.camera.StateMachine_Camera;
@@ -22,6 +21,7 @@ import b33hive.client.ui.cell.bhAlertManager.I_Delegate;
 import b33hive.client.ui.dialog.bhDialog;
 import b33hive.shared.app.bhS_App;
 import b33hive.shared.debugging.bhU_Debug;
+import b33hive.shared.entities.bhA_Grid;
 import b33hive.shared.memory.bhObjectPool;
 import b33hive.shared.reflection.bhI_Class;
 import b33hive.shared.statemachine.bhA_Action;
@@ -199,6 +199,7 @@ public class bhVisualCellManager implements bhI_UIElement, bhI_CellPoolDelegate
 		bhCellBufferManager cellManager = bhCellBufferManager.getInstance();
 		bhCellBuffer cellBuffer = cellManager.getDisplayBuffer();
 		bhBufferCell firstCell = cellBuffer.getCellCount() > 0 ? cellBuffer.getCellAtIndex(0) : null;
+		bhA_Grid grid = firstCell.getGrid(); // TODO: Can't assume this cell will have same grid as other cells.
 		
 		if ( firstCell == null )
 		{
@@ -219,7 +220,7 @@ public class bhVisualCellManager implements bhI_UIElement, bhI_CellPoolDelegate
 		
 		double distanceRatio = camera.calcDistanceRatio();
 		
-		int cellSize = cellBuffer.getCellSize();
+		int cellSize = cellBuffer.getSubCellCount();
 		
 		double scaling = bhVisualCell.calcCellScaling(distanceRatio, cellSize);
 		/*double factor = 1e5; // = 1 * 10^5 = 100000.

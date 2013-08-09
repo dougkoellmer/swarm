@@ -1,8 +1,10 @@
 package b33hive.client.app;
 
 import b33hive.client.entities.bhA_ClientUser;
+import b33hive.shared.app.bhAppConfig;
+import b33hive.shared.entities.bhA_Grid;
 
-public class bhAppConfig
+public class bhClientAppConfig extends bhAppConfig
 {
 	public double floatingHistoryUpdateFreq_seconds;
 	public double cellHudHeight;
@@ -10,7 +12,6 @@ public class bhAppConfig
 	public double snapTimeRange;
 	public int framerateMilliseconds;
 	public double backOffDistance;
-	public String appId;
 	
 	public int addressCacheSize;
 	public double addressCacheExpiration_seconds;
@@ -19,4 +20,5 @@ public class bhAppConfig
 	public double codeCacheExpiration_seconds;
 	
 	public bhA_ClientUser user;
+	public bhA_Grid grid;
 }

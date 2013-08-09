@@ -219,7 +219,7 @@ public class bhCellAddressManager implements bhI_TransactionResponseHandler
 		}
 		
 		bhCellBuffer displayBuffer = bhCellBufferManager.getInstance().getDisplayBuffer();
-		if( displayBuffer.getCellSize() == 1 )
+		if( displayBuffer.getSubCellCount() == 1 )
 		{
 			for( int i = 0; i < displayBuffer.getCellCount(); i++ )
 			{
@@ -252,7 +252,7 @@ public class bhCellAddressManager implements bhI_TransactionResponseHandler
 	{
 		bhCellBuffer displayBuffer = bhCellBufferManager.getInstance().getDisplayBuffer();
 		
-		if( displayBuffer.getCellSize() == 1 )
+		if( displayBuffer.getSubCellCount() == 1 )
 		{
 			if( displayBuffer.isInBoundsAbsolute(mapping.getCoordinate()) )
 			{

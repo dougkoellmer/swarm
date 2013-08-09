@@ -125,7 +125,7 @@ public class bhCellCodeManager implements bhI_TransactionResponseHandler
 		{
 			bhCellBuffer buffer = manager.getDisplayBuffer();
 			
-			if( buffer.getCellSize() == 1 ) // NOTE: should always be the case for the snap buffer manager.
+			if( buffer.getSubCellCount() == 1 ) // NOTE: should always be the case for the snap buffer manager.
 			{
 				if( buffer.isInBoundsAbsolute(coord) )
 				{
@@ -310,7 +310,7 @@ public class bhCellCodeManager implements bhI_TransactionResponseHandler
 			
 			//--- DRK > Cell data is only requested if we're close enough to see individually rendered cells.
 			//---		If we've since zoomed out, we cache the data as above, but otherwise ignore it.
-			if( buffer.getCellSize() == 1 )
+			if( buffer.getSubCellCount() == 1 )
 			{
 				if ( buffer.isInBoundsAbsolute(m_utilCoord) )
 				{
@@ -384,7 +384,7 @@ public class bhCellCodeManager implements bhI_TransactionResponseHandler
 
 					//--- DRK > The user can technically commit their code and then navigate away while it's in transit to/from
 					//---		the server...that's why we have to dig and see if the cell is even visible anymore.
-					if( buffer.getCellSize() == 1 )
+					if( buffer.getSubCellCount() == 1 )
 					{
 						if ( buffer.isInBoundsAbsolute(m_utilCoord) )
 						{
@@ -433,7 +433,7 @@ public class bhCellCodeManager implements bhI_TransactionResponseHandler
 			
 			//--- DRK > Cell data is only requested if we're close enough to see individually rendered cells.
 			//---		If we've since zoomed out, we cache the data as above, but otherwise ignore it.
-			if( buffer.getCellSize() == 1 )
+			if( buffer.getSubCellCount() == 1 )
 			{
 				if ( buffer.isInBoundsAbsolute(m_utilCoord) )
 				{

@@ -3,7 +3,6 @@ package b33hive.client.ui.tabs.code;
 import b33hive.client.app.bh_c;
 import b33hive.client.entities.bhBufferCell;
 import b33hive.client.entities.bhCamera;
-import b33hive.client.entities.bhClientGrid;
 import b33hive.client.entities.bhA_ClientUser;
 import b33hive.client.managers.bhClientAccountManager;
 import b33hive.client.managers.bhUserManager;
@@ -13,6 +12,7 @@ import b33hive.client.states.camera.State_ViewingCell;
 import b33hive.client.structs.bhAccountInfo;
 import b33hive.client.ui.cell.bhAlertManager;
 import b33hive.shared.debugging.bhU_Debug;
+import b33hive.shared.entities.bhA_Grid;
 import b33hive.shared.statemachine.bhA_Action;
 import b33hive.shared.statemachine.bhA_State;
 import b33hive.shared.structs.bhCellAddress;
@@ -196,14 +196,18 @@ public class bhU_CellApi
 				
 				return username;
 			},
-			getGridSize:function()
+			getGridWidth:function()
 			{
-				var size = @b33hive.client.ui.tabs.code.bhU_CellApi::getGridSize()();
+				var width = @b33hive.client.ui.tabs.code.bhU_CellApi::getGridWidth()();
 				
-				return size;
+				return width;
 			},
-			CELL_SIZE:@b33hive.shared.app.bhS_App::CELL_PIXEL_COUNT,
-			CELL_PADDING:@b33hive.shared.app.bhS_App::CELL_SPACING_PIXEL_COUNT
+			getGridHeight:function()
+			{
+				var height = @b33hive.client.ui.tabs.code.bhU_CellApi::getGridHeight()();
+				
+				return height;
+			}
 		};
 		
 		$wnd[namespace+"_alert"] = function(message)
@@ -265,7 +269,9 @@ public class bhU_CellApi
 	{
 		bhGridCoordinate coordinate = new bhGridCoordinate((int)m, (int)n);
 		
-		if( !bhClientGrid.getInstance().isInBounds(coordinate) )
+		bhA_Grid grid = bh_c.gridMngr.getGrid();
+		
+		if( !grid.isInBounds(coordinate) )
 		{
 			logError("Coordinates are out of bounds.");
 			return;
@@ -338,9 +344,14 @@ public class bhU_CellApi
 		}
 	}
 	
-	private static int getGridSize()
+	private static int getGridWidth()
 	{
-		return bhClientGrid.getInstance().getSize();
+		return getCurrentCell().getGrid().getWidth();
+	}
+	
+	private static int getGridHeight()
+	{
+		return getCurrentCell().getGrid().getHeight();
 	}
 	
 	static State_ViewingCell getViewingState()

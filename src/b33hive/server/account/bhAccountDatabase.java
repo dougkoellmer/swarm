@@ -15,7 +15,6 @@ import javax.naming.NamingException;
 import javax.sql.DataSource;
 
 import b33hive.server.data.sql.bhA_SqlDatabase;
-import b33hive.server.data.sql.bhS_Sql;
 import b33hive.server.data.sql.bhU_Sql;
 import b33hive.shared.utils.bhU_TypeConversion;
 import com.google.appengine.api.rdbms.AppEngineDriver;

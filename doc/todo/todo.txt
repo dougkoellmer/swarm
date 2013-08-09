@@ -1,0 +1,58 @@
+- decommission URI policy and API when leaving cell.
+
+- load testing
+
+- have "auto-run my cells" flag in user management, or any other way for users to fix DoS problems in their code.
+
+- fix ie 10 text field focus bug
+
+- figure out what caja mitigating is.
+
+- make sure cell buffer isn't getting updated twice while dragging
+
+- have a link to sandbox while inside the examples page.
+
+- test performance improvement if removing loading animation
+
+- create a bare bones log in/out servlet
+
+- get new caja version...might require api changes...using "frame" instead of caja instance for taming.
+
+- handle "unlimited character case", at least in code editor UI, for number of characters left...actually, elsewhere too
+
+
+
+- have an alert bring focus to the cell such that the user can press the enter button and dismiss the alert.
+
+- account for multiple syncs coming back out of order...currently just blocks until last one is complete.
+
+- get touch/drag working for zoom slider and panel resizer
+
+- add pinch/zoom to cell grid (may have to disable mouse for more than one touch).
+
+- have seperate preview buttons for "compiled" and "splash", perhaps
+
+- have "are you sure" for both signing out, and exiting page, for unsaved changes...make sure it disregards changes to sandbox cell
+
+- make it so that enter, anywhere in the tab order of the sign up/in panel, causes the appropriate sign in/up call to fire?
+
+- have a simple boolean that censors a cell's content
+
+- be able to sign in with username, maybe
+
+- in dev mode, first key press in a text field doesn't register...after that, fields owrk normally...not a problem in release
+
+- build up a "mitigate library" so users can load shared scripts from b33hive without having to cajole them (if that's how mitigate works).
+
+- have an automatic "taken" check for username, and maybe e-mail, as they're typing it
+
+
+
+
+- consider https if other similar Show HNs have it.
+
+- checkbox to create cell or not...in manage account, have "claim cell" if user doesn't have one...might have a "confirm" dialog to dissuade casual users.
+
+- have way to change user name
+
+- wiggle account input fields when there's an error after pressing the sign in/up button

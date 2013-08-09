@@ -86,9 +86,14 @@ public class bhBlobTransaction_CreateUser extends bhA_BlobTransaction
 		return m_createCellTransaction.didGridGrow();
 	}
 	
-	public int getNewGridSize()
+	public int getGridWidth()
 	{
-		return m_createCellTransaction.getNewGridSize();
+		return m_createCellTransaction.getGridWidth();
+	}
+	
+	public int getGridHeight()
+	{
+		return m_createCellTransaction.getGridHeight();
 	}
 	
 	public bhServerGrid getGrid()

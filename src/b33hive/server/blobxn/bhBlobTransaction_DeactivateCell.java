@@ -52,7 +52,7 @@ public class bhBlobTransaction_DeactivateCell extends bhA_BlobTransaction
 		
 		bhServerGrid activeGrid = blobManager.getBlob(bhE_GridType.ACTIVE, bhServerGrid.class);
 		
-		if( activeGrid == null || activeGrid.getSize() == 0 )
+		if( activeGrid == null || activeGrid.isEmpty() == 0 )
 		{
 			throw new bhBlobException("Grid was not supposed to be null or empty.");
 		}

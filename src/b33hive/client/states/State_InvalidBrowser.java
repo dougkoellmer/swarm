@@ -1,6 +1,5 @@
 package b33hive.client.states;
 
-import b33hive.client.entities.bhClientGrid;
 import b33hive.client.entities.bhA_ClientUser;
 import b33hive.client.managers.bhClientAccountManager;
 import b33hive.client.managers.bhGridManager;

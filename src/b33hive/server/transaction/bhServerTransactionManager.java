@@ -108,7 +108,7 @@ public class bhServerTransactionManager
 	
 	public void handleRequestFromClient(final Object nativeRequest, final Object nativeResponse, Object nativeContext, bhI_JsonObject requestJson, bhI_JsonObject responseJson, boolean verboseJson)
 	{
-		m_jsonFactory.startScope();
+		m_jsonFactory.startScope(bhS_App.VERBOSE_TRANSACTIONS);
 		
 		//--- DRK > Early out for problems with request json.
 		if( requestJson == null )

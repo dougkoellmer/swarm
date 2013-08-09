@@ -10,7 +10,6 @@ import java.util.logging.Logger;
 import b33hive.server.account.bhS_AccountQuery;
 import b33hive.server.data.sql.bhA_SqlDatabase;
 import b33hive.server.data.sql.bhI_SqlEncodable;
-import b33hive.server.data.sql.bhS_Sql;
 import b33hive.shared.structs.bhTuple;
 import com.google.protos.cloud.sql.Client.SqlException;
 

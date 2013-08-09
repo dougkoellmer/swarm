@@ -9,6 +9,7 @@ import b33hive.client.structs.bhCellPool;
 import b33hive.client.structs.bhI_LocalCodeRepository;
 import b33hive.shared.utils.bhU_BitTricks;
 import b33hive.shared.debugging.bhU_Debug;
+import b33hive.shared.entities.bhA_Grid;
 import b33hive.shared.entities.bhE_CodeType;
 import b33hive.shared.structs.bhGridCoordinate;
 
@@ -28,7 +29,7 @@ public class bhCellBuffer
 	private int m_width = 0;
 	private int m_height = 0;
 	
-	private int m_cellSize = 1;
+	private int m_subCellCountDim = 1;
 	
 	bhCellBuffer()
 	{
@@ -47,12 +48,12 @@ public class bhCellBuffer
 			return;
 		}
 		
-		m_cellSize = size;
+		m_subCellCountDim = size;
 	}
 	
-	public int getCellSize()
+	public int getSubCellCount()
 	{
-		return m_cellSize;
+		return m_subCellCountDim;
 	}
 	
 	public int getWidth()
@@ -164,7 +165,7 @@ public class bhCellBuffer
 		return isInBoundsRelative(relativeM, relativeN);
 	}
 	
-	void imposeBuffer(bhCellBuffer otherBuffer, bhI_LocalCodeRepository localHtmlSource, int options__extends__bhF_BufferUpdateOption)
+	void imposeBuffer(bhA_Grid grid, bhCellBuffer otherBuffer, bhI_LocalCodeRepository localCodeSource, int options__extends__bhF_BufferUpdateOption)
 	{
 		boolean createVisualizations = (options__extends__bhF_BufferUpdateOption & bhF_BufferUpdateOption.CREATE_VISUALIZATIONS) != 0;
 		boolean communicateWithServer = (options__extends__bhF_BufferUpdateOption & bhF_BufferUpdateOption.COMMUNICATE_WITH_SERVER) != 0;
@@ -175,8 +176,8 @@ public class bhCellBuffer
 		boolean cellRecycled;
 		int m, n;
 		
-		int otherCellSize = otherBuffer.getCellSize();
-		int thisCellSize = this.getCellSize();
+		int otherSubCellCountDim = otherBuffer.getSubCellCount();
+		int thisSubCellCountDim = this.getSubCellCount();
 		int thisCellCount = this.getCellCount();
 		int otherBufferCellCount = otherBuffer.getCellCount();
 		
@@ -187,7 +188,7 @@ public class bhCellBuffer
 		bhCellCodeManager populator = bhCellCodeManager.getInstance();
 		
 		//--- DRK > Easy case is when we have a size change...then everything is recycled.
-		if ( otherCellSize != thisCellSize )
+		if ( otherSubCellCountDim != thisSubCellCountDim )
 		{
 			for ( i = 0; i < thisCellCount; i++ )
 			{
@@ -209,14 +210,14 @@ public class bhCellBuffer
 				}
 				else
 				{
-					ithCell = bhCellPool.getInstance().allocCell(this.m_cellSize, createVisualizations);
+					ithCell = bhCellPool.getInstance().allocCell(grid, this.m_subCellCountDim, createVisualizations);
 				}
 				
 				this.m_cells.set(i, ithCell);
 				
 				ithCell.getCoordinate().copy(absCoord);
 				
-				populator.populateCell(ithCell, localHtmlSource, m_cellSize, cellRecycled, communicateWithServer, bhE_CodeType.SPLASH);
+				populator.populateCell(ithCell, localCodeSource, m_subCellCountDim, cellRecycled, communicateWithServer, bhE_CodeType.SPLASH);
 			}
 		}
 		
@@ -335,7 +336,7 @@ public class bhCellBuffer
 						}
 						else
 						{
-							otherCell = pool.allocCell(this.m_cellSize, createVisualizations);
+							otherCell = pool.allocCell(grid, this.m_subCellCountDim, createVisualizations);
 						}
 						
 						this.setCell(m, n, otherCell);
@@ -344,7 +345,7 @@ public class bhCellBuffer
 					bhBufferCell imposedCell = getCellAtRelativeCoord(relThisCoord);
 					imposedCell.getCoordinate().copy(absCoord);
 					
-					populator.populateCell(otherCell, localHtmlSource, m_cellSize, cellRecycled, communicateWithServer, bhE_CodeType.SPLASH);
+					populator.populateCell(otherCell, localCodeSource, m_subCellCountDim, cellRecycled, communicateWithServer, bhE_CodeType.SPLASH);
 				}
 			}
 			

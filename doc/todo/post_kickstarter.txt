@@ -1,0 +1,74 @@
+- password protect....google account, bluehost, hotmail, tlen, quickb2 forums, banking, creditcard, facebook i guess, computer
+
+- have options for ignoring warnings from caja
+
+- make it so that using the keyboard shortcut for a button changes the button to the mousedown state while the key is pressed...so it should look the same as if the mouse pressed it
+
+- find telemetry package to use for detailed user tracking
+
+- set up forums, or some kind of discussion platform
+
+- pretty up dialog box
+
+- look into github wiki and bugtracking options
+
+- need tool tip manager to support tutorials
+
+- add undo/redo buttons
+
+- add tutorials?
+
+- have zoom of camera be interpolated along a curve that is biased towards panning x/y greatly initially, while slowly tapering the panning off towards the end and just zooming.
+
+- if you zoom out just a bit from max zoom, it's possible to get a default mouse pointer cursor to display if you slowly move from one cell hover to another.
+
+- might want to aggregate cell populator server calls and pump them out every second or so...maybe depending on camera velocity or something
+
+- fully-automate compiling so you don't have to run the minify process separately
+
+- select cursor can come up when you start panning after snapping...annoying
+
+- make it so that mouseable cell area is symmetric, not all to the bottom/right
+
+- fix the "jitters" that sometimes appear as you scale out and in...they are only noticable really with cells on the right side of the screen as you're zooming in or out.
+
+- make icon sprite plate a power of two
+
+- make user select more robust and "application-like"...make it so that ctrl-A while "focused" on cell only selects cell, make it so that things like tabs and hud, etc., aren't selectable...
+
+- optimize cell_size_1 drop shadow to use tiled css sprite images...lump with icon sprites
+
+- implement some kind of visual scroll arrow when auto-panning., etc.
+
+- the magnifier slider bar is disconnected when the whole magnifier is disabled, i.e. while page is loading.
+
+- if you mousedown on a tooltipped element, then drag to another element, then mouse up, tool tip will never come up on that other element until you mouse out then back in...really fringe i guess
+
+- bookmark system
+
+- try to quickly make it so split panel glass can be given resize cursor
+
+- probably give magnifier dragger a glass similar to split panel...or just use some global one maybe
+
+
+- make it so that the floating state periodically syncs the user's position, maybe, and snapping syncs the users position upon reaching destination...HMM ACTUALLY MAKE IT SYNC ON SNAP START
+
+- should probably make the html editing button dock hidden if it's not a user's cell...if it IS a user's cell, little pop-up animation would be good...emphasize that it's the users cell and available for editing.
+
+- have the console "snap" to closed if dragging within x pixels of side
+
+- need tool tip manager to enforce non-overlap of tool tips
+
+- need to design a logo with the full name of b33hive in it
+
+- might want to think about cancelling "get" transactions if we completely pass a cell(s) by...tricky part is that those transactions go out in batches
+
+- server compiler is doing a double walk of the dom tree after compiling...one to transform/sanitize certain elements/attributes, then another to render the tree...this should be combined into one step...problem is that renderer is very tied up in caja library...might not be able to avoid a copy/paste nightmare, with manual file merges on every caja update that changes their renderer.
+
+- have to redo checkbox class...what a complete hack...and double clicking somehow highlights area below the box
+
+- account manager should only have one delegate...statemachine should propogate to necessary listeners.
+
+- maybe consider snapping from cell to cell to follow a circular or elliptical "hopping" path, where the lightbox would fade out/in accordingly also....really the task here is to allow the camera to follow arbitrary curves
+
+- if possible, if splash is the same as dynamic, but the html is really long, have the splash compilation not include html that is not visible in splash mode.

@@ -2,6 +2,7 @@ package b33hive.client.structs;
 
 import b33hive.client.entities.bhBufferCell;
 import b33hive.client.ui.cell.bhVisualCell;
+import b33hive.shared.entities.bhA_Grid;
 import b33hive.shared.memory.bhObjectPool;
 import b33hive.shared.reflection.bhI_Class;
 
@@ -50,7 +51,7 @@ public class bhCellPool
 		return m_pool.getAllocCount();
 	}
 	
-	public bhBufferCell allocCell(int cellSize, boolean createVisualization)
+	public bhBufferCell allocCell(bhA_Grid grid, int cellSize, boolean createVisualization)
 	{
 		bhBufferCell cell = m_pool.allocate();
 		
@@ -62,6 +63,8 @@ public class bhCellPool
 		{
 			cell.setVisualization(null); // just to be sure
 		}
+		
+		cell.init(grid);
 		
 		return cell;
 	}

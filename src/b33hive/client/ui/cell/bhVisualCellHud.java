@@ -1,6 +1,6 @@
 package b33hive.client.ui.cell;
 
-import b33hive.client.app.bhAppConfig;
+import b33hive.client.app.bhClientAppConfig;
 import b33hive.client.app.bh_c;
 import b33hive.client.entities.bhCamera;
 import b33hive.client.entities.bhBufferCell;
@@ -20,6 +20,7 @@ import b33hive.client.ui.tooltip.bhToolTipManager;
 import b33hive.client.ui.widget.bhSpriteButton;
 import b33hive.shared.app.bhS_App;
 import b33hive.shared.debugging.bhU_Debug;
+import b33hive.shared.entities.bhA_Grid;
 import b33hive.shared.entities.bhE_CodeType;
 import b33hive.shared.statemachine.bhA_Action;
 import b33hive.shared.statemachine.bhA_State;
@@ -62,11 +63,11 @@ public class bhVisualCellHud extends FlowPanel implements bhI_UIElement
 
 	private boolean m_waitingForBeingRefreshableAgain = false;
 	
-	private final bhAppConfig m_appConfig;
+	private final bhClientAppConfig m_appConfig;
 	
 	private final StateMachine_Camera.SetCameraTarget.Args m_args_SetCameraTarget = new StateMachine_Camera.SetCameraTarget.Args();
 	
-	public bhVisualCellHud(Panel parent, bhAppConfig appConfig)
+	public bhVisualCellHud(Panel parent, bhClientAppConfig appConfig)
 	{
 		m_appConfig = appConfig;
 		
@@ -144,8 +145,9 @@ public class bhVisualCellHud extends FlowPanel implements bhI_UIElement
 				
 				bhBufferCell cell = state.getCell();
 				bhGridCoordinate coord = cell.getCoordinate();
+				bhA_Grid grid = cell.getGrid();
 				
-				coord.calcCenterPoint(s_utilPoint1, 1);
+				coord.calcCenterPoint(s_utilPoint1, grid.getCellWidth(), grid.getCellHeight(), grid.getCellPadding(), 1);
 				s_utilPoint1.incZ(m_appConfig.backOffDistance);
 				
 				m_args_SetCameraTarget.setPoint(s_utilPoint1);
@@ -180,11 +182,12 @@ public class bhVisualCellHud extends FlowPanel implements bhI_UIElement
 	{
 		bhCamera camera = bh_c.camera;
 		bhBufferCell cell = ((State_ViewingCell)state).getCell();
+		bhA_Grid grid = cell.getGrid();
 		bhGridCoordinate coord = cell.getCoordinate();
-		coord.calcPoint(s_utilPoint1, 1);
+		coord.calcPoint(s_utilPoint1, grid.getCellWidth(), grid.getCellHeight(), grid.getCellPadding(), 1);
 		camera.calcScreenPoint(s_utilPoint1, s_utilPoint2);
 		this.getElement().getStyle().setLeft(s_utilPoint2.getX(), Unit.PX);
-		double y = s_utilPoint2.getY()-m_appConfig.cellHudHeight-bhS_App.CELL_SPACING_PIXEL_COUNT;
+		double y = s_utilPoint2.getY()-m_appConfig.cellHudHeight-grid.getCellPadding();
 		y -= 3; // account for margin...sigh
 		this.getElement().getStyle().setTop(y, Unit.PX);
 	}

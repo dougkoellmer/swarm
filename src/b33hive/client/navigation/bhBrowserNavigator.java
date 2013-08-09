@@ -129,7 +129,7 @@ public class bhBrowserNavigator implements bhI_StateEventListener
 			}
 		};
 		
-		m_historyManager = new bhHistoryStateManager(m_historyStateListener);
+		m_historyManager = new bhHistoryStateManager(bh_c.app.getViewConfig().defaultPageTitle, m_historyStateListener);
 		
 		m_addressManager = new bhBrowserAddressManager();
 	}

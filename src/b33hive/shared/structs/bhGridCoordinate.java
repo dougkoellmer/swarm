@@ -136,34 +136,35 @@ public class bhGridCoordinate extends bhA_JsonEncodable
 	}
 	
 	
-	public void setWithPoint(bhPoint point, double cellSize)
+	public void setWithPoint(bhPoint point, double cellWidth, double cellHeight)
 	{
-		m_m = (int) (point.getX() / cellSize);
-		m_n = (int) (point.getY() / cellSize);
+		m_m = (int) (point.getX() / cellWidth);
+		m_n = (int) (point.getY() / cellHeight);
 		
 		m_m = (int) Math.floor(m_m);
 		m_n = (int) Math.floor(m_n);
 	}
+	
+	public void calcPoint(bhPoint outPoint, double cellWidth, double cellHeight, int cellPadding, int subCellCount)
+	{
+		cellWidth = cellWidth * subCellCount;
+		cellHeight = cellHeight * subCellCount;
+		cellPadding = cellPadding * subCellCount;
+		double x = m_m * cellWidth + ((m_m) * cellPadding);
+		double y = m_n * cellHeight + ((m_n) * cellPadding);
 		
-	//TODO: The indented methods below should not reference bhS_App...data should be given with input arguments instead.
-		public void calcPoint(bhPoint outPoint, int cellSize)
-		{
-			double cellPixels = bhS_App.CELL_PIXEL_COUNT * cellSize;
-			double cellSpacingPixels = bhS_App.CELL_SPACING_PIXEL_COUNT * cellSize;
-			double x = m_m * cellPixels + ((m_m) * cellSpacingPixels);
-			double y = m_n * cellPixels + ((m_n) * cellSpacingPixels);
-			
-			outPoint.set(x, y, 0.0);
-		}
+		outPoint.set(x, y, 0.0);
+	}
+	
+	public void calcCenterPoint(bhPoint outPoint, double cellWidth, double cellHeight, int cellPadding, int subCellCount)
+	{
+		cellWidth = cellWidth * subCellCount;
+		cellHeight = cellHeight * subCellCount;
 		
-		public void calcCenterPoint(bhPoint outPoint, int cellSize)
-		{
-			double cellPixels = bhS_App.CELL_PIXEL_COUNT * cellSize;
-			
-			calcPoint(outPoint, cellSize);
-			
-			outPoint.inc(cellPixels/2.0, cellPixels/2.0, 0.0);
-		}
+		calcPoint(outPoint, cellWidth, cellHeight, cellPadding, subCellCount);
+		
+		outPoint.inc(cellWidth/2.0, cellHeight/2.0, 0.0);
+	}
 	
 	@Override
 	public void writeJson(bhI_JsonObject json)

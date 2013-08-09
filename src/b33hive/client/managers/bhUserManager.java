@@ -4,23 +4,18 @@ import java.util.Iterator;
 
 import b33hive.client.app.bh_c;
 import b33hive.client.entities.bhBufferCell;
-import b33hive.client.entities.bhCamera;
-import b33hive.client.entities.bhClientGrid;
 import b33hive.client.entities.bhA_ClientUser;
 import b33hive.client.entities.bhE_CellNuke;
 import b33hive.client.entities.bhUserCell;
 import b33hive.client.managers.bhClientAccountManager.E_ResponseType;
-import b33hive.client.states.camera.StateMachine_Camera;
 import b33hive.client.structs.bhAccountInfo;
 import b33hive.client.structs.bhCellCodeCache;
-import b33hive.client.structs.bhI_LocalCodeRepository;
 import b33hive.client.structs.bhLocalCodeRepositoryWrapper;
 import b33hive.client.transaction.bhE_TransactionAction;
 import b33hive.client.transaction.bhE_ResponseErrorControl;
 import b33hive.client.transaction.bhE_ResponseSuccessControl;
 import b33hive.client.transaction.bhI_ResponseBatchListener;
 import b33hive.client.transaction.bhI_TransactionResponseHandler;
-import b33hive.client.transaction.bhClientTransactionManager;
 import b33hive.shared.app.bh;
 import b33hive.shared.debugging.bhU_Debug;
 import b33hive.shared.entities.bhE_CodeType;
@@ -142,7 +137,7 @@ public class bhUserManager implements bhI_TransactionResponseHandler, bhClientAc
 				bhCellBuffer buffer = bhCellBufferManager.getInstance().getDisplayBuffer();
 				bhGridCoordinate coord = userCell.getCoordinate();
 				
-				if( buffer.getCellSize() == 1 )
+				if( buffer.getSubCellCount() == 1 )
 				{
 					if( buffer.isInBoundsAbsolute(coord) )
 					{
@@ -289,7 +284,7 @@ public class bhUserManager implements bhI_TransactionResponseHandler, bhClientAc
 				bhUserCell userCell = cellIterator.next();
 				bhGridCoordinate coord = userCell.getCoordinate();
 				
-				if( buffer.getCellSize() == 1 )
+				if( buffer.getSubCellCount() == 1 )
 				{
 					if( buffer.isInBoundsAbsolute(coord) )
 					{

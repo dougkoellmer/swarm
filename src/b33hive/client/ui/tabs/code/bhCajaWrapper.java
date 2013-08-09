@@ -5,7 +5,6 @@ import java.util.HashMap;
 import org.apache.commons.collections.map.HashedMap;
 
 import b33hive.client.entities.bhBufferCell;
-import b33hive.client.entities.bhClientGrid;
 import b33hive.client.states.camera.StateMachine_Camera;
 import b33hive.client.states.camera.State_ViewingCell;
 import b33hive.client.ui.tabs.code.bhCellSandbox.I_StartUpCallback;

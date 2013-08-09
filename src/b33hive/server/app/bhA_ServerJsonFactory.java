@@ -5,7 +5,7 @@ import b33hive.shared.json.bhJsonHelper;
 
 public abstract class bhA_ServerJsonFactory extends bhA_JsonFactory
 {
-	public abstract void startScope();
+	public abstract void startScope(boolean verboseKeys);
 	
 	public abstract void endScope();
 }

@@ -1,0 +1,20 @@
+- magnifier slider can take a long "asymptotic" time to implicitly reach its max zoom state, and during that time you can pan, stopping the zoom, so it looks like the slider is at max zoom, and the zoom out button should be grey, but it's not
+
+
+- in codemirror, in at least chrome, sometimes you'd expect to scroll all the way back to the left, like going to the next short line aftera really long line of code, but it stops one indent short of doing so.
+
+
+- navigating to a valid address that doesn't exist is a slightly different experience than navigating to an invalid address (i.e. bad formatting)...the latter is a ridirect on the server, the former shows an "address not found" error.
+
+
+- address-related notifications (e.g. "address not found!") could stand out a little more.
+
+- make "touch area" of certain buttons, like console collapse, a little bigger, or just the buttons themselves bigger
+
+- make the tolerance for a "touch click" on a cell, in order to snap, a little looser...lots of false negative clicks when i was playing around with it on ipad...had to be very careful to make a perfect click.
+
+- possibly remove magnifier when focused
+
+- possibly automatically shrink console if it gets in the way of focused cell content.
+
+- have richer display of character count quota...need to delineate the fraction a bit better.

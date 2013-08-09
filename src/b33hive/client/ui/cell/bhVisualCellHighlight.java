@@ -62,7 +62,7 @@ public class bhVisualCellHighlight extends FlowPanel implements bhI_UIElement
 		}
 		
 		bhCellBuffer buffer = bhCellBufferManager.getInstance().getDisplayBuffer();
-		int cellSize = buffer.getCellSize();
+		int cellSize = buffer.getSubCellCount();
 		
 		bhCamera camera = bh_c.camera;
 		bhPoint basePoint = null;
@@ -88,7 +88,7 @@ public class bhVisualCellHighlight extends FlowPanel implements bhI_UIElement
 		
 		double apparentCellPixels = 0;
 		
-		if( buffer.getCellSize() > 1 )
+		if( buffer.getSubCellCount() > 1 )
 		{
 			apparentCellPixels = ((bhS_App.CELL_PIXEL_COUNT / ((double) cellSize)) * lastScaling);
 		}

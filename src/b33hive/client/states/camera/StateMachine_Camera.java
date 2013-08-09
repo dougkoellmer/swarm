@@ -14,7 +14,6 @@ import b33hive.client.managers.bhCellBuffer;
 import b33hive.client.managers.bhCellBufferManager;
 import b33hive.client.managers.bhClientAccountManager;
 import b33hive.client.managers.bhUserManager;
-import b33hive.client.entities.bhClientGrid;
 import b33hive.client.entities.bhA_ClientUser;
 import b33hive.client.managers.bhF_BufferUpdateOption;
 import b33hive.client.input.bhBrowserHistoryManager;
@@ -313,7 +312,7 @@ public class StateMachine_Camera extends bhA_StateMachine implements bhI_StateEv
 		{
 			bhGridCoordinate coordinate = ((Args) args).m_coordinate;
 			
-			if( !bhClientGrid.getInstance().isInBounds(coordinate) )
+			if( !bh_c.gridMngr.getGrid().isInBounds(coordinate) )
 			{
 				return false;
 			}
@@ -708,12 +707,12 @@ public class StateMachine_Camera extends bhA_StateMachine implements bhI_StateEv
 			
 			int options = bhF_BufferUpdateOption.CREATE_VISUALIZATIONS;
 			
-			bhCellBufferManager.getInstance().update(bhClientGrid.getInstance(), bh_c.camera, compiledStaticHtmlSource, options);
+			bhCellBufferManager.getInstance().update(bh_c.gridMngr.getGrid(), bh_c.camera, compiledStaticHtmlSource, options);
 			
 			//--- DRK > As soon as target cell comes into sight, we start trying to populate
 			//---		it with compiled_dynamic and source html from the snapping state's html source(s).
 			bhCellBuffer buffer = bhCellBufferManager.getInstance().getDisplayBuffer();
-			if( buffer.getCellSize() == 1 )
+			if( buffer.getSubCellCount() == 1 )
 			{
 				if( buffer.isInBoundsAbsolute(snappingState.getTargetCoordinate()) )
 				{
@@ -731,7 +730,7 @@ public class StateMachine_Camera extends bhA_StateMachine implements bhI_StateEv
 		else
 		{
 			int options = bhF_BufferUpdateOption.ALL;
-			bhCellBufferManager.getInstance().update(bhClientGrid.getInstance(), bh_c.camera, m_codeRepo, options);
+			bhCellBufferManager.getInstance().update(bh_c.gridMngr.getGrid(), bh_c.camera, m_codeRepo, options);
 		}
 	}
 	

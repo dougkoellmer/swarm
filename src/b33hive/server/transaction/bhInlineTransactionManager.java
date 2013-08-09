@@ -56,7 +56,7 @@ public class bhInlineTransactionManager
 		out.write("var bh_rl = [];");
 		m_context.set(new Context(out, request, response));
 		
-		m_jsonFactory.startScope();
+		m_jsonFactory.startScope(bhS_App.VERBOSE_TRANSACTIONS);
 		
 		for( int i = 0; i < m_scopeListeners.size(); i++ )
 		{

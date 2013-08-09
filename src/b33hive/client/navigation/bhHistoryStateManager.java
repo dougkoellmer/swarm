@@ -31,9 +31,11 @@ public class bhHistoryStateManager
 	});
 	
 	private final I_Listener m_listener;
+	private final String m_defaultPageTitle;
 	
-	public bhHistoryStateManager(I_Listener listener)
+	public bhHistoryStateManager(String defaultPageTitle, I_Listener listener)
 	{
+		m_defaultPageTitle = defaultPageTitle;
 		m_listener = listener;
 	}
 	
@@ -52,11 +54,11 @@ public class bhHistoryStateManager
 		this.setState(address.getRawAddress(), state);
 	}
 	
-	private static String getTitleFromPath(String path)
+	private String getTitleFromPath(String path)
 	{
 		if( path.equals("/") || path == null || path.isEmpty() )
 		{
-			return "This is b33hive.";
+			return m_defaultPageTitle;
 		}
 		else
 		{

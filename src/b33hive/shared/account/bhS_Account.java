@@ -5,7 +5,7 @@ public class bhS_Account
 	public static final int MIN_PASSWORD_LENGTH = 6;
 
 	// not visibly enforced, but max length sent up to server, and truncated to on server for extra measure
-	// against a DoS attack.
+	// against a DoS attack or something.
 	public static final int MAX_PASSWORD_LENGTH = 255;
 
 	public static final int MAX_USERNAME_LENGTH = 16;

@@ -46,7 +46,7 @@ public class bhServerGrid extends bhA_Grid implements bhI_Blob
 	
 	private static final Logger s_logger = Logger.getLogger(bhServerGrid.class.getName());
 	
-	private static final int EXTERNAL_VERSION = 1;
+	private static final int EXTERNAL_VERSION = 2;
 	
 	private bhBitArray m_bitArray = null;
 	
@@ -59,13 +59,13 @@ public class bhServerGrid extends bhA_Grid implements bhI_Blob
 	
 	public boolean isTaken(bhGridCoordinate coordinate)
 	{
-		int bitIndex = coordinate.calcArrayIndex(m_size);
+		int bitIndex = coordinate.calcArrayIndex(m_width);
 		return m_bitArray.isSet(bitIndex);
 	}
 	
 	public void markCoordinateAvailable(bhGridCoordinate coordinate)
 	{
-		int bitIndex = coordinate.calcArrayIndex(m_size);
+		int bitIndex = coordinate.calcArrayIndex(m_width);
 		m_bitArray.set(bitIndex, false);
 	}
 	
@@ -76,30 +76,41 @@ public class bhServerGrid extends bhA_Grid implements bhI_Blob
 	
 	private bhServerGridCoordinate private_findFreeCoordinate(int expansionDelta, bhGridCoordinate preference) throws GridException
 	{
-		int currentGridSize = this.getSize();
+		int currentGridWidth = this.getWidth();
+		int currentGridHeight = this.getHeight();
+		
 		Integer freeIndex = null;
 		
 		if( preference != null )
 		{
-			int sizeRequiredForPreference = Math.max(preference.getM(), preference.getN()) + 1;
-			if( sizeRequiredForPreference > currentGridSize )
+			if( preference.getM() >= currentGridWidth || preference.getN() >= currentGridHeight )
 			{
-				int expansionDeltaModified = sizeRequiredForPreference - currentGridSize;
-				int remainder = expansionDeltaModified % expansionDelta;
-				expansionDeltaModified -= remainder;
-				if( remainder > 0 )
+				int expansionDeltaX = (preference.getM()+1) - currentGridWidth;
+				int expansionDeltaY = (preference.getN()+1) - currentGridHeight;
+				
+				int remainderX = expansionDeltaX % expansionDelta;
+				expansionDeltaX -= remainderX;
+				if( remainderX > 0 )
 				{
-					expansionDeltaModified += expansionDelta;
+					expansionDeltaX += expansionDelta;
 				}
 				
-				int newSize = currentGridSize + expansionDeltaModified;
-				this.expandToSize(newSize);
+				int remainderY = expansionDeltaY % expansionDelta;
+				expansionDeltaY -= remainderY;
+				if( remainderY > 0 )
+				{
+					expansionDeltaY += expansionDelta;
+				}
 				
-				return this.private_findFreeCoordinate(expansionDeltaModified, preference);
+				int newWidth = currentGridWidth + expansionDeltaX;
+				int newHeight = currentGridHeight + expansionDeltaY;
+				this.expandToSize(newWidth, newHeight);
+				
+				return this.private_findFreeCoordinate(expansionDelta, preference);
 			}
 			else
 			{
-				int coordIndex = preference.calcArrayIndex(currentGridSize);
+				int coordIndex = preference.calcArrayIndex(currentGridWidth);
 				
 				if( m_bitArray.isSet(coordIndex) )
 				{
@@ -112,7 +123,7 @@ public class bhServerGrid extends bhA_Grid implements bhI_Blob
 			}
 		}
 		
-		if( freeIndex == null && currentGridSize > 0 )
+		if( freeIndex == null && currentGridWidth > 0 && currentGridHeight > 0 )
 		{
 			//--- DRK > Figure out a random index where we should start looking from.
 			//---		Note that Math.random() is synchronized, so if there were a ton
@@ -156,8 +167,9 @@ public class bhServerGrid extends bhA_Grid implements bhI_Blob
 		//---		As a result, we increase its size so we have more free space.
 		if( freeIndex == null )
 		{
-			int newSize = currentGridSize + expansionDelta;
-			this.expandToSize(newSize);
+			int newWidth = currentGridWidth + expansionDelta;
+			int newHeight = currentGridHeight + expansionDelta;
+			this.expandToSize(newWidth, newHeight);
 			
 			//--- DRK > Recurse into this function.
 			return this.private_findFreeCoordinate(expansionDelta, null);
@@ -171,24 +183,27 @@ public class bhServerGrid extends bhA_Grid implements bhI_Blob
 		
 		//--- DRK > Mark the free index as taken and return a coordinate.
 		m_bitArray.set(freeIndex, true);
-		int m = freeIndex % this.getSize();
-		int n = (freeIndex - m) / this.getSize();
+		int m = freeIndex % this.getWidth();
+		int n = (freeIndex - m) / this.getWidth();
+		
 		return new bhServerGridCoordinate(m, n);
 	}
 	
-	private void expandToSize(int size)
+	private void expandToSize(int width, int height)
 	{
-		int oldSize = this.getSize();
+		int oldWidth = this.getWidth();
+		int oldHeight = this.getHeight();
 
-		m_size = size;
+		m_width = width;
+		m_height = height;
 		
 		bhBitArray oldArray = m_bitArray;
 		
-		m_bitArray = new bhBitArray(size*size);
+		m_bitArray = new bhBitArray(m_width*m_height);
 		
 		if( oldArray != null )
 		{
-			m_bitArray.or(oldArray, oldSize, size);
+			m_bitArray.or(oldArray, oldWidth, m_width);
 		}
 		
 		//bhT_Grid.validateExpansion(m_bitArray, oldSize, m_size);
@@ -199,7 +214,11 @@ public class bhServerGrid extends bhA_Grid implements bhI_Blob
 	{
 		out.writeInt(EXTERNAL_VERSION);
 		
-		out.writeInt(this.getSize());
+		out.writeInt(this.getWidth());
+		out.writeInt(this.getHeight());
+		out.writeInt(this.getCellWidth());
+		out.writeInt(this.getCellHeight());
+		out.writeInt(this.getCellPadding());
 		
 		bhU_Serialization.writeNullableObject(m_bitArray, out);
 		
@@ -211,7 +230,23 @@ public class bhServerGrid extends bhA_Grid implements bhI_Blob
 	{
 		int externalVersion = in.readInt();
 		
-		m_size = in.readInt();
+		if( externalVersion == 1 )
+		{
+			m_width = in.readInt();
+			m_height = in.readInt();
+			
+			m_cellWidth = 0;
+			m_cellHeight = 0;
+			m_cellPadding = 0;
+		}
+		else if( externalVersion > 1 )
+		{
+			m_width = in.readInt();
+			m_height = in.readInt();
+			m_cellWidth = in.readInt();
+			m_cellHeight = in.readInt();
+			m_cellPadding = in.readInt();
+		}
 		
 		m_bitArray = bhU_Serialization.readNullableObject(bhBitArray.class, in);
 		

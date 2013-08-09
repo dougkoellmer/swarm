@@ -1,0 +1,54 @@
+- console.log probably isn't fully supported, so have to make sure of graceul failure
+
+
+
+MOZ
+
+- recaptcha shows alt text for a second before displaying image
+
+
+
+
+IE 9
+
+- text for selected tab is too grey...not a huge deal
+
+- pressing console button, you get a dashed outline around it
+
+- no background gradient for buttons
+
+
+
+IE 10
+
+- Clicking "remember me" text doesn't activate the check box
+
+- sign in/up buttons are slightly offset left of where they should be
+
+- placeholder and input text vertical align is not consistent
+
+- weird symbols come up in text fields when typing
+
+- cell alert OK button is somehow already highlighted...jesus
+
+- the "One Second" text doesn't come up in Examples cell.
+
+- hand cursor is used by default over focused cells.
+
+
+
+IOS
+
+- slider-dragger "doppleganger" appears when you focus a cell...mostly on chrome, but safari sometimes too
+
+- on chrome, if you visit an empty cell, it messes up the page title thereafter, turning it into www.b33hive.net unless you're visiting an owned cell
+
+- sometimes a faint white line appears through the buttons on the cell hud
+
+- reload button on recaptcha sometimes hides the captcha...seems to be when the touch intersects the image or something, but can also happen when the captcha reloads due to signing out or whatever.
+
+
+
+OPERA
+
+- slow as hell

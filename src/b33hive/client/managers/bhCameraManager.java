@@ -2,9 +2,11 @@ package b33hive.client.managers;
 
 import java.util.logging.Logger;
 
+import b33hive.client.app.bh_c;
 import b33hive.client.entities.bhCamera;
 import b33hive.shared.app.bhS_App;
 import b33hive.shared.debugging.bhU_Debug;
+import b33hive.shared.entities.bhA_Grid;
 import b33hive.shared.structs.bhPoint;
 import b33hive.shared.structs.bhTolerance;
 import b33hive.shared.structs.bhVector;
@@ -85,6 +87,8 @@ public class bhCameraManager
 	
 	protected void setTargetPosition(bhPoint point, boolean instant)
 	{
+		bhA_Grid grid = bh_c.gridMngr.getGrid();
+		
 		bhPoint oldTargetPosition = m_utilPoint;
 		oldTargetPosition.copy(m_targetPosition);
 		double maxZ = m_camera.calcMaxZ();
@@ -144,7 +148,7 @@ public class bhCameraManager
 		
 		//TODO: Leaving this constant here cause it's prolly not a final solution anyway.
 		//		Obviously should be moved out someplace that's a little more configurable.
-		double maxDistance = 1024 * bhS_App.CELL_PLUS_SPACING_PIXEL_COUNT;
+		double maxDistance = 1024 * Math.max(grid.getCellWidth(), grid.getCellHeight());
 		
 		double distanceRatio = m_lengthToTravel / maxDistance;
 		

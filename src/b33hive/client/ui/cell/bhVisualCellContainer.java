@@ -18,14 +18,14 @@ import b33hive.client.states.*;
 import b33hive.client.states.camera.StateMachine_Camera;
 import b33hive.client.states.camera.State_GettingMapping;
 import b33hive.client.states.camera.State_ViewingCell;
-import b33hive.client.app.bhAppConfig;
+import b33hive.client.app.bhClientAppConfig;
 import b33hive.client.app.bh_c;
 import b33hive.client.entities.bhBufferCell;
 import b33hive.client.entities.bhCamera;
-import b33hive.client.entities.bhClientGrid;
 import b33hive.client.managers.bhCellBufferManager;
 import b33hive.client.navigation.bhMouseNavigator;
 import b33hive.shared.app.bhS_App;
+import b33hive.shared.entities.bhA_Grid;
 import b33hive.shared.statemachine.bhA_Action;
 import b33hive.shared.statemachine.bhA_State;
 import b33hive.shared.statemachine.bhStateEvent;
@@ -130,9 +130,9 @@ public class bhVisualCellContainer extends FlowPanel implements ResizeHandler, b
 	
 	private void updateCroppers()
 	{
-		//--- DRK > If cell size is 1, it means we can match the bottom/right sides of the grid exactly.
-		int cellSize = bhCellBufferManager.getInstance().getDisplayBuffer().getCellSize();
-		if( cellSize == 0 || cellSize == 1 )
+		//--- DRK > If cell sub count is 1, it means we can match the bottom/right sides of the grid exactly.
+		int cellSubCount = bhCellBufferManager.getInstance().getDisplayBuffer().getSubCellCount();
+		if( cellSubCount == 0 || cellSubCount == 1 )
 		{
 			hideCroppers();
 			
@@ -140,8 +140,8 @@ public class bhVisualCellContainer extends FlowPanel implements ResizeHandler, b
 		}
 
 		//--- DRK > If the mod operation is 0, we can also always match bottom/right sides exactly.
-		bhClientGrid grid = bhClientGrid.getInstance();
-		if( (grid.getSize() % cellSize) == 0 )
+		bhA_Grid grid = bh_c.gridMngr.getGrid();
+		if( (grid.getWidth() % cellSubCount) == 0 && (grid.getHeight() % cellSubCount) == 0 )
 		{
 			hideCroppers();
 			
@@ -150,13 +150,14 @@ public class bhVisualCellContainer extends FlowPanel implements ResizeHandler, b
 		
 		bhCamera camera = bh_c.camera;
 	
-		double gridPixels = grid.calcPixelWidth();
+		double gridWidthInPixels = grid.calcPixelWidth();
+		double gridHeightInPixels = grid.calcPixelHeight();
 		
 		bhPoint worldPoint = s_utilPoint1;
 		bhPoint screenPoint = s_utilPoint2;
 
 		worldPoint.zeroOut();
-		worldPoint.inc(gridPixels, gridPixels, 0);
+		worldPoint.inc(gridWidthInPixels, gridHeightInPixels, 0);
 		camera.calcScreenPoint(worldPoint, screenPoint);
 		double[] screenDimensions = {this.getOffsetWidth(), this.getOffsetHeight()};
 		double scaling = camera.calcDistanceRatio();
@@ -172,7 +173,7 @@ public class bhVisualCellContainer extends FlowPanel implements ResizeHandler, b
 				m_cropper[i].setVisible(true);
 				
 				double component = screenComponent < 0 ? 0 : screenComponent;
-				component += scaling * bhS_App.CELL_SPACING_PIXEL_COUNT;
+				component += scaling * grid.getCellPadding();
 				component -= 1; // just to make sure we don't have a pixel sliver of the next cell over.
 				
 				m_cropper[i].setPositionComponent(i, component);

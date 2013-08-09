@@ -136,7 +136,7 @@ public final class bhU_CellCode
 	{
 		//--- DRK > Here we attempt to delete this cell from memcache so that subsequent requests for this cell get a fresh copy.
 		//---		Note that we could put a fresh copy in memcache, but we don't know how popular this cell is, and memcache
-		//---		space is potentially very limited. Therefore we let user demand determine when/if this cell gets cached.
+		//---		space is potentially very limited. Therefore we let user demand determine when/if this cell gets cached again.
 		bhI_BlobManager blobManager = bh_s.blobMngrFactory.create(bhE_BlobCacheLevel.MEMCACHE);
 		try
 		{

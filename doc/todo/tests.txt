@@ -1,0 +1,16 @@
+
+
+
+- test "get mapping" coming back to us while there's an async dialog being displayed...make sure that when dialog is dismissed, snapping takes place correctly.
+
+- test snapping to address while in the middle of snapping to coordinate...test must require server communication which brings up "getting mapping" state...camera should stop and wait while server is out....if server brings back error, camera stays stopped, otherwise snaps to target.
+
+- check that server version error gets sent to all requests handlers in a batch.
+
+
+
+- test that blob caching layers work correctly
+
+
+
+- have to make sure "get user data failed" dialog comes up correctly...so NOT when authentication fails, YES when authentication succeeds but just the get user data failed, and YES if it fails furing the opening flow (already have a session).

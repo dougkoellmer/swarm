@@ -7,12 +7,12 @@ import java.util.logging.Logger;
 
 import com.google.appengine.api.rdbms.AppEngineDriver;
 
+import b33hive.client.app.bhClientAppConfig;
 import b33hive.server.account.bhAccountDatabase;
 import b33hive.server.account.bhServerAccountManager;
 import b33hive.server.account.bh_s;
 import b33hive.server.code.bhServerCodeCompiler;
 import b33hive.server.data.blob.bhBlobManagerFactory;
-import b33hive.server.data.sql.bhS_Sql;
 import b33hive.server.handlers.admin.adminHandler;
 import b33hive.server.handlers.admin.bhI_HomeCellCreator;
 import b33hive.server.handlers.admin.clearCell;
@@ -60,13 +60,23 @@ public abstract class bhA_ServerApp extends bhA_App
 {
 	private static final Logger s_logger = Logger.getLogger(bhA_ServerApp.class.getName());
 	
+	private bhServerAppConfig m_appConfig;
+	
 	protected bhA_ServerApp()
 	{
 		super(bhE_AppEnvironment.SERVER);
 	}
 	
+	public bhServerAppConfig getConfig()
+	{
+		return m_appConfig;
+	}
+	
 	protected void entryPoint(bhServerAppConfig appConfig)
 	{
+		m_appConfig = appConfig;
+		bh_s.app = this;
+		
 		bhU_Debug.setDelegate(new bhI_AssertionDelegate()
 		{
 			@Override
@@ -85,10 +95,10 @@ public abstract class bhA_ServerApp extends bhA_App
 			s_logger.log(Level.SEVERE, "Could not start up sql databases.", e1);
 		}
 		
-		bh_s.jsonFactory = new bhServerJsonFactory(bhS_App.VERBOSE_TRANSACTIONS);
+		bh_s.jsonFactory = new bhServerJsonFactory();
 		bh_s.codeCompiler = new bhServerCodeCompiler();
-		bh_s.requestPathMngr = new bhRequestPathManager(bhS_App.VERBOSE_TRANSACTIONS);
-		bh_s.txnMngr = new bhServerTransactionManager((bhA_ServerJsonFactory) bh_s.jsonFactory, bh_s.requestPathMngr);
+		bh.requestPathMngr = new bhRequestPathManager(bhS_App.VERBOSE_TRANSACTIONS);
+		bh_s.txnMngr = new bhServerTransactionManager((bhA_ServerJsonFactory) bh_s.jsonFactory, bh.requestPathMngr);
 		bh_s.inlineTxnMngr = new bhInlineTransactionManager((bhA_ServerJsonFactory) bh_s.jsonFactory);
 		bh_s.blobMngrFactory = new bhBlobManagerFactory();
 		bh_s.sessionMngr = new bhSessionManager();
@@ -96,7 +106,7 @@ public abstract class bhA_ServerApp extends bhA_App
 		bh_s.telemetryDb = new bhTelemetryDatabase(appConfig.telemetryDatabase);
 		
 		addClientHandlers();
-		addAdminHandlers(appConfig.T_homeCellCreator);
+		addAdminHandlers(m_appConfig.T_homeCellCreator);
 		addTelemetryHandlers();
 		//addDebugHandlers();
 		//addDebugPathResponseErrors();
@@ -118,7 +128,7 @@ public abstract class bhA_ServerApp extends bhA_App
 		bh_s.txnMngr.setDebugResponseError(bhE_RequestPath.syncCode);
 	}
 	
-	private static void addClientHandlers()
+	private void addClientHandlers()
 	{
 		bhServerTransactionManager txnManager = bh_s.txnMngr;
 		bh.requestPathMngr.register(bhE_RequestPath.values());
@@ -132,7 +142,7 @@ public abstract class bhA_ServerApp extends bhA_App
 		txnManager.addRequestHandler(new getUserData(),				bhE_RequestPath.getUserData);
 		txnManager.addRequestHandler(new getGridData(),				bhE_RequestPath.getGridData);
 		txnManager.addRequestHandler(new signIn(),					bhE_RequestPath.signIn);
-		txnManager.addRequestHandler(new signUp(),					bhE_RequestPath.signUp);
+		txnManager.addRequestHandler(new signUp(m_appConfig.publicRecaptchaKey, m_appConfig.privateRecaptchaKey), bhE_RequestPath.signUp);
 		txnManager.addRequestHandler(new signOut(),					bhE_RequestPath.signOut);
 		txnManager.addRequestHandler(new getAccountInfo(),			bhE_RequestPath.getAccountInfo);
 		txnManager.addRequestHandler(new setNewDesiredPassword(),	bhE_RequestPath.setNewDesiredPassword);

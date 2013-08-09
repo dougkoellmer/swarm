@@ -189,7 +189,7 @@ public class bhU_InlineTransactions
 				(new bhGridCoordinate()).calcCenterPoint(startingPosition, 1);
 			}
 			
-			startingPosition.setZ(S_ServerApp.DEFAULT_STARTING_Z);
+			startingPosition.setZ(bh_s.app.getConfig().startingZ);
 			transactionManager.makeInlineRequestWithResponse(bhE_RequestPath.getStartingPosition, startingPosition);
 		}
 		finally

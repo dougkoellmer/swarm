@@ -5,7 +5,6 @@ import b33hive.client.entities.bhCamera;
 import b33hive.client.managers.bhCellBuffer;
 import b33hive.client.entities.bhBufferCell;
 import b33hive.client.managers.bhCellBufferManager;
-import b33hive.client.entities.bhClientGrid;
 import b33hive.client.entities.bhA_ClientUser;
 import b33hive.client.entities.bhE_CellNuke;
 import b33hive.client.input.bhBrowserHistoryManager;
@@ -25,6 +24,7 @@ import b33hive.client.structs.bhLocalCodeRepositoryWrapper;
 import b33hive.client.transaction.bhE_TransactionAction;
 import b33hive.shared.app.bhS_App;
 import b33hive.shared.debugging.bhU_Debug;
+import b33hive.shared.entities.bhA_Grid;
 import b33hive.shared.entities.bhE_CodeType;
 import b33hive.shared.statemachine.bhA_Action;
 
@@ -97,6 +97,8 @@ public class State_CameraSnapping extends bhA_State implements bhI_StateEventLis
 
 	void updateGridCoordinate(bhGridCoordinate targetCoordinate, bhCellAddress targetAddress_nullable)
 	{
+		bhA_Grid grid = bh_c.gridMngr.getGrid();
+		
 		m_targetAddress = targetAddress_nullable;
 		
 		if( m_targetGridCoordinate.isEqualTo(targetCoordinate) )
@@ -112,7 +114,7 @@ public class State_CameraSnapping extends bhA_State implements bhI_StateEventLis
 		}
 		
 		m_targetGridCoordinate.copy(targetCoordinate);
-		m_targetGridCoordinate.calcCenterPoint(m_utilPoint, 1);
+		m_targetGridCoordinate.calcCenterPoint(m_utilPoint, grid.getCellWidth(), grid.getCellHeight(), grid.getCellPadding(), 1);
 		m_utilPoint.incY(-m_cellHudHeight/2);
 		
 		m_snapCamera.getPosition().copy(m_utilPoint);
@@ -196,6 +198,7 @@ public class State_CameraSnapping extends bhA_State implements bhI_StateEventLis
 	
 	private void updateSnapBufferManager(boolean flushPopulator)
 	{
+		bhA_Grid grid = bh_c.gridMngr.getGrid();
 		bhI_LocalCodeRepository htmlSource = m_internalCodeRepo;
 		
 		int options = bhF_BufferUpdateOption.COMMUNICATE_WITH_SERVER;
@@ -204,7 +207,7 @@ public class State_CameraSnapping extends bhA_State implements bhI_StateEventLis
 			options |= bhF_BufferUpdateOption.FLUSH_CELL_POPULATOR;
 		}
 		
-		m_snapBufferManager.update(bhClientGrid.getInstance(), m_snapCamera, htmlSource, options);
+		m_snapBufferManager.update(grid, m_snapCamera, htmlSource, options);
 	}
 	
 	bhI_LocalCodeRepository getCompiledStaticHtmlSource()

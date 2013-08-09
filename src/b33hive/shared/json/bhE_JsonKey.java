@@ -48,7 +48,11 @@ public enum bhE_JsonKey implements bhI_JsonKeySource
 
 	accountInfo,
 
-	gridSize,
+	gridWidth,
+	gridHeight,
+	gridCellWidth,
+	gridCellHeight,
+	gridCellPadding,
 	
 	rememberMe,
 	
@@ -84,6 +88,6 @@ public enum bhE_JsonKey implements bhI_JsonKeySource
 
 	public String getVerboseKey()
 	{
-		return "bh_" + this.name();
+		return this.name();
 	}
 }

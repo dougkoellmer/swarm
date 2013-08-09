@@ -70,7 +70,7 @@ public class bhVisualCellFocuser extends FlowPanel implements bhI_UIElement
 	{
 		bhCellBuffer buffer = bhCellBufferManager.getInstance().getDisplayBuffer();
 		
-		if( buffer.getCellSize() == 1 )
+		if( buffer.getSubCellCount() == 1 )
 		{
 			bhGridCoordinate targetCoord = null;
 			
@@ -259,7 +259,7 @@ public class bhVisualCellFocuser extends FlowPanel implements bhI_UIElement
 				{
 					bhCellBuffer buffer = bhCellBufferManager.getInstance().getDisplayBuffer();
 					
-					if( buffer.getCellSize() != 1 || !buffer.isInBoundsAbsolute(m_poppedCellCoord) )
+					if( buffer.getSubCellCount() != 1 || !buffer.isInBoundsAbsolute(m_poppedCellCoord) )
 					{
 						m_poppedCell.pushDown();
 						m_poppedCell = null;

@@ -68,7 +68,7 @@ public class bhA_ClientApp extends bhA_App implements bhI_TimeSource
 	private bhInlineRequestDispatcher m_synchronousRequestDispatcher;
 	private double m_lastTime = 0;
 	
-	private bhAppConfig m_appConfig;
+	private bhClientAppConfig m_appConfig;
 	private bhViewConfig m_viewConfig;
 	
 	protected bhA_ClientApp()
@@ -78,7 +78,12 @@ public class bhA_ClientApp extends bhA_App implements bhI_TimeSource
 		bh_c.app = this;
 	}
 	
-	protected void entryPoint(bhAppConfig appConfig, bhViewConfig viewConfig)
+	public bhViewConfig getViewConfig()
+	{
+		return m_viewConfig;
+	}
+	
+	protected void entryPoint(bhClientAppConfig appConfig, bhViewConfig viewConfig)
 	{
 		m_appConfig = appConfig;
 		m_viewConfig = viewConfig;
@@ -137,7 +142,7 @@ public class bhA_ClientApp extends bhA_App implements bhI_TimeSource
 		bh_c.accountMngr = new bhClientAccountManager();
 		bh_c.codeCache = new bhCellCodeCache(m_appConfig.codeCacheSize, m_appConfig.codeCacheExpiration_seconds, this);
 		bh_c.userMngr = new bhUserManager(bh_c.accountMngr, bh_c.codeCache, m_appConfig.user);
-		bh_c.gridMngr = new bhGridManager();
+		bh_c.gridMngr = new bhGridManager(m_appConfig.grid);
 		bh.requestPathMngr = new bhRequestPathManager(bhS_App.VERBOSE_TRANSACTIONS);
 		bh_c.txnMngr = new bhClientTransactionManager(bh.requestPathMngr);
 		
@@ -206,7 +211,7 @@ public class bhA_ClientApp extends bhA_App implements bhI_TimeSource
 	/**
 	 * The braces and indenting here are just to make the overall structure of the machine more apparent.
 	 */
-	protected void registerStates(bhAppConfig config)
+	protected void registerStates(bhClientAppConfig config)
 	{
 		b33hive.shared.statemachine.bhA_State.register(new StateMachine_Base());
 		{

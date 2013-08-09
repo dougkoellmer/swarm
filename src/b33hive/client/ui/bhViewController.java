@@ -2,7 +2,7 @@ package b33hive.client.ui;
 
 import java.util.ArrayList;
 
-import b33hive.client.app.bhAppConfig;
+import b33hive.client.app.bhClientAppConfig;
 import b33hive.client.app.bh_c;
 import b33hive.client.input.bhMouse;
 import b33hive.client.navigation.bhMasterNavigator;
@@ -11,7 +11,6 @@ import b33hive.client.states.StateContainer_Base;
 import b33hive.client.states.StateMachine_Base;
 import b33hive.client.ui.cell.bhVisualCellContainer;
 import b33hive.client.ui.cell.bhVisualCellFocuser;
-import b33hive.client.ui.cell.bhVisualCellHighlight;
 import b33hive.client.ui.cell.bhVisualCellHud;
 import b33hive.client.ui.cell.bhVisualCellManager;
 import b33hive.client.ui.dialog.bhDialogManager;
@@ -34,9 +33,9 @@ public class bhViewController extends Object implements bhI_StateEventListener
 {	
 	private final ArrayList<bhI_UIElement> m_listeners = new ArrayList<bhI_UIElement>();
 	private final bhViewConfig m_viewConfig;
-	private final bhAppConfig m_appConfig;
+	private final bhClientAppConfig m_appConfig;
 	
-	public bhViewController(bhViewConfig config, bhAppConfig appConfig)
+	public bhViewController(bhViewConfig config, bhClientAppConfig appConfig)
 	{
 		m_viewConfig = config;
 		m_appConfig = appConfig;
@@ -64,7 +63,7 @@ public class bhViewController extends Object implements bhI_StateEventListener
 		m_listeners.add(bh_c.navigator = new bhMasterNavigator(mouse, m_appConfig.floatingHistoryUpdateFreq_seconds));
 		m_listeners.add(bh_view.cellMngr = new bhVisualCellManager(cellContainer.getCellContainerLayer()));
 		m_listeners.add(bh_view.splitPanel);
-		m_listeners.add(new bhVisualCellHighlight(cellContainer.getCellContainerLayer()));
+		//m_listeners.add(new bhVisualCellHighlight(cellContainer.getCellContainerLayer()));
 		m_listeners.add(new bhVisualCellFocuser(cellContainer.getCellContainerLayer()));
 		m_listeners.add(new bhVisualCellHud((Panel)cellContainer, m_appConfig));
 		

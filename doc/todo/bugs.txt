@@ -1,0 +1,9 @@
+- clicking/dragging off the magnifier (probably elsewhere too), the cell highlighter dissappears until the grid gets "focus" again.
+
+- if you give a b33hive path in user code without a leading /, it can be interpreted differently by the server and client, because the client may do things relative to the current cell path...so far this problem has only been observed, for some reason, with the b33hive.net/b33hive/* cells.
+
+- recaptcha can throw a null pointer exception if it's not part of DOM...no known case for now, but a little sloppy to exist as a possibility...UPDATE: it seems recaptcha might do intermittent polling for new captcha, or something, so NPE does happen...set tab contents to invisible for now instead of removing them or display:none, and that solves the problem.
+
+- if you exit the browser while a save transaction is pending (probably other transactions as well), a quick compiler error message comes up...kind of annoying
+
+- <script>alert('<script></script>');</script> doesn't work...caja fails to parse...might be something to do with code mirror.
