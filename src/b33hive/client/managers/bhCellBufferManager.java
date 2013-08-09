@@ -204,7 +204,7 @@ public class bhCellBufferManager implements bhI_LocalCodeRepository
 	
 	private void calcRawBufferDimensions(bhCamera camera, bhA_Grid grid, int subCellCountDim, bhGridCoordinate topLeft_out, bhGridCoordinate widthHeight_out)
 	{
-		if( subCellCountDim == 0 )
+		if( subCellCountDim == 0 || grid.getWidth() == 0 || grid.getHeight() == 0 )
 		{
 			topLeft_out.set(0, 0);
 			widthHeight_out.set(0,  0);

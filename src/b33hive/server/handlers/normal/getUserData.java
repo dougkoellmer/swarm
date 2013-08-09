@@ -20,6 +20,7 @@ import b33hive.server.transaction.bhTransactionContext;
 import b33hive.shared.app.bh;
 import b33hive.shared.entities.bhA_Grid;
 import b33hive.shared.json.bhE_JsonKey;
+import b33hive.shared.json.bhI_JsonObject;
 import b33hive.shared.json.bhJsonHelper;
 import b33hive.shared.transaction.bhE_ResponseError;
 import b33hive.shared.transaction.bhTransactionRequest;
@@ -28,6 +29,13 @@ import b33hive.shared.transaction.bhTransactionResponse;
 public class getUserData implements bhI_RequestHandler
 {
 	private static final Logger s_logger = Logger.getLogger(getUserData.class.getName());
+	
+	public boolean m_autoCreateHomeCell;
+	
+	public getUserData(boolean autoCreateHomeCell)
+	{
+		m_autoCreateHomeCell = autoCreateHomeCell;
+	}
 	
 	@Override
 	public void handleRequest(bhTransactionContext context, bhTransactionRequest request, bhTransactionResponse response)
@@ -66,7 +74,7 @@ public class getUserData implements bhI_RequestHandler
 		{
 			try
 			{
-				bhBlobTransaction_CreateUser createUserTransaction = new bhBlobTransaction_CreateUser(userSession, true);
+				bhBlobTransaction_CreateUser createUserTransaction = new bhBlobTransaction_CreateUser(userSession, m_autoCreateHomeCell);
 				createUserTransaction.perform(bhE_BlobTransactionType.MULTI_BLOB_TYPE, 5);
 				
 				//--- DRK > Not a huge fan of this method of letting client know that grid size changed.
@@ -74,7 +82,16 @@ public class getUserData implements bhI_RequestHandler
 				//---		out how to make that efficient without completely spaghettifying server code.
 				if( createUserTransaction.didGridGrow() )
 				{
-					bhA_Grid dummyGrid = new bhA_Grid(createUserTransaction.getGridWidth(), createUserTransaction.getGridHeight()){};
+					bhA_Grid dummyGrid = new bhA_Grid(createUserTransaction.getGridWidth(), createUserTransaction.getGridHeight())
+					{
+						@Override
+						public void writeJson(bhI_JsonObject json_out)
+						{
+							//--- DRK > Only sending down width and height so we don't overwrite other properties.
+							bh.jsonFactory.getHelper().putInt(json_out, bhE_JsonKey.gridWidth, this.getWidth());
+							bh.jsonFactory.getHelper().putInt(json_out, bhE_JsonKey.gridHeight, this.getHeight());
+						}
+					};
 					
 					dummyGrid.writeJson(response.getJson());
 				}

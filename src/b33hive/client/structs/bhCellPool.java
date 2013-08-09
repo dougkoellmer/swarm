@@ -51,13 +51,16 @@ public class bhCellPool
 		return m_pool.getAllocCount();
 	}
 	
-	public bhBufferCell allocCell(bhA_Grid grid, int cellSize, boolean createVisualization)
+	public bhBufferCell allocCell(bhA_Grid grid, int subCellDimension, boolean createVisualization)
 	{
 		bhBufferCell cell = m_pool.allocate();
 		
 		if( createVisualization )
 		{
-			cell.setVisualization(m_delegate.createVisualization(cellSize));
+			cell.setVisualization
+			(
+				m_delegate.createVisualization(grid.getCellWidth(), grid.getCellHeight(), grid.getCellPadding(), subCellDimension)
+			);
 		}
 		else
 		{

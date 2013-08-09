@@ -43,9 +43,13 @@ public class createGrid implements bhI_RequestHandler
 	
 	private final Class<? extends bhI_HomeCellCreator> m_T_homeCellCreator;
 	
-	public createGrid(Class<? extends bhI_HomeCellCreator> T_homeCellCreator)
+	// TEMPORARY
+	private final Class<? extends bhServerGrid> m_T_grid;
+
+	public createGrid(Class<? extends bhI_HomeCellCreator> T_homeCellCreator, Class<? extends bhServerGrid> T_grid)
 	{
 		m_T_homeCellCreator = T_homeCellCreator;
+		m_T_grid = T_grid;
 	}
 	
 	@Override
@@ -82,11 +86,9 @@ public class createGrid implements bhI_RequestHandler
 		try
 		{
 			HashMap<bhI_BlobKeySource, bhI_Blob> grids = new HashMap<bhI_BlobKeySource, bhI_Blob>();
-			activeGrid = new bhServerGrid();
-			grids.put(bhE_GridType.ACTIVE, new bhServerGrid());
-			grids.put(bhE_GridType.INACTIVE, activeGrid);
+			activeGrid = bhU_Handler.newObjectInstance(m_T_grid, response);
 			
-			blobManager.putBlobs(grids);
+			blobManager.putBlob(bhE_GridType.ACTIVE, activeGrid);
 		}
 		catch(bhBlobException e)
 		{
@@ -97,7 +99,7 @@ public class createGrid implements bhI_RequestHandler
 			return;
 		}
 		
-		bhServerUser user = null;
+		/*bhServerUser user = null;
 		
 		try
 		{
@@ -141,13 +143,13 @@ public class createGrid implements bhI_RequestHandler
 			s_logger.severe("User has too many cells already, or doesn't own origin cell!");
 			
 			return;
-		}*/
+		}
 
 		bhI_HomeCellCreator homeCellCreator = bhU_Handler.newObjectInstance(m_T_homeCellCreator, response);
 		
 		if( homeCellCreator == null )  return;
 		
 		homeCellCreator.initialize((ServletContext)context.getNativeContext());
-		homeCellCreator.run(request, response, context, session, user);
+		homeCellCreator.run(request, response, context, session, user);*/
 	}
 }

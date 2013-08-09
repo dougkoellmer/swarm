@@ -13,6 +13,7 @@ import b33hive.server.account.bhServerAccountManager;
 import b33hive.server.account.bh_s;
 import b33hive.server.code.bhServerCodeCompiler;
 import b33hive.server.data.blob.bhBlobManagerFactory;
+import b33hive.server.entities.bhServerGrid;
 import b33hive.server.handlers.admin.adminHandler;
 import b33hive.server.handlers.admin.bhI_HomeCellCreator;
 import b33hive.server.handlers.admin.clearCell;
@@ -139,7 +140,7 @@ public abstract class bhA_ServerApp extends bhA_App
 		txnManager.addRequestHandler(new syncCode(),				bhE_RequestPath.syncCode);
 		txnManager.addRequestHandler(new getCellAddress(),			bhE_RequestPath.getCellAddress);
 		txnManager.addRequestHandler(new getCellAddressMapping(),	bhE_RequestPath.getCellAddressMapping);
-		txnManager.addRequestHandler(new getUserData(),				bhE_RequestPath.getUserData);
+		txnManager.addRequestHandler(new getUserData(false),		bhE_RequestPath.getUserData);
 		txnManager.addRequestHandler(new getGridData(),				bhE_RequestPath.getGridData);
 		txnManager.addRequestHandler(new signIn(),					bhE_RequestPath.signIn);
 		txnManager.addRequestHandler(new signUp(m_appConfig.publicRecaptchaKey, m_appConfig.privateRecaptchaKey), bhE_RequestPath.signUp);
@@ -157,14 +158,14 @@ public abstract class bhA_ServerApp extends bhA_App
 		bhServerTransactionManager txnManager = bh_s.txnMngr;
 		bh.requestPathMngr.register(bhE_AdminRequestPath.values());
 		
-		addAdminHandler(new createGrid(T_homeCellCreator),			bhE_AdminRequestPath.createGrid);
-		addAdminHandler(new deactivateUserCells(),					bhE_AdminRequestPath.deactivateUserCells);
-		addAdminHandler(new refreshHomeCells(T_homeCellCreator),	bhE_AdminRequestPath.refreshHomeCells);
-		addAdminHandler(new clearCell(),							bhE_AdminRequestPath.clearCell);
-		addAdminHandler(new recompileCells(),						bhE_AdminRequestPath.recompileCells);
+		addAdminHandler(new createGrid(T_homeCellCreator, bhServerGrid.class),	bhE_AdminRequestPath.createGrid);
+		addAdminHandler(new deactivateUserCells(),								bhE_AdminRequestPath.deactivateUserCells);
+		addAdminHandler(new refreshHomeCells(T_homeCellCreator),				bhE_AdminRequestPath.refreshHomeCells);
+		addAdminHandler(new clearCell(),										bhE_AdminRequestPath.clearCell);
+		addAdminHandler(new recompileCells(),									bhE_AdminRequestPath.recompileCells);
 	}
 	
-	private static void addAdminHandler(bhI_RequestHandler handler, bhI_RequestPath path)
+	protected static void addAdminHandler(bhI_RequestHandler handler, bhI_RequestPath path)
 	{
 		bhServerTransactionManager txnManager = bh_s.txnMngr;
 		

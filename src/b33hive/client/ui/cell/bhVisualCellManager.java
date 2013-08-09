@@ -142,7 +142,7 @@ public class bhVisualCellManager implements bhI_UIElement, bhI_CellPoolDelegate
 		m_queuedRemovals.clear();
 	}
 	
-	public bhI_BufferCellListener createVisualization(int cellSize)
+	public bhI_BufferCellListener createVisualization(int width, int height, int padding, int subCellDim)
 	{
 		bhVisualCell newVisualCell = m_pool.allocate();
 		
@@ -153,7 +153,7 @@ public class bhVisualCellManager implements bhI_UIElement, bhI_CellPoolDelegate
 			bhU_Debug.ASSERT(false, "createVisualization1");
 		}
 		
-		newVisualCell.onCreate(cellSize);
+		newVisualCell.onCreate(width, height, padding, subCellDim);
 		
 		return newVisualCell;
 	}
@@ -199,7 +199,6 @@ public class bhVisualCellManager implements bhI_UIElement, bhI_CellPoolDelegate
 		bhCellBufferManager cellManager = bhCellBufferManager.getInstance();
 		bhCellBuffer cellBuffer = cellManager.getDisplayBuffer();
 		bhBufferCell firstCell = cellBuffer.getCellCount() > 0 ? cellBuffer.getCellAtIndex(0) : null;
-		bhA_Grid grid = firstCell.getGrid(); // TODO: Can't assume this cell will have same grid as other cells.
 		
 		if ( firstCell == null )
 		{
@@ -212,6 +211,8 @@ public class bhVisualCellManager implements bhI_UIElement, bhI_CellPoolDelegate
 			return false;
 		}
 		
+		bhA_Grid grid = firstCell.getGrid(); // TODO: Can't assume this cell will have same grid as other cells.
+		
 		int bufferSize = cellBuffer.getCellCount();
 		int bufferWidth = cellBuffer.getWidth();
 		int bufferHeight = cellBuffer.getHeight();
@@ -220,35 +221,43 @@ public class bhVisualCellManager implements bhI_UIElement, bhI_CellPoolDelegate
 		
 		double distanceRatio = camera.calcDistanceRatio();
 		
-		int cellSize = cellBuffer.getSubCellCount();
-		
-		double scaling = bhVisualCell.calcCellScaling(distanceRatio, cellSize);
-		/*double factor = 1e5; // = 1 * 10^5 = 100000.
-		scaling = Math.round(scaling * factor) / factor;*/
-		
-		double cellPlusSpacingPixels = -1;
-		if( cellSize == 1 )
-		{
-			cellPlusSpacingPixels = (bhS_App.CELL_PLUS_SPACING_PIXEL_COUNT) * scaling;
-		}
-		else
-		{
-			//--- DRK > We have to fudge the scaling here so that thick artifact lines don't appear between the meta-cell images at some zoom levels.
-			//---		Basically just rounding things to the nearest pixel so that the browser renderer doesn't just decide on its own how it should look at sub-pixels.
-			cellPlusSpacingPixels = (bhS_App.CELL_PIXEL_COUNT) * scaling;
-			cellPlusSpacingPixels = Math.round(cellPlusSpacingPixels);
-			scaling = cellPlusSpacingPixels / bhS_App.CELL_PIXEL_COUNT;
-		}
+		int subCellCount = cellBuffer.getSubCellCount();
 		
 		bhPoint basePoint = m_utilPoint1;
-		firstCell.getCoordinate().calcPoint(basePoint, cellSize);
+		firstCell.getCoordinate().calcPoint(basePoint, grid.getCellWidth(), grid.getCellHeight(), grid.getCellPadding(), 1);
 		camera.calcScreenPoint(basePoint, m_utilPoint2);
 		basePoint = m_utilPoint2;
 		basePoint.round();
 		
 		m_lastBasePoint.copy(basePoint);
+		
+		
+		
+		
+		double scaling = ((bhVisualCell)firstCell.getVisualization()).calcCellScaling(distanceRatio, subCellCount);
+		/*double factor = 1e5; // = 1 * 10^5 = 100000.
+		scaling = Math.round(scaling * factor) / factor;*/
+		
+		double cellWidthPlusPadding = -1;
+		double cellHeightPlusPadding = -1;
+		if( subCellCount == 1 )
+		{
+			cellWidthPlusPadding = (grid.getCellWidth() + grid.getCellPadding()) * scaling;
+			cellHeightPlusPadding = (grid.getCellHeight() + grid.getCellPadding()) * scaling;
+		}
+		else
+		{
+			//--- DRK > We have to fudge the scaling here so that thick artifact lines don't appear between the meta-cell images at some zoom levels.
+			//---		Basically just rounding things to the nearest pixel so that the browser renderer doesn't just decide on its own how it should look at sub-pixels.
+			cellWidthPlusPadding = (grid.getCellWidth()) * scaling;
+			cellWidthPlusPadding = Math.round(cellWidthPlusPadding);
+			scaling = cellWidthPlusPadding / grid.getCellWidth();
+			
+			cellHeightPlusPadding = grid.getCellHeight() * scaling;
+		}
 	
 		String scaleProperty = scaling < NO_SCALING ? bhU_UI.createScaleTransform(scaling) : null;
+		
 		
 		
 		//--- DRK > NOTE: ALL DOM-manipulation related to cells should occur within this block.
@@ -268,8 +277,8 @@ public class bhVisualCellManager implements bhI_UIElement, bhI_CellPoolDelegate
 				int ix = i % bufferWidth;
 				int iy = i / bufferWidth;
 				
-				double offsetX = (ix * (cellPlusSpacingPixels));
-				double offsetY = (iy * (cellPlusSpacingPixels));
+				double offsetX = (ix * (cellWidthPlusPadding));
+				double offsetY = (iy * (cellHeightPlusPadding));
 				
 				bhVisualCell ithVisualCell = (bhVisualCell) cellBuffer.getCellAtIndex(i).getVisualization();
 				

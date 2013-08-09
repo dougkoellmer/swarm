@@ -59,10 +59,14 @@ public class bhVisualCell extends AbsolutePanel implements bhI_BufferCellListene
 	private final ArrayList<Image> m_backgroundImages = new ArrayList<Image>();
 	private int m_currentImageIndex = -1;
 	
-	private static final String CELL_PLUS_SPACING_PIXEL_COUNT = bhS_App.CELL_PLUS_SPACING_PIXEL_COUNT + "px";
-	private static final String CELL_PIXEL_COUNT = bhS_App.CELL_PIXEL_COUNT + "px";
+	//private static final String CELL_PLUS_SPACING_PIXEL_COUNT = bhS_App.CELL_PLUS_SPACING_PIXEL_COUNT + "px";
+	//private static final String CELL_PIXEL_COUNT = bhS_App.CELL_PIXEL_COUNT + "px";
 	
-	private int m_cellSize = -1;
+	private int m_subCellDimension = -1;
+	private int m_width = 0;
+	private int m_height = 0;
+	private int m_padding = 0;
+	
 	private boolean m_isValidated = false;
 	
 	private final CodeLoadListener m_codeLoadListener = new CodeLoadListener(this);
@@ -77,9 +81,6 @@ public class bhVisualCell extends AbsolutePanel implements bhI_BufferCellListene
 		m_backgroundPanel.getElement().getStyle().setPosition(Position.ABSOLUTE);
 		m_statusPanel.getElement().getStyle().setPosition(Position.ABSOLUTE);
 		m_glassPanel.getElement().getStyle().setPosition(Position.ABSOLUTE);
-		
-		m_contentPanel.setSize(CELL_PIXEL_COUNT, CELL_PIXEL_COUNT);
-		m_statusPanel.setSize(CELL_PIXEL_COUNT, CELL_PIXEL_COUNT);
 		
 		bhE_ZIndex.CELL_STATUS.assignTo(m_statusPanel);
 		bhE_ZIndex.CELL_GLASS.assignTo(m_glassPanel);
@@ -143,7 +144,7 @@ public class bhVisualCell extends AbsolutePanel implements bhI_BufferCellListene
 		}
 	}
 	
-	public static double calcCellScaling(double distanceRatio, int cellSubCountDim)
+	public double calcCellScaling(double distanceRatio, int cellSubCountDim)
 	{
 		if( cellSubCountDim == 1 )
 		{
@@ -151,7 +152,8 @@ public class bhVisualCell extends AbsolutePanel implements bhI_BufferCellListene
 		}
 		else
 		{
-			return (distanceRatio * bhS_App.SCALING_RATIO) * ((double)cellSubCountDim);
+			double scalingRatio = ((double)m_width+m_padding)/((double) m_width);
+			return (distanceRatio * scalingRatio) * ((double)cellSubCountDim);
 		}
 	}
 	
@@ -164,10 +166,10 @@ public class bhVisualCell extends AbsolutePanel implements bhI_BufferCellListene
 			m_backgroundImages.get(m_currentImageIndex).getElement().getStyle().setDisplay(Display.NONE);
 		}
 		
-		if( m_cellSize == 1 )
+		if( m_subCellDimension == 1 )
 		{
-			this.setSize(CELL_PLUS_SPACING_PIXEL_COUNT, CELL_PLUS_SPACING_PIXEL_COUNT);
-			m_backgroundPanel.setSize(CELL_PLUS_SPACING_PIXEL_COUNT, CELL_PLUS_SPACING_PIXEL_COUNT);
+			this.setSize(m_width+m_padding + "px", m_height+m_padding + "px");
+			m_backgroundPanel.setSize(m_width+m_padding + "px", m_height+m_padding + "px");
 			
 			m_currentImageIndex = 0;
 			m_backgroundImages.get(m_currentImageIndex).getElement().getStyle().setDisplay(Display.BLOCK);
@@ -178,14 +180,14 @@ public class bhVisualCell extends AbsolutePanel implements bhI_BufferCellListene
 			
 			m_contentPanel.addStyleName("visual_cell_content");
 		}
-		else if( m_cellSize > 1 )
+		else if( m_subCellDimension > 1 )
 		{
 			this.setStatusHtml(null, false); // shouldn't have to be done, but what the hell.
 			
-			this.setSize(CELL_PIXEL_COUNT, CELL_PIXEL_COUNT);
-			m_backgroundPanel.setSize(CELL_PIXEL_COUNT, CELL_PIXEL_COUNT);
+			this.setSize(m_width+"px", m_height+"px");
+			m_backgroundPanel.setSize(m_width+"px", m_height+"px");
 			
-			if( m_cellSize > bhS_App.MAX_IMAGED_CELL_SIZE )
+			if( m_subCellDimension > bhS_App.MAX_IMAGED_CELL_SIZE )
 			{				
 				m_backgroundPanel.getElement().getStyle().setBackgroundColor("white");
 			}
@@ -193,7 +195,7 @@ public class bhVisualCell extends AbsolutePanel implements bhI_BufferCellListene
 			{
 				m_backgroundPanel.getElement().getStyle().clearBackgroundColor();
 				
-				m_currentImageIndex = bhU_BitTricks.calcBitPosition(m_cellSize);
+				m_currentImageIndex = bhU_BitTricks.calcBitPosition(m_subCellDimension);
 				m_backgroundImages.get(m_currentImageIndex).getElement().getStyle().setDisplay(Display.BLOCK);
 			}
 			
@@ -203,19 +205,25 @@ public class bhVisualCell extends AbsolutePanel implements bhI_BufferCellListene
 		m_isValidated = true;
 	}
 	
-	public void onCreate(int cellSize)
+	public void onCreate(int width, int height, int padding, int subCellDimension)
 	{
 		 //--- DRK > NOTE: for some reason this gets reset somehow...at least in hosted mode, so can't put it in constructor.
 		this.getElement().getStyle().setPosition(Position.ABSOLUTE);
 		
 		m_isValidated = false;
-		m_cellSize = cellSize;
+		m_subCellDimension = subCellDimension;
+		m_width = width;
+		m_height = height;
+		m_padding = padding;
 		m_currentImageIndex = -1;
+		
+		m_contentPanel.setSize(m_width+"px", m_height+"px");
+		m_statusPanel.setSize(m_width+"px", m_height+"px");
 	}
 	
 	public void onDestroy()
 	{
-		m_cellSize = -1;
+		m_subCellDimension = -1;
 		
 		if( m_currentImageIndex != -1 )
 		{
@@ -268,12 +276,12 @@ public class bhVisualCell extends AbsolutePanel implements bhI_BufferCellListene
 	@Override
 	public void onCellRecycled(int cellSize)
 	{
-		if( cellSize != m_cellSize )
+		if( cellSize != m_subCellDimension )
 		{
 			m_isValidated = false;
 		}
 
-		m_cellSize = cellSize;
+		m_subCellDimension = cellSize;
 
 		this.insertSafeHtml("");
 		

@@ -27,6 +27,7 @@ import b33hive.server.thirdparty.servlet.bhU_Servlet;
 import b33hive.server.session.bhSessionManager;
 import b33hive.server.structs.bhServerCellAddress;
 import b33hive.server.structs.bhServerCellAddressMapping;
+import b33hive.shared.entities.bhA_Grid;
 import b33hive.shared.json.bhI_JsonEncodable;
 import b33hive.shared.structs.bhCellAddress;
 import b33hive.shared.structs.bhCellAddressMapping;
@@ -127,6 +128,8 @@ public class bhU_InlineTransactions
 				s_logger.severe("batch get error: " + e + e.getCause());
 			}
 			
+			bhA_Grid grid = null;
+			
 			if( blobBatchResult != null )
 			{
 				if( blobBatchResult.containsKey(session))
@@ -142,7 +145,8 @@ public class bhU_InlineTransactions
 				
 				if( blobBatchResult.containsKey(bhE_GridType.ACTIVE) )
 				{
-					transactionManager.makeInlineRequestWithResponse(bhE_RequestPath.getGridData, (bhI_JsonEncodable) blobBatchResult.get(bhE_GridType.ACTIVE));
+					grid = (bhA_Grid) blobBatchResult.get(bhE_GridType.ACTIVE);
+					transactionManager.makeInlineRequestWithResponse(bhE_RequestPath.getGridData, grid);
 					
 					makeGridRequest = false;
 				}
@@ -176,17 +180,19 @@ public class bhU_InlineTransactions
 			
 			if( makeGridRequest )
 			{
-				transactionManager.makeInlineRequest(bhE_RequestPath.getGridData);
+				bhTransactionResponse response = transactionManager.makeInlineRequest(bhE_RequestPath.getGridData);
+				grid = new bhA_Grid(){};
+				grid.readJson(response.getJson());
 			}
 	
 			bhPoint startingPosition = new bhPoint();
 			if( mappingResult.isEverythingOk() )
 			{
-				mappingResult.getMapping().getCoordinate().calcCenterPoint(startingPosition, 1);
+				mappingResult.getMapping().getCoordinate().calcCenterPoint(startingPosition, grid.getCellWidth(), grid.getCellHeight(), grid.getCellPadding(), 1);
 			}
 			else
 			{
-				(new bhGridCoordinate()).calcCenterPoint(startingPosition, 1);
+				(new bhGridCoordinate()).calcCenterPoint(startingPosition, grid.getCellWidth(), grid.getCellHeight(), grid.getCellPadding(), 1);
 			}
 			
 			startingPosition.setZ(bh_s.app.getConfig().startingZ);

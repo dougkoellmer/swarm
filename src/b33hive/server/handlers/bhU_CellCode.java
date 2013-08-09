@@ -76,29 +76,36 @@ public final class bhU_CellCode
 		
 		return true;
 	}
-
-	public static bhServerCell getCellForCompile(bhI_BlobManager blobManager, bhServerCellAddressMapping mapping, bhTransactionResponse response)
+	
+	public static bhServerCell getCell(bhI_BlobManager blobManager, bhServerCellAddressMapping mapping, bhTransactionResponse response)
 	{
 		bhServerCell persistedCell = null;
 		
 		try
 		{
 			persistedCell = blobManager.getBlob(mapping, bhServerCell.class);
-			
-			if( persistedCell == null )
-			{
-				s_logger.severe("Expected cell to already exist for user at mapping: " + mapping);
-				
-				response.setError(bhE_ResponseError.BAD_STATE);
-				
-				return null;
-			}
 		}
 		catch(bhBlobException e)
 		{
-			s_logger.severe("Exception getting cell for compile at mapping: " + mapping + " " + e);
+			s_logger.severe("Exception getting cell at mapping: " + mapping + " " + e);
 			
 			response.setError(bhE_ResponseError.SERVICE_EXCEPTION);
+			
+			return null;
+		}
+		
+		return persistedCell;
+	}
+
+	public static bhServerCell getCellForCompile(bhI_BlobManager blobManager, bhServerCellAddressMapping mapping, bhTransactionResponse response)
+	{
+		bhServerCell persistedCell = getCell(blobManager, mapping, response);
+		
+		if( persistedCell == null )
+		{
+			s_logger.severe("Expected cell to already exist for user at mapping: " + mapping);
+			
+			response.setError(bhE_ResponseError.BAD_STATE);
 			
 			return null;
 		}

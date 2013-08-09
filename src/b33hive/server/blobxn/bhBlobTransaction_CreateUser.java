@@ -83,7 +83,7 @@ public class bhBlobTransaction_CreateUser extends bhA_BlobTransaction
 	
 	public boolean didGridGrow()
 	{
-		return m_createCellTransaction.didGridGrow();
+		return m_createCellTransaction != null && m_createCellTransaction.didGridGrow();
 	}
 	
 	public int getGridWidth()

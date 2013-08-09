@@ -97,11 +97,17 @@ public abstract class bhA_Grid extends bhA_JsonEncodable
 	@Override
 	public void readJson(bhI_JsonObject json)
 	{
-		m_width = bh.jsonFactory.getHelper().getInt(json, bhE_JsonKey.gridWidth);
-		m_height = bh.jsonFactory.getHelper().getInt(json, bhE_JsonKey.gridHeight);
-		m_cellWidth = bh.jsonFactory.getHelper().getInt(json, bhE_JsonKey.gridCellWidth);
-		m_cellHeight = bh.jsonFactory.getHelper().getInt(json, bhE_JsonKey.gridCellHeight);
-		m_cellPadding = bh.jsonFactory.getHelper().getInt(json, bhE_JsonKey.gridCellPadding);		
+		Integer width = bh.jsonFactory.getHelper().getInt(json, bhE_JsonKey.gridWidth);
+		Integer height = bh.jsonFactory.getHelper().getInt(json, bhE_JsonKey.gridHeight);
+		Integer cellWidth = bh.jsonFactory.getHelper().getInt(json, bhE_JsonKey.gridCellWidth);
+		Integer cellHeight = bh.jsonFactory.getHelper().getInt(json, bhE_JsonKey.gridCellHeight);
+		Integer cellPadding = bh.jsonFactory.getHelper().getInt(json, bhE_JsonKey.gridCellPadding);	
+		
+		m_width = width != null ? width : m_width;
+		m_height = height != null ? height : m_height;
+		m_cellWidth = cellWidth != null ? cellWidth : m_cellWidth;
+		m_cellHeight = cellHeight != null ? cellHeight : m_cellHeight;
+		m_cellPadding = cellPadding != null ? cellPadding : m_cellPadding;
 	}
 	
 	@Override

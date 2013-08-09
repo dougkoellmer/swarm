@@ -94,12 +94,12 @@ public class bhInlineTransactionManager
 		writeInlineTransaction(request, response);
 	}
 	
-	public void makeInlineRequest(bhE_RequestPath path) throws IOException
+	public bhTransactionResponse makeInlineRequest(bhE_RequestPath path) throws IOException
 	{
-		makeInlineRequest(path, null);
+		return makeInlineRequest(path, null);
 	}
 	
-	public void makeInlineRequest(bhE_RequestPath path, bhI_JsonEncodable jsonEncodable) throws IOException
+	public bhTransactionResponse makeInlineRequest(bhE_RequestPath path, bhI_JsonEncodable jsonEncodable) throws IOException
 	{
 		bhTransactionRequest request = new bhTransactionRequest(m_context.get().m_nativeRequest);
 		bhTransactionResponse response = new bhTransactionResponse(m_context.get().m_nativeResponse);
@@ -112,6 +112,8 @@ public class bhInlineTransactionManager
 		}
 		
 		makeInlineRequest(request, response);
+		
+		return response;
 	}
 	
 	public void makeInlineRequestWithResponse(bhE_RequestPath path, bhI_JsonEncodable requestJsonEncodable, bhI_JsonEncodable responseJsonEncodable) throws IOException

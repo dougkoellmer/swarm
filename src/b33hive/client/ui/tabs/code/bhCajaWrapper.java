@@ -65,7 +65,8 @@ public class bhCajaWrapper
 			$wnd.caja.markFunction($wnd[apiNamespace].getAddress);
 			$wnd.caja.markFunction($wnd[apiNamespace].getPosition);
 			$wnd.caja.markFunction($wnd[apiNamespace].getUsername);
-			$wnd.caja.markFunction($wnd[apiNamespace].getGridSize);
+			$wnd.caja.markFunction($wnd[apiNamespace].getGridWidth);
+			$wnd.caja.markFunction($wnd[apiNamespace].getGridHeight);
 			
 			$wnd[apiNamespace+"_tamed"] = $wnd.caja.tame($wnd[apiNamespace]);
 		}

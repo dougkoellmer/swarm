@@ -18,3 +18,5 @@
 - possibly automatically shrink console if it gets in the way of focused cell content.
 
 - have richer display of character count quota...need to delineate the fraction a bit better.
+
+- have suggestion drop down for email for sign in, and maybe for sign up too, depending on how it actually works.
