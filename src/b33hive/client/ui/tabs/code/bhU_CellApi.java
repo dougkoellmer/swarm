@@ -325,7 +325,7 @@ public class bhU_CellApi
 	
 	private static String getAddress()
 	{
-		return getCurrentCell().getCellAddress().getRawAddressNoLeadSlash();
+		return getCurrentCell().getCellAddress().getRawAddress();
 	}
 	
 	private static String getUsername()

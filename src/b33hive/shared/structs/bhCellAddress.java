@@ -19,11 +19,12 @@ public class bhCellAddress extends bhA_JsonEncodable
 		CELL
 	}
 	
-	private String m_rawAddressNoLeadSlash = null;
 	private String m_rawAddress = null;
+	private String m_caseSensitiveRawAddress = null;
+	
 	private final String[] m_parts = new String[E_Part.values().length];
 	
-	private bhE_CellAddressParseError m_cachedParseError = null;
+	private bhE_CellAddressParseError m_parseError = null;
 	
 	public bhCellAddress()
 	{
@@ -44,7 +45,7 @@ public class bhCellAddress extends bhA_JsonEncodable
 	
 	public bhCellAddress(bhCellAddress source)
 	{
-		this(source.getRawAddress());
+		this(source.getRawAddressLeadSlash());
 	}
 	
 	public boolean isValid()
@@ -54,9 +55,9 @@ public class bhCellAddress extends bhA_JsonEncodable
 	
 	protected void init(String rawAddress)
 	{
-		m_rawAddressNoLeadSlash = null;
+		m_caseSensitiveRawAddress = null;
 		m_rawAddress = null;
-		m_cachedParseError = null;
+		m_parseError = null;
 		for( int i = 0; i < m_parts.length; i++ )
 		{
 			m_parts[i] = null;
@@ -67,7 +68,12 @@ public class bhCellAddress extends bhA_JsonEncodable
 	
 	public bhE_CellAddressParseError getParseError()
 	{
-		return m_cachedParseError;
+		return m_parseError;
+	}
+	
+	public String getRawAddressLeadSlash()
+	{
+		return "/" + m_rawAddress;
 	}
 	
 	public String getRawAddress()
@@ -75,9 +81,14 @@ public class bhCellAddress extends bhA_JsonEncodable
 		return m_rawAddress;
 	}
 	
-	public String getRawAddressNoLeadSlash()
+	public String getCasedRawAddress()
 	{
-		return m_rawAddressNoLeadSlash;
+		return m_caseSensitiveRawAddress;
+	}
+	
+	public String getCasedRawAddressLeadSlash()
+	{
+		return "/" + m_caseSensitiveRawAddress;
 	}
 	
 	public String getPart(E_Part part)
@@ -87,12 +98,12 @@ public class bhCellAddress extends bhA_JsonEncodable
 	
 	private void parse(String rawAddress)
 	{
-		m_rawAddressNoLeadSlash = null;
+		m_caseSensitiveRawAddress = null;
 		m_rawAddress = null;
 		
 		if( rawAddress == null || rawAddress.length() == 0 )
 		{
-			m_cachedParseError = bhE_CellAddressParseError.EMPTY;
+			m_parseError = bhE_CellAddressParseError.EMPTY;
 			
 			return;
 		}
@@ -101,7 +112,7 @@ public class bhCellAddress extends bhA_JsonEncodable
 		//---		So we just account for that strange case simply here.
 		if( rawAddress.contains("//") )
 		{
-			m_cachedParseError = bhE_CellAddressParseError.TOO_MANY_PARTS;
+			m_parseError = bhE_CellAddressParseError.TOO_MANY_PARTS;
 			
 			return;
 		}
@@ -112,24 +123,22 @@ public class bhCellAddress extends bhA_JsonEncodable
 		
 		if( rawAddressFiltered == null || rawAddressFiltered.length() == 0 )
 		{
-			m_cachedParseError = bhE_CellAddressParseError.EMPTY;
+			m_parseError = bhE_CellAddressParseError.EMPTY;
 			
 			return;
 		}
-		
-		rawAddressFiltered = rawAddressFiltered.toLowerCase();
 		
 		String[] parts = rawAddressFiltered.split("/");
 		
 		if( parts.length == 0 )
 		{
-			m_cachedParseError = bhE_CellAddressParseError.EMPTY;
+			m_parseError = bhE_CellAddressParseError.EMPTY;
 			
 			return;
 		}
 		else if( parts.length > bhS_App.MAX_CELL_ADDRESS_PARTS )
 		{
-			m_cachedParseError = bhE_CellAddressParseError.TOO_MANY_PARTS;
+			m_parseError = bhE_CellAddressParseError.TOO_MANY_PARTS;
 			
 			return;
 		}
@@ -142,26 +151,28 @@ public class bhCellAddress extends bhA_JsonEncodable
 			
 			if( error.isError() )
 			{
-				m_cachedParseError = bhE_CellAddressParseError.BAD_FORMAT;
+				m_parseError = bhE_CellAddressParseError.BAD_FORMAT;
 				
 				return;
 			}
 			
+			String partToLowerCase = part.toLowerCase();
+			
 			if( m_rawAddress == null )
 			{
-				m_rawAddress = "/" + part;
-				m_rawAddressNoLeadSlash = part;
+				m_rawAddress = partToLowerCase;
+				m_caseSensitiveRawAddress = part;
 			}
 			else
 			{
-				m_rawAddress += "/" + part;
-				m_rawAddressNoLeadSlash += "/" + part;
+				m_rawAddress += "/" + part.toLowerCase();
+				m_caseSensitiveRawAddress += "/" + part;
 			}
 			
-			m_parts[i] = parts[i];
+			m_parts[i] = partToLowerCase;
 		}
 
-		m_cachedParseError = bhE_CellAddressParseError.NO_ERROR;
+		m_parseError = bhE_CellAddressParseError.NO_ERROR;
 	}
 	
 	public boolean isEqualTo(bhCellAddress address)
@@ -172,7 +183,7 @@ public class bhCellAddress extends bhA_JsonEncodable
 	@Override
 	public void writeJson(bhI_JsonObject json)
 	{
-		bh.jsonFactory.getHelper().putString(json, bhE_JsonKey.rawCellAddress, m_rawAddress);
+		bh.jsonFactory.getHelper().putString(json, bhE_JsonKey.rawCellAddress, m_caseSensitiveRawAddress);
 	}
 
 	@Override

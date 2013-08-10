@@ -1,0 +1,1 @@
+- give each request handler instances of various managers it needs, defaulting to at least transaction mngr and blob factory...generic, DRY way, probably an init method or something...this is instead of accessing global instances

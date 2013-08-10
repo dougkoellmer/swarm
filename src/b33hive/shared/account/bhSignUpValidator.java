@@ -32,11 +32,16 @@ public class bhSignUpValidator
 			result = new bhSignUpValidationResult();
 		}
 		
+		validate( credentials, result);
+		
+		return result;
+	}
+	
+	public void validate(bhSignUpCredentials credentials, bhSignUpValidationResult result_out)
+	{
 		if( credentials.getCaptchaChallenge() == null )
 		{
-			result.setResponseError();
-			
-			return result;
+			result_out.setResponseError();
 		}
 		
 		for( int i = 0; i < bhE_SignUpCredentialType.values().length; i++ )
@@ -45,9 +50,7 @@ public class bhSignUpValidator
 			String credential = credentials.get(type);
 			bhE_SignUpValidationError error = type.getValidator().validateCredential(credential);
 			
-			result.setError(type, error);
+			result_out.setError(type, error);
 		}
-		
-		return result;
 	}
 }

@@ -58,7 +58,7 @@ public class bhServerCellAddress extends bhCellAddress implements Externalizable
 	@Override
 	public String createBlobKey(bhI_Blob blob)
 	{
-		return bhU_Blob.generateKey(blob, this.getRawAddressNoLeadSlash());
+		return bhU_Blob.generateKey(blob, this.getCasedRawAddress());
 	}
 
 	@Override
@@ -66,7 +66,7 @@ public class bhServerCellAddress extends bhCellAddress implements Externalizable
 	{
 		out.writeInt(EXTERNAL_VERSION);
 		
-		bhU_Serialization.writeNullableString(this.getRawAddressNoLeadSlash(), out);
+		bhU_Serialization.writeNullableString(this.getCasedRawAddress(), out);
 	}
 
 	@Override

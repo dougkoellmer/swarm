@@ -20,8 +20,10 @@ import b33hive.shared.account.bhE_SignUpValidationError;
 import b33hive.shared.account.bhS_Account;
 import b33hive.shared.account.bhSignInCredentials;
 import b33hive.shared.account.bhSignInValidationResult;
+import b33hive.shared.account.bhSignInValidator;
 import b33hive.shared.account.bhSignUpCredentials;
 import b33hive.shared.account.bhSignUpValidationResult;
+import b33hive.shared.account.bhSignUpValidator;
 
 /**
  * 
@@ -61,6 +63,21 @@ public class bhServerAccountManager
 		
 		return true;
 	}
+	
+	private boolean earlyOut_signIn(bhSignInCredentials creds, bhSignInValidationResult result_out)
+	{
+		bhSignInValidator.getInstance().validate(creds, result_out);
+		
+		return !result_out.isEverythingOk();
+	}
+	
+	private boolean earlyOut_signUp(bhSignUpCredentials creds, bhSignUpValidationResult result_out)
+	{
+		bhSignUpValidator.getInstance().validate(creds, result_out);
+		
+		return !result_out.isEverythingOk();
+	}
+	
 	
 	//TODO: Probably have to flush this out a bit.
 	private boolean isAllowedEmail(String email)
@@ -103,8 +120,10 @@ public class bhServerAccountManager
 	 * 
 	 * @return A password change token to be e-mailed to the user, or null in case of issues.
 	 */
-	public String setNewDesiredPassword(bhSignInCredentials credentials)
+	public String setNewDesiredPassword(bhSignInCredentials credentials, bhSignInValidationResult result_out)
 	{
+		if( earlyOut_signIn(credentials, result_out) )  return null;
+		
 		String email				= credentials.get(bhE_SignInCredentialType.EMAIL);
 		String plainTextPassword	= credentials.get(bhE_SignInCredentialType.PASSWORD);
     	
@@ -130,21 +149,23 @@ public class bhServerAccountManager
     	return null;
 	}
 	
-	public bhUserSession attemptSignUp(bhSignUpValidationResult outResult, bhSignUpCredentials credentials)
+	public bhUserSession attemptSignUp(bhSignUpCredentials credentials, bhSignUpValidationResult result_out)
 	{
+		if( earlyOut_signUp(credentials, result_out) )  return null;
+		
 		String email				= credentials.get(bhE_SignUpCredentialType.EMAIL);
 		String username				= credentials.get(bhE_SignUpCredentialType.USERNAME);
 		String plainTextPassword	= credentials.get(bhE_SignUpCredentialType.PASSWORD);
 		
 		if( !isAllowedEmail(email) )
 		{
-			outResult.setError(bhE_SignUpCredentialType.EMAIL, bhE_SignUpValidationError.EMAIL_TAKEN);
+			result_out.setError(bhE_SignUpCredentialType.EMAIL, bhE_SignUpValidationError.EMAIL_TAKEN);
 			return null;
 		}
 		
 		if( !isAllowedUsername(username) )
 		{
-			outResult.setError(bhE_SignUpCredentialType.USERNAME, bhE_SignUpValidationError.USERNAME_TAKEN);
+			result_out.setError(bhE_SignUpCredentialType.USERNAME, bhE_SignUpValidationError.USERNAME_TAKEN);
 			return null;
 		}
 		
@@ -182,7 +203,7 @@ public class bhServerAccountManager
 					{
 						s_logger.log(Level.SEVERE, "Could not check which credentials already exist.", e1);
 						
-						outResult.setResponseError();
+						result_out.setResponseError();
 						
 						return null;
 					}
@@ -191,12 +212,12 @@ public class bhServerAccountManager
 					{
 						if ( (flags & bhF_SignUpExistance.EMAIL_EXISTS) != 0 )
 						{
-							outResult.setError(bhE_SignUpCredentialType.EMAIL, bhE_SignUpValidationError.EMAIL_TAKEN);
+							result_out.setError(bhE_SignUpCredentialType.EMAIL, bhE_SignUpValidationError.EMAIL_TAKEN);
 						}
 						
 						if( (flags & bhF_SignUpExistance.USERNAME_EXISTS) != 0 )
 						{
-							outResult.setError(bhE_SignUpCredentialType.USERNAME, bhE_SignUpValidationError.USERNAME_TAKEN);
+							result_out.setError(bhE_SignUpCredentialType.USERNAME, bhE_SignUpValidationError.USERNAME_TAKEN);
 						}
 						
 						return null;
@@ -214,7 +235,7 @@ public class bhServerAccountManager
 				{
 					s_logger.log(Level.SEVERE, "Could not add account due to exception.", e1);
 					
-					outResult.setResponseError();
+					result_out.setResponseError();
 					
 					return null;
 				}
@@ -227,31 +248,15 @@ public class bhServerAccountManager
 		//---		This simply results in the user seeing a "server error" type of message, and they can try again with the same credentials.
 		s_logger.warning("Exceeded retry count for finding a unique user id.");
 		
-		outResult.setResponseError();
+		result_out.setResponseError();
 		
 		return null;
 	}
 	
-	/*public bhUserSession createSession(int accountId)
-	{
-		bhAccountDatabase database = bhAccountDatabase.getInstance();
-    	
-    	try
-    	{
-        	bhUserSession userSession = database.containsAccountId(accountId);
-
-        	return userSession;
-    	}
-    	catch(SQLException e)
-    	{
-    		s_logger.log(Level.SEVERE, "Error occured while getting session data for account: " + accountId, e);
-    	}
-    	
-    	return null;
-	}*/
-	
-	public bhUserSession confirmNewPassword(bhSignInValidationResult outResult, bhSignInCredentials credentials, String passwordResetToken)
+	public bhUserSession confirmNewPassword(bhSignInCredentials credentials, String passwordResetToken, bhSignInValidationResult result_out)
     {
+		if( earlyOut_signIn(credentials, result_out) )  return null;
+		
     	String email				= credentials.get(bhE_SignInCredentialType.EMAIL);
 		String plainTextPassword	= credentials.get(bhE_SignInCredentialType.PASSWORD);
 		
@@ -261,7 +266,7 @@ public class bhServerAccountManager
 	        
 	        if( salt == null )
 	        {
-	        	outResult.setResponseError();
+	        	result_out.setResponseError();
 	        }
 	        else
 	        {
@@ -273,7 +278,7 @@ public class bhServerAccountManager
 	        	
 	            if (userSession == null)
 	            {
-	            	outResult.setResponseError();
+	            	result_out.setResponseError();
 	            }
 	            
 	            return userSession;
@@ -283,14 +288,16 @@ public class bhServerAccountManager
     	{
     		s_logger.log(Level.SEVERE, "Could not sign user in with new password.", e);
     		
-    		outResult.setResponseError();
+    		result_out.setResponseError();
     	}
     	
     	return null;
     }
 
-	public bhUserSession attemptSignIn(bhSignInValidationResult result_out, bhSignInCredentials credentials)
+	public bhUserSession attemptSignIn(bhSignInCredentials credentials, bhSignInValidationResult result_out)
     {
+		if( earlyOut_signIn(credentials, result_out) )  return null;
+		
     	String email				= credentials.get(bhE_SignInCredentialType.EMAIL);
 		String plainTextPassword	= credentials.get(bhE_SignInCredentialType.PASSWORD);
 	

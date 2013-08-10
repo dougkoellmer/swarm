@@ -21,7 +21,7 @@ public class bhSignInValidator
 	
 	public bhSignInValidationResult validate(bhSignInCredentials credentials)
 	{
-		bhSignInValidationResult result = null;
+		bhSignInValidationResult result;
 		
 		if( bhA_App.getInstance().getEnvironment() == bhE_AppEnvironment.CLIENT )
 		{
@@ -32,6 +32,13 @@ public class bhSignInValidator
 			result = new bhSignInValidationResult();
 		}
 		
+		validate(credentials, result);
+		
+		return result;
+	}
+	
+	public void validate(bhSignInCredentials credentials, bhSignInValidationResult result_out)
+	{		
 		for( int i = 0; i < bhE_SignInCredentialType.values().length; i++ )
 		{
 			bhE_SignInCredentialType type = bhE_SignInCredentialType.values()[i];
@@ -44,9 +51,7 @@ public class bhSignInValidator
 				error = bhE_SignInValidationError.NO_ERROR;
 			}
 			
-			result.m_errors[i] = error;
+			result_out.m_errors[i] = error;
 		}
-		
-		return result;
 	}
 }

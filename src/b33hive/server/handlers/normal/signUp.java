@@ -31,7 +31,7 @@ public class signUp implements bhI_RequestHandler
 		m_privateRecaptchaKey = privateRecaptchaKey;
 	}
 	
-	private void validateCaptcha(bhSignUpCredentials creds, bhSignUpValidationResult outResult, String remoteAddress)
+	private boolean isCaptchaValid(bhSignUpCredentials creds, bhSignUpValidationResult result_out, String remoteAddress)
 	{
 		String captchaChallenge = creds.getCaptchaChallenge();
 		String captchaResponse = creds.get(bhE_SignUpCredentialType.CAPTCHA_RESPONSE);
@@ -41,32 +41,30 @@ public class signUp implements bhI_RequestHandler
 
         if ( !recaptchaResponse.isValid())
         {
-        	outResult.setError(bhE_SignUpCredentialType.CAPTCHA_RESPONSE, bhE_SignUpValidationError.CAPTCHA_INCORRECT);
+        	result_out.setNoErrors(); // just make sure all errors are filled in for json writing...kinda hacky.
+        	result_out.setError(bhE_SignUpCredentialType.CAPTCHA_RESPONSE, bhE_SignUpValidationError.CAPTCHA_INCORRECT);
+        	
+        	return false;
         }
+        
+        return true;
 	}
 	
 	@Override
 	public void handleRequest(bhTransactionContext context, bhTransactionRequest request, bhTransactionResponse response)
 	{
+		bhServerAccountManager accountManager = bh_s.accountMngr;
 		bhSignUpCredentials creds = new bhSignUpCredentials(request.getJson());
+		bhSignUpValidationResult result = new bhSignUpValidationResult();
+		String remoteAddress = ((HttpServletRequest) request.getNativeRequest()).getRemoteAddr();
 		
-		bhSignUpValidationResult result = bhSignUpValidator.getInstance().validate(creds);
-		
-		if( result.isEverythingOk() )
+		if( isCaptchaValid(creds, result, remoteAddress))
 		{
-			String remoteAddress = ((HttpServletRequest) request.getNativeRequest()).getRemoteAddr();
-			validateCaptcha(creds, result, remoteAddress);
+			bhUserSession userSession = accountManager.attemptSignUp(creds, result);
 			
-			if( result.isEverythingOk/*Still?*/() )
+			if( userSession != null )
 			{
-				bhServerAccountManager accountManager = bh_s.accountMngr;
-				
-				bhUserSession userSession = accountManager.attemptSignUp(result, creds);
-				
-				if( result.isEverythingOk/*STILL?*/() )
-				{
-					bh_s.sessionMngr.startSession(userSession, response, creds.rememberMe());
-				}
+				bh_s.sessionMngr.startSession(userSession, response, creds.rememberMe());
 			}
 		}
 		

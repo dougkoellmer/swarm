@@ -67,7 +67,7 @@ public class bhBlobTransaction_DeactivateCell extends bhA_BlobTransaction
 			
 			if( mappingToDelete == null )
 			{
-				throw new bhBlobException("Could not find mapping for the address: " + addressToDelete.getRawAddress());
+				throw new bhBlobException("Could not find mapping for the address: " + addressToDelete.getRawAddressLeadSlash());
 			}
 		}
 		else

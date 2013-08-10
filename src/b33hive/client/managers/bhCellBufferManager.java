@@ -217,9 +217,9 @@ public class bhCellBufferManager implements bhI_LocalCodeRepository
 		bhPoint screenPointOfCenterCell = m_utilPoint2;
 		double distanceRatio = camera.calcDistanceRatio();
 		
-		double cellWidthPlusPadding = (grid.getWidth() + grid.getCellPadding()) * subCellCountDim;
+		double cellWidthPlusPadding = (grid.getCellWidth() + grid.getCellPadding()) * subCellCountDim;
 		double scaledCellWidth = (cellWidthPlusPadding) * distanceRatio;
-		double cellHeightPlusPadding = (grid.getHeight() + grid.getCellPadding()) * subCellCountDim;
+		double cellHeightPlusPadding = (grid.getCellHeight() + grid.getCellPadding()) * subCellCountDim;
 		double scaledCellHeight = (cellHeightPlusPadding) * distanceRatio;
 		
 		coordOfCenterCell.setWithPoint(camera.getPosition(), cellWidthPlusPadding, cellHeightPlusPadding);

@@ -60,6 +60,14 @@ public class bhSignUpValidationResult extends bhA_JsonEncodable
 		
 		return true;
 	}
+	
+	public void setNoErrors()
+	{
+		for( int i = 0; i < m_errors.length; i++ )
+		{
+			m_errors[i] = bhE_SignUpValidationError.NO_ERROR;
+		}
+	}
 
 	@Override
 	public void writeJson(bhI_JsonObject json)

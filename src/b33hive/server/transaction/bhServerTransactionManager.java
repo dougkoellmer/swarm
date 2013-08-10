@@ -106,14 +106,14 @@ public class bhServerTransactionManager
 		responseToReturn.writeJson(responseJson);
 	}
 	
-	public void handleRequestFromClient(final Object nativeRequest, final Object nativeResponse, Object nativeContext, bhI_JsonObject requestJson, bhI_JsonObject responseJson, boolean verboseJson)
+	public void handleRequestFromClient(final Object nativeRequest, final Object nativeResponse, Object nativeContext, bhI_JsonObject requestJson, bhI_JsonObject responseJson_out, boolean verboseJson)
 	{
-		m_jsonFactory.startScope(bhS_App.VERBOSE_TRANSACTIONS);
+		m_jsonFactory.startScope(verboseJson);
 		
 		//--- DRK > Early out for problems with request json.
 		if( requestJson == null )
 		{
-			this.createEarlyOutResponse(bhE_ResponseError.REQUEST_READ_ERROR, responseJson);
+			this.createEarlyOutResponse(bhE_ResponseError.REQUEST_READ_ERROR, responseJson_out);
 			
 			return;
 		}
@@ -137,14 +137,14 @@ public class bhServerTransactionManager
 			//--- DRK > Early out for server version mismatches.
 			if( serverVersionMismatch )
 			{
-				this.createEarlyOutResponse(bhE_ResponseError.VERSION_MISMATCH, responseJson);
+				this.createEarlyOutResponse(bhE_ResponseError.VERSION_MISMATCH, responseJson_out);
 				
 				return;
 			}
 			
 			if( wrappedRequest.getPath() == null )
 			{
-				this.createEarlyOutResponse(bhE_ResponseError.UNKNOWN_PATH, responseJson);
+				this.createEarlyOutResponse(bhE_ResponseError.UNKNOWN_PATH, responseJson_out);
 				
 				return;
 			}
@@ -271,7 +271,7 @@ public class bhServerTransactionManager
 				responseToReturn.setError(bhE_ResponseError.SERVER_EXCEPTION);
 			}
 			
-			responseToReturn.writeJson(responseJson);
+			responseToReturn.writeJson(responseJson_out);
 			
 			m_jsonFactory.endScope();
 			

@@ -51,7 +51,12 @@ public class bhHistoryStateManager
 	
 	public void setState(bhCellAddress address, bhHistoryState state)
 	{
-		this.setState(address.getRawAddress(), state);
+		this.setState(address.getCasedRawAddressLeadSlash(), state);
+	}
+	
+	public void setState(bhCellAddress address, bhCellAddressMapping mapping)
+	{
+		this.setState(address, new bhHistoryState(mapping));
 	}
 	
 	private String getTitleFromPath(String path)
@@ -75,7 +80,7 @@ public class bhHistoryStateManager
 	
 	public void pushState(bhCellAddress address, bhHistoryState state)
 	{
-		this.pushState(address.getRawAddress(), state);
+		this.pushState(address.getCasedRawAddressLeadSlash(), state);
 	}
 	
 	public void pushState(String path, bhPoint point)
@@ -86,6 +91,11 @@ public class bhHistoryStateManager
 	public void pushState(String path, bhCellAddressMapping mapping)
 	{
 		this.pushState(path, new bhHistoryState(mapping));
+	}
+	
+	public void pushState(bhCellAddress address, bhCellAddressMapping mapping)
+	{
+		this.pushState(address, new bhHistoryState(mapping));
 	}
 	
 	public void pushState(String path, bhHistoryState state)

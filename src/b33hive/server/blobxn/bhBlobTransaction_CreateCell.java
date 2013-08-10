@@ -39,17 +39,17 @@ public class bhBlobTransaction_CreateCell extends bhA_BlobTransaction
 	
 	private bhServerGrid m_grid = null;
 	private bhServerCellAddressMapping m_mapping = null;
-	private final bhServerCellAddress m_address;
+	private final bhServerCellAddress[] m_addresses;
 	private final bhGridCoordinate m_preference;
 	private final bhServerCodePrivileges m_privileges;
 	
-	public bhBlobTransaction_CreateCell(bhServerCellAddress cellAddress, bhGridCoordinate preference, bhServerCodePrivileges privileges)
+	public bhBlobTransaction_CreateCell(bhServerCellAddress[] cellAddresses, bhGridCoordinate preference, bhServerCodePrivileges privileges)
 	{
 		//--- DRK > debug code
 		//preference = preference != null ? preference : new bhServerGridCoordinate(0, 4);
 		
 		m_privileges = privileges; 
-		m_address = cellAddress;
+		m_addresses = cellAddresses;
 		m_preference = preference;
 	}
 	
@@ -82,9 +82,9 @@ public class bhBlobTransaction_CreateCell extends bhA_BlobTransaction
 		m_mapping = null;
 	}
 	
-	protected bhServerCellAddress getAddress()
+	protected bhServerCellAddress[] getAddresses()
 	{
-		return m_address;
+		return m_addresses;
 	}
 	
 	protected bhServerCellAddressMapping getMapping()
@@ -95,11 +95,6 @@ public class bhBlobTransaction_CreateCell extends bhA_BlobTransaction
 	@Override
 	protected void performOperations() throws bhBlobException
 	{
-		if( m_address.getParseError() != bhE_CellAddressParseError.NO_ERROR )
-		{
-			throw new bhBlobException("Address has a parse error! " + m_address);
-		}
-		
 		this.clear();
 		
 		bhI_BlobManager blobManager = bh_s.blobMngrFactory.create(bhE_BlobCacheLevel.PERSISTENT);
@@ -136,12 +131,17 @@ public class bhBlobTransaction_CreateCell extends bhA_BlobTransaction
 			m_didGridGrow = true;
 		}
 		
-		//--- DRK > Add cell address to the database.
+		//--- DRK > Add cell addresses to the database.
 		m_mapping = new bhServerCellAddressMapping(bhE_GridType.ACTIVE, freeCoord);
-		blobManager.putBlob(m_address, m_mapping);
+		HashMap<bhI_BlobKeySource, bhI_Blob> mappings = new HashMap<bhI_BlobKeySource, bhI_Blob>();
+		for( int i = 0; i < m_addresses.length; i++ )
+		{
+			mappings.put(m_addresses[i], m_mapping);
+		}
+		blobManager.putBlobs(mappings);
 		
 		//--- DRK > Add an empty cell to the database.
-		bhServerCell cell = m_privileges != null ? new bhServerCell(m_address, m_privileges) : new bhServerCell(m_address);
+		bhServerCell cell = m_privileges != null ? new bhServerCell(m_addresses[0], m_privileges) : new bhServerCell(m_addresses[0]);
 		blobManager.putBlob(m_mapping, cell);
 		
 		//TODO: All of the above "puts" might be doable in a batch...google docs say no because of different blob types, but I suspect the docs are out of date.
@@ -150,6 +150,8 @@ public class bhBlobTransaction_CreateCell extends bhA_BlobTransaction
 	@Override
 	protected void onSuccess()
 	{
+		//TODO: Not sure the reasoning on caching cell addresses was below...commented out for now.
+		
 		bhI_BlobManager blobManager = bh_s.blobMngrFactory.create(bhE_BlobCacheLevel.MEMCACHE);
 		
 		//--- DRK > We only update the grid if it grew...we only care that a grid of appropriate size is cached,
@@ -158,8 +160,11 @@ public class bhBlobTransaction_CreateCell extends bhA_BlobTransaction
 		if( this.didGridGrow() )
 		{
 			Map<bhI_BlobKeySource, bhI_Blob> values = new HashMap<bhI_BlobKeySource, bhI_Blob>();
-			
-			values.put(m_address, m_mapping);
+
+			/*( int i = 0; i < m_addresses.length; i++ )
+			{
+				values.put(m_addresses[i], m_mapping);
+			}*/
 			values.put(bhE_GridType.ACTIVE, m_grid);
 			
 			try
@@ -173,14 +178,14 @@ public class bhBlobTransaction_CreateCell extends bhA_BlobTransaction
 		}
 		else
 		{
-			try
+			/*try
 			{
 				blobManager.putBlobAsync(m_address, m_mapping);
 			}
 			catch(bhBlobException e)
 			{
 				s_logger.log(Level.WARNING, "Could not cache address mapping from create user blob transaction.", e);
-			}
+			}*/
 		}
 	}
 }

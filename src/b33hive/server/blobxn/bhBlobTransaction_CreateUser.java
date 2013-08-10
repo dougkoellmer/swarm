@@ -37,7 +37,8 @@ public class bhBlobTransaction_CreateUser extends bhA_BlobTransaction
 	
 	public bhBlobTransaction_CreateUser(bhUserSession session, boolean createHomeCell)
 	{
-		m_createCellTransaction = createHomeCell ? new bhBlobTransaction_CreateCell(new bhServerCellAddress(session.getUsername()), null, null) : null;
+		bhServerCellAddress[] cellAddresses = {new bhServerCellAddress(session.getUsername())};
+		m_createCellTransaction = createHomeCell ? new bhBlobTransaction_CreateCell(cellAddresses, null, null) : null;
 		
 		m_session = session;
 	}

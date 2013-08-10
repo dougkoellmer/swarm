@@ -130,6 +130,11 @@ public class bhSessionManager implements bhI_TransactionScopeListener
 		return cookieValue;
 	}
 	
+	public void startSession(bhUserSession userSession, Object nativeResponse, boolean rememberMe)
+	{
+		this.startSession(userSession, new bhTransactionResponse(nativeResponse), rememberMe);
+	}
+	
 	public void startSession(bhUserSession userSession, bhTransactionResponse response, boolean rememberMe)
 	{
 		bhSessionCookieValue transCookieValue = createSessionCookieValue(response, userSession, bhE_SessionType.TRANSIENT);
@@ -278,6 +283,11 @@ public class bhSessionManager implements bhI_TransactionScopeListener
 		return userSession;
 	}
 	
+	public void endSession(Object nativeRequest, Object nativeResponse)
+	{
+		this.endSession(new bhTransactionRequest(nativeRequest), new bhTransactionResponse(nativeResponse));
+	}
+	
 	public void endSession(bhTransactionRequest request, bhTransactionResponse response)
 	{
 		bhSessionCookieValue transCookieValue = getSessionCookieValue(request, bhE_SessionType.TRANSIENT);
@@ -334,6 +344,11 @@ public class bhSessionManager implements bhI_TransactionScopeListener
 	{
 		//--- DRK > Just creating dummy request/response wrappers here because caller obviously doesn't care about response.
 		return isAuthorized(new bhTransactionRequest(nativeRequest), new bhTransactionResponse(nativeResponse), requiredRole);
+	}
+	
+	public boolean isAuthenticated(Object nativeRequest, Object nativeResponse)
+	{
+		return isAuthorized(nativeRequest, nativeResponse, bhE_Role.USER);
 	}
 	
 	public boolean isAuthorized(bhTransactionRequest request, bhTransactionResponse response, bhE_Role requiredRole)

@@ -353,7 +353,7 @@ public class bhMouseNavigator implements bhI_UIElement, bhMouse.I_Listener
 		//double modX = m_utilPoint2.getX() % cellSizePlusSpacing;
 		//double modY = m_utilPoint2.getY() % cellSizePlusSpacing;
 		
-		m_mouseGridCoord.setWithPoint(m_utilPoint2, grid.getWidth() + grid.getCellPadding(), grid.getHeight() + grid.getCellPadding());
+		m_mouseGridCoord.setWithPoint(m_utilPoint2, grid.getCellWidth() + grid.getCellPadding(), grid.getCellHeight() + grid.getCellPadding());
 		
 		/*if ( modX > bhS_App.CELL_PIXEL_COUNT || modY > bhS_App.CELL_PIXEL_COUNT )
 		{

@@ -39,23 +39,23 @@ private static final Logger s_logger = Logger.getLogger(bhBlobTransaction_AddCel
 	
 	private final bhBlobTransaction_CreateCell m_createCellTransaction;
 	
-	public bhBlobTransaction_AddCellToUser(bhUserSession session, bhServerCellAddress cellAddress, bhGridCoordinate preference, bhServerCodePrivileges privileges)
+	public bhBlobTransaction_AddCellToUser(bhUserSession session, bhServerCellAddress[] cellAddresses, bhGridCoordinate preference, bhServerCodePrivileges privileges)
 	{
-		m_createCellTransaction = new bhBlobTransaction_CreateCell(cellAddress, preference, privileges);
+		m_createCellTransaction = new bhBlobTransaction_CreateCell(cellAddresses, preference, privileges);
 		
 		m_session = session;
 	}
 	
-	public bhBlobTransaction_AddCellToUser(bhUserSession session, bhServerCellAddress cellAddress, bhGridCoordinate preference)
+	public bhBlobTransaction_AddCellToUser(bhUserSession session, bhServerCellAddress[] cellAddresses, bhGridCoordinate preference)
 	{
-		m_createCellTransaction = new bhBlobTransaction_CreateCell(cellAddress, preference, null);
+		m_createCellTransaction = new bhBlobTransaction_CreateCell(cellAddresses, preference, null);
 		
 		m_session = session;
 	}
 	
-	bhBlobTransaction_AddCellToUser(bhUserSession session, bhServerCellAddress cellAddress)
+	bhBlobTransaction_AddCellToUser(bhUserSession session, bhServerCellAddress[] cellAddresses)
 	{
-		m_createCellTransaction = new bhBlobTransaction_CreateCell(cellAddress, null, null);
+		m_createCellTransaction = new bhBlobTransaction_CreateCell(cellAddresses, null, null);
 		
 		m_session = session;
 	}
@@ -66,7 +66,7 @@ private static final Logger s_logger = Logger.getLogger(bhBlobTransaction_AddCel
 		m_user = null;
 		
 		//--- DRK > Sanity check.
-		bhServerCellAddress address = m_createCellTransaction.getAddress();
+		bhServerCellAddress address = m_createCellTransaction.getAddresses()[0];
 		String usernamePart = address.getPart(bhCellAddress.E_Part.USERNAME);
 		if( usernamePart == null || !m_session.getUsername().equals(usernamePart))
 		{
@@ -83,7 +83,7 @@ private static final Logger s_logger = Logger.getLogger(bhBlobTransaction_AddCel
 		
 		if( address.getParseError() != bhE_CellAddressParseError.NO_ERROR )
 		{
-			throw new bhBlobException("Bad address: " + address.getRawAddress());
+			throw new bhBlobException("Bad address: " + address.getRawAddressLeadSlash());
 		}
 		
 		//--- DRK > Do a get that we'll use to perform some sanity checks.

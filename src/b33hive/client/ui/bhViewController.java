@@ -24,7 +24,6 @@ import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 
 
-
 /**
  * ...
  * @author 
@@ -52,7 +51,7 @@ public class bhViewController extends Object implements bhI_StateEventListener
 		m_listeners.remove(m_listeners.size()-1);
 	}
 	
-	private void startUpCoreUI()
+	protected void startUpCoreUI()
 	{
 		bh_view.splitPanel = new bhSplitPanel(m_viewConfig);
 		bhVisualCellContainer cellContainer = bh_view.splitPanel.getCellContainer();
@@ -65,9 +64,14 @@ public class bhViewController extends Object implements bhI_StateEventListener
 		m_listeners.add(bh_view.splitPanel);
 		//m_listeners.add(new bhVisualCellHighlight(cellContainer.getCellContainerLayer()));
 		m_listeners.add(new bhVisualCellFocuser(cellContainer.getCellContainerLayer()));
-		m_listeners.add(new bhVisualCellHud((Panel)cellContainer, m_appConfig));
+		//m_listeners.add(new bhVisualCellHud((Panel)cellContainer, m_appConfig));
 		
 		RootLayoutPanel.get().add(bh_view.splitPanel);
+	}
+	
+	protected void addStateListener(bhI_UIElement listener)
+	{
+		m_listeners.add(listener);
 	}
 	
 	public void onStateEvent(bhStateEvent event)

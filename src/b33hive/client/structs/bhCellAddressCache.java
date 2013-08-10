@@ -27,7 +27,7 @@ public class bhCellAddressCache
 	
 	public bhCellAddressMapping get(bhCellAddress address)
 	{
-		return (bhCellAddressMapping) m_addressToMapping.get(address.getRawAddress());
+		return (bhCellAddressMapping) m_addressToMapping.get(address.getRawAddressLeadSlash());
 	}
 	
 	public bhCellAddress get(bhCellAddressMapping mapping)
@@ -37,7 +37,7 @@ public class bhCellAddressCache
 	
 	public void put(bhCellAddress key, bhCellAddressMapping value)
 	{
-		m_addressToMapping.put(key.getRawAddress(), value);
+		m_addressToMapping.put(key.getRawAddressLeadSlash(), value);
 	}
 	
 	public void put(bhCellAddressMapping key, bhCellAddress value)
@@ -52,6 +52,6 @@ public class bhCellAddressCache
 
 	public void clear(bhCellAddress address)
 	{
-		m_addressToMapping.remove(address.getRawAddress());
+		m_addressToMapping.remove(address.getRawAddressLeadSlash());
 	}
 }

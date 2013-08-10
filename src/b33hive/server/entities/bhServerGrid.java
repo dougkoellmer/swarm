@@ -102,6 +102,9 @@ public class bhServerGrid extends bhA_Grid implements bhI_Blob
 					expansionDeltaY += expansionDelta;
 				}
 				
+				expansionDeltaX = expansionDeltaX < 0 ? 0 : expansionDeltaX;
+				expansionDeltaY = expansionDeltaY < 0 ? 0 : expansionDeltaY;
+				
 				int newWidth = currentGridWidth + expansionDeltaX;
 				int newHeight = currentGridHeight + expansionDeltaY;
 				this.expandToSize(newWidth, newHeight);
@@ -235,6 +238,7 @@ public class bhServerGrid extends bhA_Grid implements bhI_Blob
 			m_width = in.readInt();
 			m_height = in.readInt();
 			
+			//--- DRK > These have to be corrected manually.
 			m_cellWidth = 0;
 			m_cellHeight = 0;
 			m_cellPadding = 0;

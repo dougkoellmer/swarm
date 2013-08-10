@@ -21,28 +21,23 @@ public class signIn implements bhI_RequestHandler
 	public void handleRequest(bhTransactionContext context, bhTransactionRequest request, bhTransactionResponse response)
 	{
 		bhSignInCredentials creds = new bhSignInCredentials(request.getJson());
+		bhSignInValidationResult result = new bhSignInValidationResult();
+		String passwordChangeToken = bh.jsonFactory.getHelper().getString(request.getJson(), bhE_JsonKey.passwordChangeToken);
 		
-		bhSignInValidationResult result = bhSignInValidator.getInstance().validate(creds);
+		bhUserSession userSession = null;
 		
-		if( result.isEverythingOk() )
-		{			
-			String passwordResetToken = bh.jsonFactory.getHelper().getString(request.getJson(), bhE_JsonKey.passwordChangeToken);
-			
-			bhUserSession userSession = null;
-			
-			if( passwordResetToken != null )
-			{
-				userSession = bh_s.accountMngr.confirmNewPassword(result, creds, passwordResetToken);
-			}
-			else
-			{
-				userSession = bh_s.accountMngr.attemptSignIn(result, creds);
-			}
-			
-			if( result.isEverythingOk/*Still?*/() )
-			{
-				bh_s.sessionMngr.startSession(userSession, response, creds.rememberMe());
-			}
+		if( passwordChangeToken != null )
+		{
+			userSession = bh_s.accountMngr.confirmNewPassword(creds, passwordChangeToken, result);
+		}
+		else
+		{
+			userSession = bh_s.accountMngr.attemptSignIn(creds, result);
+		}
+		
+		if( userSession != null )
+		{
+			bh_s.sessionMngr.startSession(userSession, response, creds.rememberMe());
 		}
 		
 		result.writeJson(response.getJson());

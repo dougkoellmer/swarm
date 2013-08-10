@@ -121,7 +121,7 @@ public final class bhU_UriPolicy
 			
 			if( address.getParseError() == bhE_CellAddressParseError.NO_ERROR )
 			{
-				return address.getRawAddressNoLeadSlash();
+				return address.getRawAddress();
 			}
 		}
 		

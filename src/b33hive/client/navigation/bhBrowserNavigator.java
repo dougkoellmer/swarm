@@ -141,7 +141,7 @@ public class bhBrowserNavigator implements bhI_StateEventListener
 	
 	private bhCellAddress getBrowserCellAddress()
 	{
-		String path = m_addressManager.getCurrentPathLowercased();
+		String path = m_addressManager.getCurrentPath();
 		bhCellAddress address = new bhCellAddress(path);
 		bhE_CellAddressParseError parseError = address.getParseError();
 		
@@ -174,7 +174,7 @@ public class bhBrowserNavigator implements bhI_StateEventListener
 							m_pushHistoryStateForFloating = false;
 							m_stateAlreadyPushedForViewingExit = true;
 							
-							m_historyManager.setState(address.getRawAddress(), new bhHistoryState()); // set empty state
+							m_historyManager.setState(address, new bhHistoryState()); // set empty state
 							m_args_SnapToAddress.setAddress(address);
 							event.getState().performAction(StateMachine_Camera.SnapToAddress.class, m_args_SnapToAddress);
 						}
@@ -191,7 +191,7 @@ public class bhBrowserNavigator implements bhI_StateEventListener
 					//--- DRK > This case essentially manually fires a state change event when we're coming from a different domain.
 					else
 					{
-						String path = address == null ? FLOATING_STATE_PATH : address.getRawAddress();
+						String path = address == null ? FLOATING_STATE_PATH : address.getCasedRawAddressLeadSlash();
 						
 						m_historyStateListener.onStateChange(path, currentHistoryState);
 					}
@@ -210,7 +210,7 @@ public class bhBrowserNavigator implements bhI_StateEventListener
 						bhCellAddress address = cell.getCellAddress();
 						if( address != null )
 						{
-							m_historyManager.setState(address.getRawAddress(), new bhCellAddressMapping(cell.getCoordinate()));
+							m_historyManager.setState(address, new bhCellAddressMapping(cell.getCoordinate()));
 						}
 					}
 					else
@@ -275,23 +275,22 @@ public class bhBrowserNavigator implements bhI_StateEventListener
 										bhCellAddress address = this.getBrowserCellAddress();
 										if( address != null )
 										{
-											m_historyManager.setState(address.getRawAddress(), m_args_OnMappingResponse.getMapping());
+											m_historyManager.setState(address, m_args_OnMappingResponse.getMapping());
 										}
 										else
 										{
 											bhU_Debug.ASSERT(false, "with current history state null with last snap action being to address, browser address should have existed");
 										}
-										
 									}
 									else
 									{
 										if( m_stateAlreadyPushedForViewingExit )
 										{
-											m_historyManager.setState(m_args_OnMappingResponse.getAddress().getRawAddress(), m_args_OnMappingResponse.getMapping());
+											m_historyManager.setState(m_args_OnMappingResponse.getAddress(), m_args_OnMappingResponse.getMapping());
 										}
 										else
 										{
-											m_historyManager.pushState(m_args_OnMappingResponse.getAddress().getRawAddress(), m_args_OnMappingResponse.getMapping());
+											m_historyManager.pushState(m_args_OnMappingResponse.getAddress(), m_args_OnMappingResponse.getMapping());
 										}
 									}
 								}
@@ -419,7 +418,7 @@ public class bhBrowserNavigator implements bhI_StateEventListener
 						
 						if( args.getType() == StateMachine_Camera.OnAddressResponse.E_Type.ON_FOUND )
 						{
-							m_historyManager.setState(args.getAddress().getRawAddress(), args.getMapping());
+							m_historyManager.setState(args.getAddress(), args.getMapping());
 						}
 					}
 					else

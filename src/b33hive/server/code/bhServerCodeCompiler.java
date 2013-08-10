@@ -493,7 +493,7 @@ public class bhServerCodeCompiler extends bhA_CodeCompiler
 				
 				if( address.getParseError() == bhE_CellAddressParseError.NO_ERROR )
 				{
-					String rawAddress = address.getRawAddressNoLeadSlash();
+					String rawAddress = address.getRawAddress();
 					href.setNodeValue(bhU_Code.transformPathToJavascript(rawAddress));
 					
 					setTarget = false;
