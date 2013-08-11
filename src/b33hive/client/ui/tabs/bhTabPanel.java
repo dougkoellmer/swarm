@@ -8,7 +8,6 @@ import b33hive.client.input.bhI_ClickHandler;
 import b33hive.client.managers.bhClientAccountManager;
 import b33hive.client.states.StateMachine_Base;
 import b33hive.client.states.StateMachine_Tabs;
-import b33hive.client.states.State_ViewingBookmarks;
 import b33hive.client.states.account.StateMachine_Account;
 import b33hive.client.states.account.State_ManageAccount;
 import b33hive.client.states.account.State_SignInOrUp;
@@ -19,8 +18,8 @@ import b33hive.client.ui.bhS_UI;
 import b33hive.client.ui.bhU_ToString;
 import b33hive.client.ui.alignment.bhAlignmentDefinition;
 import b33hive.client.ui.alignment.bhU_Alignment;
-import b33hive.client.ui.tabs.account.bhAccountTab;
-import b33hive.client.ui.tabs.code.bhCodeEditorTab;
+import b33hive.client.ui.tabs.account.bhAccountTabContent;
+import b33hive.client.ui.tabs.code.bhCodeEditorTabContent;
 import b33hive.client.ui.tooltip.bhE_ToolTipMood;
 import b33hive.client.ui.tooltip.bhE_ToolTipType;
 import b33hive.client.ui.tooltip.bhToolTipConfig;
@@ -46,13 +45,6 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class bhTabPanel extends AbsolutePanel implements bhI_UIElement
 {	
-	private static enum Tab
-	{
-		ACCOUNT,
-		//BOOKMARKS,
-		HTML
-	}
-	
 	public static final double TAB_HEIGHT = 40;
 	
 	private static final Logger s_logger = Logger.getLogger(bhTabPanel.class.getName());
@@ -64,14 +56,14 @@ public class bhTabPanel extends AbsolutePanel implements bhI_UIElement
 	private bhI_TabContent m_currentContent = null;
 	private bhButtonWithText m_currentTab = null;
 	
-	private bhI_TabContent m_tabContent[] = new bhI_TabContent[Tab.values().length];
-	
-	private final bhButtonWithText m_accountTabButton;
-	
 	private static final StateMachine_Tabs.SelectTab.Args m_args_SelectTab = new StateMachine_Tabs.SelectTab.Args();
 	
-	public bhTabPanel()
+	private final bhI_Tab[] m_tabs;
+	
+	public bhTabPanel(bhI_Tab[] tabs)
 	{
+		m_tabs = tabs;
+		
 		m_tabContainerWrapper.addStyleName("bh_tab_container_wrapper");
 		m_tabContainer.addStyleName("bh_tab_container");
 		m_contentContainer.addStyleName("bh_tab_content_container");
@@ -85,12 +77,10 @@ public class bhTabPanel extends AbsolutePanel implements bhI_UIElement
 		this.add(m_tabContainerWrapper);
 		this.add(m_contentContainer);
 		
-		int tabIndex = 0;
-		m_accountTabButton = this.addTab("Account", "", tabIndex++);
-//		//this.addTab("Bookmarks", "View and edit your bookmarks.", tabIndex++);
-		this.addTab("HTML", "View or edit the html of a cell.", tabIndex++);
-		
-		this.updateAccountTabToolTip();
+		for( int i = 0; i < m_tabs.length; i++ )
+		{
+			this.addTab(m_tabs[i].getName(), m_tabs[i].getToolTipText(), i);
+		}
 	}
 	
 	private void updateLayout()
@@ -135,31 +125,7 @@ public class bhTabPanel extends AbsolutePanel implements bhI_UIElement
 	
 	private void selectTab(int index)
 	{
-		bhI_TabContent newContent = m_tabContent[index];
-		
-		if( newContent == null )
-		{
-			switch(Tab.values()[index])
-			{
-				case ACCOUNT:
-				{
-					newContent = m_tabContent[index] = new bhAccountTab();
-					break;
-				}
-				
-				/*case BOOKMARKS:
-				{
-					newContent = m_tabContent[index] = new bhBookmarkTab();
-					break;
-				}*/
-				
-				case HTML:
-				{
-					newContent = m_tabContent[index] = new bhCodeEditorTab();
-					break;
-				}
-			}
-		}
+		bhI_TabContent newContent = m_tabs[index].getContent();
 		
 		if( newContent == m_currentContent )
 		{
@@ -194,35 +160,11 @@ public class bhTabPanel extends AbsolutePanel implements bhI_UIElement
 		m_currentTab = newTab;
 	}
 	
-	private void updateAccountTabToolTip()
-	{
-		bhToolTipManager tipManager = bh_c.toolTipMngr;
-		
-		if( bh_c.accountMngr.isSignedIn() )
-		{
-			tipManager.addTip(m_accountTabButton, new bhToolTipConfig(bhE_ToolTipType.MOUSE_OVER, "Manage your account."));
-		}
-		else
-		{
-			tipManager.addTip(m_accountTabButton, new bhToolTipConfig(bhE_ToolTipType.MOUSE_OVER, "Sign in or sign up."));
-		}
-	}
-	
 	@Override
 	public void onStateEvent(bhStateEvent event)
 	{
 		switch( event.getType() )
 		{
-			case DID_FOREGROUND:
-			{
-				if( event.getState() instanceof State_SignInOrUp || event.getState() instanceof State_ManageAccount )
-				{
-					updateAccountTabToolTip();
-				}
-				
-				break;
-			}
-			
 			case DID_ENTER:
 			{
 				if( event.getState().getParent() instanceof StateMachine_Tabs )
@@ -233,51 +175,14 @@ public class bhTabPanel extends AbsolutePanel implements bhI_UIElement
 				
 				break;
 			}
-			
-			case DID_EXIT:
-			{
-				break;
-			}
-			
-			case DID_PERFORM_ACTION:
-			{
-				if( event.getAction() == StateMachine_Base.OnAccountManagerResponse.class )
-				{
-					updateAccountTabToolTip();
-					
-					if( bhA_State.isForegrounded(StateMachine_Tabs.class) )
-					{
-						if( !bhA_State.isForegrounded(StateMachine_Account.class) )
-						{
-							StateMachine_Base.OnAccountManagerResponse.Args args = event.getActionArgs();
-							bhClientAccountManager.E_ResponseType responseType = args.getType();
-							String text = bhU_ToString.get(responseType);
-							
-							if( text != null )
-							{
-								bhAlignmentDefinition alignment = bhU_Alignment.createHorRightVerCenter(bhS_UI.TOOl_TIP_PADDING);
-								bhE_ToolTipMood severity = responseType.isGood() ? bhE_ToolTipMood.PAT_ON_BACK : bhE_ToolTipMood.OOPS;
-								bhToolTipConfig config = new bhToolTipConfig(bhE_ToolTipType.NOTIFICATION, alignment, text, severity);
-								bh_c.toolTipMngr.addTip(m_accountTabButton, config);
-							}
-						}
-					}
-				}
-				
-				break;
-			}
 		}
 		
-		/*if( m_currentContent != null )
+		for( int i = 0; i < m_tabs.length; i++ )
 		{
-			m_currentContent.onStateEvent(event);
-		}*/
-		
-		for( int i = 0; i < m_tabContent.length; i++ )
-		{
-			if( m_tabContent[i] != null )
+			m_tabs[i].onStateEvent(event);
+			if( m_tabs[i].getContent() != null )
 			{
-				m_tabContent[i].onStateEvent(event);
+				m_tabs[i].getContent().onStateEvent(event);
 			}
 		}
 	}

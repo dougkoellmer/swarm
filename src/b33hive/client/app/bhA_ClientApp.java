@@ -20,7 +20,6 @@ import b33hive.client.states.StateMachine_Tabs;
 import b33hive.client.states.State_AsyncDialog;
 import b33hive.client.states.State_GenericDialog;
 import b33hive.client.states.State_Initializing;
-import b33hive.client.states.State_ViewingBookmarks;
 import b33hive.client.states.account.StateMachine_Account;
 import b33hive.client.states.account.State_AccountStatusPending;
 import b33hive.client.states.account.State_ManageAccount;
@@ -229,25 +228,26 @@ public class bhA_ClientApp extends bhA_App implements bhI_TimeSource
 					bhA_State.register(new State_CameraSnapping(config.cellHudHeight));
 					bhA_State.register(new State_ViewingCell());
 				}
-				
-				bhA_State.register(new StateMachine_Tabs());
-				{
-					bhA_State.register(new StateMachine_EditingCode());
-					{
-						bhA_State.register(new State_EditingCode());
-						bhA_State.register(new State_EditingCodeBlocker());
-					}
-					
-					bhA_State.register(new StateMachine_Account());
-					{
-						bhA_State.register(new State_ManageAccount());
-						bhA_State.register(new State_AccountStatusPending());
-						bhA_State.register(new State_SignInOrUp());
-					}
-					
-					bhA_State.register(new State_ViewingBookmarks());
-				}
 			}
+		}
+	}
+	
+	protected void registerCodeEditingStates()
+	{
+		bhA_State.register(new StateMachine_EditingCode());
+		{
+			bhA_State.register(new State_EditingCode());
+			bhA_State.register(new State_EditingCodeBlocker());
+		}
+	}
+	
+	protected void registerAccountStates()
+	{
+		bhA_State.register(new StateMachine_Account());
+		{
+			bhA_State.register(new State_ManageAccount());
+			bhA_State.register(new State_AccountStatusPending());
+			bhA_State.register(new State_SignInOrUp());
 		}
 	}
 	

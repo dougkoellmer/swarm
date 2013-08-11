@@ -79,7 +79,7 @@ public class bhServerTransactionManager
 		return m_handlers.get(path.getId());
 	}
 	
-	public void addRequestHandler(bhI_RequestHandler handler, bhI_RequestPath path)
+	public void setRequestHandler(bhI_RequestHandler handler, bhI_RequestPath path)
 	{
 		m_handlers.put(path.getId(), handler);
 	}

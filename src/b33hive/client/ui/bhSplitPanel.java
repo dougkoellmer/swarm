@@ -40,7 +40,7 @@ public class bhSplitPanel extends SplitLayoutPanel implements bhI_UIElement
 {
 	private static final Logger s_logger = Logger.getLogger(bhSplitPanel.class.getName());
 	
-	private final bhTabPanel m_tabPanel = new bhTabPanel();
+	private final bhTabPanel m_tabPanel;
 	private final bhVisualCellContainer m_cellContainer;
 	
 	private final bhSpriteButton m_panelButton = new bhSpriteButton(null);
@@ -68,6 +68,7 @@ public class bhSplitPanel extends SplitLayoutPanel implements bhI_UIElement
 	{
 		super((int) PARENT_SPLITTER_WIDTH);
 		
+		m_tabPanel = new bhTabPanel(config.tabs);
 		m_cellContainer = new bhVisualCellContainer(config);
 		
 		this.addStyleName("split_panel");

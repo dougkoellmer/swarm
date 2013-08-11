@@ -136,19 +136,19 @@ public abstract class bhA_ServerApp extends bhA_App
 		
 		getCode getCodeHandler = new getCode();
 		
-		txnManager.addRequestHandler(getCodeHandler,				bhE_RequestPath.getCode);
-		txnManager.addRequestHandler(new syncCode(),				bhE_RequestPath.syncCode);
-		txnManager.addRequestHandler(new getCellAddress(),			bhE_RequestPath.getCellAddress);
-		txnManager.addRequestHandler(new getCellAddressMapping(),	bhE_RequestPath.getCellAddressMapping);
-		txnManager.addRequestHandler(new getUserData(false),		bhE_RequestPath.getUserData);
-		txnManager.addRequestHandler(new getGridData(),				bhE_RequestPath.getGridData);
-		txnManager.addRequestHandler(new signIn(),					bhE_RequestPath.signIn);
-		txnManager.addRequestHandler(new signUp(m_appConfig.publicRecaptchaKey, m_appConfig.privateRecaptchaKey), bhE_RequestPath.signUp);
-		txnManager.addRequestHandler(new signOut(),					bhE_RequestPath.signOut);
-		txnManager.addRequestHandler(new getAccountInfo(),			bhE_RequestPath.getAccountInfo);
-		txnManager.addRequestHandler(new setNewDesiredPassword(),	bhE_RequestPath.setNewDesiredPassword);
-		txnManager.addRequestHandler(new getPasswordChangeToken(),	bhE_RequestPath.getPasswordChangeToken);
-		txnManager.addRequestHandler(new getServerVersion(),		bhE_RequestPath.getServerVersion);
+		txnManager.setRequestHandler(getCodeHandler,				bhE_RequestPath.getCode);
+		txnManager.setRequestHandler(new syncCode(),				bhE_RequestPath.syncCode);
+		txnManager.setRequestHandler(new getCellAddress(),			bhE_RequestPath.getCellAddress);
+		txnManager.setRequestHandler(new getCellAddressMapping(),	bhE_RequestPath.getCellAddressMapping);
+		txnManager.setRequestHandler(new getUserData(false),		bhE_RequestPath.getUserData);
+		txnManager.setRequestHandler(new getGridData(),				bhE_RequestPath.getGridData);
+		txnManager.setRequestHandler(new signIn(),					bhE_RequestPath.signIn);
+		txnManager.setRequestHandler(new signUp(m_appConfig.publicRecaptchaKey, m_appConfig.privateRecaptchaKey), bhE_RequestPath.signUp);
+		txnManager.setRequestHandler(new signOut(),					bhE_RequestPath.signOut);
+		txnManager.setRequestHandler(new getAccountInfo(),			bhE_RequestPath.getAccountInfo);
+		txnManager.setRequestHandler(new setNewDesiredPassword(),	bhE_RequestPath.setNewDesiredPassword);
+		txnManager.setRequestHandler(new getPasswordChangeToken(),	bhE_RequestPath.getPasswordChangeToken);
+		txnManager.setRequestHandler(new getServerVersion(),		bhE_RequestPath.getServerVersion);
 		
 		txnManager.addDeferredHandler(getCodeHandler);
 	}
@@ -158,18 +158,18 @@ public abstract class bhA_ServerApp extends bhA_App
 		bhServerTransactionManager txnManager = bh_s.txnMngr;
 		bh.requestPathMngr.register(bhE_AdminRequestPath.values());
 		
-		addAdminHandler(new createGrid(T_homeCellCreator, bhServerGrid.class),	bhE_AdminRequestPath.createGrid);
-		addAdminHandler(new deactivateUserCells(),								bhE_AdminRequestPath.deactivateUserCells);
-		addAdminHandler(new refreshHomeCells(T_homeCellCreator),				bhE_AdminRequestPath.refreshHomeCells);
-		addAdminHandler(new clearCell(),										bhE_AdminRequestPath.clearCell);
-		addAdminHandler(new recompileCells(),									bhE_AdminRequestPath.recompileCells);
+		setAdminHandler(new createGrid(T_homeCellCreator, bhServerGrid.class),	bhE_AdminRequestPath.createGrid);
+		setAdminHandler(new deactivateUserCells(),								bhE_AdminRequestPath.deactivateUserCells);
+		setAdminHandler(new refreshHomeCells(T_homeCellCreator),				bhE_AdminRequestPath.refreshHomeCells);
+		setAdminHandler(new clearCell(),										bhE_AdminRequestPath.clearCell);
+		setAdminHandler(new recompileCells(),									bhE_AdminRequestPath.recompileCells);
 	}
 	
-	protected static void addAdminHandler(bhI_RequestHandler handler, bhI_RequestPath path)
+	protected static void setAdminHandler(bhI_RequestHandler handler, bhI_RequestPath path)
 	{
 		bhServerTransactionManager txnManager = bh_s.txnMngr;
 		
-		txnManager.addRequestHandler(new adminHandler(handler), path);
+		txnManager.setRequestHandler(new adminHandler(handler), path);
 	}
 	
 	private static void addTelemetryHandlers()
@@ -177,7 +177,7 @@ public abstract class bhA_ServerApp extends bhA_App
 		bhServerTransactionManager txnManager = bh_s.txnMngr;
 		bh.requestPathMngr.register(bhE_TelemetryRequestPath.values());
 		
-		txnManager.addRequestHandler(new logAssert(),	bhE_TelemetryRequestPath.logAssert);
+		txnManager.setRequestHandler(new logAssert(),	bhE_TelemetryRequestPath.logAssert);
 	}
 	
 	private static void addDebugHandlers()
@@ -185,6 +185,6 @@ public abstract class bhA_ServerApp extends bhA_App
 		bhServerTransactionManager txnManager = bh_s.txnMngr;
 		bh.requestPathMngr.register(bhE_DebugRequestPath.values());
 		
-		txnManager.addRequestHandler(new sessionQueryTest(),		bhE_DebugRequestPath.sessionQueryTest);
+		txnManager.setRequestHandler(new sessionQueryTest(),		bhE_DebugRequestPath.sessionQueryTest);
 	}
 }

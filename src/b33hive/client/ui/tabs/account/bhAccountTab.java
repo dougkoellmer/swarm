@@ -1,147 +1,103 @@
 package b33hive.client.ui.tabs.account;
 
-import java.util.logging.Logger;
+import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.Widget;
 
-import b33hive.client.entities.bhBufferCell;
-import b33hive.client.entities.bhA_ClientUser;
+import b33hive.client.app.bh_c;
+import b33hive.client.managers.bhClientAccountManager;
+import b33hive.client.states.StateMachine_Base;
 import b33hive.client.states.StateMachine_Tabs;
-import b33hive.client.states.account.State_AccountStatusPending;
+import b33hive.client.states.account.StateMachine_Account;
 import b33hive.client.states.account.State_ManageAccount;
 import b33hive.client.states.account.State_SignInOrUp;
-import b33hive.client.states.camera.State_CameraSnapping;
-import b33hive.client.states.camera.State_ViewingCell;
-import b33hive.client.states.code.State_EditingCode;
-import b33hive.client.states.code.State_EditingCodeBlocker;
-import b33hive.client.ui.bhConsoleBlocker;
-import b33hive.client.ui.bhI_UIElement;
-import b33hive.client.ui.bhSplitPanel;
+import b33hive.client.ui.bhS_UI;
+import b33hive.client.ui.bhU_ToString;
+import b33hive.client.ui.alignment.bhAlignmentDefinition;
+import b33hive.client.ui.alignment.bhU_Alignment;
+import b33hive.client.ui.tabs.bhA_Tab;
+import b33hive.client.ui.tabs.bhI_Tab;
 import b33hive.client.ui.tabs.bhI_TabContent;
-import b33hive.client.ui.tabs.code.bhCodeMirrorWrapper;
-import b33hive.client.ui.tabs.code.bhI_CodeMirrorListener;
+import b33hive.client.ui.tabs.code.bhCodeEditorTabContent;
+import b33hive.client.ui.tooltip.bhE_ToolTipMood;
+import b33hive.client.ui.tooltip.bhE_ToolTipType;
+import b33hive.client.ui.tooltip.bhToolTipConfig;
 import b33hive.client.ui.tooltip.bhToolTipManager;
-import b33hive.client.ui.widget.bhButton;
-import b33hive.shared.app.bhS_App;
-import b33hive.shared.debugging.bhU_Debug;
-import b33hive.shared.entities.bhE_CodeType;
-import b33hive.shared.statemachine.bhA_Action;
 import b33hive.shared.statemachine.bhA_State;
 import b33hive.shared.statemachine.bhStateEvent;
-import b33hive.shared.structs.bhGridCoordinate;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.ui.AbsolutePanel;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.HasVerticalAlignment;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.RootPanel;
 
-public class bhAccountTab extends AbsolutePanel implements bhI_TabContent
+public class bhAccountTab extends bhA_Tab
 {
-	private static final Logger s_logger = Logger.getLogger(bhAccountTab.class.getName());
-	
-	private final bhSignInOrUpPanel m_signUpOrIn = new bhSignInOrUpPanel();
-	private final bhManageAccountPanel m_manage = new bhManageAccountPanel();
-	
 	public bhAccountTab()
 	{
-		this.addStyleName("bh_account_tab");
+		super("Account", "", new bhCodeEditorTabContent());
 	}
 	
+	private void updateAccountTabToolTip()
+	{
+		bhToolTipManager tipManager = bh_c.toolTipMngr;
+		
+		if( bh_c.accountMngr.isSignedIn() )
+		{
+			tipManager.addTip(m_tabButton, new bhToolTipConfig(bhE_ToolTipType.MOUSE_OVER, "Manage your account."));
+		}
+		else
+		{
+			tipManager.addTip(m_tabButton, new bhToolTipConfig(bhE_ToolTipType.MOUSE_OVER, "Sign in or sign up."));
+		}
+	}
+	
+	@Override
+	public void onAttached(IsWidget tabButton)
+	{
+		super.onAttached(tabButton);
+		
+		updateAccountTabToolTip();
+	}
+
 	@Override
 	public void onStateEvent(bhStateEvent event)
 	{
-		switch(event.getType())
+		super.onStateEvent(event);
+		
+		switch( event.getType() )
 		{
-			case DID_ENTER:
-			{
-				if( event.getState() instanceof State_SignInOrUp )
-				{
-					bhU_Debug.ASSERT(m_signUpOrIn.getParent() == null);
-					
-					this.add(m_signUpOrIn);
-				}
-				else if( event.getState() instanceof State_ManageAccount )
-				{
-					bhU_Debug.ASSERT(m_manage.getParent() == null);
-					
-					this.add(m_manage);
-				}
-				
-				break;
-			}
-			
 			case DID_FOREGROUND:
 			{
-				if( event.getState() instanceof State_AccountStatusPending )
+				if( event.getState() instanceof State_SignInOrUp || event.getState() instanceof State_ManageAccount )
 				{
-					bhConsoleBlocker.getInstance().attachTo(this);
-					bhConsoleBlocker.getInstance().setHtml("Wait a second...");
+					updateAccountTabToolTip();
 				}
-				else if( event.getState() instanceof StateMachine_Tabs )
-				{
-					if( event.getRevealingState() == null )
-					{
-						//--- DRK > This goes along with the sleight of hand we pull below for not detaching the blocker while animating out.
-						//---		This just makes sure that the console blocker gets detached...it might be the case that it gets immediately
-						//---		reattached.
-						bhConsoleBlocker.getInstance().detachFrom(this);
-					}
-				}
-			
-				break;
-			}
-			
-			case DID_BACKGROUND:
-			{
 				
 				break;
 			}
 			
-			case DID_EXIT:
+			case DID_PERFORM_ACTION:
 			{
-				if( event.getState() instanceof State_SignInOrUp )
+				if( event.getAction() == StateMachine_Base.OnAccountManagerResponse.class )
 				{
-					bhU_Debug.ASSERT(m_signUpOrIn.getParent() == this);
+					updateAccountTabToolTip();
 					
-					this.remove(m_signUpOrIn);
-				}
-				else if( event.getState() instanceof State_ManageAccount )
-				{
-					bhU_Debug.ASSERT(m_manage.getParent() == this);
-					
-					this.remove(m_manage);
-				}
-				else if( event.getState() instanceof State_AccountStatusPending )
-				{
-					//--- DRK > Pulling a little sleight of hand here so that we don't remove the blocker if it appears
-					//---		that the console is being animated out.
 					if( bhA_State.isForegrounded(StateMachine_Tabs.class) )
 					{
-						//--- DRK > This should be called in the "exit" event because background event could be called for something
-						//---		like an error dialog being pushed over the topmost state in the machine.
-						//---		Other tabs needing the console blocker will simply take over if they need it anyway.
-						bhConsoleBlocker.getInstance().detachFrom(this);
+						if( !bhA_State.isForegrounded(StateMachine_Account.class) )
+						{
+							StateMachine_Base.OnAccountManagerResponse.Args args = event.getActionArgs();
+							bhClientAccountManager.E_ResponseType responseType = args.getType();
+							String text = bhU_ToString.get(responseType);
+							
+							if( text != null )
+							{
+								bhAlignmentDefinition alignment = bhU_Alignment.createHorRightVerCenter(bhS_UI.TOOl_TIP_PADDING);
+								bhE_ToolTipMood severity = responseType.isGood() ? bhE_ToolTipMood.PAT_ON_BACK : bhE_ToolTipMood.OOPS;
+								bhToolTipConfig config = new bhToolTipConfig(bhE_ToolTipType.NOTIFICATION, alignment, text, severity);
+								bh_c.toolTipMngr.addTip(m_tabButton, config);
+							}
+						}
 					}
 				}
+				
 				break;
 			}
 		}
-		
-		m_signUpOrIn.onStateEvent(event);
-		m_manage.onStateEvent(event);
-	}
-
-	@Override
-	public void onResize()
-	{
-		//TODO: Don't call this if not being displayed.
-		m_signUpOrIn.onResize();
-		m_manage.onResize();
-	}
-
-	@Override
-	public void onSelect()
-	{
-		// TODO Auto-generated method stub
 	}
 }

@@ -1,6 +1,7 @@
 package b33hive.client.states;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import b33hive.client.states.account.StateMachine_Account;
 import b33hive.client.states.code.StateMachine_EditingCode;
@@ -60,17 +61,15 @@ public class StateMachine_Tabs extends bhA_StateMachine
 		}
 	}
 	
-	private ArrayList<Class<? extends bhA_State>> m_tabStates = new ArrayList<Class<? extends bhA_State>>();
+	private final List<Class<? extends bhA_State>> m_tabStates;
 	
 	private int m_tabIndex = -1;
 	
-	public StateMachine_Tabs() 
+	public StateMachine_Tabs(List<Class<? extends bhA_State>> tabStates) 
 	{
 		bhA_Action.register(new SelectTab());
 		
-		m_tabStates.add(StateMachine_Account.class);
-		//m_tabStates.add(State_ViewingBookmarks.class);
-		m_tabStates.add(StateMachine_EditingCode.class);
+		m_tabStates = tabStates;
 	}
 	
 	@Override
