@@ -49,8 +49,8 @@ public class bhClientTransactionManager
 	
 	private bhTransactionRequestBatch m_transactionRequestBatch = null;
 	
-	private bhI_RequestDispatcher m_syncDispatcher = null;
-	private bhI_AsynchronousRequestDispatcher m_asyncDispatcher = null;
+	private bhI_SyncRequestDispatcher m_syncDispatcher = null;
+	private bhI_AsyncRequestDispatcher m_asyncDispatcher = null;
 	
 	private final bhTransactionResponse m_reusedResponse = new bhTransactionResponse();
 	
@@ -89,15 +89,15 @@ public class bhClientTransactionManager
 		requestPathMngr.register(bhE_ReservedRequestPath.values());
 	}
 	
-	public void setSynchronousRequestRouter(bhI_RequestDispatcher router)
+	public void setSyncRequestDispatcher(bhI_SyncRequestDispatcher dispatcher)
 	{
-		m_syncDispatcher = router;
+		m_syncDispatcher = dispatcher;
 		m_syncDispatcher.initialize(m_callbacks, bhS_Transaction.MAX_GET_URL_LENGTH);
 	}
 	
-	public void setAsynchronousRequestRouter(bhI_AsynchronousRequestDispatcher router)
+	public void setAsyncRequestDispatcher(bhI_AsyncRequestDispatcher dispatcher)
 	{
-		m_asyncDispatcher = router;
+		m_asyncDispatcher = dispatcher;
 		m_asyncDispatcher.initialize(m_callbacks, bhS_Transaction.MAX_GET_URL_LENGTH);
 	}
 	
@@ -184,6 +184,14 @@ public class bhClientTransactionManager
 		this.makeRequest(m_transactionRequestBatch);
 		
 		m_transactionRequestBatch = null;
+	}
+	
+	public void flushSyncResponses()
+	{
+		if( m_syncDispatcher != null )
+		{
+			m_syncDispatcher.flushResponses();
+		}
 	}
 	
 	public void makeRequest(bhI_RequestPath path, bhI_JsonObject jsonArgs)

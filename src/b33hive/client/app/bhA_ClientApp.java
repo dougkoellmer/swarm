@@ -64,55 +64,86 @@ public class bhA_ClientApp extends bhA_App implements bhI_TimeSource
 {
 	private static final Logger s_logger = Logger.getLogger(bhA_ClientApp.class.getName());	
 	
-	private bhInlineRequestDispatcher m_synchronousRequestDispatcher;
 	private double m_lastTime = 0;
 	
-	private bhClientAppConfig m_appConfig;
-	private bhViewConfig m_viewConfig;
+	protected final bhClientAppConfig m_appConfig;
+	protected final bhViewConfig m_viewConfig;
 	
-	protected bhA_ClientApp()
+	protected bhA_ClientApp(bhClientAppConfig appConfig, bhViewConfig viewConfig)
 	{
 		super(bhE_AppEnvironment.CLIENT);
+		
+		m_appConfig = appConfig;
+		m_viewConfig = viewConfig;
 		
 		bh_c.app = this;
 	}
 	
-	public bhViewConfig getViewConfig()
+	protected void startUp(bhE_StartUpStage stage)
 	{
-		return m_viewConfig;
-	}
-	
-	protected void entryPoint(bhClientAppConfig appConfig, bhViewConfig viewConfig)
-	{
-		m_appConfig = appConfig;
-		m_viewConfig = viewConfig;
-		
-		bh_c.cellSandbox = new bhCellSandbox(new bhCellSandbox.I_StartUpCallback()
+		switch(stage)
 		{
-			public void onStartUpComplete(boolean success)
+			case CONFIGURE_LOGGING:
 			{
-				if( success )
-				{
-					entryPoint_continued();
-				}
-				else
-				{
-					//--- DRK > For some reason we have to do a short setTimeout before modifying the
-					//---		DOM here, at least in debug mode, to avoid an exception. The exception
-					//---		gets fired *after* the DOM is successfully changed, so we could just let it
-					//---		go, but just being pedantic and avoiding it here.
-					showUnsupportedBrowserError();
-				}
+				stage_configureLogging();			break;
 			}
-		}, m_appConfig.appId);
+		
+			case CHECK_BROWSER_SUPPORT:// this case goes async, so can't recurse immediately.
+			{
+				stage_browserSupportCheck();		return;
+			}
+			
+			case START_APP_MANAGERS:
+			{
+				stage_startAppManagers();			break;
+			}
+			
+			case START_VIEW_MANAGERS:
+			{
+				stage_startViewManagers();			break;
+			}
+			
+			case REGISTER_STATES:
+			{
+				stage_registerStateMachine();				break;
+			}
+			
+			case ESTABLISH_TIMING:
+			{
+				stage_establishTiming();			break;
+			}
+			
+			case GUNSHOT_SOUND:
+			{
+				stage_gunshotSound();				break;
+			}
+		};
+		
+		bhE_StartUpStage nextStage = stage.getNext();
+		
+		if( nextStage != null )
+		{
+			startUp(nextStage);
+		}
 	}
 	
-	protected void entryPoint_continued()
+	protected void stage_configureLogging()
 	{
-		//--- DRK > Check platform info...mostly for determining touch/iOS-specific stuff for now.
-		bh_c.platformInfo = new bhPlatformInfo();
-		bhE_Platform platform = bh_c.platformInfo.getPlatform();
-				
+		//--- DRK > Format console logging messages.
+		Logger.getLogger("b33hive.shared.statemachine").setLevel(Level.OFF);
+		Handler[] handlers = Logger.getLogger("").getHandlers();
+		for (Handler h : handlers)
+		{
+		    h.setFormatter(new TextLogFormatter(false)
+		    {
+		        @Override
+		        public String format(LogRecord event)
+		        {
+		            return event.getMessage();
+		        }
+		    });
+		}
+		
 		bhU_Debug.setDelegate(new bhI_AssertionDelegate()
 		{
 			@Override
@@ -130,14 +161,36 @@ public class bhA_ClientApp extends bhA_App implements bhI_TimeSource
 				//assert(false);
 			}
 		});
-		
-		//--- DRK > Start up a bunch of shared managers and services.
-		bh_c.clickMngr = new bhClickManager();
+	}
+	
+	protected void stage_browserSupportCheck()
+	{
+		bh_c.cellSandbox = new bhCellSandbox(new bhCellSandbox.I_StartUpCallback()
+		{
+			public void onStartUpComplete(boolean success)
+			{
+				if( success )
+				{
+					startUp(bhE_StartUpStage.CHECK_BROWSER_SUPPORT.getNext());
+				}
+				else
+				{
+					//--- DRK > For some reason we have to do a short setTimeout before modifying the
+					//---		DOM here, at least in debug mode, to avoid an exception. The exception
+					//---		gets fired *after* the DOM is successfully changed, so we could just let it
+					//---		go, but just being pedantic and avoiding it here.
+					showUnsupportedBrowserError();
+				}
+			}
+		}, m_appConfig.appId);
+	}
+	
+	protected void stage_startAppManagers()
+	{
+		bh_c.platformInfo = new bhPlatformInfo();
 		bh.jsonFactory = new bhGwtJsonFactory(bhS_App.VERBOSE_TRANSACTIONS);
 		bh.codeCompiler = new bhClientCodeCompiler();
-		bh_c.recaptchaWrapper = new bhRecaptchaWrapper();
 		bh_c.addressMngr = new bhCellAddressManager(m_appConfig.addressCacheSize, m_appConfig.addressCacheExpiration_seconds, this);
-		bh_c.toolTipMngr = new bhToolTipManager(platform != bhE_Platform.IOS, bhS_UI.TOOL_TIP_DELAY);
 		bh_c.accountMngr = new bhClientAccountManager();
 		bh_c.codeCache = new bhCellCodeCache(m_appConfig.codeCacheSize, m_appConfig.codeCacheExpiration_seconds, this);
 		bh_c.userMngr = new bhUserManager(bh_c.accountMngr, bh_c.codeCache, m_appConfig.user);
@@ -145,34 +198,50 @@ public class bhA_ClientApp extends bhA_App implements bhI_TimeSource
 		bh.requestPathMngr = new bhRequestPathManager(bhS_App.VERBOSE_TRANSACTIONS);
 		bh_c.txnMngr = new bhClientTransactionManager(bh.requestPathMngr);
 		
-		//--- DRK > Get transaction-related crap configured.
+		//--- DRK > Configure transaction stuff.
 		bh_c.requestPathMngr.register(bhE_RequestPath.values());
-		m_synchronousRequestDispatcher = new bhInlineRequestDispatcher();
-		bh_c.txnMngr.setSynchronousRequestRouter(m_synchronousRequestDispatcher);
-		bh_c.txnMngr.setAsynchronousRequestRouter(new bhGwtRequestDispatcher());
-
+		bh_c.txnMngr.setSyncRequestDispatcher(new bhInlineRequestDispatcher());
+		bh_c.txnMngr.setAsyncRequestDispatcher(new bhGwtRequestDispatcher());
+	}
+	
+	protected void stage_startViewManagers()
+	{
+		bh_c.recaptchaWrapper = new bhRecaptchaWrapper();
+		bh_c.clickMngr = new bhClickManager();
+		bh_c.toolTipMngr = new bhToolTipManager(bh_c.platformInfo.getPlatform() != bhE_Platform.IOS, bhS_UI.TOOL_TIP_DELAY);
+		
 		//--- DRK > Set defaults for tool tips.
 		for( int i = bhE_ZIndex.TOOL_TIP_1.ordinal(), j = 0; i <= bhE_ZIndex.TOOL_TIP_5.ordinal(); i++, j++ )
 		{
 			bh_c.toolTipMngr.setDefaultZIndex(bhE_ToolTipType.values()[j], i);
 		}
 		bh_c.toolTipMngr.setDefaultPadding(bhS_UI.TOOl_TIP_PADDING);
-		
-		//--- DRK > Format console logging messages.
-		Logger.getLogger("b33hive.shared.statemachine").setLevel(Level.OFF);
-		Handler[] handlers = Logger.getLogger("").getHandlers();
-		for (Handler h : handlers)
+	}
+	
+	protected void stage_registerStateMachine()
+	{
+		bhA_State.register(new StateMachine_Base());
 		{
-		    h.setFormatter(new TextLogFormatter(false)
-		    {
-		        @Override
-		        public String format(LogRecord event)
-		        {
-		            return event.getMessage();
-		        }
-		    });
+			bhA_State.register(new State_Initializing());
+			
+			bhA_State.register(new State_GenericDialog());
+			bhA_State.register(new State_AsyncDialog());
+			
+			bhA_State.register(new StateContainer_Base());
+			{
+				bhA_State.register(new StateMachine_Camera(m_appConfig.minSnapTime, m_appConfig.snapTimeRange));
+				{
+					bhA_State.register(new State_CameraFloating());
+					bhA_State.register(new State_GettingMapping());
+					bhA_State.register(new State_CameraSnapping(m_appConfig.cellHudHeight));
+					bhA_State.register(new State_ViewingCell());
+				}
+			}
 		}
-		
+	}
+	
+	protected void stage_establishTiming()
+	{
 		//--- DRK > Get timing and update loop going.
 		bhU_Time.startUp();
 		Timer timer = new Timer()
@@ -184,13 +253,33 @@ public class bhA_ClientApp extends bhA_App implements bhI_TimeSource
 			}
 		};
 		timer.scheduleRepeating(m_appConfig.framerateMilliseconds);
-		
-		registerStates(m_appConfig);
-		
+	}
+	
+	protected void stage_gunshotSound()
+	{
 		bhA_StateMachine.root_didEnter(StateMachine_Base.class, new bhViewController(m_viewConfig, m_appConfig));
 		bhA_StateMachine.root_didForeground(StateMachine_Base.class);
 		
-		m_synchronousRequestDispatcher.flushQueuedSynchronousResponses();
+		bh_c.txnMngr.flushSyncResponses();
+	}
+
+	protected static void registerCodeEditingStates()
+	{
+		bhA_State.register(new StateMachine_EditingCode());
+		{
+			bhA_State.register(new State_EditingCode());
+			bhA_State.register(new State_EditingCodeBlocker());
+		}
+	}
+	
+	protected static void registerAccountStates()
+	{
+		bhA_State.register(new StateMachine_Account());
+		{
+			bhA_State.register(new State_ManageAccount());
+			bhA_State.register(new State_AccountStatusPending());
+			bhA_State.register(new State_SignInOrUp());
+		}
 	}
 	
 	protected native void showUnsupportedBrowserError()
@@ -206,58 +295,14 @@ public class bhA_ClientApp extends bhA_App implements bhI_TimeSource
 			
 			setTimeout(showError, 0);
  	}-*/;
-
-	/**
-	 * The braces and indenting here are just to make the overall structure of the machine more apparent.
-	 */
-	protected void registerStates(bhClientAppConfig config)
-	{
-		b33hive.shared.statemachine.bhA_State.register(new StateMachine_Base());
-		{
-			bhA_State.register(new State_Initializing());
-			
-			bhA_State.register(new State_GenericDialog());
-			bhA_State.register(new State_AsyncDialog());
-			
-			bhA_State.register(new StateContainer_Base());
-			{
-				bhA_State.register(new StateMachine_Camera(config.minSnapTime, config.snapTimeRange));
-				{
-					bhA_State.register(new State_CameraFloating());
-					bhA_State.register(new State_GettingMapping());
-					bhA_State.register(new State_CameraSnapping(config.cellHudHeight));
-					bhA_State.register(new State_ViewingCell());
-				}
-			}
-		}
-	}
-	
-	protected void registerCodeEditingStates()
-	{
-		bhA_State.register(new StateMachine_EditingCode());
-		{
-			bhA_State.register(new State_EditingCode());
-			bhA_State.register(new State_EditingCodeBlocker());
-		}
-	}
-	
-	protected void registerAccountStates()
-	{
-		bhA_State.register(new StateMachine_Account());
-		{
-			bhA_State.register(new State_ManageAccount());
-			bhA_State.register(new State_AccountStatusPending());
-			bhA_State.register(new State_SignInOrUp());
-		}
-	}
 	
 	public void update()
 	{
 		double currentTime = bhU_Time.getSeconds();
 		bhA_StateMachine.root_didUpdate(StateMachine_Base.class, currentTime - m_lastTime);
 		m_lastTime = currentTime;
-		
-		m_synchronousRequestDispatcher.flushQueuedSynchronousResponses();
+
+		bh_c.txnMngr.flushSyncResponses();
 	}
 
 	@Override

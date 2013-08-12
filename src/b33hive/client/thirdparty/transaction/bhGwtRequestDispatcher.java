@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.logging.Logger;
 
 import b33hive.client.transaction.bhClientTransactionManager;
-import b33hive.client.transaction.bhI_AsynchronousRequestDispatcher;
+import b33hive.client.transaction.bhI_AsyncRequestDispatcher;
 import b33hive.client.transaction.bhI_ResponseCallbacks;
 import b33hive.client.transaction.bhTransactionRequestBatch;
 import b33hive.shared.app.bh;
@@ -32,7 +32,7 @@ import com.google.gwt.http.client.Response;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Window;
 
-public class bhGwtRequestDispatcher implements bhI_AsynchronousRequestDispatcher, RequestCallback
+public class bhGwtRequestDispatcher implements bhI_AsyncRequestDispatcher, RequestCallback
 {
 	private static final Logger s_logger = Logger.getLogger(bhGwtRequestDispatcher.class.getName());
 	

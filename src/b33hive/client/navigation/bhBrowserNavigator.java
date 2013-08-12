@@ -64,7 +64,7 @@ public class bhBrowserNavigator implements bhI_StateEventListener
 	
 	private final double m_floatingHistoryUpdateRate;
 	
-	bhBrowserNavigator(double floatingHistoryUpdateRate_seconds)
+	bhBrowserNavigator(String defaultPageTitle, double floatingHistoryUpdateRate_seconds)
 	{
 		m_floatingHistoryUpdateRate = floatingHistoryUpdateRate_seconds;
 		
@@ -129,7 +129,7 @@ public class bhBrowserNavigator implements bhI_StateEventListener
 			}
 		};
 		
-		m_historyManager = new bhHistoryStateManager(bh_c.app.getViewConfig().defaultPageTitle, m_historyStateListener);
+		m_historyManager = new bhHistoryStateManager(defaultPageTitle, m_historyStateListener);
 		
 		m_addressManager = new bhBrowserAddressManager();
 	}

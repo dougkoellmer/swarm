@@ -91,13 +91,14 @@ public class bhCodeEditorTabContent extends AbsolutePanel implements bhI_TabCont
 		};
 		
 		bhToolTipManager tipManager = bh_c.toolTipMngr;
+		bhClickManager clickMngr = new bhClickManager();
 		
-		bh_c.clickMngr.addClickHandler(m_saveButton, commitHandler);
+		clickMngr.addClickHandler(m_saveButton, commitHandler);
 		m_saveButton.setText("Save");
 		m_saveButton.setEnabled(false);
 		tipManager.addTip(m_saveButton, new bhToolTipConfig(bhE_ToolTipType.MOUSE_OVER, "Save your cell and push it live. [Ctrl-S]"));
 		
-		bh_c.clickMngr.addClickHandler(m_previewButton, previewHandler);
+		clickMngr.addClickHandler(m_previewButton, previewHandler);
 		m_previewButton.setText("Preview");
 		m_previewButton.setEnabled(false);
 		tipManager.addTip(m_previewButton, new bhToolTipConfig(bhE_ToolTipType.MOUSE_OVER, "Preview your cell without saving. [Ctrl-P]"));

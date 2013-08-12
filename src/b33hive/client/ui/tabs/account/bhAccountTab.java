@@ -29,10 +29,10 @@ public class bhAccountTab extends bhA_Tab
 {
 	public bhAccountTab()
 	{
-		super("Account", "", new bhCodeEditorTabContent());
+		super("Account", "", new bhAccountTabContent());
 	}
 	
-	private void updateAccountTabToolTip()
+	private void updateToolTip()
 	{
 		bhToolTipManager tipManager = bh_c.toolTipMngr;
 		
@@ -51,7 +51,7 @@ public class bhAccountTab extends bhA_Tab
 	{
 		super.onAttached(tabButton);
 		
-		updateAccountTabToolTip();
+		updateToolTip();
 	}
 
 	@Override
@@ -65,7 +65,7 @@ public class bhAccountTab extends bhA_Tab
 			{
 				if( event.getState() instanceof State_SignInOrUp || event.getState() instanceof State_ManageAccount )
 				{
-					updateAccountTabToolTip();
+					updateToolTip();
 				}
 				
 				break;
@@ -75,7 +75,7 @@ public class bhAccountTab extends bhA_Tab
 			{
 				if( event.getAction() == StateMachine_Base.OnAccountManagerResponse.class )
 				{
-					updateAccountTabToolTip();
+					updateToolTip();
 					
 					if( bhA_State.isForegrounded(StateMachine_Tabs.class) )
 					{

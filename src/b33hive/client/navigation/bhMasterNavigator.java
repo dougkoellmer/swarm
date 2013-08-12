@@ -10,10 +10,10 @@ public class bhMasterNavigator implements bhI_UIElement
 	private final bhMouseNavigator m_mouseNavigator;
 	private final bhBrowserNavigator m_browserNavigator;
 	
-	public bhMasterNavigator(bhMouse mouse, double floatingHistoryStateFreq_seconds)
+	public bhMasterNavigator(bhMouse mouse, String defaultPageTitle, double floatingHistoryStateFreq_seconds)
 	{
 		m_mouseNavigator = new bhMouseNavigator(mouse);
-		m_browserNavigator = new bhBrowserNavigator(floatingHistoryStateFreq_seconds);
+		m_browserNavigator = new bhBrowserNavigator(defaultPageTitle, floatingHistoryStateFreq_seconds);
 	}
 
 	@Override

@@ -12,7 +12,7 @@ import b33hive.shared.transaction.bhTransactionResponse;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.core.client.JsArrayString;
 
-public class bhInlineRequestDispatcher implements bhI_RequestDispatcher
+public class bhInlineRequestDispatcher implements bhI_SyncRequestDispatcher
 {
 	private static class QueuedTransaction
 	{
@@ -80,7 +80,7 @@ public class bhInlineRequestDispatcher implements bhI_RequestDispatcher
 		m_callbacks = callbacks;
 	}
 	
-	public void flushQueuedSynchronousResponses()
+	public void flushResponses()
 	{
 		for(int i = 0; i < m_queuedTransactions.size(); i++ )
 		{

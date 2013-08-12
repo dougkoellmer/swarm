@@ -79,7 +79,7 @@ public class bhTabPanel extends AbsolutePanel implements bhI_UIElement
 		
 		for( int i = 0; i < m_tabs.length; i++ )
 		{
-			this.addTab(m_tabs[i].getName(), m_tabs[i].getToolTipText(), i);
+			this.addTab(m_tabs[i], i);
 		}
 	}
 	
@@ -102,12 +102,12 @@ public class bhTabPanel extends AbsolutePanel implements bhI_UIElement
 		}
 	}
 	
-	private bhButtonWithText addTab(String tabTitle, String toolTipText, final int tabIndex)
+	private void addTab(bhI_Tab tab, final int tabIndex)
 	{
-		bhButtonWithText tab = new bhButtonWithText();
-		tab.addStyleName("bh_tab");
-		tab.setText(tabTitle); 
-		bh_c.clickMngr.addClickHandler(tab, new bhI_ClickHandler()
+		bhButtonWithText tabButton = new bhButtonWithText();
+		tabButton.addStyleName("bh_tab");
+		tabButton.setText(tab.getName()); 
+		bh_c.clickMngr.addClickHandler(tabButton, new bhI_ClickHandler()
 		{
 			public void onClick()
 			{
@@ -116,11 +116,11 @@ public class bhTabPanel extends AbsolutePanel implements bhI_UIElement
 			}
 		});
 		
-		bh_c.toolTipMngr.addTip(tab, new bhToolTipConfig(bhE_ToolTipType.MOUSE_OVER, toolTipText));
+		bh_c.toolTipMngr.addTip(tabButton, new bhToolTipConfig(bhE_ToolTipType.MOUSE_OVER, tab.getToolTipText()));
 		
-		m_tabContainer.add(tab);
+		m_tabContainer.add(tabButton);
 		
-		return tab;
+		tab.onAttached(tabButton);
 	}
 	
 	private void selectTab(int index)
@@ -169,7 +169,8 @@ public class bhTabPanel extends AbsolutePanel implements bhI_UIElement
 			{
 				if( event.getState().getParent() instanceof StateMachine_Tabs )
 				{
-					int tabIndex = ((StateMachine_Tabs)event.getState().getParent()).calcTabIndex(event.getState().getClass());
+					StateMachine_Tabs tabMachine = event.getState().getParent();
+					int tabIndex = tabMachine.calcTabIndex(event.getState().getClass());
 					this.selectTab(tabIndex);
 				}
 				
@@ -180,10 +181,6 @@ public class bhTabPanel extends AbsolutePanel implements bhI_UIElement
 		for( int i = 0; i < m_tabs.length; i++ )
 		{
 			m_tabs[i].onStateEvent(event);
-			if( m_tabs[i].getContent() != null )
-			{
-				m_tabs[i].getContent().onStateEvent(event);
-			}
 		}
 	}
 }

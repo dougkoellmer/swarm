@@ -59,7 +59,7 @@ public class bhViewController extends Object implements bhI_StateEventListener
 		bhMouse mouse = new bhMouse(cellContainer.getMouseEnabledLayer());
 		
 		// TODO: Clean this up so that all this crap doesn't add itself to parent containers in constructors.
-		m_listeners.add(bh_c.navigator = new bhMasterNavigator(mouse, m_appConfig.floatingHistoryUpdateFreq_seconds));
+		m_listeners.add(bh_c.navigator = new bhMasterNavigator(mouse, m_viewConfig.defaultPageTitle, m_appConfig.floatingHistoryUpdateFreq_seconds));
 		m_listeners.add(bh_view.cellMngr = new bhVisualCellManager(cellContainer.getCellContainerLayer()));
 		m_listeners.add(bh_view.splitPanel);
 		//m_listeners.add(new bhVisualCellHighlight(cellContainer.getCellContainerLayer()));

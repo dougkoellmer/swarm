@@ -263,6 +263,8 @@ public class bhSplitPanel extends SplitLayoutPanel implements bhI_UIElement
 			
 			case DID_PERFORM_ACTION:
 			{
+				//TODO(DRK): Pretty sure this can be moved to bhAccountTab...think it is here because
+				//			 at some point the tab UI didn't get state events if the tab content's state wasn't foregrounded.
 				if( event.getAction() == StateMachine_Base.OnAccountManagerResponse.class )
 				{
 					StateMachine_Base.OnAccountManagerResponse.Args args = event.getActionArgs();
