@@ -23,7 +23,7 @@ import b33hive.shared.transaction.bhTransactionResponse;
  */
 public class StateContainer_Base extends bhA_StateContainer implements bhI_TransactionResponseHandler
 {
-	public static class Hide extends bhA_Action
+	public static class HideSupplementState extends bhA_Action
 	{
 		@Override
 		public void perform(bhA_ActionArgs args)
@@ -44,7 +44,7 @@ public class StateContainer_Base extends bhA_StateContainer implements bhI_Trans
 		}
 	}
 	
-	public static class Show extends bhA_Action 
+	public static class ShowSupplementState extends bhA_Action 
 	{
 		@Override
 		public void perform(bhA_ActionArgs args)
@@ -67,8 +67,8 @@ public class StateContainer_Base extends bhA_StateContainer implements bhI_Trans
 	
 	public StateContainer_Base()
 	{
-		bhA_Action.register(new Hide());
-		bhA_Action.register(new Show());
+		bhA_Action.register(new HideSupplementState());
+		bhA_Action.register(new ShowSupplementState());
 	}
 	
 	@Override

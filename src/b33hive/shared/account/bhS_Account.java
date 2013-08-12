@@ -1,5 +1,7 @@
 package b33hive.shared.account;
 
+import b33hive.shared.app.bhS_App;
+
 public class bhS_Account
 {
 	public static final int MIN_PASSWORD_LENGTH = 6;
@@ -12,7 +14,7 @@ public class bhS_Account
 
 	public static final int MAX_EMAIL_LENGTH = 255;
 
-	public static final String USERNAME_REGEX = "^[a-zA-Z0-9_]*$";
+	public static final String USERNAME_REGEX = bhS_App.CELL_ADDRESS_REGEX;
 
 	public static final String EMAIL_REGEX = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
 	

@@ -13,7 +13,7 @@ import b33hive.server.data.blob.bhBlobException;
 import b33hive.server.data.blob.bhBlobManagerFactory;
 import b33hive.server.data.blob.bhE_BlobCacheLevel;
 import b33hive.server.data.blob.bhI_Blob;
-import b33hive.server.data.blob.bhI_BlobKeySource;
+import b33hive.server.data.blob.bhI_BlobKey;
 import b33hive.server.data.blob.bhI_BlobManager;
 import b33hive.server.entities.bhS_BlobKeyPrefix;
 import b33hive.server.entities.bhServerCell;
@@ -88,10 +88,10 @@ private static final Logger s_logger = Logger.getLogger(bhBlobTransaction_AddCel
 		
 		//--- DRK > Do a get that we'll use to perform some sanity checks.
 		bhI_BlobManager blobManager = bh_s.blobMngrFactory.create(bhE_BlobCacheLevel.PERSISTENT);
-		HashMap<bhI_BlobKeySource, Class<? extends bhI_Blob>> existanceQuery = new HashMap<bhI_BlobKeySource, Class<? extends bhI_Blob>>();
+		HashMap<bhI_BlobKey, Class<? extends bhI_Blob>> existanceQuery = new HashMap<bhI_BlobKey, Class<? extends bhI_Blob>>();
 		existanceQuery.put(m_session, bhServerUser.class);
 		existanceQuery.put(address, bhServerCellAddressMapping.class);
-		Map<bhI_BlobKeySource, bhI_Blob> result = blobManager.getBlobs(existanceQuery);
+		Map<bhI_BlobKey, bhI_Blob> result = blobManager.getBlobs(existanceQuery);
 		
 		//--- DRK > Make sure user exists.
 		if( result == null )

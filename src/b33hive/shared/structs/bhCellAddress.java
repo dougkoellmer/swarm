@@ -6,10 +6,12 @@ import b33hive.shared.app.bh;
 import b33hive.shared.app.bhS_App;
 import b33hive.shared.account.bhE_SignUpValidationError;
 import b33hive.shared.account.bhI_SignUpCredentialValidator;
+import b33hive.shared.account.bhS_Account;
 import b33hive.shared.json.bhA_JsonEncodable;
 import b33hive.shared.json.bhE_JsonKey;
 import b33hive.shared.json.bhI_JsonObject;
 import b33hive.shared.json.bhJsonHelper;
+import b33hive.shared.utils.bhU_Regex;
 
 public class bhCellAddress extends bhA_JsonEncodable
 {
@@ -147,9 +149,7 @@ public class bhCellAddress extends bhA_JsonEncodable
 		{
 			String part = parts[i];
 			
-			bhE_SignUpValidationError error = bhI_SignUpCredentialValidator.USERNAME_VALIDATOR.validateCredential(part);
-			
-			if( error.isError() )
+			if( !bhU_Regex.calcIsMatch(part, bhS_Account.USERNAME_REGEX) )
 			{
 				m_parseError = bhE_CellAddressParseError.BAD_FORMAT;
 				

@@ -15,7 +15,7 @@ import b33hive.server.data.blob.bhBlobManagerFactory;
 import b33hive.server.data.blob.bhE_BlobCacheLevel;
 import b33hive.server.data.blob.bhE_BlobTransactionType;
 import b33hive.server.data.blob.bhI_Blob;
-import b33hive.server.data.blob.bhI_BlobKeySource;
+import b33hive.server.data.blob.bhI_BlobKey;
 import b33hive.server.data.blob.bhI_BlobManager;
 import b33hive.server.entities.bhE_GridType;
 import b33hive.server.entities.bhServerGrid;
@@ -85,7 +85,7 @@ public class createGrid implements bhI_RequestHandler
 		
 		try
 		{
-			HashMap<bhI_BlobKeySource, bhI_Blob> grids = new HashMap<bhI_BlobKeySource, bhI_Blob>();
+			HashMap<bhI_BlobKey, bhI_Blob> grids = new HashMap<bhI_BlobKey, bhI_Blob>();
 			activeGrid = bhU_Handler.newObjectInstance(m_T_grid, response);
 			
 			blobManager.putBlob(bhE_GridType.ACTIVE, activeGrid);

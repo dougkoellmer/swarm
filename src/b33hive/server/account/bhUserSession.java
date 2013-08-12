@@ -11,14 +11,14 @@ import java.util.Map;
 
 import b33hive.server.data.blob.bhE_BlobCacheLevel;
 import b33hive.server.data.blob.bhI_Blob;
-import b33hive.server.data.blob.bhI_BlobKeySource;
+import b33hive.server.data.blob.bhI_BlobKey;
 import b33hive.server.data.blob.bhU_Blob;
 import b33hive.server.data.blob.bhU_Serialization;
 import b33hive.server.entities.bhS_BlobKeyPrefix;
 import b33hive.server.session.bhS_Session;
 import b33hive.server.structs.bhDate;
 
-public class bhUserSession implements bhI_Blob, bhI_BlobKeySource
+public class bhUserSession implements bhI_Blob, bhI_BlobKey
 {
 	private static final int EXTERNAL_VERSION = 1;
 	

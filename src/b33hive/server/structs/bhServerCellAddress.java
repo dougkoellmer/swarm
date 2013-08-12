@@ -7,7 +7,7 @@ import java.io.ObjectOutput;
 
 import b33hive.client.app.bhE_Platform;
 import b33hive.server.data.blob.bhI_Blob;
-import b33hive.server.data.blob.bhI_BlobKeySource;
+import b33hive.server.data.blob.bhI_BlobKey;
 import b33hive.server.data.blob.bhU_Blob;
 import b33hive.server.data.blob.bhU_Serialization;
 import b33hive.server.entities.bhS_BlobKeyPrefix;
@@ -16,7 +16,7 @@ import b33hive.shared.structs.bhCellAddress;
 import b33hive.shared.structs.bhCodePrivileges;
 import b33hive.shared.structs.bhE_CellAddressParseError;
 
-public class bhServerCellAddress extends bhCellAddress implements Externalizable, bhI_BlobKeySource
+public class bhServerCellAddress extends bhCellAddress implements Externalizable, bhI_BlobKey
 {
 	private static final int EXTERNAL_VERSION = 1;
 	

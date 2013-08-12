@@ -105,7 +105,7 @@ public class bhA_ClientApp extends bhA_App implements bhI_TimeSource
 			
 			case REGISTER_STATES:
 			{
-				stage_registerStateMachine();				break;
+				stage_registerStateMachine();		break;
 			}
 			
 			case ESTABLISH_TIMING:
@@ -257,7 +257,7 @@ public class bhA_ClientApp extends bhA_App implements bhI_TimeSource
 	
 	protected void stage_gunshotSound()
 	{
-		bhA_StateMachine.root_didEnter(StateMachine_Base.class, new bhViewController(m_viewConfig, m_appConfig));
+		bhA_StateMachine.root_didEnter(StateMachine_Base.class, m_viewConfig.stateEventListener);
 		bhA_StateMachine.root_didForeground(StateMachine_Base.class);
 		
 		bh_c.txnMngr.flushSyncResponses();

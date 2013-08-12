@@ -29,7 +29,7 @@ class bhBlobManager_Persistent extends bhA_BlobManager
 		m_templateMngr = templateMngr;
 	}
 	
-	private Entity createEntityForPut(bhI_BlobKeySource keySource, bhI_Blob blob) throws bhBlobException
+	private Entity createEntityForPut(bhI_BlobKey keySource, bhI_Blob blob) throws bhBlobException
 	{
 		Key keyObject = KeyFactory.createKey(blob.getKind(), keySource.createBlobKey(blob));
 		Entity entity = new Entity(keyObject);
@@ -51,7 +51,7 @@ class bhBlobManager_Persistent extends bhA_BlobManager
 	}
 	
 	@Override
-	public void putBlob(bhI_BlobKeySource keySource, bhI_Blob blob) throws bhBlobException, ConcurrentModificationException
+	public void putBlob(bhI_BlobKey keySource, bhI_Blob blob) throws bhBlobException, ConcurrentModificationException
 	{
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		
@@ -74,7 +74,7 @@ class bhBlobManager_Persistent extends bhA_BlobManager
 	}
 
 	@Override
-	public void putBlobAsync(bhI_BlobKeySource keySource, bhI_Blob blob) throws bhBlobException
+	public void putBlobAsync(bhI_BlobKey keySource, bhI_Blob blob) throws bhBlobException
 	{
 		AsyncDatastoreService datastore = DatastoreServiceFactory.getAsyncDatastoreService();
 		
@@ -102,7 +102,7 @@ class bhBlobManager_Persistent extends bhA_BlobManager
 	}
 	
 	@Override
-	public <T extends bhI_Blob> T getBlob(bhI_BlobKeySource keySource, Class<? extends T> T) throws bhBlobException
+	public <T extends bhI_Blob> T getBlob(bhI_BlobKey keySource, Class<? extends T> T) throws bhBlobException
 	{
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		
@@ -141,15 +141,15 @@ class bhBlobManager_Persistent extends bhA_BlobManager
 	}
 	
 	@Override
-	public Map<bhI_BlobKeySource, bhI_Blob> getBlobs(Map<bhI_BlobKeySource, Class<? extends bhI_Blob>> values) throws bhBlobException
+	public Map<bhI_BlobKey, bhI_Blob> getBlobs(Map<bhI_BlobKey, Class<? extends bhI_Blob>> values) throws bhBlobException
 	{
 		ArrayList<Key> keyObjects = new ArrayList<Key>();
 		Map<String, bhBlobTuple> generatedKeysToTuples = new HashMap<String, bhBlobTuple>();
 		
-		Iterator<? extends bhI_BlobKeySource> keySourceIterator = values.keySet().iterator();
+		Iterator<? extends bhI_BlobKey> keySourceIterator = values.keySet().iterator();
 		while( keySourceIterator.hasNext() )
 		{
-			bhI_BlobKeySource keySource = keySourceIterator.next();
+			bhI_BlobKey keySource = keySourceIterator.next();
 			Class<? extends bhI_Blob> nextBlobType = values.get(keySource);
 			bhI_Blob blobTemplate = m_templateMngr.getTemplate(nextBlobType);
 			
@@ -167,7 +167,7 @@ class bhBlobManager_Persistent extends bhA_BlobManager
 			
 			if( entities != null && entities.size() > 0 )
 			{
-				HashMap<bhI_BlobKeySource, bhI_Blob> toReturn = new HashMap<bhI_BlobKeySource, bhI_Blob>();
+				HashMap<bhI_BlobKey, bhI_Blob> toReturn = new HashMap<bhI_BlobKey, bhI_Blob>();
 				
 				for( Key keyObject : entities.keySet() )
 				{
@@ -193,14 +193,14 @@ class bhBlobManager_Persistent extends bhA_BlobManager
 		return null;
 	}
 	
-	private List<Entity> createEntitiesForPut(Map<bhI_BlobKeySource, bhI_Blob> values) throws bhBlobException
+	private List<Entity> createEntitiesForPut(Map<bhI_BlobKey, bhI_Blob> values) throws bhBlobException
 	{
 		ArrayList<Entity> entities = new ArrayList<Entity>();
 		
-		Iterator<? extends bhI_BlobKeySource> keySourceIterator = values.keySet().iterator();
+		Iterator<? extends bhI_BlobKey> keySourceIterator = values.keySet().iterator();
 		while( keySourceIterator.hasNext() )
 		{
-			bhI_BlobKeySource keySource = keySourceIterator.next();
+			bhI_BlobKey keySource = keySourceIterator.next();
 			bhI_Blob nextBlob = values.get(keySource);
 			
 			Entity entity = createEntityForPut(keySource, nextBlob);
@@ -211,7 +211,7 @@ class bhBlobManager_Persistent extends bhA_BlobManager
 	}
 	
 	@Override
-	public void putBlobs(Map<bhI_BlobKeySource, bhI_Blob> values) throws bhBlobException
+	public void putBlobs(Map<bhI_BlobKey, bhI_Blob> values) throws bhBlobException
 	{
 		List<Entity> entities = createEntitiesForPut(values);
 		
@@ -228,7 +228,7 @@ class bhBlobManager_Persistent extends bhA_BlobManager
 	}
 	
 	@Override
-	public void putBlobsAsync(Map<bhI_BlobKeySource, bhI_Blob> values) throws bhBlobException
+	public void putBlobsAsync(Map<bhI_BlobKey, bhI_Blob> values) throws bhBlobException
 	{
 		List<Entity> entities = createEntitiesForPut(values);
 		
@@ -251,7 +251,7 @@ class bhBlobManager_Persistent extends bhA_BlobManager
 	}
 
 	@Override
-	public void deleteBlob(bhI_BlobKeySource keySource, Class<? extends bhI_Blob> blobType) throws bhBlobException
+	public void deleteBlob(bhI_BlobKey keySource, Class<? extends bhI_Blob> blobType) throws bhBlobException
 	{
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		
@@ -272,7 +272,7 @@ class bhBlobManager_Persistent extends bhA_BlobManager
 	}
 	
 	@Override
-	public void deleteBlobAsync(bhI_BlobKeySource keySource, Class<? extends bhI_Blob> blobType) throws bhBlobException
+	public void deleteBlobAsync(bhI_BlobKey keySource, Class<? extends bhI_Blob> blobType) throws bhBlobException
 	{
 		AsyncDatastoreService datastore = DatastoreServiceFactory.getAsyncDatastoreService();
 		
@@ -297,14 +297,14 @@ class bhBlobManager_Persistent extends bhA_BlobManager
 		}
 	}
 	
-	private List<Key> createKeysForBatchDelete(Map<bhI_BlobKeySource, Class<? extends bhI_Blob>> values) throws bhBlobException
+	private List<Key> createKeysForBatchDelete(Map<bhI_BlobKey, Class<? extends bhI_Blob>> values) throws bhBlobException
 	{
 		ArrayList<Key> keys = new ArrayList<Key>();
 		
-		Iterator<bhI_BlobKeySource> iterator = values.keySet().iterator();
+		Iterator<bhI_BlobKey> iterator = values.keySet().iterator();
 		while( iterator.hasNext() )
 		{
-			bhI_BlobKeySource keySource = iterator.next();
+			bhI_BlobKey keySource = iterator.next();
 			bhI_Blob blob = m_templateMngr.getTemplate(values.get(keySource));
 			
 			Key keyObject = KeyFactory.createKey(blob.getKind(), keySource.createBlobKey(blob));
@@ -316,7 +316,7 @@ class bhBlobManager_Persistent extends bhA_BlobManager
 	}
 	
 	@Override
-	public void deleteBlobs(Map<bhI_BlobKeySource, Class<? extends bhI_Blob>> values) throws bhBlobException
+	public void deleteBlobs(Map<bhI_BlobKey, Class<? extends bhI_Blob>> values) throws bhBlobException
 	{
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		
@@ -335,7 +335,7 @@ class bhBlobManager_Persistent extends bhA_BlobManager
 	}
 	
 	@Override
-	public void deleteBlobsAsync(Map<bhI_BlobKeySource, Class<? extends bhI_Blob>> values) throws bhBlobException
+	public void deleteBlobsAsync(Map<bhI_BlobKey, Class<? extends bhI_Blob>> values) throws bhBlobException
 	{
 		AsyncDatastoreService datastore = DatastoreServiceFactory.getAsyncDatastoreService();
 		
@@ -359,7 +359,7 @@ class bhBlobManager_Persistent extends bhA_BlobManager
 	}
 
 	@Override
-	public Map<bhI_BlobKeySource, bhI_Blob> performQuery(bhBlobQuery query) throws bhBlobException
+	public Map<bhI_BlobKey, bhI_Blob> performQuery(bhBlobQuery query) throws bhBlobException
 	{
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		

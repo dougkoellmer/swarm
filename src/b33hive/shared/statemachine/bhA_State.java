@@ -28,13 +28,15 @@ public abstract class bhA_State extends bhA_BaseStateObject
 	private boolean m_isEntering = false;
 	private boolean m_isForegrounding = false;
 	
-	bhA_State m_stateBeneath = null;	
+	bhA_State m_stateBeneath = null;
+	
 	
 	private HashMap<Class<? extends bhA_Action>, Boolean> m_isPerformableOverrides = new HashMap<Class<? extends bhA_Action>, Boolean>();
 	
 	bhA_State m_parent = null;
 	
 	Class<? extends bhA_State> m_previousState = null;
+	Class<? extends bhA_State> m_blockingState = null;
 	
 	private Class<? extends bhA_Action> m_lastActionPerformed = null;
 	
@@ -49,28 +51,28 @@ public abstract class bhA_State extends bhA_BaseStateObject
 	{
 	}
 	
-	public static bhStateTreeRoot root_didEnter(Class<? extends bhA_State> T__extends__bhA_State, bhI_StateEventListener stateEventListener)
+	public static bhStateTreeRoot root_didEnter(Class<? extends bhA_State> state_T, bhI_StateEventListener stateEventListener)
 	{
-		bhA_State state = bhA_State.getInstance(T__extends__bhA_State);
+		bhA_State state = bhA_State.getInstance(state_T);
 		bhStateTreeRoot root = new bhStateTreeRoot(state);
 		root.addListener(stateEventListener);
 		state.m_root = root;
 		
-		state.internal_didEnter(null);
+		state.didEnter_internal(null);
 		
 		return root;
 	}
 	
-	public static void root_didForeground(Class<? extends bhA_State> T__extends__bhA_State)
+	public static void root_didForeground(Class<? extends bhA_State> state_T)
 	{
-		bhA_State state = bhA_State.getEnteredInstance(T__extends__bhA_State);
-		state.internal_didForeground(null, null);
+		bhA_State state = bhA_State.getEnteredInstance(state_T);
+		state.didForeground_internal(null, null);
 	}
 	
-	public static void root_didUpdate(Class<? extends bhA_State> T__extends__bhA_State, double timeStep)
+	public static void root_didUpdate(Class<? extends bhA_State> state_T, double timeStep)
 	{
-		bhA_State state = bhA_State.getEnteredInstance(T__extends__bhA_State);
-		state.internal_update(timeStep);
+		bhA_State state = bhA_State.getEnteredInstance(state_T);
+		state.update_internal(timeStep);
 	}
 	
 	public boolean isTransparent()
@@ -101,6 +103,11 @@ public abstract class bhA_State extends bhA_BaseStateObject
 	public int getUpdateCount()
 	{
 		return m_totalUpdateCount;
+	}
+	
+	public Class<? extends bhA_State> getBlockingState()
+	{
+		return m_blockingState;
 	}
 	
 	public int getForegroundedUpdateCount()
@@ -151,6 +158,7 @@ public abstract class bhA_State extends bhA_BaseStateObject
 	
 	private void clean()
 	{
+		m_blockingState = null;
 		m_totalTimeInState = 0.0f;
 		m_foregroundedTimeInState = 0.0f;
 		m_isForegrounded = false;
@@ -283,7 +291,7 @@ public abstract class bhA_State extends bhA_BaseStateObject
 	
 	
 	
-	void internal_didEnter(bhA_StateConstructor constructor)
+	void didEnter_internal(bhA_StateConstructor constructor)
 	{
 		bhStateTreeRoot root = m_root;
 		
@@ -314,12 +322,13 @@ public abstract class bhA_State extends bhA_BaseStateObject
 		root.processEventQueue();
 	}
 	
-	void internal_didForeground(Class<? extends bhA_State> revealingState, Object[] args)
+	void didForeground_internal(Class<? extends bhA_State> revealingState, Object[] args)
 	{
 		m_isForegrounded = true;
 		
 		m_foregroundedTimeInState = 0.0f;
 		m_foregroundedUpdateCount = 0;
+		m_blockingState = null;
 		
 		bhStateTreeRoot root = m_root;
 		
@@ -336,7 +345,7 @@ public abstract class bhA_State extends bhA_BaseStateObject
 		root.processEventQueue();
 	}
 	
-	void internal_update(double timeStep)
+	void update_internal(double timeStep)
 	{
 		bhStateTreeRoot root = m_root;
 		
@@ -366,13 +375,15 @@ public abstract class bhA_State extends bhA_BaseStateObject
 		root.processEventQueue();
 	}
 	
-	void internal_willBackground(Class<? extends bhA_State> blockingState)
+	void willBackground_internal(Class<? extends bhA_State> blockingState)
 	{
 		bhStateTreeRoot root = m_root;
 		
 		//s_logger.log(Level.INFO, "Will background state: " + this.getClass().getName());
 		
 		root.queueEvent(new bhStateEvent(bhE_StateEventType.DID_BACKGROUND, this, blockingState));
+		
+		this.m_blockingState = blockingState;
 		
 		this.willBackground(blockingState);
 		
@@ -384,7 +395,7 @@ public abstract class bhA_State extends bhA_BaseStateObject
 		m_foregroundedUpdateCount = 0;
 	}
 	
-	void internal_willExit()
+	void willExit_internal()
 	{
 		bhStateTreeRoot root = m_root;
 		

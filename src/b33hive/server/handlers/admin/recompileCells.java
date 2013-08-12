@@ -16,7 +16,7 @@ import b33hive.server.data.blob.bhBlobManagerFactory;
 import b33hive.server.data.blob.bhE_BlobCacheLevel;
 import b33hive.server.data.blob.bhE_BlobTransactionType;
 import b33hive.server.data.blob.bhI_Blob;
-import b33hive.server.data.blob.bhI_BlobKeySource;
+import b33hive.server.data.blob.bhI_BlobKey;
 import b33hive.server.data.blob.bhI_BlobManager;
 import b33hive.server.entities.bhE_GridType;
 import b33hive.server.entities.bhServerCell;

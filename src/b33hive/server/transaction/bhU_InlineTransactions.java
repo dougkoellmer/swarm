@@ -18,7 +18,7 @@ import b33hive.server.data.blob.bhBlobException;
 import b33hive.server.data.blob.bhBlobManagerFactory;
 import b33hive.server.data.blob.bhE_BlobCacheLevel;
 import b33hive.server.data.blob.bhI_Blob;
-import b33hive.server.data.blob.bhI_BlobKeySource;
+import b33hive.server.data.blob.bhI_BlobKey;
 import b33hive.server.data.blob.bhI_BlobManager;
 import b33hive.server.entities.bhE_GridType;
 import b33hive.server.entities.bhServerGrid;
@@ -98,7 +98,7 @@ public class bhU_InlineTransactions
 			boolean makeUserRequest = true;
 			boolean makeGridRequest = true;
 			
-			Map<bhI_BlobKeySource, Class<? extends bhI_Blob>> batchGet = new HashMap<bhI_BlobKeySource, Class<? extends bhI_Blob>>();
+			Map<bhI_BlobKey, Class<? extends bhI_Blob>> batchGet = new HashMap<bhI_BlobKey, Class<? extends bhI_Blob>>();
 			batchGet.put(bhE_GridType.ACTIVE, bhServerGrid.class);
 			
 			if( getAddressMapping )
@@ -116,7 +116,7 @@ public class bhU_InlineTransactions
 			}
 			
 			bhI_BlobManager blobManager = bh_s.blobMngrFactory.create(bhE_BlobCacheLevel.MEMCACHE, bhE_BlobCacheLevel.PERSISTENT);
-			Map<bhI_BlobKeySource, bhI_Blob> blobBatchResult = null;
+			Map<bhI_BlobKey, bhI_Blob> blobBatchResult = null;
 			
 			try
 			{

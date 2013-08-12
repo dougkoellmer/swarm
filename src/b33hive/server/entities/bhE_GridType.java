@@ -1,10 +1,10 @@
 package b33hive.server.entities;
 
 import b33hive.server.data.blob.bhI_Blob;
-import b33hive.server.data.blob.bhI_BlobKeySource;
+import b33hive.server.data.blob.bhI_BlobKey;
 import b33hive.server.data.blob.bhU_Blob;
 
-public enum bhE_GridType implements bhI_BlobKeySource
+public enum bhE_GridType implements bhI_BlobKey
 {
 	//--- This enum's name field is used as part of a key for database blobs...think twice before changing their names.
 	ACTIVE,

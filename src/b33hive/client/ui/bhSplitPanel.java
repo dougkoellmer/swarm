@@ -74,18 +74,24 @@ public class bhSplitPanel extends SplitLayoutPanel implements bhI_UIElement
 		this.addStyleName("split_panel");
 		
 		int pageWidth = RootPanel.get().getOffsetWidth();
-		double panelWidth = pageWidth*STARTING_PANEL_RATIO;
-		if( panelWidth < MIN_INITIAL_CONSOLE_WIDTH )
+		double panelWidth = 0;
+		
+		if( bhA_State.isForegrounded(StateMachine_Tabs.class) )
 		{
-			panelWidth = MIN_INITIAL_CONSOLE_WIDTH;
-		}
-		if( (pageWidth - panelWidth) < MIN_INITIAL_GRID_WIDTH )
-		{
-			panelWidth = pageWidth - MIN_INITIAL_GRID_WIDTH;
-		}
-		if( panelWidth < 0 )
-		{
-			panelWidth = 0;
+			panelWidth = pageWidth*STARTING_PANEL_RATIO;
+
+			if( panelWidth < MIN_INITIAL_CONSOLE_WIDTH )
+			{
+				panelWidth = MIN_INITIAL_CONSOLE_WIDTH;
+			}
+			if( (pageWidth - panelWidth) < MIN_INITIAL_GRID_WIDTH )
+			{
+				panelWidth = pageWidth - MIN_INITIAL_GRID_WIDTH;
+			}
+			if( panelWidth < 0 )
+			{
+				panelWidth = 0;
+			}
 		}
 		
 		m_tabPanelWidth = panelWidth;
@@ -130,13 +136,13 @@ public class bhSplitPanel extends SplitLayoutPanel implements bhI_UIElement
 			@Override
 			public void onClick()
 			{
-				if( bhA_Action.perform(StateContainer_Base.Hide.class) )
+				if( bhA_Action.perform(StateContainer_Base.HideSupplementState.class) )
 				{
 					m_lastTabPanelSize = m_tabPanel.getOffsetWidth();
 					
 					m_tweener.start(m_lastTabPanelSize, 0);
 				}
-				else if( bhA_Action.perform(StateContainer_Base.Show.class) )
+				else if( bhA_Action.perform(StateContainer_Base.ShowSupplementState.class) )
 				{
 					double windowWidth = RootPanel.get().getOffsetWidth();
 					
@@ -156,7 +162,7 @@ public class bhSplitPanel extends SplitLayoutPanel implements bhI_UIElement
 		
 		bhE_ZIndex.MINIMIZER_MAXIMIZER.assignTo(m_panelButton);
 
-		setToggleButton(false);
+		updateToggleButton();
 		updateButtonPosition(panelWidth);
 		RootPanel.get().add(m_panelButton);
 	}
@@ -171,11 +177,15 @@ public class bhSplitPanel extends SplitLayoutPanel implements bhI_UIElement
 		return RootPanel.get().getOffsetWidth() - m_tabPanelWidth;
 	}
 	
-	private void setToggleButton(boolean openArrow)
+	private void updateToggleButton()
 	{
 		bhToolTipManager toolTipper = bh_c.toolTipMngr;
 		
-		if( openArrow )
+		StateMachine_Tabs tabMachine = bhA_State.getEnteredInstance(StateMachine_Tabs.class);
+		
+		boolean isCollapsed = !tabMachine.isForegrounded() && tabMachine.getBlockingState() == null;
+		
+		if( isCollapsed )
 		{
 			m_panelButton.setSpriteId("maximize");
 			
@@ -243,7 +253,7 @@ public class bhSplitPanel extends SplitLayoutPanel implements bhI_UIElement
 			{
 				if( event.getState() instanceof StateMachine_Tabs )
 				{
-					setToggleButton(false);
+					updateToggleButton();
 				}
 				
 				break;
@@ -253,7 +263,7 @@ public class bhSplitPanel extends SplitLayoutPanel implements bhI_UIElement
 			{
 				if( event.getState() instanceof StateMachine_Tabs )
 				{
-					setToggleButton(true);
+					updateToggleButton();
 					
 					m_tabPanel.getElement().blur();
 				}
@@ -300,7 +310,7 @@ public class bhSplitPanel extends SplitLayoutPanel implements bhI_UIElement
 						
 						default:
 						{
-							m_reloadCaptchaASAP = true; // sloppy
+							m_reloadCaptchaASAP = true; // kinda sloppy
 							
 							break;
 						}
@@ -352,14 +362,14 @@ public class bhSplitPanel extends SplitLayoutPanel implements bhI_UIElement
 	
 	private void showOrHideTabControllerStateFromManualResize()
 	{
-		boolean showable = bhA_Action.isPerformable(StateContainer_Base.Show.class);
-		boolean hideable = bhA_Action.isPerformable(StateContainer_Base.Hide.class);
+		boolean showable = bhA_Action.isPerformable(StateContainer_Base.ShowSupplementState.class);
+		boolean hideable = bhA_Action.isPerformable(StateContainer_Base.HideSupplementState.class);
 		
 		if( showable )
 		{
 			if( m_splitter.getAbsoluteLeft() > 0 )
 			{
-				bhA_Action.perform(StateContainer_Base.Show.class);
+				bhA_Action.perform(StateContainer_Base.ShowSupplementState.class);
 			}
 		}
 		else if( hideable )
@@ -367,7 +377,7 @@ public class bhSplitPanel extends SplitLayoutPanel implements bhI_UIElement
 			if( m_splitter.getAbsoluteLeft() <= 0 )
 			{
 				m_lastTabPanelSize = 0;
-				bhA_Action.perform(StateContainer_Base.Hide.class);
+				bhA_Action.perform(StateContainer_Base.HideSupplementState.class);
 			}
 		}
 	}

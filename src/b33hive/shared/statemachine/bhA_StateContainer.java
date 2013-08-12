@@ -75,7 +75,7 @@ public abstract class bhA_StateContainer extends bhA_State
 		
 		newState.m_parent = this;
 		newState.m_root = this.m_root;
-		newState.internal_didEnter(constructor);
+		newState.didEnter_internal(constructor);
 		
 		m_childrenForegrounded.put(T, false);
 	}
@@ -96,7 +96,7 @@ public abstract class bhA_StateContainer extends bhA_State
 			return;
 		}
 		
-		state.internal_didForeground(null, null);
+		state.didForeground_internal(null, null);
 		
 		m_childrenForegrounded.put(T, true);
 	}
@@ -117,7 +117,7 @@ public abstract class bhA_StateContainer extends bhA_State
 			return;
 		}
 		
-		state.internal_willBackground(null);
+		state.willBackground_internal(null);
 		
 		m_childrenForegrounded.put(T, false);
 	}
@@ -134,10 +134,10 @@ public abstract class bhA_StateContainer extends bhA_State
 		
 		if ( state.isForegrounded() )
 		{
-			state.internal_willBackground(null);
+			state.willBackground_internal(null);
 		}
 		
-		state.internal_willExit();
+		state.willExit_internal();
 		
 		state.m_parent = null;
 		state.m_root = null;
@@ -147,19 +147,19 @@ public abstract class bhA_StateContainer extends bhA_State
 	}
 	
 	@Override
-	void internal_didEnter(bhA_StateConstructor constructor)
+	void didEnter_internal(bhA_StateConstructor constructor)
 	{
 		bhU_Debug.ASSERT(m_children == null);
 		bhU_Debug.ASSERT(m_childrenForegrounded == null);
 		
-		super.internal_didEnter(constructor);
+		super.didEnter_internal(constructor);
 		
 		m_children = new HashMap<Class<? extends bhA_State>, bhA_State>();
 		m_childrenForegrounded = new HashMap<Class<? extends bhA_State>, Boolean>();
 	}
 	
 	@Override
-	void internal_didForeground(Class<? extends bhA_State> revealingState, Object[] args)
+	void didForeground_internal(Class<? extends bhA_State> revealingState, Object[] args)
 	{
 		final ArrayList<bhA_State> existingStates = new ArrayList<bhA_State>();
 
@@ -169,7 +169,7 @@ public abstract class bhA_StateContainer extends bhA_State
 			existingStates.add(state);
 		}
 
-		super.internal_didForeground(revealingState, args);
+		super.didForeground_internal(revealingState, args);
 
 		for ( int i = 0; i < existingStates.size(); i++ )
 		{
@@ -182,43 +182,43 @@ public abstract class bhA_StateContainer extends bhA_State
 				if ( m_childrenForegrounded.get(T) == true )
 				{
 					// DRK > NOTE: Might not want to forward the args here...don't know yet.
-					existingState.internal_didForeground(revealingState, args);
+					existingState.didForeground_internal(revealingState, args);
 				}
 			}
 		}
 	}
 	
 	@Override
-	void internal_update(double timeStep)
+	void update_internal(double timeStep)
 	{
-		super.internal_update(timeStep);
+		super.update_internal(timeStep);
 		
 		for ( Class<? extends bhA_State> T : m_children.keySet() )
 		{
 			bhA_State state = m_children.get(T);
-			state.internal_update(timeStep);
+			state.update_internal(timeStep);
 		}
 	}
 	
 	@Override
-	void internal_willBackground(Class<? extends bhA_State> blockingState)
+	void willBackground_internal(Class<? extends bhA_State> blockingState)
 	{
-		super.internal_willBackground(blockingState);
+		super.willBackground_internal(blockingState);
 		
 		for ( Class<? extends bhA_State> T : m_children.keySet() )
 		{
 			bhA_State state = m_children.get(T);
 			if ( state.isForegrounded() )
 			{
-				state.internal_willBackground(blockingState);
+				state.willBackground_internal(blockingState);
 			}
 		}
 	}
 	
 	@Override
-	void internal_willExit()
+	void willExit_internal()
 	{
-		super.internal_willExit();
+		super.willExit_internal();
 		
 		HashMap<Class<? extends bhA_State>, bhA_State> children = m_children;
 	
@@ -228,7 +228,7 @@ public abstract class bhA_StateContainer extends bhA_State
 		for ( Class<? extends bhA_State> T : children.keySet() )
 		{
 			bhA_State state = children.get(T);
-			state.internal_willExit();
+			state.willExit_internal();
 		}
 	}
 }

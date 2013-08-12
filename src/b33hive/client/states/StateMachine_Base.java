@@ -205,8 +205,6 @@ public class StateMachine_Base extends bhA_StateMachine implements bhI_Transacti
 	
 	private final AccountManagerDelegate m_accountManagerDelegate = new AccountManagerDelegate();
 	
-	private static StateMachine_Base s_instance = null;
-	
 	private final ArrayList<DialogData> m_asyncDialogQueue = new ArrayList<DialogData>();
 	
 	private boolean m_hasShownVersionMismatchDialog = false;

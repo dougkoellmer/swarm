@@ -7,7 +7,7 @@ import java.util.Map;
 
 import b33hive.server.data.blob.bhE_BlobCacheLevel;
 import b33hive.server.data.blob.bhI_Blob;
-import b33hive.server.data.blob.bhI_BlobKeySource;
+import b33hive.server.data.blob.bhI_BlobKey;
 import b33hive.server.data.blob.bhU_Blob;
 import b33hive.server.data.blob.bhU_Serialization;
 import b33hive.server.entities.bhE_GridType;
@@ -15,7 +15,7 @@ import b33hive.server.entities.bhS_BlobKeyPrefix;
 import b33hive.shared.structs.bhCellAddressMapping;
 import b33hive.shared.structs.bhGridCoordinate;
 
-public class bhServerCellAddressMapping extends bhCellAddressMapping implements bhI_Blob, bhI_BlobKeySource
+public class bhServerCellAddressMapping extends bhCellAddressMapping implements bhI_Blob, bhI_BlobKey
 {
 	private static final int EXTERNAL_VERSION = 1;
 	

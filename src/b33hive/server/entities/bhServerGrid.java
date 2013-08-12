@@ -10,7 +10,7 @@ import java.util.logging.Logger;
 
 import b33hive.server.data.blob.bhE_BlobCacheLevel;
 import b33hive.server.data.blob.bhI_Blob;
-import b33hive.server.data.blob.bhI_BlobKeySource;
+import b33hive.server.data.blob.bhI_BlobKey;
 import b33hive.server.data.blob.bhU_Blob;
 import b33hive.server.data.blob.bhU_Serialization;
 import b33hive.server.structs.bhBitArray;

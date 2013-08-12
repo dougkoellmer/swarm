@@ -33,7 +33,7 @@ public abstract class bhA_StateMachine extends bhA_State
 		this.enterSubState(newState, stateBeneath, false, constructor);
 	}
 	
-	void internal_pushState(Class<? extends bhA_State> T, bhA_StateConstructor constructor)
+	void pushState_internal(Class<? extends bhA_State> T, bhA_StateConstructor constructor)
 	{
 		bhA_State newState		= bhA_State.getInstance(T);
 		bhA_State currentState = this.getCurrentState();
@@ -49,14 +49,14 @@ public abstract class bhA_StateMachine extends bhA_State
 			if( !newState.isTransparent() )
 			{
 				// TODO: Walk the entire stack and make sure all states are backgrounded.
-				currentState.internal_willBackground(T);
+				currentState.willBackground_internal(T);
 			}
 		}
 		
 		this.enterSubState(newState, currentState, true, constructor);
 	}
 	
-	void internal_popState(Object[] args)
+	void popState_internal(Object[] args)
 	{
 		//TODO: Walk the entire stack and make sure to take into account state transparency.
 		//		A 3-state stack with the middle state transparent would require us to foreground
@@ -79,7 +79,7 @@ public abstract class bhA_StateMachine extends bhA_State
 		
 		if( !poppedState.isTransparent() )
 		{
-			m_currentState.internal_didForeground(poppedState.getClass(), args);
+			m_currentState.didForeground_internal(poppedState.getClass(), args);
 		}
 	}
 	
@@ -89,30 +89,30 @@ public abstract class bhA_StateMachine extends bhA_State
 	}
 	
 	@Override
-	void internal_didEnter(bhA_StateConstructor constructor)
+	void didEnter_internal(bhA_StateConstructor constructor)
 	{
 		bhU_Debug.ASSERT(m_currentState == null);
 
-		super.internal_didEnter(constructor);
+		super.didEnter_internal(constructor);
 	}
 	
 	@Override
-	void internal_didForeground(Class<? extends bhA_State> revealingState, Object[] args)
+	void didForeground_internal(Class<? extends bhA_State> revealingState, Object[] args)
 	{
 		bhA_State currentState = m_currentState;
 		
-		super.internal_didForeground(revealingState, args);
+		super.didForeground_internal(revealingState, args);
 		
 		if( currentState != null && currentState == m_currentState)
 		{
-			m_currentState.internal_didForeground(revealingState, args);
+			m_currentState.didForeground_internal(revealingState, args);
 		}
 	}
 	
 	@Override
-	void internal_update(double timeStep)
+	void update_internal(double timeStep)
 	{
-		super.internal_update(timeStep);
+		super.update_internal(timeStep);
 		
 		bhA_State currentState = m_currentState;
 		while( currentState != null )
@@ -121,7 +121,7 @@ public abstract class bhA_StateMachine extends bhA_State
 
 			if( currentState != null )
 			{
-				currentState.internal_update(timeStep);
+				currentState.update_internal(timeStep);
 			}
 			
 			currentState = stateBeneath;
@@ -129,20 +129,20 @@ public abstract class bhA_StateMachine extends bhA_State
 	}
 	
 	@Override
-	void internal_willBackground(Class<? extends bhA_State> blockingState)
+	void willBackground_internal(Class<? extends bhA_State> blockingState)
 	{
-		super.internal_willBackground(blockingState);
+		super.willBackground_internal(blockingState);
 		
 		if( m_currentState != null )
 		{
-			m_currentState.internal_willBackground(blockingState);
+			m_currentState.willBackground_internal(blockingState);
 		}
 	}
 	
 	@Override
-	void internal_willExit()
+	void willExit_internal()
 	{
-		super.internal_willExit();
+		super.willExit_internal();
 		
 		bhA_State currentState = m_currentState;
 		
@@ -173,18 +173,18 @@ public abstract class bhA_StateMachine extends bhA_State
 		this.m_currentState = stateToEnter;
 		this.m_currentState.m_root = this.m_root;
 
-		this.m_currentState.internal_didEnter(constructor);
-		this.m_currentState.internal_didForeground(null, null);
+		this.m_currentState.didEnter_internal(constructor);
+		this.m_currentState.didForeground_internal(null, null);
 	}
 
 	private void exitSubState(bhA_State stateToExit)
 	{
 		if( stateToExit.isForegrounded() )
 		{
-			stateToExit.internal_willBackground(null);
+			stateToExit.willBackground_internal(null);
 		}
 		
-		stateToExit.internal_willExit();
+		stateToExit.willExit_internal();
 		
 		stateToExit.m_root = null;
 		stateToExit.m_parent = null;

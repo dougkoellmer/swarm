@@ -12,7 +12,7 @@ import b33hive.server.data.blob.bhBlobException;
 import b33hive.server.data.blob.bhBlobManagerFactory;
 import b33hive.server.data.blob.bhE_BlobCacheLevel;
 import b33hive.server.data.blob.bhI_Blob;
-import b33hive.server.data.blob.bhI_BlobKeySource;
+import b33hive.server.data.blob.bhI_BlobKey;
 import b33hive.server.data.blob.bhI_BlobManager;
 import b33hive.server.entities.bhE_GridType;
 import b33hive.server.entities.bhServerCell;
@@ -133,7 +133,7 @@ public class bhBlobTransaction_CreateCell extends bhA_BlobTransaction
 		
 		//--- DRK > Add cell addresses to the database.
 		m_mapping = new bhServerCellAddressMapping(bhE_GridType.ACTIVE, freeCoord);
-		HashMap<bhI_BlobKeySource, bhI_Blob> mappings = new HashMap<bhI_BlobKeySource, bhI_Blob>();
+		HashMap<bhI_BlobKey, bhI_Blob> mappings = new HashMap<bhI_BlobKey, bhI_Blob>();
 		for( int i = 0; i < m_addresses.length; i++ )
 		{
 			mappings.put(m_addresses[i], m_mapping);
@@ -159,7 +159,7 @@ public class bhBlobTransaction_CreateCell extends bhA_BlobTransaction
 		//---		a cell to an existing user's account, and in that case we bypass the cache to ensure a fresh copy (see above).
 		if( this.didGridGrow() )
 		{
-			Map<bhI_BlobKeySource, bhI_Blob> values = new HashMap<bhI_BlobKeySource, bhI_Blob>();
+			Map<bhI_BlobKey, bhI_Blob> values = new HashMap<bhI_BlobKey, bhI_Blob>();
 
 			/*( int i = 0; i < m_addresses.length; i++ )
 			{

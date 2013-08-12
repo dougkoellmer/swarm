@@ -14,7 +14,7 @@ import b33hive.server.data.blob.bhBlobException;
 import b33hive.server.data.blob.bhBlobManagerFactory;
 import b33hive.server.data.blob.bhE_BlobCacheLevel;
 import b33hive.server.data.blob.bhI_Blob;
-import b33hive.server.data.blob.bhI_BlobKeySource;
+import b33hive.server.data.blob.bhI_BlobKey;
 import b33hive.server.data.blob.bhI_BlobManager;
 import b33hive.server.entities.bhE_GridType;
 import b33hive.server.entities.bhServerCell;
@@ -53,13 +53,13 @@ public class getCode implements bhI_RequestHandler, bhI_DeferredRequestHandler
 		//"<img src='http://indianahumanities.net/wp-content/uploads/2011/08/cat2.jpg' />"
 	};
 	
-	private HashMap<bhI_BlobKeySource, Class<? extends bhI_Blob>> getBlobCoordSet(bhTransactionContext context, boolean forceCreate)
+	private HashMap<bhI_BlobKey, Class<? extends bhI_Blob>> getBlobCoordSet(bhTransactionContext context, boolean forceCreate)
 	{
-		HashMap<bhI_BlobKeySource, Class<? extends bhI_Blob>> set = (HashMap<bhI_BlobKeySource, Class<? extends bhI_Blob>>) context.getUserData(bhE_RequestPath.getCode);
+		HashMap<bhI_BlobKey, Class<? extends bhI_Blob>> set = (HashMap<bhI_BlobKey, Class<? extends bhI_Blob>>) context.getUserData(bhE_RequestPath.getCode);
 		
 		if( set == null && forceCreate)
 		{
-			set = new HashMap<bhI_BlobKeySource, Class<? extends bhI_Blob>>();
+			set = new HashMap<bhI_BlobKey, Class<? extends bhI_Blob>>();
 			context.setUserData(bhE_RequestPath.getCode, set);
 		}
 		
@@ -76,7 +76,7 @@ public class getCode implements bhI_RequestHandler, bhI_DeferredRequestHandler
 		
 		if( context.getRequestCount(bhE_RequestPath.getCode) > 1 )
 		{
-			HashMap<bhI_BlobKeySource, Class<? extends bhI_Blob>> blobCoordSet = this.getBlobCoordSet(context, true);
+			HashMap<bhI_BlobKey, Class<? extends bhI_Blob>> blobCoordSet = this.getBlobCoordSet(context, true);
 			
 			blobCoordSet.put(mapping, bhServerCell.class);
 			
@@ -158,7 +158,7 @@ public class getCode implements bhI_RequestHandler, bhI_DeferredRequestHandler
 	@Override
 	public void handleDeferredRequests(bhTransactionContext context, bhTransactionBatch batch)
 	{
-		HashMap<bhI_BlobKeySource, Class<? extends bhI_Blob>> query = this.getBlobCoordSet(context, false);
+		HashMap<bhI_BlobKey, Class<? extends bhI_Blob>> query = this.getBlobCoordSet(context, false);
 		
 		if( query == null )
 		{
@@ -167,7 +167,7 @@ public class getCode implements bhI_RequestHandler, bhI_DeferredRequestHandler
 
 		bhI_BlobManager blobManager = bh_s.blobMngrFactory.create(bhE_BlobCacheLevel.values());
 		
-		Map<bhI_BlobKeySource, bhI_Blob> result = null;
+		Map<bhI_BlobKey, bhI_Blob> result = null;
 		bhE_ResponseError error = bhE_ResponseError.NO_ERROR;
 		
 		try

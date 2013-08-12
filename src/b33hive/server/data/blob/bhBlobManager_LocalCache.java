@@ -42,14 +42,14 @@ class bhBlobManager_LocalCache extends bhA_BlobManagerWithCache
 	 * @throws bhBlobException
 	 */
 	@Override
-	protected Map<bhI_BlobKeySource, bhI_Blob> getBlobsFromCache(Map<bhI_BlobKeySource, Class<? extends bhI_Blob>> values) throws bhBlobException
+	protected Map<bhI_BlobKey, bhI_Blob> getBlobsFromCache(Map<bhI_BlobKey, Class<? extends bhI_Blob>> values) throws bhBlobException
 	{
-		Map<bhI_BlobKeySource, bhI_Blob> toReturn = null;
+		Map<bhI_BlobKey, bhI_Blob> toReturn = null;
 		
-		Iterator<bhI_BlobKeySource> iterator = values.keySet().iterator();
+		Iterator<bhI_BlobKey> iterator = values.keySet().iterator();
 		while( iterator.hasNext() )
 		{
-			bhI_BlobKeySource keySource = iterator.next();
+			bhI_BlobKey keySource = iterator.next();
 			Class<? extends bhI_Blob> blobType = values.get(keySource);
 			
 			bhI_Blob blobTemplate = m_templateMngr.getTemplate(blobType);
@@ -62,7 +62,7 @@ class bhBlobManager_LocalCache extends bhA_BlobManagerWithCache
 			{
 				iterator.remove();
 				
-				toReturn = toReturn == null ? new HashMap<bhI_BlobKeySource, bhI_Blob>() : toReturn;
+				toReturn = toReturn == null ? new HashMap<bhI_BlobKey, bhI_Blob>() : toReturn;
 				toReturn.put(keySource, cachedBlob);
 			}
 		}
@@ -89,12 +89,12 @@ class bhBlobManager_LocalCache extends bhA_BlobManagerWithCache
 	}
 
 	@Override
-	protected void putBlobsIntoCache(Map<bhI_BlobKeySource, bhI_Blob> values) throws bhBlobException
+	protected void putBlobsIntoCache(Map<bhI_BlobKey, bhI_Blob> values) throws bhBlobException
 	{
-		Iterator<bhI_BlobKeySource> iterator = values.keySet().iterator();
+		Iterator<bhI_BlobKey> iterator = values.keySet().iterator();
 		while( iterator.hasNext() )
 		{
-			bhI_BlobKeySource keySource = iterator.next();
+			bhI_BlobKey keySource = iterator.next();
 			bhI_Blob blob = values.get(keySource);
 			
 			if( this.isCacheable(blob) )
@@ -105,12 +105,12 @@ class bhBlobManager_LocalCache extends bhA_BlobManagerWithCache
 	}
 
 	@Override
-	protected void deleteBlobsFromCache(Map<bhI_BlobKeySource, Class<? extends bhI_Blob>> values) throws bhBlobException
+	protected void deleteBlobsFromCache(Map<bhI_BlobKey, Class<? extends bhI_Blob>> values) throws bhBlobException
 	{
-		Iterator<bhI_BlobKeySource> iterator = values.keySet().iterator();
+		Iterator<bhI_BlobKey> iterator = values.keySet().iterator();
 		while( iterator.hasNext() )
 		{
-			bhI_BlobKeySource keySource = iterator.next();
+			bhI_BlobKey keySource = iterator.next();
 			bhI_Blob blob = m_templateMngr.getTemplate(values.get(keySource));
 			
 			if( !isCacheable(blob) )

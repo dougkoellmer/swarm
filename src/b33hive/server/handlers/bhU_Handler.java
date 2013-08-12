@@ -4,7 +4,7 @@ import java.util.logging.Logger;
 
 import b33hive.server.data.blob.bhBlobException;
 import b33hive.server.data.blob.bhI_Blob;
-import b33hive.server.data.blob.bhI_BlobKeySource;
+import b33hive.server.data.blob.bhI_BlobKey;
 import b33hive.server.data.blob.bhI_BlobManager;
 import b33hive.shared.statemachine.bhA_State;
 import b33hive.shared.transaction.bhE_ResponseError;
@@ -30,7 +30,7 @@ public class bhU_Handler
 		return instance != null ? (T) instance : null;
 	}
 	
-	public static bhI_Blob getBlob(bhI_BlobManager blobMngr, bhI_BlobKeySource key, Class<? extends bhI_Blob> T, bhTransactionResponse response)
+	public static bhI_Blob getBlob(bhI_BlobManager blobMngr, bhI_BlobKey key, Class<? extends bhI_Blob> T, bhTransactionResponse response)
 	{
 		bhI_Blob blob = null;
 		

@@ -73,8 +73,12 @@ public class bhTabPanel extends AbsolutePanel implements bhI_UIElement
 		
 		updateLayout();
 		
-		m_tabContainerWrapper.add(m_tabContainer);
-		this.add(m_tabContainerWrapper);
+		if( m_tabs.length > 1 )
+		{
+			m_tabContainerWrapper.add(m_tabContainer);
+			this.add(m_tabContainerWrapper);
+		}
+		
 		this.add(m_contentContainer);
 		
 		for( int i = 0; i < m_tabs.length; i++ )
@@ -83,9 +87,16 @@ public class bhTabPanel extends AbsolutePanel implements bhI_UIElement
 		}
 	}
 	
+	public double getTabButtonContainerHeight()
+	{
+		double tabHeight = m_tabs.length == 1 ? 0 : TAB_HEIGHT-1;
+		
+		return tabHeight;
+	}
+	
 	private void updateLayout()
 	{
-		double tabHeight = TAB_HEIGHT-1;
+		double tabHeight = getTabButtonContainerHeight();
 		this.setHeight(RootPanel.get().getOffsetHeight() + "px");
 		double containerHeight = RootPanel.get().getOffsetHeight() - tabHeight;
 		m_tabContainerWrapper.setHeight(tabHeight + "px");

@@ -151,7 +151,8 @@ public class bhCodeEditorTabContent extends AbsolutePanel implements bhI_TabCont
 	
 	private void updateLayout()
 	{
-		double editorHeight = RootPanel.get().getOffsetHeight() - bhTabPanel.TAB_HEIGHT*2 - bhS_UI.MAGIC_UI_SPACING*2;
+		double tabButtonContainerHeight = bh_view.splitPanel.getTabPanel().getTabButtonContainerHeight();
+		double editorHeight = RootPanel.get().getOffsetHeight() - bhTabPanel.TAB_HEIGHT - bhS_UI.MAGIC_UI_SPACING*2 - tabButtonContainerHeight;
 		m_editor.setSize(bh_view.splitPanel.getTabPanelWidth() + "px", editorHeight + "px");
 		
 		m_editor.updateLayout();

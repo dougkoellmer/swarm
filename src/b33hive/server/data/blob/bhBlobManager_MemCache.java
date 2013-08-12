@@ -96,16 +96,16 @@ class bhBlobManager_MemCache extends bhA_BlobManagerWithCache
 	}
 	
 	@Override
-	protected void deleteBlobsFromCache(Map<bhI_BlobKeySource, Class<? extends bhI_Blob>> values) throws bhBlobException
+	protected void deleteBlobsFromCache(Map<bhI_BlobKey, Class<? extends bhI_Blob>> values) throws bhBlobException
 	{
 		AsyncMemcacheService memCache = MemcacheServiceFactory.getAsyncMemcacheService();
 		
 		ArrayList<String> keys = null;
 		
-		Iterator<bhI_BlobKeySource> iterator = values.keySet().iterator();
+		Iterator<bhI_BlobKey> iterator = values.keySet().iterator();
 		while( iterator.hasNext() )
 		{
-			bhI_BlobKeySource keySource = iterator.next();
+			bhI_BlobKey keySource = iterator.next();
 			bhI_Blob blob = m_templateMngr.getTemplate(values.get(keySource));
 			
 			if( !isCacheable(blob) )
@@ -131,14 +131,14 @@ class bhBlobManager_MemCache extends bhA_BlobManagerWithCache
 	}
 	
 	@Override
-	protected void putBlobsIntoCache(Map<bhI_BlobKeySource, bhI_Blob> values) throws bhBlobException
+	protected void putBlobsIntoCache(Map<bhI_BlobKey, bhI_Blob> values) throws bhBlobException
 	{
 		HashMap<String, byte[]> entries = null;
 		
-		Iterator<bhI_BlobKeySource> iterator = values.keySet().iterator();
+		Iterator<bhI_BlobKey> iterator = values.keySet().iterator();
 		while( iterator.hasNext() )
 		{
-			bhI_BlobKeySource keySource = iterator.next();
+			bhI_BlobKey keySource = iterator.next();
 			bhI_Blob blob = values.get(keySource);
 			
 			if( !isCacheable(blob) )
@@ -167,15 +167,15 @@ class bhBlobManager_MemCache extends bhA_BlobManagerWithCache
 	}
 	
 	@Override
-	protected Map<bhI_BlobKeySource, bhI_Blob> getBlobsFromCache(Map<bhI_BlobKeySource, Class<? extends bhI_Blob>> values) throws bhBlobException
+	protected Map<bhI_BlobKey, bhI_Blob> getBlobsFromCache(Map<bhI_BlobKey, Class<? extends bhI_Blob>> values) throws bhBlobException
 	{
 		ArrayList<String> generatedKeys = new ArrayList<String>();
 		Map<String, bhBlobTuple> generatedKeysToTuples = new HashMap<String, bhBlobTuple>();
 		
-		Iterator<? extends bhI_BlobKeySource> keySourceIterator = values.keySet().iterator();
+		Iterator<? extends bhI_BlobKey> keySourceIterator = values.keySet().iterator();
 		while(keySourceIterator.hasNext() )
 		{
-			bhI_BlobKeySource keySource = keySourceIterator.next();
+			bhI_BlobKey keySource = keySourceIterator.next();
 			Class<? extends bhI_Blob> blobType = values.get(keySource);
 			bhI_Blob blobTemplate = m_templateMngr.getTemplate(blobType);
 			
@@ -202,7 +202,7 @@ class bhBlobManager_MemCache extends bhA_BlobManagerWithCache
 			return null;
 		}
 		
-		HashMap<bhI_BlobKeySource, bhI_Blob> toReturn = new HashMap<bhI_BlobKeySource, bhI_Blob>();
+		HashMap<bhI_BlobKey, bhI_Blob> toReturn = new HashMap<bhI_BlobKey, bhI_Blob>();
 		
 		for( String generatedKey : result.keySet() )
 		{

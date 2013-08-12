@@ -5,7 +5,7 @@ import java.security.SecureRandom;
 import b33hive.server.account.bhS_ServerAccount;
 import b33hive.server.account.bhU_Hashing;
 import b33hive.server.data.blob.bhI_Blob;
-import b33hive.server.data.blob.bhI_BlobKeySource;
+import b33hive.server.data.blob.bhI_BlobKey;
 import b33hive.server.data.blob.bhU_Blob;
 import b33hive.shared.app.bh;
 import b33hive.shared.json.bhA_JsonEncodable;
@@ -13,7 +13,7 @@ import b33hive.shared.json.bhI_JsonKeySource;
 import b33hive.shared.json.bhI_JsonObject;
 import b33hive.shared.json.bhJsonHelper;
 
-class bhSessionCookieValue extends bhA_JsonEncodable implements bhI_BlobKeySource
+class bhSessionCookieValue extends bhA_JsonEncodable implements bhI_BlobKey
 {
 	private static enum JsonKey implements bhI_JsonKeySource
 	{

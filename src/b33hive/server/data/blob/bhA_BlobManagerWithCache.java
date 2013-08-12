@@ -26,10 +26,10 @@ abstract class bhA_BlobManagerWithCache extends bhA_BlobManager
 	//---		overridden instead of the interface methods, which are finalized here.
 	protected abstract void putBlobIntoCache(String generatedKey, bhI_Blob blob) throws bhBlobException;
 	protected abstract <T extends bhI_Blob> bhI_Blob getBlobFromCache(String generatedKey, Class<? extends T> blobType) throws bhBlobException;
-	protected abstract Map<bhI_BlobKeySource, bhI_Blob> getBlobsFromCache(Map<bhI_BlobKeySource, Class<? extends bhI_Blob>> values) throws bhBlobException;
+	protected abstract Map<bhI_BlobKey, bhI_Blob> getBlobsFromCache(Map<bhI_BlobKey, Class<? extends bhI_Blob>> values) throws bhBlobException;
 	protected abstract void deleteBlobFromCache(String generatedKey) throws bhBlobException;
-	protected abstract void deleteBlobsFromCache(Map<bhI_BlobKeySource, Class<? extends bhI_Blob>> values) throws bhBlobException;
-	protected abstract void putBlobsIntoCache(Map<bhI_BlobKeySource, bhI_Blob> values) throws bhBlobException;
+	protected abstract void deleteBlobsFromCache(Map<bhI_BlobKey, Class<? extends bhI_Blob>> values) throws bhBlobException;
+	protected abstract void putBlobsIntoCache(Map<bhI_BlobKey, bhI_Blob> values) throws bhBlobException;
 	
 	private void private_putBlobIntoCache(String generatedKey, bhI_Blob blob) throws bhBlobException
 	{
@@ -45,7 +45,7 @@ abstract class bhA_BlobManagerWithCache extends bhA_BlobManager
 	}
 	
 	@Override
-	public final void putBlob(bhI_BlobKeySource keySource, bhI_Blob blob) throws bhBlobException, ConcurrentModificationException
+	public final void putBlob(bhI_BlobKey keySource, bhI_Blob blob) throws bhBlobException, ConcurrentModificationException
 	{
 		if( m_wrappedManager != null )
 		{
@@ -56,7 +56,7 @@ abstract class bhA_BlobManagerWithCache extends bhA_BlobManager
 	}
 	
 	@Override
-	public final <T extends bhI_Blob> T getBlob(bhI_BlobKeySource keySource, Class<? extends T> blobType) throws bhBlobException
+	public final <T extends bhI_Blob> T getBlob(bhI_BlobKey keySource, Class<? extends T> blobType) throws bhBlobException
 	{
 		bhI_Blob template = m_templateMngr.getTemplate(blobType);
 		
@@ -81,7 +81,7 @@ abstract class bhA_BlobManagerWithCache extends bhA_BlobManager
 	}
 	
 	@Override
-	public final void deleteBlob(bhI_BlobKeySource keySource, Class<? extends bhI_Blob> blobType) throws bhBlobException
+	public final void deleteBlob(bhI_BlobKey keySource, Class<? extends bhI_Blob> blobType) throws bhBlobException
 	{
 		bhI_Blob blobTemplate = m_templateMngr.getTemplate(blobType);
 		
@@ -94,13 +94,13 @@ abstract class bhA_BlobManagerWithCache extends bhA_BlobManager
 	}
 	
 	@Override
-	public final void deleteBlobAsync(bhI_BlobKeySource keySource, Class<? extends bhI_Blob> blobType) throws bhBlobException
+	public final void deleteBlobAsync(bhI_BlobKey keySource, Class<? extends bhI_Blob> blobType) throws bhBlobException
 	{
 		this.deleteBlob(keySource, blobType);
 	}
 	
 	@Override
-	public final void deleteBlobs(Map<bhI_BlobKeySource, Class<? extends bhI_Blob>> values) throws bhBlobException
+	public final void deleteBlobs(Map<bhI_BlobKey, Class<? extends bhI_Blob>> values) throws bhBlobException
 	{
 		this.deleteBlobsFromCache(values);
 		
@@ -111,13 +111,13 @@ abstract class bhA_BlobManagerWithCache extends bhA_BlobManager
 	}
 	
 	@Override
-	public final void deleteBlobsAsync(Map<bhI_BlobKeySource, Class<? extends bhI_Blob>> values) throws bhBlobException
+	public final void deleteBlobsAsync(Map<bhI_BlobKey, Class<? extends bhI_Blob>> values) throws bhBlobException
 	{
 		this.deleteBlobs(values);
 	}
 	
 	@Override
-	public final void putBlobs(Map<bhI_BlobKeySource, bhI_Blob> values) throws bhBlobException
+	public final void putBlobs(Map<bhI_BlobKey, bhI_Blob> values) throws bhBlobException
 	{
 		if( this.m_wrappedManager != null)
 		{
@@ -128,9 +128,9 @@ abstract class bhA_BlobManagerWithCache extends bhA_BlobManager
 	}
 	
 	@Override
-	public final Map<bhI_BlobKeySource, bhI_Blob> getBlobs(Map<bhI_BlobKeySource, Class<? extends bhI_Blob>> values) throws bhBlobException
+	public final Map<bhI_BlobKey, bhI_Blob> getBlobs(Map<bhI_BlobKey, Class<? extends bhI_Blob>> values) throws bhBlobException
 	{
-		Map<bhI_BlobKeySource, bhI_Blob> cachedBlobs = this.getBlobsFromCache(values);
+		Map<bhI_BlobKey, bhI_Blob> cachedBlobs = this.getBlobsFromCache(values);
 		
 		if( values.size() == 0 )
 		{
@@ -142,19 +142,19 @@ abstract class bhA_BlobManagerWithCache extends bhA_BlobManager
 			
 			if( values.size() == 1 )
 			{
-				Iterator<bhI_BlobKeySource> iterator = values.keySet().iterator();
-				bhI_BlobKeySource soloKeySource = iterator.next();
+				Iterator<bhI_BlobKey> iterator = values.keySet().iterator();
+				bhI_BlobKey soloKeySource = iterator.next();
 				Class<? extends bhI_Blob> soloBlobType = values.get(soloKeySource);
 				
 				bhI_Blob blobFromWrappedManager = m_wrappedManager.getBlob(soloKeySource, soloBlobType);
 				
-				Map<bhI_BlobKeySource, bhI_Blob> toReturn = null;
+				Map<bhI_BlobKey, bhI_Blob> toReturn = null;
 				
 				if( cachedBlobs == null )
 				{
 					if( blobFromWrappedManager != null )
 					{
-						toReturn = new HashMap<bhI_BlobKeySource, bhI_Blob>();
+						toReturn = new HashMap<bhI_BlobKey, bhI_Blob>();
 					}
 				}
 				else
@@ -173,7 +173,7 @@ abstract class bhA_BlobManagerWithCache extends bhA_BlobManager
 			}
 			else if( values.size() > 1 )
 			{
-				Map<bhI_BlobKeySource, bhI_Blob> blobsFromWrappedManager = m_wrappedManager.getBlobs(values);
+				Map<bhI_BlobKey, bhI_Blob> blobsFromWrappedManager = m_wrappedManager.getBlobs(values);
 				
 				if( blobsFromWrappedManager != null )
 				{
@@ -188,10 +188,10 @@ abstract class bhA_BlobManagerWithCache extends bhA_BlobManager
 					}
 					else
 					{
-						Iterator<bhI_BlobKeySource> iterator = cachedBlobs.keySet().iterator();
+						Iterator<bhI_BlobKey> iterator = cachedBlobs.keySet().iterator();
 						while( iterator.hasNext() )
 						{
-							bhI_BlobKeySource keySourceFromCache = iterator.next();
+							bhI_BlobKey keySourceFromCache = iterator.next();
 							bhI_Blob blobFromCache = cachedBlobs.get(keySourceFromCache);
 							
 							blobsFromWrappedManager.put(keySourceFromCache, blobFromCache);
@@ -211,7 +211,7 @@ abstract class bhA_BlobManagerWithCache extends bhA_BlobManager
 	}
 	
 	@Override
-	public Map<bhI_BlobKeySource, bhI_Blob> performQuery(bhBlobQuery query) throws bhBlobException
+	public Map<bhI_BlobKey, bhI_Blob> performQuery(bhBlobQuery query) throws bhBlobException
 	{
 		//--- DRK > Probably never going to support queries here.
 		if( this.m_wrappedManager != null )
@@ -223,7 +223,7 @@ abstract class bhA_BlobManagerWithCache extends bhA_BlobManager
 	}
 	
 	@Override
-	public final void putBlobAsync(bhI_BlobKeySource keySource, bhI_Blob blob) throws bhBlobException
+	public final void putBlobAsync(bhI_BlobKey keySource, bhI_Blob blob) throws bhBlobException
 	{
 		//--- DRK > Probably never going to support queries here.
 		if( this.m_wrappedManager != null )
@@ -235,7 +235,7 @@ abstract class bhA_BlobManagerWithCache extends bhA_BlobManager
 	}
 	
 	@Override
-	public final void putBlobsAsync(Map<bhI_BlobKeySource, bhI_Blob> values) throws bhBlobException
+	public final void putBlobsAsync(Map<bhI_BlobKey, bhI_Blob> values) throws bhBlobException
 	{
 		//--- DRK > Probably never going to support queries here.
 		if( this.m_wrappedManager != null )

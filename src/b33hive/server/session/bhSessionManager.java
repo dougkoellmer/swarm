@@ -25,7 +25,7 @@ import b33hive.server.data.blob.bhBlobException;
 import b33hive.server.data.blob.bhBlobManagerFactory;
 import b33hive.server.data.blob.bhE_BlobCacheLevel;
 import b33hive.server.data.blob.bhI_Blob;
-import b33hive.server.data.blob.bhI_BlobKeySource;
+import b33hive.server.data.blob.bhI_BlobKey;
 import b33hive.server.data.blob.bhI_BlobManager;
 import b33hive.server.data.blob.bhU_Serialization;
 import b33hive.server.transaction.bhI_TransactionScopeListener;
@@ -152,7 +152,7 @@ public class bhSessionManager implements bhI_TransactionScopeListener
 				}
 				else
 				{
-					HashMap<bhI_BlobKeySource, bhI_Blob> map = new HashMap<bhI_BlobKeySource, bhI_Blob>();
+					HashMap<bhI_BlobKey, bhI_Blob> map = new HashMap<bhI_BlobKey, bhI_Blob>();
 					map.put(transCookieValue, userSession);
 					map.put(persCookieValue, userSession);
 					
@@ -309,7 +309,7 @@ public class bhSessionManager implements bhI_TransactionScopeListener
 				{
 					bhU_Cookie.delete((HttpServletResponse) response.getNativeResponse(), bhE_SessionType.PERSISTENT.getCookieName());
 					
-					HashMap<bhI_BlobKeySource, Class<? extends bhI_Blob>> map = new HashMap<bhI_BlobKeySource, Class<? extends bhI_Blob>>();
+					HashMap<bhI_BlobKey, Class<? extends bhI_Blob>> map = new HashMap<bhI_BlobKey, Class<? extends bhI_Blob>>();
 					map.put(transCookieValue, bhUserSession.class);
 					map.put(persCookieValue, bhUserSession.class);
 					m_blobManager.deleteBlobsAsync(map);

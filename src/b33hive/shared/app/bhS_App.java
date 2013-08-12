@@ -18,6 +18,8 @@ public class bhS_App
 	
 	public static final double DEPTH_OF_FIELD = 500;
 	
+	public static final String CELL_ADDRESS_REGEX = "^[a-zA-Z0-9_]*$";
+	
 	
 	public static final double MAX_ZOOM_CELL_PIXEL_COUNT = 1;
 	public static final double MIN_Z = 0;

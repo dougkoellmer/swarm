@@ -1,5 +1,6 @@
 package b33hive.server.blobxn;
 
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -8,6 +9,8 @@ import b33hive.server.data.blob.bhA_BlobTransaction;
 import b33hive.server.data.blob.bhBlobException;
 import b33hive.server.data.blob.bhBlobManagerFactory;
 import b33hive.server.data.blob.bhE_BlobCacheLevel;
+import b33hive.server.data.blob.bhI_Blob;
+import b33hive.server.data.blob.bhI_BlobKey;
 import b33hive.server.data.blob.bhI_BlobManager;
 import b33hive.server.entities.bhE_GridType;
 import b33hive.server.entities.bhServerCell;
@@ -24,12 +27,12 @@ public class bhBlobTransaction_SetCellAddress extends bhA_BlobTransaction
 	private static final Logger s_logger = Logger.getLogger(bhBlobTransaction_SetCellAddress.class.getName());
 	
 	private final bhServerCellAddressMapping m_mapping;
-	private final bhServerCellAddress m_address;
+	private final bhServerCellAddress[] m_addresses;
 	
-	public bhBlobTransaction_SetCellAddress(bhServerCellAddressMapping mapping, bhServerCellAddress address)
+	public bhBlobTransaction_SetCellAddress(bhServerCellAddressMapping mapping, bhServerCellAddress[] addresses)
 	{
 		m_mapping = mapping;
-		m_address = address;
+		m_addresses = addresses;
 	}
 	
 	@Override
@@ -59,9 +62,14 @@ public class bhBlobTransaction_SetCellAddress extends bhA_BlobTransaction
 			throw new bhBlobException("Problem confirming cell at mapping.");
 		}
 		
-		blobManager.putBlob(m_address, m_mapping);
+		HashMap<bhI_BlobKey, bhI_Blob> batch = new HashMap<bhI_BlobKey, bhI_Blob>();
 		
-		cell.setAddress(m_address);
+		for( int i = 0; i < m_addresses.length; i++ )
+		{
+			batch.put(m_addresses[i], m_mapping);
+		}
+		
+		cell.setAddress(m_addresses[0]);
 		
 		blobManager.putBlob(m_mapping, cell);
 	}

@@ -55,7 +55,7 @@ public class bhA_BaseStateObject extends Object
 		
 		bhU_Debug.ASSERT(thisArg instanceof bhA_StateMachine);
 		
-		((bhA_StateMachine) thisArg).internal_pushState(T, constructor);
+		((bhA_StateMachine) thisArg).pushState_internal(T, constructor);
 	}
 	
 	protected void machine_popState(bhA_State thisArg, Object ... args)
@@ -64,7 +64,7 @@ public class bhA_BaseStateObject extends Object
 		
 		bhU_Debug.ASSERT(thisArg instanceof bhA_StateMachine);
 		
-		((bhA_StateMachine) thisArg).internal_popState(args);
+		((bhA_StateMachine) thisArg).popState_internal(args);
 	}
 	
 	protected void machine_setState(bhA_State thisArg, Class<? extends bhA_State> T)
