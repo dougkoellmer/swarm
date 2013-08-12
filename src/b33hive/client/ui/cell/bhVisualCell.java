@@ -51,12 +51,12 @@ public class bhVisualCell extends AbsolutePanel implements bhI_BufferCellListene
 	
 	private int m_id;
 	private final AbsolutePanel m_contentPanel = new AbsolutePanel();
-	private final AbsolutePanel m_backgroundPanel = new AbsolutePanel();
+	//private final AbsolutePanel //m_backgroundPanel = new AbsolutePanel();
 	private final bhUIBlocker	m_statusPanel = new bhUIBlocker();
 	private final AbsolutePanel m_glassPanel = new AbsolutePanel();
 	private final bhCellSpinner m_spinner	= new bhCellSpinner(bhS_UI.SPINNER_ROTATION_RATE);
 	
-	private final ArrayList<Image> m_backgroundImages = new ArrayList<Image>();
+	//private final ArrayList<Image> //m_backgroundImages = new ArrayList<Image>();
 	private int m_currentImageIndex = -1;
 	
 	//private static final String CELL_PLUS_SPACING_PIXEL_COUNT = bhS_App.CELL_PLUS_SPACING_PIXEL_COUNT + "px";
@@ -78,7 +78,7 @@ public class bhVisualCell extends AbsolutePanel implements bhI_BufferCellListene
 		this.addStyleName("visual_cell");
 		m_glassPanel.addStyleName("bh_cell_glass");
 
-		m_backgroundPanel.getElement().getStyle().setPosition(Position.ABSOLUTE);
+		//m_backgroundPanel.getElement().getStyle().setPosition(Position.ABSOLUTE);
 		m_statusPanel.getElement().getStyle().setPosition(Position.ABSOLUTE);
 		m_glassPanel.getElement().getStyle().setPosition(Position.ABSOLUTE);
 		
@@ -88,23 +88,23 @@ public class bhVisualCell extends AbsolutePanel implements bhI_BufferCellListene
 		
 		m_statusPanel.setVisible(false);
 		
-		int maxImages = bhS_App.MAX_CELL_IMAGES;
+		/*int maxImages = bhS_App.MAX_CELL_IMAGES;
 		int currentBit = 1;
 		for( int i = 0; i <= 1; i++ )
 		{
 			Image image = new Image();
 			image.setUrl("/r.img/cell_size_" + currentBit + ".png");
 			image.getElement().getStyle().setDisplay(Display.NONE);
-			m_backgroundImages.add(image);
-			m_backgroundPanel.add(image);
+			//m_backgroundImages.add(image);
+			//m_backgroundPanel.add(image);
 			
 			currentBit <<= 1;
-		}
+		}*/
 		
-		bhU_UI.toggleSelectability(m_backgroundPanel.getElement(), false);
+		//bhU_UI.toggleSelectability(//m_backgroundPanel.getElement(), false);
 		this.allowUserSelect(false);
 		
-		this.add(m_backgroundPanel);
+		//this.add(//m_backgroundPanel);
 		this.add(m_contentPanel);
 		this.add(m_statusPanel);
 		this.add(m_glassPanel);
@@ -163,20 +163,20 @@ public class bhVisualCell extends AbsolutePanel implements bhI_BufferCellListene
 		
 		if( m_currentImageIndex != -1 )
 		{
-			m_backgroundImages.get(m_currentImageIndex).getElement().getStyle().setDisplay(Display.NONE);
+			//m_backgroundImages.get(m_currentImageIndex).getElement().getStyle().setDisplay(Display.NONE);
 		}
 		
 		if( m_subCellDimension == 1 )
 		{
 			this.setSize(m_width+m_padding + "px", m_height+m_padding + "px");
-			m_backgroundPanel.setSize(m_width+m_padding + "px", m_height+m_padding + "px");
+			//m_backgroundPanel.setSize(m_width+m_padding + "px", m_height+m_padding + "px");
 			
 			m_currentImageIndex = 0;
-			m_backgroundImages.get(m_currentImageIndex).getElement().getStyle().setDisplay(Display.BLOCK);
+			//m_backgroundImages.get(m_currentImageIndex).getElement().getStyle().setDisplay(Display.BLOCK);
 			
 			//--- DRK > Rare case of jumping from beyond max imaged zoom to all the way to cell size 1,
 			//---		but could technically happen with bad frame rate or something, so clearing this here just in case.
-			m_backgroundPanel.getElement().getStyle().clearBackgroundColor();
+			//m_backgroundPanel.getElement().getStyle().clearBackgroundColor();
 			
 			m_contentPanel.addStyleName("visual_cell_content");
 		}
@@ -185,18 +185,18 @@ public class bhVisualCell extends AbsolutePanel implements bhI_BufferCellListene
 			this.setStatusHtml(null, false); // shouldn't have to be done, but what the hell.
 			
 			this.setSize(m_width+"px", m_height+"px");
-			m_backgroundPanel.setSize(m_width+"px", m_height+"px");
+			//m_backgroundPanel.setSize(m_width+"px", m_height+"px");
 			
 			if( m_subCellDimension > bhS_App.MAX_IMAGED_CELL_SIZE )
 			{				
-				m_backgroundPanel.getElement().getStyle().setBackgroundColor("white");
+				//m_backgroundPanel.getElement().getStyle().setBackgroundColor("white");
 			}
 			else
 			{
-				m_backgroundPanel.getElement().getStyle().clearBackgroundColor();
+				//m_backgroundPanel.getElement().getStyle().clearBackgroundColor();
 				
 				m_currentImageIndex = bhU_BitTricks.calcBitPosition(m_subCellDimension);
-				m_backgroundImages.get(m_currentImageIndex).getElement().getStyle().setDisplay(Display.BLOCK);
+				//m_backgroundImages.get(m_currentImageIndex).getElement().getStyle().setDisplay(Display.BLOCK);
 			}
 			
 			m_contentPanel.removeStyleName("visual_cell_content");
@@ -227,7 +227,7 @@ public class bhVisualCell extends AbsolutePanel implements bhI_BufferCellListene
 		
 		if( m_currentImageIndex != -1 )
 		{
-			m_backgroundImages.get(m_currentImageIndex).getElement().getStyle().setDisplay(Display.NONE);
+			//m_backgroundImages.get(m_currentImageIndex).getElement().getStyle().setDisplay(Display.NONE);
 		}
 
 		this.insertSafeHtml("");
