@@ -43,6 +43,11 @@ public class bhCameraManager
 		m_camera = camera;
 	}
 	
+	public bhCamera getCamera()
+	{
+		return m_camera;
+	}
+	
 	public bhPoint getTargetPosition()
 	{
 		return m_targetPosition;
@@ -55,11 +60,22 @@ public class bhCameraManager
 		return y;
 	}
 	
+	public double getSnapProgress()
+	{
+		if( m_snapTime > 0 ) // just being safe
+		{
+			return 1 - (m_xProgress / m_snapTime);
+		}
+		
+		return 0;
+	}
+	
 	protected void update(double timeStep)
 	{//s_logger.severe(m_camera.getPosition() + "");
 		if ( m_xProgress == 0 )
 		{
 			m_cameraAtRestFrameCount++;
+			m_snapTime = 0;
 			
 			return;
 		}

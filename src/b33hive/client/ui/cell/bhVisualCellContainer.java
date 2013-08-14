@@ -69,7 +69,7 @@ public class bhVisualCellContainer extends FlowPanel implements ResizeHandler, b
 	
 	public bhVisualCellContainer(bhViewConfig config)
 	{
-		m_magnifier = new bhMagnifier(config.magnifierTickCount);
+		m_magnifier = new bhMagnifier(config.magnifierTickCount, config.magFadeInTime_seconds);
 		
 		m_splashGlass.addStyleName("bh_splash_glass");
 		m_cellContainerInner.addStyleName("bh_cell_container_inner");
@@ -110,7 +110,7 @@ public class bhVisualCellContainer extends FlowPanel implements ResizeHandler, b
 		return m_splashGlass;
 	}
 	
-	public FlowPanel getCellContainerLayer()
+	public FlowPanel getCellContainerInner()
 	{
 		return m_cellContainerInner;
 	}

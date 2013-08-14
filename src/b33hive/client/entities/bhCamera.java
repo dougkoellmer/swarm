@@ -39,7 +39,7 @@ public class bhCamera
 	
 	public double calcMaxZ()
 	{
-		return 700;
+		return 5000;
 		/*
 		if( m_cachedMaxZ != DIRTY_VALUE )
 		{

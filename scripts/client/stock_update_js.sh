@@ -5,17 +5,17 @@ export SHELLOPTS
 
 APP_ID=$1
 
-APP_JS=$(realpath ../../project/war/r.$APP_ID/r.$APP_ID.nocache.js)
-JS_MIN_OUT=${APP_ID}_min.js
-JSP=$(realpath ../../project/war/$APP_ID.jsp)
-MODULE=$(realpath ../../project/war/r.$APP_ID)
+APP_JS=$(realpath ../../project/war/r.app/r.app.nocache.js)
+JS_MIN_OUT=min.js
+JSP=$(realpath ../../project/war/index.jsp)
+MODULE=$(realpath ../../project/war/r.app)
 
 BH_SCRIPTS="../../project/lib/b33hive/scripts/client"
 WAR="../../../../war"
 
 cd $BH_SCRIPTS
 sh update_js.sh $APP_JS $JS_MIN_OUT $JSP $MODULE
-sh minify_html.sh $WAR/$APP_ID.jsp $WAR/$APP_ID.min.jsp
+sh minify_html.sh $WAR/index.jsp $WAR/index.min.jsp
 cd -
 
 

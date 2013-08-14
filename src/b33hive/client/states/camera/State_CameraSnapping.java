@@ -1,5 +1,7 @@
 package b33hive.client.states.camera;
 
+import java.util.logging.Logger;
+
 import b33hive.client.app.bh_c;
 import b33hive.client.entities.bhCamera;
 import b33hive.client.managers.bhCellBuffer;
@@ -40,6 +42,8 @@ import b33hive.shared.structs.bhPoint;
 
 public class State_CameraSnapping extends bhA_State implements bhI_StateEventListener
 {
+	private static final Logger s_logger = Logger.getLogger(State_CameraSnapping.class.getName());
+	
 	public static class Constructor extends bhA_StateConstructor
 	{
 		public Constructor(bhGridCoordinate targetCoordinate)
@@ -78,6 +82,8 @@ public class State_CameraSnapping extends bhA_State implements bhI_StateEventLis
 	private boolean m_hasRequestedCompiledCode = false;
 	
 	private final double m_cellHudHeight;
+	
+	private double m_snapProgressBase;
 	
 	public State_CameraSnapping(double cellHudHeight)
 	{
@@ -141,8 +147,18 @@ public class State_CameraSnapping extends bhA_State implements bhI_StateEventLis
 		
 		requestCodeForTargetCell();
 		
+		m_snapProgressBase = this.getOverallSnapProgress();
+		
 		CameraManager manager = (CameraManager) ((StateMachine_Camera) getParent()).getCameraManager();
 		manager.internal_setTargetPosition(m_utilPoint, false);
+	}
+	
+	public double getOverallSnapProgress()
+	{
+		CameraManager manager = (CameraManager) ((StateMachine_Camera) getParent()).getCameraManager();
+		
+		//s_logger.severe("snap prog base: " + m_snapProgressBase + "   snap prog: " + manager.getSnapProgress());
+		return m_snapProgressBase + (1-m_snapProgressBase)*manager.getSnapProgress();
 	}
 
 	private void requestCodeForTargetCell()
@@ -247,6 +263,8 @@ public class State_CameraSnapping extends bhA_State implements bhI_StateEventLis
 		
 		m_hasRequestedSourceCode = false;
 		m_hasRequestedCompiledCode = false;
+		
+		m_snapProgressBase = 0;
 
 		updateGridCoordinate(castConstructor.m_targetCoordinate, castConstructor.m_targetAddress);
 	}

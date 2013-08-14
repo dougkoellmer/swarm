@@ -53,7 +53,7 @@ public class bhGwtRequestDispatcher implements bhI_AsyncRequestDispatcher, Reque
 	@Override
 	public boolean dispatch(bhTransactionRequest request)
 	{
-		String baseUrl = GWT.getModuleBaseURL() + "t";
+		String baseUrl = "/r.t";
 		String url = baseUrl;
 		String jsonString = request.writeJson().toString();
 		

@@ -1,0 +1,1 @@
+- if you snap to cell address in the middle of an existing snap, i'm not sure cell focuser handles that gracefully...possible solution...have a "did snap to coordinate" event action and listen for that instead

@@ -60,10 +60,10 @@ public class bhViewController extends Object implements bhI_StateEventListener
 		
 		// TODO: Clean this up so that all this crap doesn't add itself to parent containers in constructors.
 		m_listeners.add(bh_c.navigator = new bhMasterNavigator(mouse, m_viewConfig.defaultPageTitle, m_appConfig.floatingHistoryUpdateFreq_seconds));
-		m_listeners.add(bh_view.cellMngr = new bhVisualCellManager(cellContainer.getCellContainerLayer()));
+		m_listeners.add(bh_view.cellMngr = new bhVisualCellManager(cellContainer.getCellContainerInner()));
 		m_listeners.add(bh_view.splitPanel);
 		//m_listeners.add(new bhVisualCellHighlight(cellContainer.getCellContainerLayer()));
-		m_listeners.add(new bhVisualCellFocuser(cellContainer.getCellContainerLayer()));
+		m_listeners.add(new bhVisualCellFocuser(cellContainer.getCellContainerInner()));
 		//m_listeners.add(new bhVisualCellHud((Panel)cellContainer, m_appConfig));
 		
 		RootLayoutPanel.get().add(bh_view.splitPanel);

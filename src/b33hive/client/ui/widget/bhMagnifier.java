@@ -19,6 +19,7 @@ import b33hive.shared.app.bhS_App;
 import b33hive.shared.utils.bhU_Math;
 import b33hive.shared.statemachine.bhA_Action;
 import b33hive.shared.statemachine.bhA_State;
+import b33hive.shared.statemachine.bhE_StateTimeType;
 import b33hive.shared.statemachine.bhI_StateEventListener;
 import b33hive.shared.statemachine.bhStateEvent;
 import b33hive.shared.structs.bhPoint;
@@ -86,10 +87,17 @@ public class bhMagnifier extends FlowPanel implements bhI_StateEventListener
 	private final StateMachine_Camera.SetCameraTarget.Args m_args_SetCameraTarget = new StateMachine_Camera.SetCameraTarget.Args();
 	
 	private final double m_tickRatio;
+	private final double m_fadeInTime_seconds;
+	
+	private double m_baseAlpha;
+	private double m_alpha;
 
-	public bhMagnifier(double tickCount)
+	public bhMagnifier(double tickCount, double fadeInTime_seconds)
 	{
+		m_fadeInTime_seconds = fadeInTime_seconds;
 		m_tickRatio = tickCount = 1.0 / (((double)tickCount)+1.0);
+		
+		m_alpha = m_baseAlpha = 1;
 		
 		this.addStyleName("bh_magnifier");
 		m_zoomIn.addStyleName("bh_zoom_in_button");
@@ -389,6 +397,19 @@ public class bhMagnifier extends FlowPanel implements bhI_StateEventListener
 		
 		m_currentRatio = ratio;
 	}
+	
+	private void startFadeIn()
+	{
+		m_baseAlpha = m_alpha;
+		this.setVisible(true);
+	}
+	
+	private void setAlpha(double alpha)
+	{
+		m_alpha = alpha;
+		s_logger.severe(m_baseAlpha + "   " + m_alpha +"");
+		this.getElement().getStyle().setOpacity(m_alpha);
+	}
 
 	@Override
 	public void onStateEvent(bhStateEvent event)
@@ -415,8 +436,27 @@ public class bhMagnifier extends FlowPanel implements bhI_StateEventListener
 					if( m_cameraState instanceof State_CameraSnapping )
 					{
 						m_underThisControl = false;
+						m_baseAlpha = m_alpha;
+					}
+					else if( m_cameraState instanceof State_ViewingCell )
+					{
+						this.setVisible(false);
+						this.setAlpha(0);
 					}
 				}
+				break;
+			}
+			
+			case DID_EXIT:
+			{
+				if( event.getState() instanceof State_ViewingCell || event.getState() instanceof State_CameraSnapping )
+				{
+					if( !bhA_State.isEntered(State_CameraSnapping.class) && !bhA_State.isEntered(State_ViewingCell.class))
+					{
+						startFadeIn();
+					}
+				}
+				
 				break;
 			}
 			
@@ -429,6 +469,30 @@ public class bhMagnifier extends FlowPanel implements bhI_StateEventListener
 						if( !((StateMachine_Camera) event.getState()).getCameraManager().isCameraAtRest() )
 						{
 							setDraggerPositionFromCamera();
+						}
+					}
+				}
+				else if( event.getState().getParent() instanceof StateMachine_Camera )
+				{
+					if( event.getState() instanceof State_CameraSnapping )
+					{
+						State_CameraSnapping cameraSnapping = bhA_State.getEnteredInstance(State_CameraSnapping.class);
+						if( cameraSnapping != null && cameraSnapping.getPreviousState() != State_ViewingCell.class )
+						{
+							this.setAlpha(m_baseAlpha * (1 - cameraSnapping.getOverallSnapProgress()));
+						}
+					}
+					else if( !(event.getState() instanceof State_ViewingCell) )
+					{
+						if( m_alpha < 1 )
+						{
+							if( event.getState().isEntered() )
+							{
+								double timeMantissa = event.getState().getTimeInState(bhE_StateTimeType.TOTAL) / m_fadeInTime_seconds;
+								timeMantissa = bhU_Math.clamp(timeMantissa, 0, 1);
+								
+								this.setAlpha(m_baseAlpha + (1-m_baseAlpha)*timeMantissa);
+							}
 						}
 					}
 				}

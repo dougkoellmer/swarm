@@ -13,10 +13,10 @@
 
 - make the tolerance for a "touch click" on a cell, in order to snap, a little looser...lots of false negative clicks when i was playing around with it on ipad...had to be very careful to make a perfect click.
 
-- possibly remove magnifier when focused
-
 - possibly automatically shrink console if it gets in the way of focused cell content.
 
 - have richer display of character count quota...need to delineate the fraction a bit better.
 
 - have suggestion drop down for email for sign in, and maybe for sign up too, depending on how it actually works.
+
+- on the first snap, cell shifts to the left for some reason
