@@ -71,7 +71,9 @@ public class bhBlobTransaction_SetCellAddress extends bhA_BlobTransaction
 		
 		cell.setAddress(m_addresses[0]);
 		
-		blobManager.putBlob(m_mapping, cell);
+		batch.put(m_mapping, cell);
+		
+		blobManager.putBlobs(batch);
 	}
 
 	@Override

@@ -165,7 +165,7 @@ public class bhCellAddress extends bhA_JsonEncodable
 			}
 			else
 			{
-				m_rawAddress += "/" + part.toLowerCase();
+				m_rawAddress += "/" + partToLowerCase;
 				m_caseSensitiveRawAddress += "/" + part;
 			}
 			
@@ -183,7 +183,7 @@ public class bhCellAddress extends bhA_JsonEncodable
 	@Override
 	public void writeJson(bhI_JsonObject json)
 	{
-		bh.jsonFactory.getHelper().putString(json, bhE_JsonKey.rawCellAddress, m_caseSensitiveRawAddress);
+		bh.jsonFactory.getHelper().putString(json, bhE_JsonKey.rawCellAddress, getCasedRawAddress());
 	}
 
 	@Override

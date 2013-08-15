@@ -58,7 +58,7 @@ public class bhServerCellAddress extends bhCellAddress implements Externalizable
 	@Override
 	public String createBlobKey(bhI_Blob blob)
 	{
-		return bhU_Blob.generateKey(blob, this.getCasedRawAddress());
+		return bhU_Blob.generateKey(blob, this.getRawAddress());
 	}
 
 	@Override
