@@ -71,14 +71,14 @@ public class bhCameraManager
 	}
 	
 	protected void update(double timeStep)
-	{//s_logger.severe(m_camera.getPosition() + "");
+	{
 		if ( m_xProgress == 0 )
 		{
 			m_cameraAtRestFrameCount++;
 			m_snapTime = 0;
 			
 			return;
-		}
+		}//s_logger.severe(m_camera.getPosition() + "");
 
 		m_xProgress -= timeStep;
 		

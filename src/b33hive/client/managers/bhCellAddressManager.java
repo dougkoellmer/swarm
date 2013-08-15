@@ -135,11 +135,9 @@ public class bhCellAddressManager implements bhI_TransactionResponseHandler
 		}
 		
 		//--- DRK > Try to get address from cell buffer.
-		Object addressUncast = this.getAddressOrMappingFromCellBuffer(mapping);
-		if( addressUncast != null )
+		address = this.getAddressFromCellBuffer(mapping);
+		if( address != null )
 		{
-			address = (bhCellAddress) addressUncast;
-
 			onAddressFound(mapping, address, false);
 			
 			return;
@@ -186,11 +184,9 @@ public class bhCellAddressManager implements bhI_TransactionResponseHandler
 		}
 		
 		//--- DRK > Try to get mapping from cell buffer.
-		Object mappingUncast = this.getAddressOrMappingFromCellBuffer(address);
-		if( mappingUncast != null )
+		mapping = getMappingFromCellBuffer(address);
+		if( mapping != null )
 		{
-			mapping = (bhCellAddressMapping) mappingUncast;
-			
 			m_listener.onMappingFound(address, mapping);
 			
 			return;
@@ -204,21 +200,12 @@ public class bhCellAddressManager implements bhI_TransactionResponseHandler
 		}
 	}
 	
-	private Object getAddressOrMappingFromCellBuffer(Object mappingOrAddress)
+	//private bhCellAddress
+	
+	private bhCellAddressMapping getMappingFromCellBuffer(bhCellAddress address)
 	{
-		bhCellAddress address = null;
-		bhCellAddressMapping mapping = null;
-		
-		if( mappingOrAddress instanceof bhCellAddress )
-		{
-			address = (bhCellAddress) mappingOrAddress;
-		}
-		else
-		{
-			mapping = (bhCellAddressMapping) mappingOrAddress;
-		}
-		
 		bhCellBuffer displayBuffer = bhCellBufferManager.getInstance().getDisplayBuffer();
+		
 		if( displayBuffer.getSubCellCount() == 1 )
 		{
 			for( int i = 0; i < displayBuffer.getCellCount(); i++ )
@@ -235,13 +222,22 @@ public class bhCellAddressManager implements bhI_TransactionResponseHandler
 						}
 					}
 				}
-				else
-				{
-					if( cell.getCoordinate().isEqualTo(mapping.getCoordinate()) )
-					{
-						return cell.getCellAddress();
-					}
-				}
+			}
+		}
+		
+		return null;
+	}
+	
+	private bhCellAddress getAddressFromCellBuffer(bhCellAddressMapping mapping)
+	{
+		bhCellBuffer displayBuffer = bhCellBufferManager.getInstance().getDisplayBuffer();
+		if( displayBuffer.getSubCellCount() == 1 )
+		{
+			bhBufferCell cell = displayBuffer.getCellAtAbsoluteCoord(mapping.getCoordinate());
+			
+			if( cell != null )
+			{
+				cell.getCellAddress();
 			}
 		}
 		

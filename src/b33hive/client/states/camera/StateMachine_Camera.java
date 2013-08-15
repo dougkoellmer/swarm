@@ -32,6 +32,7 @@ import b33hive.shared.app.bhS_App;
 import b33hive.shared.code.bhCompilerResult;
 import b33hive.shared.code.bhE_CompilationStatus;
 import b33hive.shared.debugging.bhU_Debug;
+import b33hive.shared.entities.bhA_Grid;
 import b33hive.shared.entities.bhE_CodeType;
 import b33hive.shared.json.bhI_JsonObject;
 import b33hive.shared.statemachine.bhA_Action;
@@ -312,7 +313,14 @@ public class StateMachine_Camera extends bhA_StateMachine implements bhI_StateEv
 		{
 			bhGridCoordinate coordinate = ((Args) args).m_coordinate;
 			
-			if( !bh_c.gridMngr.getGrid().isInBounds(coordinate) )
+			bhA_Grid grid = bh_c.gridMngr.getGrid();
+			
+			if( !grid.isInBounds(coordinate) )
+			{
+				return false;
+			}
+			
+			if( !grid.isTaken(coordinate) )
 			{
 				return false;
 			}

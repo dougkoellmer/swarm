@@ -147,10 +147,10 @@ public class bhCellBufferManager implements bhI_LocalCodeRepository
 		cellSize = cellSize <= 4 ? 1 : cellSize; // COMMENT OUT TO get correct cell sizes.
 		cellSize = cellSize > gridSizeUpperOf2 ? gridSizeUpperOf2 : cellSize;*/
 		
-		int subCellCountAcross = 1;
+		int subCellDim = 1;
 		
 		//--- DRK > Calculate maximum "raw" buffer position and size, not caring about constraints.
-		this.calcRawBufferDimensions(camera, grid, subCellCountAcross, m_utilCoord1, m_utilCoord2);
+		this.calcRawBufferDimensions(camera, grid, subCellDim, m_utilCoord1, m_utilCoord2);
 		int newBufferWidth = m_utilCoord2.getM();
 		int newBufferHeight = m_utilCoord2.getN();
 		
@@ -158,12 +158,12 @@ public class bhCellBufferManager implements bhI_LocalCodeRepository
 		
 		//--- DRK > Constrain both the position and size of the buffer if necessary so it maps onto the grid in a minimal fashion.
 		//---		The following is capable of creating a buffer with zero cells, which is perfectly acceptable.
-		int gridWidthRemainder = subCellCountAcross > 0 ? grid.getWidth() % subCellCountAcross : 0;
-		int relativeGridWidth = grid.getWidth() == 0 ? 0 : (grid.getWidth() - gridWidthRemainder) / subCellCountAcross;
+		int gridWidthRemainder = subCellDim > 0 ? grid.getWidth() % subCellDim : 0;
+		int relativeGridWidth = grid.getWidth() == 0 ? 0 : (grid.getWidth() - gridWidthRemainder) / subCellDim;
 		relativeGridWidth += gridWidthRemainder > 0 ? 1 : 0;
 		
-		int gridHeightRemainder = subCellCountAcross > 0 ? grid.getHeight() % subCellCountAcross : 0;
-		int relativeGridHeight = grid.getHeight() == 0 ? 0 : (grid.getHeight() - gridHeightRemainder) / subCellCountAcross;
+		int gridHeightRemainder = subCellDim > 0 ? grid.getHeight() % subCellDim : 0;
+		int relativeGridHeight = grid.getHeight() == 0 ? 0 : (grid.getHeight() - gridHeightRemainder) / subCellDim;
 		relativeGridHeight += gridHeightRemainder > 0 ? 1 : 0;
 		
 		
@@ -194,7 +194,7 @@ public class bhCellBufferManager implements bhI_LocalCodeRepository
 		//s_logger.severe("");
 		
 		m_backBuffer.setExtents(m_utilCoord1.getM(), m_utilCoord1.getN(), newBufferWidth, newBufferHeight);
-		m_backBuffer.setCellSize(subCellCountAcross);
+		m_backBuffer.setCellSize(subCellDim);
 		m_backBuffer.imposeBuffer(grid, m_displayBuffer, alternativeCodeSource, options__extends__bhF_BufferUpdateOption);
 		
 		//s_logger.info(bhCellPool.getInstance().getAllocCount() + "");

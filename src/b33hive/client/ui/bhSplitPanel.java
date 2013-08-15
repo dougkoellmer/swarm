@@ -174,7 +174,7 @@ public class bhSplitPanel extends SplitLayoutPanel implements bhI_UIElement
 	
 	public double getCellPanelWidth()
 	{
-		return RootPanel.get().getOffsetWidth() - m_tabPanelWidth;
+		return RootPanel.get().getOffsetWidth() - m_tabPanelWidth - SPLITTER_WIDTH;
 	}
 	
 	private void updateToggleButton()

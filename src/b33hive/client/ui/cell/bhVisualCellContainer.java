@@ -194,6 +194,9 @@ public class bhVisualCellContainer extends FlowPanel implements ResizeHandler, b
 			{
 				if( event.getState() instanceof StateMachine_Camera )
 				{
+					//--- DRK > For some reason we can't use the updateCameraViewRect method because
+					//---		offset width/height return 0...I think it's because CSS isn't applied yet.
+					//---		So kind of a hack here...would be nice if I could fix this, so...TODO(DRK).
 					double width = bh_view.splitPanel.getCellPanelWidth();
 					double x = bh_view.splitPanel.getTabPanelWidth();
 					double height = RootPanel.get().getOffsetHeight();

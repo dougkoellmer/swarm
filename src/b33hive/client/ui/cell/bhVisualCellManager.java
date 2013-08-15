@@ -220,6 +220,8 @@ public class bhVisualCellManager implements bhI_UIElement, bhI_CellPoolDelegate
 		basePoint = m_utilPoint2;
 		basePoint.round();
 		
+		//s_logger.severe("" + basePoint + " " + camera.getPosition() + " " + camera.getViewWidth() + " " + camera.getViewHeight());
+		
 		m_lastBasePoint.copy(basePoint);
 		
 		double scaling = bhU_Grid.calcCellScaling(distanceRatio, subCellCount, grid.getCellPadding(), grid.getCellWidth());
@@ -264,12 +266,12 @@ public class bhVisualCellManager implements bhI_UIElement, bhI_CellPoolDelegate
 			
 			for ( int i = 0; i < bufferSize; i++ )
 			{
-				int ix = i % bufferWidth;
-				int iy = i / bufferWidth;
-				
 				bhBufferCell ithBufferCell = cellBuffer.getCellAtIndex(i);
 				
 				if( ithBufferCell == null )  continue;
+				
+				int ix = i % bufferWidth;
+				int iy = i / bufferWidth;
 				
 				double offsetX = (ix * (cellWidthPlusPadding));
 				double offsetY = (iy * (cellHeightPlusPadding));
