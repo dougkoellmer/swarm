@@ -47,7 +47,7 @@ public class bhU_InlineTransactions
 	
 	public static void addInlineTransactions(HttpServletRequest nativeRequest, HttpServletResponse nativeResponse, Writer out) throws IOException
 	{
-		String rawAddress = nativeRequest.getRequestURI().toLowerCase();
+		String rawAddress = nativeRequest.getRequestURI();
 		bhServerCellAddress cellAddress = new bhServerCellAddress(rawAddress);
 		bhE_CellAddressParseError parseError = cellAddress.getParseError();
 		
