@@ -39,6 +39,7 @@ import b33hive.server.handlers.normal.syncCode;
 import b33hive.server.session.bhSessionManager;
 import b33hive.server.telemetry.bhTelemetryDatabase;
 import b33hive.server.thirdparty.json.bhServerJsonFactory;
+import b33hive.server.thirdparty.servlet.bhServletRedirector;
 import b33hive.server.transaction.bhE_AdminRequestPath;
 import b33hive.server.transaction.bhE_DebugRequestPath;
 import b33hive.server.transaction.bhI_RequestHandler;
@@ -105,6 +106,7 @@ public abstract class bhA_ServerApp extends bhA_App
 		bh_s.sessionMngr = new bhSessionManager();
 		bh_s.accountMngr = new bhServerAccountManager(appConfig.accountDatabase);
 		bh_s.telemetryDb = new bhTelemetryDatabase(appConfig.telemetryDatabase);
+		bh_s.requestRedirector = new bhServletRedirector(appConfig.mainPage);
 		
 		addClientHandlers();
 		addAdminHandlers(m_appConfig.T_homeCellCreator);

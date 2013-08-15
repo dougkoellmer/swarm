@@ -13,11 +13,12 @@ import b33hive.server.data.blob.bhI_Blob;
 import b33hive.server.data.blob.bhI_BlobKey;
 import b33hive.server.data.blob.bhU_Blob;
 import b33hive.server.data.blob.bhU_Serialization;
-import b33hive.server.structs.bhBitArray;
+import b33hive.server.structs.bhServerBitArray;
 import b33hive.server.structs.bhDate;
 import b33hive.server.structs.bhServerGridCoordinate;
 import b33hive.shared.app.bhS_App;
 import b33hive.shared.entities.bhA_Grid;
+import b33hive.shared.structs.bhBitArray;
 import b33hive.shared.structs.bhGridCoordinate;
 
 /**
@@ -48,8 +49,6 @@ public class bhServerGrid extends bhA_Grid implements bhI_Blob
 	
 	private static final int EXTERNAL_VERSION = 2;
 	
-	private bhBitArray m_bitArray = null;
-	
 	private final bhDate m_lastUpdated = new bhDate();
 	
 	public bhServerGrid()
@@ -57,16 +56,10 @@ public class bhServerGrid extends bhA_Grid implements bhI_Blob
 		
 	}
 	
-	public boolean isTaken(bhGridCoordinate coordinate)
-	{
-		int bitIndex = coordinate.calcArrayIndex(m_width);
-		return m_bitArray.isSet(bitIndex);
-	}
-	
 	public void markCoordinateAvailable(bhGridCoordinate coordinate)
 	{
 		int bitIndex = coordinate.calcArrayIndex(m_width);
-		m_bitArray.set(bitIndex, false);
+		m_ownership.set(bitIndex, false);
 	}
 	
 	public bhServerGridCoordinate findFreeCoordinate(int expansionDelta, bhGridCoordinate preference) throws GridException
@@ -115,7 +108,7 @@ public class bhServerGrid extends bhA_Grid implements bhI_Blob
 			{
 				int coordIndex = preference.calcArrayIndex(currentGridWidth);
 				
-				if( m_bitArray.isSet(coordIndex) )
+				if( m_ownership.isSet(coordIndex) )
 				{
 					throw new GridException(GridException.Reason.PREFERENCE_TAKEN, "Preference is taken.");
 				}
@@ -134,14 +127,14 @@ public class bhServerGrid extends bhA_Grid implements bhI_Blob
 			//---		I doubt this is really an issue, especially since the DB contention
 			//---		would be much more of a problem, but slightly more proper would
 			//---		be for the grid to serialize its own random number generator.
-			int byteCount = m_bitArray.getByteCount();
+			int byteCount = m_ownership.getByteCount();
 			double rand = Math.random();
 			int randomIndex = (int) (rand * byteCount);
 			
 			//--- DRK > Start looking backwards from random position.
 			for( int i = randomIndex; i >= 0; i-- )
 			{
-				Integer indexOfFreeBit = m_bitArray.findIndexOfFreeBit(i);
+				Integer indexOfFreeBit = m_ownership.findIndexOfFreeBit(i);
 				
 				if( indexOfFreeBit != null )
 				{
@@ -155,7 +148,7 @@ public class bhServerGrid extends bhA_Grid implements bhI_Blob
 			{
 				for( int i = randomIndex+1; i < byteCount; i++ )
 				{
-					Integer indexOfFreeBit = m_bitArray.findIndexOfFreeBit(i);
+					Integer indexOfFreeBit = m_ownership.findIndexOfFreeBit(i);
 					
 					if( indexOfFreeBit != null )
 					{
@@ -185,11 +178,17 @@ public class bhServerGrid extends bhA_Grid implements bhI_Blob
 		}*/
 		
 		//--- DRK > Mark the free index as taken and return a coordinate.
-		m_bitArray.set(freeIndex, true);
+		m_ownership.set(freeIndex, true);
 		int m = freeIndex % this.getWidth();
 		int n = (freeIndex - m) / this.getWidth();
 		
 		return new bhServerGridCoordinate(m, n);
+	}
+	
+	@Override
+	protected bhBitArray createBitArray()
+	{
+		return new bhServerBitArray();
 	}
 	
 	private void expandToSize(int width, int height)
@@ -200,13 +199,13 @@ public class bhServerGrid extends bhA_Grid implements bhI_Blob
 		m_width = width;
 		m_height = height;
 		
-		bhBitArray oldArray = m_bitArray;
+		bhBitArray oldArray = m_ownership;
 		
-		m_bitArray = new bhBitArray(m_width*m_height);
+		m_ownership = new bhServerBitArray(m_width*m_height);
 		
 		if( oldArray != null )
 		{
-			m_bitArray.or(oldArray, oldWidth, m_width);
+			m_ownership.or(oldArray, oldWidth, m_width);
 		}
 		
 		//bhT_Grid.validateExpansion(m_bitArray, oldSize, m_size);
@@ -223,7 +222,7 @@ public class bhServerGrid extends bhA_Grid implements bhI_Blob
 		out.writeInt(this.getCellHeight());
 		out.writeInt(this.getCellPadding());
 		
-		bhU_Serialization.writeNullableObject(m_bitArray, out);
+		bhU_Serialization.writeNullableObject((bhServerBitArray)m_ownership, out);
 		
 		m_lastUpdated.writeExternal(out);
 	}
@@ -252,7 +251,7 @@ public class bhServerGrid extends bhA_Grid implements bhI_Blob
 			m_cellPadding = in.readInt();
 		}
 		
-		m_bitArray = bhU_Serialization.readNullableObject(bhBitArray.class, in);
+		m_ownership = bhU_Serialization.readNullableObject(bhServerBitArray.class, in);
 		
 		m_lastUpdated.readExternal(in);
 	}

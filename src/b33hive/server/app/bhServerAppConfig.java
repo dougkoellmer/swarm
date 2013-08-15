@@ -9,6 +9,8 @@ public class bhServerAppConfig extends bhAppConfig
 	public String telemetryDatabase;
 	public double startingZ;
 	public int gridExpansionDelta;
+	
+	public String mainPage;
 
 	public String publicRecaptchaKey;
 	public String privateRecaptchaKey;

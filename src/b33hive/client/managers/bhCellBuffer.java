@@ -144,24 +144,24 @@ public class bhCellBuffer
 		return m_cells.get(relativeCoord.getM() + relativeCoord.getN() * m_width);
 	}
 	
-	public void absoluteToRelative(bhGridCoordinate absoluteCoordinate, bhGridCoordinate outCoordinate)
+	public void absoluteToRelative(bhGridCoordinate absCoord, bhGridCoordinate coord_out)
 	{
-		int relativeM = absoluteCoordinate.getM() - this.m_coordinate.getM();
-		int relativeN = absoluteCoordinate.getN() - this.m_coordinate.getN();
-		outCoordinate.set(relativeM, relativeN);
+		int relativeM = absCoord.getM() - this.m_coordinate.getM();
+		int relativeN = absCoord.getN() - this.m_coordinate.getN();
+		coord_out.set(relativeM, relativeN);
 	}
 	
-	public void relativeToAbsolute(bhGridCoordinate relativeCoordinate, bhGridCoordinate outCoordinate)
+	public void relativeToAbsolute(bhGridCoordinate relCoord, bhGridCoordinate coord_out)
 	{
-		int absoluteM = relativeCoordinate.getM() + this.m_coordinate.getM();
-		int absoluteN = relativeCoordinate.getN() + this.m_coordinate.getN();
-		outCoordinate.set(absoluteM, absoluteN);
+		int absoluteM = relCoord.getM() + this.m_coordinate.getM();
+		int absoluteN = relCoord.getN() + this.m_coordinate.getN();
+		coord_out.set(absoluteM, absoluteN);
 	}
 	
-	public boolean isTouching(bhGridCoordinate absoluteCoordinate)
+	public boolean isTouching(bhGridCoordinate absCoord)
 	{
-		int relativeM = absoluteCoordinate.getM() - this.m_coordinate.getM();
-		int relativeN = absoluteCoordinate.getN() - this.m_coordinate.getN();
+		int relativeM = absCoord.getM() - this.m_coordinate.getM();
+		int relativeN = absCoord.getN() - this.m_coordinate.getN();
 		return isInBoundsRelative(relativeM, relativeN);
 	}
 	
@@ -190,6 +190,8 @@ public class bhCellBuffer
 		//--- DRK > Easy case is when we have a size change...then everything is recycled.
 		if ( otherSubCellCountDim != thisSubCellCountDim )
 		{
+			bhU_Debug.ASSERT(false); // asserting here until zoomed-out meta cells are implemented.
+			
 			for ( i = 0; i < thisCellCount; i++ )
 			{
 				m = i % m_width;
@@ -263,6 +265,12 @@ public class bhCellBuffer
 					relThisCoord.set(m, n);
 					
 					this.relativeToAbsolute(relThisCoord, absCoord);
+					
+					if( !grid.isTaken(absCoord) )
+					{
+						continue;
+					}
+					
 					otherBuffer.absoluteToRelative(absCoord, relOtherCoord);
 					
 					cellRecycled = false;

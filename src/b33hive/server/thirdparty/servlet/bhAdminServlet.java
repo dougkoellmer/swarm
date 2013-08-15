@@ -48,11 +48,13 @@ public class bhAdminServlet extends bhA_BaseServlet
 	{
 		((bhA_ServerJsonFactory)bh_s.jsonFactory).startScope(true);
 		
+		//TODO: Move this check into an abstract base class or utlity method or
+		//		something so we can have other admin servlets with same behavior.
 		if( !bh_s.sessionMngr.isAuthorized(nativeRequest, nativeResponse, bhE_Role.ADMIN) )
 		{
 			((bhA_ServerJsonFactory)bh_s.jsonFactory).endScope();
-			
-			bhU_Servlet.redirectToMainPage(nativeResponse);
+
+			bh_s.requestRedirector.redirectToMainPage(nativeResponse);
 			
 			return;
 		}

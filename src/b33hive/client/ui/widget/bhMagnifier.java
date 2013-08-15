@@ -407,7 +407,7 @@ public class bhMagnifier extends FlowPanel implements bhI_StateEventListener
 	private void setAlpha(double alpha)
 	{
 		m_alpha = alpha;
-		s_logger.severe(m_baseAlpha + "   " + m_alpha +"");
+		//s_logger.severe(m_baseAlpha + "   " + m_alpha +"");
 		this.getElement().getStyle().setOpacity(m_alpha);
 	}
 

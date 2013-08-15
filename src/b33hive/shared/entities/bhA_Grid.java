@@ -1,11 +1,13 @@
 package b33hive.shared.entities;
 
+import b33hive.server.structs.bhServerBitArray;
 import b33hive.shared.app.bh;
 import b33hive.shared.app.bhS_App;
 import b33hive.shared.json.bhA_JsonEncodable;
 import b33hive.shared.json.bhE_JsonKey;
 import b33hive.shared.json.bhI_JsonObject;
 import b33hive.shared.json.bhJsonHelper;
+import b33hive.shared.structs.bhBitArray;
 import b33hive.shared.structs.bhGridCoordinate;
 
 /**
@@ -20,15 +22,30 @@ public abstract class bhA_Grid extends bhA_JsonEncodable
 	protected int m_cellHeight;
 	protected int m_cellPadding;
 	
+	protected bhBitArray m_ownership = null;
+	
 	public bhA_Grid()
 	{
+	}
+
+	public boolean isTaken(bhGridCoordinate coordinate)
+	{
+		if( m_ownership == null )  return false;
 		
+		int bitIndex = coordinate.calcArrayIndex(m_width);
+		
+		return m_ownership.isSet(bitIndex);
 	}
 	
 	public bhA_Grid(int width, int height)
 	{
 		m_width = width;
 		m_height = height;
+	}
+	
+	protected bhBitArray createBitArray()
+	{
+		return new bhBitArray();
 	}
 	
 	public boolean isInBounds(bhGridCoordinate coordinate)
@@ -108,6 +125,13 @@ public abstract class bhA_Grid extends bhA_JsonEncodable
 		m_cellWidth = cellWidth != null ? cellWidth : m_cellWidth;
 		m_cellHeight = cellHeight != null ? cellHeight : m_cellHeight;
 		m_cellPadding = cellPadding != null ? cellPadding : m_cellPadding;
+		
+		if( bh.jsonFactory.getHelper().containsAnyKeys(json, bhE_JsonKey.bitArray) )
+		{
+			m_ownership = m_ownership != null ? m_ownership : createBitArray();
+			
+			m_ownership.readJson(json);
+		}
 	}
 	
 	@Override
@@ -118,5 +142,10 @@ public abstract class bhA_Grid extends bhA_JsonEncodable
 		bh.jsonFactory.getHelper().putInt(json, bhE_JsonKey.gridCellWidth, m_cellWidth);
 		bh.jsonFactory.getHelper().putInt(json, bhE_JsonKey.gridCellHeight, m_cellHeight);
 		bh.jsonFactory.getHelper().putInt(json, bhE_JsonKey.gridCellPadding, m_cellPadding);
+		
+		if( m_ownership != null )
+		{
+			m_ownership.writeJson(json);
+		}
 	}
 }

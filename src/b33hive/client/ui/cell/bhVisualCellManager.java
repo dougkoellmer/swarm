@@ -22,12 +22,14 @@ import b33hive.client.ui.dialog.bhDialog;
 import b33hive.shared.app.bhS_App;
 import b33hive.shared.debugging.bhU_Debug;
 import b33hive.shared.entities.bhA_Grid;
+import b33hive.shared.entities.bhU_Grid;
 import b33hive.shared.memory.bhObjectPool;
 import b33hive.shared.reflection.bhI_Class;
 import b33hive.shared.statemachine.bhA_Action;
 import b33hive.shared.statemachine.bhA_State;
 import b33hive.shared.statemachine.bhStateEvent;
 import b33hive.shared.structs.bhCellAddress;
+import b33hive.shared.structs.bhGridCoordinate;
 import b33hive.shared.structs.bhPoint;
 import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.safehtml.shared.SafeHtml;
@@ -57,6 +59,7 @@ public class bhVisualCellManager implements bhI_UIElement, bhI_CellPoolDelegate
 	
 	private final bhPoint m_utilPoint1 = new bhPoint();
 	private final bhPoint m_utilPoint2 = new bhPoint();
+	private final bhGridCoordinate m_utilCoord = new bhGridCoordinate();
 	
 	private final bhPoint m_lastBasePoint = new bhPoint();
 	
@@ -198,20 +201,8 @@ public class bhVisualCellManager implements bhI_UIElement, bhI_CellPoolDelegate
 
 		bhCellBufferManager cellManager = bhCellBufferManager.getInstance();
 		bhCellBuffer cellBuffer = cellManager.getDisplayBuffer();
-		bhBufferCell firstCell = cellBuffer.getCellCount() > 0 ? cellBuffer.getCellAtIndex(0) : null;
 		
-		if ( firstCell == null )
-		{
-			m_container.getElement().getStyle().setDisplay(Display.NONE);
-			{
-				processRemovals();
-			}
-			m_container.getElement().getStyle().setDisplay(Display.BLOCK);
-			
-			return false;
-		}
-		
-		bhA_Grid grid = firstCell.getGrid(); // TODO: Can't assume this cell will have same grid as other cells.
+		bhA_Grid grid = bh_c.gridMngr.getGrid(); // TODO: Get grid from somewhere else.
 		
 		int bufferSize = cellBuffer.getCellCount();
 		int bufferWidth = cellBuffer.getWidth();
@@ -224,17 +215,14 @@ public class bhVisualCellManager implements bhI_UIElement, bhI_CellPoolDelegate
 		int subCellCount = cellBuffer.getSubCellCount();
 		
 		bhPoint basePoint = m_utilPoint1;
-		firstCell.getCoordinate().calcPoint(basePoint, grid.getCellWidth(), grid.getCellHeight(), grid.getCellPadding(), 1);
+		cellBuffer.getCoordinate().calcPoint(basePoint, grid.getCellWidth(), grid.getCellHeight(), grid.getCellPadding(), 1);
 		camera.calcScreenPoint(basePoint, m_utilPoint2);
 		basePoint = m_utilPoint2;
 		basePoint.round();
 		
 		m_lastBasePoint.copy(basePoint);
 		
-		
-		
-		
-		double scaling = ((bhVisualCell)firstCell.getVisualization()).calcCellScaling(distanceRatio, subCellCount);
+		double scaling = bhU_Grid.calcCellScaling(distanceRatio, subCellCount, grid.getCellPadding(), grid.getCellWidth());
 		/*double factor = 1e5; // = 1 * 10^5 = 100000.
 		scaling = Math.round(scaling * factor) / factor;*/
 		
@@ -270,17 +258,23 @@ public class bhVisualCellManager implements bhI_UIElement, bhI_CellPoolDelegate
 			processRemovals();
 			
 			//--- DRK > Serious malfunction here if hit.
-			bhU_Debug.ASSERT(cellBuffer.getCellCount() == m_pool.getAllocCount(), "bhVisualCellManager::update1");
+			//--- NOTE: Now cell buffer can have null cells (i.e. if they aren't owned).
+			//---		So this assert is now invalid...keeping for historical reference.
+			//bhU_Debug.ASSERT(cellBuffer.getCellCount() == m_pool.getAllocCount(), "bhVisualCellManager::update1");
 			
 			for ( int i = 0; i < bufferSize; i++ )
 			{
 				int ix = i % bufferWidth;
 				int iy = i / bufferWidth;
 				
+				bhBufferCell ithBufferCell = cellBuffer.getCellAtIndex(i);
+				
+				if( ithBufferCell == null )  continue;
+				
 				double offsetX = (ix * (cellWidthPlusPadding));
 				double offsetY = (iy * (cellHeightPlusPadding));
 				
-				bhVisualCell ithVisualCell = (bhVisualCell) cellBuffer.getCellAtIndex(i).getVisualization();
+				bhVisualCell ithVisualCell = (bhVisualCell) ithBufferCell.getVisualization();
 				
 				ithVisualCell.validate();
 				
@@ -289,27 +283,6 @@ public class bhVisualCellManager implements bhI_UIElement, bhI_CellPoolDelegate
 				String translateProperty = bhU_UI.createTranslateTransform(translateX, translateY);
 				String transform = scaleProperty != null ? translateProperty + " " + scaleProperty : translateProperty;
 				bhU_UI.setTransform(ithVisualCell.getElement(), transform);
-	
-				//--- DRK > Have to include this optimization here because setting scaling every frame on every cell
-				//---		 rocks performance, at least in GWT hosted mode.
-				//---		NOTE: I'm pretty sure that CPU-based repainting of elements is the problem.
-				//---			  GPU is now used where supported, but still have to figure that out for other browsers.
-				/*if( cellsNeedRescaling || ithVisualCell.getParent() == null)
-				{
-					if( scaleProperty == null )
-					{
-						bhU_UI.removeScaleTransform(ithVisualCell.getElement());
-					}
-					else
-					{
-						bhU_UI.setScaling(ithVisualCell.getElement(), scaleProperty);
-					}
-					
-					if( ithVisualCell.getParent() == null )
-					{
-						m_container.add(ithVisualCell);
-					}
-				}*/
 				
 				ithVisualCell.update(timeStep);
 				
@@ -336,7 +309,11 @@ public class bhVisualCellManager implements bhI_UIElement, bhI_CellPoolDelegate
 		
 		for ( int i = 0; i < bufferSize; i++ )
 		{
-			bhVisualCell ithVisualCell = (bhVisualCell) cellBuffer.getCellAtIndex(i).getVisualization();
+			bhBufferCell ithBufferCell = cellBuffer.getCellAtIndex(i);
+			
+			if( ithBufferCell == null ) continue;
+			
+			bhVisualCell ithVisualCell = (bhVisualCell) ithBufferCell.getVisualization();
 			ithVisualCell.update(timeStep);
 		}
 	}

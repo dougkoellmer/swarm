@@ -59,12 +59,6 @@ public class bhU_Servlet
 		return resource;
 	}
 	
-	public static void redirectToMainPage(HttpServletResponse response) throws IOException
-	{
-		// TODO: Should be app/host specific.
-		response.sendRedirect("http://b33hive.net");
-	}
-	
 	public static void simulateException(boolean simulate) throws Error
 	{
 		if( simulate )

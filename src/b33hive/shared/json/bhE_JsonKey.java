@@ -53,6 +53,9 @@ public enum bhE_JsonKey implements bhI_JsonKeySource
 	gridCellWidth,
 	gridCellHeight,
 	gridCellPadding,
+
+	bitArray,
+	bitArrayLength,
 	
 	rememberMe,
 	

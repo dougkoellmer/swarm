@@ -213,7 +213,7 @@ public class bhBufferCell extends bhA_Cell
 				//---		At this point, something's still very wrong, because we should also have had compiled code that can stand in for splash.
 				//---		But, at least we try to salvage the UX as much as possible.
 				//---
-				//---	NOTE: This above problem might be because I was an idiot and didn't have a WAITING_ON_CODE case defined...now there is one.
+				//---	NOTE: This above problem might be because I was an idiot and didn't have a WAITING_ON_CODE case defined above...now there is one.
 				
 				bhE_CodeStatus splashStatus = this.getStatus(bhE_CodeType.SPLASH);
 				bhCode code = this.getCode(type);

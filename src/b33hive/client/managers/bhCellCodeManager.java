@@ -262,8 +262,8 @@ public class bhCellCodeManager implements bhI_TransactionResponseHandler
 		bhA_ClientUser user = userManager.getUser();
 		
 		int typeOrdinal = bh.jsonFactory.getHelper().getInt(request.getJson(), bhE_JsonKey.codeType);
-		bhE_CodeType eHtmlType = bhE_CodeType.values()[typeOrdinal];
-		bhCode code = m_utilCell.getCode(eHtmlType);
+		bhE_CodeType eCodeType = bhE_CodeType.values()[typeOrdinal];
+		bhCode code = m_utilCell.getCode(eCodeType);
 		
 		if( code == null )
 		{
@@ -272,12 +272,12 @@ public class bhCellCodeManager implements bhI_TransactionResponseHandler
 			
 			code = new bhCode(OPEN_CELL_CODE, bhE_CodeType.values());
 			code.setSafetyLevel(bhE_CodeSafetyLevel.SAFE);
-			m_utilCell.setCode(eHtmlType, code);
+			m_utilCell.setCode(eCodeType, code);
 		}
 		
 		boolean isCodeNull = code == null;
 		
-		if( eHtmlType == bhE_CodeType.SOURCE )
+		if( eCodeType == bhE_CodeType.SOURCE )
 		{
 			if( isSyncing(m_utilCoord) )
 			{

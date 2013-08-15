@@ -144,19 +144,6 @@ public class bhVisualCell extends AbsolutePanel implements bhI_BufferCellListene
 		}
 	}
 	
-	public double calcCellScaling(double distanceRatio, int cellSubCountDim)
-	{
-		if( cellSubCountDim == 1 )
-		{
-			return distanceRatio;
-		}
-		else
-		{
-			double scalingRatio = ((double)m_width+m_padding)/((double) m_width);
-			return (distanceRatio * scalingRatio) * ((double)cellSubCountDim);
-		}
-	}
-	
 	void validate()
 	{
 		if( m_isValidated )  return;

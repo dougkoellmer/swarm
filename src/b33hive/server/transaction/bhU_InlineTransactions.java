@@ -58,7 +58,7 @@ public class bhU_InlineTransactions
 		//---		It's done so that hitting "private" servlet mappings have the same behavior as invalid addresses.
 		if( parseError != bhE_CellAddressParseError.NO_ERROR && parseError != bhE_CellAddressParseError.EMPTY )
 		{
-			bhU_Servlet.redirectToMainPage(nativeResponse);
+			bh_s.requestRedirector.redirectToMainPage(nativeResponse);
 			
 			//s_logger.severe("redirecting");
 			

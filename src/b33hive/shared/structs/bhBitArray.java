@@ -1,24 +1,29 @@
-package b33hive.server.structs;
+package b33hive.shared.structs;
 
 import b33hive.shared.utils.bhU_BitTricks;
+import b33hive.shared.app.bh;
 import b33hive.shared.debugging.bhU_Debug;
+import b33hive.shared.json.bhA_JsonEncodable;
+import b33hive.shared.json.bhE_JsonKey;
+import b33hive.shared.json.bhI_JsonArray;
+import b33hive.shared.json.bhI_JsonObject;
 
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
-public class bhBitArray implements Externalizable
+public class bhBitArray extends bhA_JsonEncodable
 {
-	private static final int EXTERNAL_VERSION = 1;
+	private static final int BLOCK_SIZE = 32;
 	
-	private static final int BLOCK_SIZE = 8;
-	private static final int BLOCK_MASK = 0xFFFFFFFF;
-	private static final long BLOCK_MASK_SHIFTED = BLOCK_MASK << BLOCK_SIZE;
+	private static final long BLOCK_SIZE_LONG = BLOCK_SIZE;
+	private static final long BLOCK_MASK = 0xFFFFFFFF;
+	private static final long BLOCK_MASK_SHIFTED =  BLOCK_MASK << BLOCK_SIZE_LONG;
 	private static final long BLOCK_MASK_SHIFTED_NOT = ~BLOCK_MASK_SHIFTED;
 	
-	private int[] m_blocks;
-	private int m_bitCount;
+	protected int[] m_blocks;
+	protected int m_bitCount;
 	
 	public bhBitArray()
 	{
@@ -64,11 +69,11 @@ public class bhBitArray implements Externalizable
 		}
 	}
 	
-	private void init(int length)
+	protected void init(int length)
 	{
 		m_bitCount = length;
 		
-		int bitIndexIntoBlock = calcBitIndexIntoBlock(m_bitCount);
+		int bitIndexIntoBlock = calcBitIndexModBlock(m_bitCount);
 		int blockCount = calcBlockIndex(m_bitCount, bitIndexIntoBlock);
 		
 		if( bitIndexIntoBlock > 0 )
@@ -79,14 +84,14 @@ public class bhBitArray implements Externalizable
 		m_blocks = new int[blockCount];
 	}
 	
-	private static int calcBitIndexIntoBlock(int bitIndex)
+	private static int calcBitIndexModBlock(int bitIndex)
 	{
 		return bitIndex % BLOCK_SIZE;
 	}
 	
-	private static int calcBlockIndex(int bitIndex, int bitIndexIntoBlock)
+	private static int calcBlockIndex(int bitIndex, int bitIndexModBlock)
 	{
-		return (bitIndex - bitIndexIntoBlock) / BLOCK_SIZE;
+		return (bitIndex - bitIndexModBlock) / BLOCK_SIZE;
 	}
 	
 	public void or(bhBitArray oldArray, int columnBitCountOfOldArray, int columnBitCountOfNewArray)
@@ -101,15 +106,15 @@ public class bhBitArray implements Externalizable
 		for( int row = 0; row < rowCountOfOldArray; row++ )
 		{
 			int oldStartBitIndex = row * columnBitCountOfOldArray;
-			int oldStartBitIndexIntoBlock = calcBitIndexIntoBlock(oldStartBitIndex);
+			int oldStartBitIndexIntoBlock = calcBitIndexModBlock(oldStartBitIndex);
 			int oldStartBlockIndex = calcBlockIndex(oldStartBitIndex, oldStartBitIndexIntoBlock);
 			
 			int oldEndBitIndex = oldStartBitIndex + columnBitCountOfOldArray - 1; // inclusive
-			int oldEndBitIndexIntoBlock = calcBitIndexIntoBlock(oldEndBitIndex);
+			int oldEndBitIndexIntoBlock = calcBitIndexModBlock(oldEndBitIndex);
 			int oldEndBlockIndex = calcBlockIndex(oldEndBitIndex, oldEndBitIndexIntoBlock);
 			
 			int newStartBitIndex = row * columnBitCountOfNewArray;
-			int newStartBitIndexIntoBlock = calcBitIndexIntoBlock(newStartBitIndex);
+			int newStartBitIndexIntoBlock = calcBitIndexModBlock(newStartBitIndex);
 			int newStartBlockIndex = calcBlockIndex(newStartBitIndex, newStartBitIndexIntoBlock);
 			
 			int offset = newStartBitIndexIntoBlock - oldStartBitIndexIntoBlock;
@@ -117,7 +122,7 @@ public class bhBitArray implements Externalizable
 			for( int col_oldBlocks = oldStartBlockIndex, col_newBlocks = newStartBlockIndex; col_oldBlocks <= oldEndBlockIndex; col_oldBlocks++, col_newBlocks++ )
 			{
 				long oldDoubleBlock = oldBlocks[col_oldBlocks];
-				oldDoubleBlock &= BLOCK_MASK_SHIFTED_NOT;
+				//oldDoubleBlock &= BLOCK_MASK_SHIFTED_NOT;
 				
 				boolean breakOut = false;
 				
@@ -131,11 +136,11 @@ public class bhBitArray implements Externalizable
 				//--- DRK > Strip off last part of the last old block if necessary.
 				if( col_oldBlocks == oldEndBlockIndex )
 				{
-					if( oldEndBitIndexIntoBlock < (BLOCK_SIZE-1) )
+					if( oldEndBitIndexIntoBlock < (BLOCK_SIZE_LONG-1) )
 					{
 						int mask = bhU_BitTricks.calcMaskAfterBit(oldEndBitIndexIntoBlock);
 						oldDoubleBlock &= ~mask;
-						oldDoubleBlock &= ~(0xFF00);
+						oldDoubleBlock &= BLOCK_MASK_SHIFTED_NOT;
 					}
 				}
 				else if( col_oldBlocks < oldEndBlockIndex )
@@ -161,9 +166,9 @@ public class bhBitArray implements Externalizable
 						}
 					
 						long oldDoubleBlockEnd = oldBlocks[col_oldBlocks+1];
-						oldDoubleBlock |= (oldDoubleBlockEnd<<BLOCK_SIZE);
+						oldDoubleBlock |= (oldDoubleBlockEnd<<BLOCK_SIZE_LONG);
 						long mask = bhU_BitTricks.calcMaskAfterBit(maskStart);
-						oldDoubleBlock &= ~(mask<<BLOCK_SIZE);
+						oldDoubleBlock &= ~(mask<<BLOCK_SIZE_LONG);
 					}
 				}
 				else
@@ -186,7 +191,7 @@ public class bhBitArray implements Externalizable
 				
 				if( col_newBlocks+1 < newBlockCount )
 				{
-					newBlocks[col_newBlocks+1] |= ((BLOCK_MASK_SHIFTED & oldDoubleBlock) >> BLOCK_SIZE);
+					newBlocks[col_newBlocks+1] |= ((BLOCK_MASK_SHIFTED & oldDoubleBlock) >> BLOCK_SIZE_LONG);
 				}
 				
 				if( breakOut )
@@ -199,7 +204,7 @@ public class bhBitArray implements Externalizable
 	
 	public void set(int bitIndex, boolean value)
 	{
-		int bitIndexIntoBlock = calcBitIndexIntoBlock(bitIndex);
+		int bitIndexIntoBlock = calcBitIndexModBlock(bitIndex);
 		int blockIndex = calcBlockIndex(bitIndex, bitIndexIntoBlock);
 		int block = m_blocks[blockIndex];
 		int blockBit = bhU_BitTricks.calcOrdinalBit(bitIndexIntoBlock);
@@ -218,7 +223,7 @@ public class bhBitArray implements Externalizable
 	
 	public boolean isSet(int bitIndex)
 	{
-		int bitIndexIntoBlock = calcBitIndexIntoBlock(bitIndex);
+		int bitIndexIntoBlock = calcBitIndexModBlock(bitIndex);
 		int blockIndex = calcBlockIndex(bitIndex, bitIndexIntoBlock);
 		int block = m_blocks[blockIndex];
 		int blockBit = bhU_BitTricks.calcOrdinalBit(bitIndexIntoBlock);
@@ -232,30 +237,34 @@ public class bhBitArray implements Externalizable
 	}
 
 	@Override
-	public void writeExternal(ObjectOutput out) throws IOException
+	public void writeJson(bhI_JsonObject json)
 	{
-		out.writeInt(EXTERNAL_VERSION);
-		
-		out.writeInt(m_bitCount);
-		
-		for( int i = 0; i < m_blocks.length; i++ )
+		if( m_blocks != null )
 		{
-			out.writeInt(m_blocks[i]);
-		}
+			bhI_JsonArray blocksAsJson = bh.jsonFactory.createJsonArray();
+			for( int i = 0; i < m_blocks.length; i++ )
+			{
+				blocksAsJson.addInt(m_blocks[i]);
+			}
+			
+			bh.jsonFactory.getHelper().putJsonArray(json, bhE_JsonKey.bitArray, blocksAsJson);
+			bh.jsonFactory.getHelper().putInt(json, bhE_JsonKey.bitArrayLength, m_bitCount);
+		}		
 	}
 
 	@Override
-	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException
+	public void readJson(bhI_JsonObject json)
 	{
-		int externalVersion = in.readInt();
+		Integer bitCount = bh.jsonFactory.getHelper().getInt(json, bhE_JsonKey.bitArrayLength);
 		
-		m_bitCount = in.readInt();
+		if( bitCount == null )  return;
 		
-		init(m_bitCount);
-
-		for( int i = 0; i < m_blocks.length; i++ )
+		this.init(bitCount);
+		
+		bhI_JsonArray blocksAsJson = bh.jsonFactory.getHelper().getJsonArray(json, bhE_JsonKey.bitArray);
+		for( int i = 0; i < blocksAsJson.getSize(); i++ )
 		{
-			m_blocks[i] = in.readInt();
+			m_blocks[i] = blocksAsJson.getInt(i);
 		}
 	}
 }

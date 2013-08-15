@@ -27,7 +27,7 @@ public final class bhU_BitTricks
 	//TODO: Can probably optimize these two methods with bitwise tricks.
 	public static int calcMaskAfterBit(int bitPosition)
 	{
-		byte mask = 0x0;
+		int mask = 0x0;
 		for( int i = bitPosition+1; i < 32; i++ )
 		{
 			mask |= (0x1 << i);
@@ -35,9 +35,10 @@ public final class bhU_BitTricks
 		
 		return mask;
 	}
+	
 	public static int calcMaskBeforeBit(int bitPosition)
 	{
-		byte mask = 0x0;
+		int mask = 0x0;
 		for( int i = bitPosition-1; i >= 0; i-- )
 		{
 			mask |= (0x1 << i);
