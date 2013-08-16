@@ -252,7 +252,7 @@ public class bhA_ClientApp extends bhA_App implements bhI_TimeSource
 				bhA_ClientApp.this.update();				
 			}
 		};
-		timer.scheduleRepeating(m_appConfig.framerateMilliseconds);
+		timer.scheduleRepeating(m_appConfig.framerate_milliseconds);
 	}
 	
 	protected void stage_gunshotSound()

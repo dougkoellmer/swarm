@@ -11,7 +11,7 @@ public class bhClientAppConfig extends bhAppConfig
 	public double cellHudHeight;
 	public double minSnapTime;
 	public double snapTimeRange;
-	public int framerateMilliseconds;
+	public int framerate_milliseconds;
 	public double backOffDistance;
 	
 	public int addressCacheSize;
