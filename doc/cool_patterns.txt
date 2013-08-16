@@ -9,4 +9,4 @@ Some cool patterns discovered in b33hive...
 
 - json enum keys allow completely flat json hierarchy for requests, because keys can't collide...also allow you to effectively selectively serialize large objects...just serialize the portion of the object you want to, then on client, the whole object attempts to read all the json, but only deserializes those portions that were sent down.
 
-HEY
+- singleton aggregators, instead of singletons on the class itself...removes a lot of boilerplate, both getting singleton instances, and in creating the classic singleton design pattern with getInstance(), etc...also removes any ambiguity about how the singleton is allocated, or if it even is at all, and allows subclassing of the singleton, which is impossible unless you do s_instance = this in the constructor...decouples the class so it doesn't care whether it's a singleton or not
