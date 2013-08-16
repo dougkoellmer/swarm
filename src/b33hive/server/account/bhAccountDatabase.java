@@ -31,9 +31,9 @@ public class bhAccountDatabase extends bhA_SqlDatabase
 
 	private final static Logger s_logger = Logger.getLogger(bhAccountDatabase.class.getName());
 
-	bhAccountDatabase(String database)
+	public bhAccountDatabase(String databaseUrl, String databaseName)
 	{
-		super(database);
+		super(databaseUrl, databaseName);
 	}
 
 	public void addAccount(int id, String email, String username, byte[] passwordHash, byte[] passwordSalt, bhE_Role role) throws SQLException

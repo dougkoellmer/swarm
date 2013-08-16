@@ -13,13 +13,20 @@ public class bhA_SqlDatabase implements bhI_TransactionScopeListener
 {
 	private final static Logger s_logger = Logger.getLogger(bhA_SqlDatabase.class.getName());
 	
-	private final String m_database;
+	private final String m_databaseUrl;
+	private final String m_databaseName;
 	
 	private final ThreadLocal<Connection> m_threadLocalConnection = new ThreadLocal<Connection>();
 	
-	protected bhA_SqlDatabase(String database)
+	protected bhA_SqlDatabase(String databaseUrl, String databaseName)
 	{
-		m_database = database;
+		m_databaseUrl = databaseUrl + databaseName; // for some reason connection fails without a database name on end of url.
+		m_databaseName = databaseName;
+	}
+	
+	public String getDatabaseName()
+	{
+		return m_databaseName;
 	}
 	
 	protected Connection getConnection() throws SQLException
@@ -48,7 +55,7 @@ public class bhA_SqlDatabase implements bhI_TransactionScopeListener
 			}
 		}
 		
-		connection = DriverManager.getConnection(m_database);
+		connection = DriverManager.getConnection(m_databaseUrl);
 		
 		m_threadLocalConnection.set(connection);
 		

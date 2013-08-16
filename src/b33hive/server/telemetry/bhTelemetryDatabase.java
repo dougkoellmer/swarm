@@ -17,9 +17,9 @@ public class bhTelemetryDatabase extends bhA_SqlDatabase
 {
 	private final static Logger s_logger = Logger.getLogger(bhTelemetryDatabase.class.getName());
 	
-	public bhTelemetryDatabase(String database)
+	public bhTelemetryDatabase(String databaseUrl, String databaseName)
 	{
-		super(database);
+		super(databaseUrl, databaseName);
 	}
 	
 	public void put(bhI_SqlEncodable sqlEncodable)
@@ -28,7 +28,7 @@ public class bhTelemetryDatabase extends bhA_SqlDatabase
 		{
 			Connection connection = this.getConnection();
 			
-			String query = "INSERT INTO "+sqlEncodable.getTable();
+			String query = "INSERT INTO "+getDatabaseName()+"."+sqlEncodable.getTable();
 			String columnPart = " (";
 			String valuePart = " VALUES(";
 			
@@ -71,3 +71,4 @@ public class bhTelemetryDatabase extends bhA_SqlDatabase
 		}
 	}
 }
+

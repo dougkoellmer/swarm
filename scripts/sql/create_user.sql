@@ -1,4 +1,4 @@
-CREATE USER 'bh_admin'@'localhost' IDENTIFIED BY 'psfhqK51IA8Z46K';
+CREATE USER 'bh_admin'@'localhost' IDENTIFIED BY '$$$$$';
 
 GRANT ALL ON bh_accounts.* TO 'bh_admin'@'localhost';
 

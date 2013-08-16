@@ -5,7 +5,8 @@ import b33hive.shared.app.bhAppConfig;
 
 public class bhServerAppConfig extends bhAppConfig
 {
-	public String accountDatabase;
+	public String databaseUrl;
+	public String accountsDatabase;
 	public String telemetryDatabase;
 	public double startingZ;
 	public int gridExpansionDelta;

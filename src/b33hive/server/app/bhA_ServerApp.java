@@ -104,8 +104,8 @@ public abstract class bhA_ServerApp extends bhA_App
 		bh_s.inlineTxnMngr = new bhInlineTransactionManager((bhA_ServerJsonFactory) bh_s.jsonFactory);
 		bh_s.blobMngrFactory = new bhBlobManagerFactory();
 		bh_s.sessionMngr = new bhSessionManager();
-		bh_s.accountMngr = new bhServerAccountManager(appConfig.accountDatabase);
-		bh_s.telemetryDb = new bhTelemetryDatabase(appConfig.telemetryDatabase);
+		bh_s.accountMngr = new bhServerAccountManager(new bhAccountDatabase(appConfig.databaseUrl, appConfig.accountsDatabase));
+		bh_s.telemetryDb = new bhTelemetryDatabase(appConfig.databaseUrl, appConfig.telemetryDatabase);
 		bh_s.requestRedirector = new bhServletRedirector(appConfig.mainPage);
 		
 		addClientHandlers();

@@ -23,7 +23,7 @@ public class bhServerTelemetryAssert extends bhTelemetryAssert implements bhI_Sq
 	@Override
 	public String getTable()
 	{
-		return "bh_telemetry.assert";
+		return "assert";
 	}
 
 	@Override

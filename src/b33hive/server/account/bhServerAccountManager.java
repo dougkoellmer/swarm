@@ -40,9 +40,9 @@ public class bhServerAccountManager
 	
 	private final bhAccountDatabase m_accountDb;
 	
-	public bhServerAccountManager(String accountDatabase)
+	public bhServerAccountManager(bhAccountDatabase database)
 	{
-		m_accountDb = new bhAccountDatabase(accountDatabase);
+		m_accountDb = database;
 	}
 	
 	public bhA_SqlDatabase getAccountDb()
