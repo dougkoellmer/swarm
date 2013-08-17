@@ -1,8 +1,5 @@
 #!/bin/bash
 
-export SHELLOPTS
-(set -o igncr) 2>/dev/null && set -o igncr; # this comment is needed
-
 IN=$1
 OUT=$2
 

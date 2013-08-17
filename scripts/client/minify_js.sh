@@ -1,8 +1,5 @@
 #!/bin/bash
 
-export SHELLOPTS
-(set -o igncr) 2>/dev/null && set -o igncr; # this comment is needed
-
 DIR=../../src/b33hive/client/js
 CM_DIR="$DIR/codemirror/"
 CAJA_DIR="$DIR/caja/"
@@ -21,7 +18,7 @@ cp $HISTORY_DIR/native.history_min.js $HISTORY_DIR/temp.js
 java -jar ../../tools/closure_compiler.jar --js $HISTORY_DIR/temp.js --js_output_file $HISTORY_DIR/native.history_min.js
 rm $HISTORY_DIR/temp.js
 
-cat $HISTORY_DIR/native.history_min.js $MODERNIZR_DIR/modernizr.custom.90450.js $CM_DIR/cm_min.js $CAJA_DIR/caja-minified.js > $OUT_DIR/bh_support_lib.min.js
+cat $HISTORY_DIR/native.history_min.js $MODERNIZR_DIR/modernizr.custom.90450.js $CM_DIR/cm_min.js $CAJA_DIR/caja-minified.js > $OUT_DIR/dependencies.min.js
 
 rm $CM_DIR/cm_min.js
 rm $HISTORY_DIR/native.history_min.js
