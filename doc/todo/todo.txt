@@ -14,8 +14,6 @@
 
 - test performance improvement if removing loading animation
 
-- create a bare bones log in/out servlet
-
 - get new caja version...might require api changes...using "frame" instead of caja instance for taming.
 
 - handle "unlimited character case", at least in code editor UI, for number of characters left...actually, elsewhere too

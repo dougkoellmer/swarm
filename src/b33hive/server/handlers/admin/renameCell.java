@@ -36,7 +36,7 @@ public class renameCell implements bhI_RequestHandler
 	@Override
 	public void handleRequest(bhTransactionContext context, bhTransactionRequest request, bhTransactionResponse response)
 	{
-		String oldRawAddress = bh.jsonFactory.getHelper().getString(request.getJson(), bhE_JsonKey.oldCellAddress);
+		/*String oldRawAddress = bh.jsonFactory.getHelper().getString(request.getJson(), bhE_JsonKey.oldCellAddress);
 		String newRawAddress = bh.jsonFactory.getHelper().getString(request.getJson(), bhE_JsonKey.newCellAddress);
 		
 		bhServerCellAddress oldAddress = new bhServerCellAddress(oldRawAddress);
@@ -51,6 +51,6 @@ public class renameCell implements bhI_RequestHandler
 			response.setError(bhE_ResponseError.SERVICE_EXCEPTION);
 			
 			s_logger.log(Level.SEVERE, "Could not rename cell because of exception.", e);
-		}
+		}*/
 	}
 }

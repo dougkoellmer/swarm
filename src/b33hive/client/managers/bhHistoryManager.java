@@ -6,22 +6,15 @@ import b33hive.shared.structs.bhLinkedListNode;
 import b33hive.shared.structs.bhQueue;
 
 public class bhHistoryManager
-{
-	private static final bhHistoryManager s_instance = new bhHistoryManager();
-	
+{	
 	// TODO: Genericize the queue.
-	private final bhQueue m_coords = new bhQueue(S_ClientApp.MAX_HISTORY);
+	private final bhQueue m_coords;
 	
 	private bhLinkedListNode m_currentNode = null;
 	
-	private bhHistoryManager()
+	private bhHistoryManager(int maxHistory)
 	{
-		
-	}
-	
-	public static bhHistoryManager getInstance()
-	{
-		return s_instance;
+		m_coords = new bhQueue(maxHistory);
 	}
 	
 	public void pushCoordinate(int m, int n)

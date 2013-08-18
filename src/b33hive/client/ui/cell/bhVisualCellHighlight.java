@@ -1,6 +1,7 @@
 package b33hive.client.ui.cell;
 
 import b33hive.client.app.bh_c;
+import b33hive.client.entities.bhBufferCell;
 import b33hive.client.entities.bhCamera;
 import b33hive.client.managers.bhCellBuffer;
 import b33hive.client.managers.bhCellBufferManager;
@@ -13,6 +14,7 @@ import b33hive.client.ui.bhS_UI;
 import b33hive.client.ui.bhU_UI;
 import b33hive.client.ui.bh_view;
 import b33hive.shared.app.bhS_App;
+import b33hive.shared.debugging.bhU_Debug;
 import b33hive.shared.utils.bhU_Math;
 import b33hive.shared.statemachine.bhA_Action;
 import b33hive.shared.statemachine.bhStateEvent;
@@ -22,9 +24,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Panel;
 
 public class bhVisualCellHighlight extends FlowPanel implements bhI_UIElement
-{
-	private static final String HIGHLIGHT_PIXEL_COUNT = bhS_App.CELL_PIXEL_COUNT + "px";
-	
+{	
 	private final bhPoint m_utilPoint1 = new bhPoint();
 	
 	private double m_lastScaling = -1;
@@ -32,8 +32,6 @@ public class bhVisualCellHighlight extends FlowPanel implements bhI_UIElement
 	public bhVisualCellHighlight(Panel parent)
 	{
 		this.addStyleName("cell_highlight");
-
-		this.setSize(HIGHLIGHT_PIXEL_COUNT, HIGHLIGHT_PIXEL_COUNT);
 		
 		this.getElement().setAttribute("ondragstart", "return false;");
 		
@@ -62,13 +60,21 @@ public class bhVisualCellHighlight extends FlowPanel implements bhI_UIElement
 		}
 		
 		bhCellBuffer buffer = bhCellBufferManager.getInstance().getDisplayBuffer();
-		int cellSize = buffer.getSubCellCount();
+		int subCellDim = buffer.getSubCellCount();
 		
 		bhCamera camera = bh_c.camera;
 		bhPoint basePoint = null;
 		double highlightScaling = camera.calcDistanceRatio();
 		
 		bhGridCoordinate mouseCoord = navManager.getMouseGridCoord();
+		bhBufferCell cell = buffer.getCellAtAbsoluteCoord(mouseCoord);
+		
+		if( cell == null )
+		{
+			bhU_Debug.ASSERT(false, "Expected cell to be non null.");
+			
+			return;
+		}
 		
 		basePoint = m_utilPoint1;
 		
@@ -81,20 +87,21 @@ public class bhVisualCellHighlight extends FlowPanel implements bhI_UIElement
 		double lastScaling = cellManager.getLastScaling();
 		bhPoint lastBasePoint = cellManager.getLastBasePoint();
 		
-		int bufferM = buffer.getCoordinate().getM() * cellSize;
-		int bufferN = buffer.getCoordinate().getN() * cellSize;
+		int bufferM = buffer.getCoordinate().getM() * subCellDim;
+		int bufferN = buffer.getCoordinate().getN() * subCellDim;
 		int deltaM = mouseCoord.getM() - bufferM;
 		int deltaN = mouseCoord.getN() - bufferN;
 		
+		//TODO: Assuming square cell size.
 		double apparentCellPixels = 0;
 		
 		if( buffer.getSubCellCount() > 1 )
 		{
-			apparentCellPixels = ((bhS_App.CELL_PIXEL_COUNT / ((double) cellSize)) * lastScaling);
+			apparentCellPixels = ((cell.getGrid().getCellWidth() / ((double) subCellDim)) * lastScaling);
 		}
 		else
 		{
-			apparentCellPixels = bhS_App.CELL_PLUS_SPACING_PIXEL_COUNT * lastScaling;
+			apparentCellPixels = (cell.getGrid().getCellWidth() + cell.getGrid().getCellPadding()) * lastScaling;
 		}
 		
 		double deltaPixelsX = apparentCellPixels * deltaM;
@@ -103,7 +110,7 @@ public class bhVisualCellHighlight extends FlowPanel implements bhI_UIElement
 		basePoint.copy(lastBasePoint);
 		basePoint.inc(deltaPixelsX, deltaPixelsY, 0);
 		
-		String size = (bhS_App.CELL_PIXEL_COUNT * highlightScaling) + "px";
+		String size = (cell.getGrid().getCellWidth() * highlightScaling) + "px";
 		this.setSize(size, size);
 		this.getElement().getStyle().setProperty("top", basePoint.getY() + "px");
 		this.getElement().getStyle().setProperty("left", basePoint.getX() + "px");
