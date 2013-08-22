@@ -6,7 +6,7 @@ public class bhS_App
 {
 	public static final boolean VERBOSE_TRANSACTIONS = false; //TODO: Move to app config
 	
-	public static final int SERVER_VERSION = 8;
+	public static final int SERVER_VERSION = 9;
 	
 	public static final int UNKNOWN_SERVER_VERSION = -1;
 	

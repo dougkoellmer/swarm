@@ -62,6 +62,12 @@ public class bhServerGrid extends bhA_Grid implements bhI_Blob
 		m_ownership.set(bitIndex, false);
 	}
 	
+	public void markCoordinateTaken(bhGridCoordinate coordinate)
+	{
+		int bitIndex = coordinate.calcArrayIndex(m_width);
+		m_ownership.set(bitIndex, true);
+	}
+	
 	public bhServerGridCoordinate findFreeCoordinate(int expansionDelta, bhGridCoordinate preference) throws GridException
 	{
 		return this.private_findFreeCoordinate(expansionDelta, preference);
@@ -232,17 +238,7 @@ public class bhServerGrid extends bhA_Grid implements bhI_Blob
 	{
 		int externalVersion = in.readInt();
 		
-		if( externalVersion == 1 )
-		{
-			m_width = in.readInt();
-			m_height = in.readInt();
-			
-			//--- DRK > These have to be corrected manually.
-			m_cellWidth = 0;
-			m_cellHeight = 0;
-			m_cellPadding = 0;
-		}
-		else if( externalVersion > 1 )
+		if( externalVersion > 1 )
 		{
 			m_width = in.readInt();
 			m_height = in.readInt();

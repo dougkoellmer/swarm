@@ -1,6 +1,7 @@
 package b33hive.server.transaction;
 
 import b33hive.shared.transaction.bhE_HttpMethod;
+import b33hive.shared.transaction.bhE_RequestPathBlock;
 import b33hive.shared.transaction.bhI_RequestPath;
 
 public enum bhE_AdminRequestPath implements bhI_RequestPath
@@ -28,7 +29,7 @@ public enum bhE_AdminRequestPath implements bhI_RequestPath
 	@Override
 	public int getId()
 	{
-		return this.ordinal() + 1000;
+		return bhE_RequestPathBlock.LIB_ADMIN.getPathId(this);
 	}
 
 	@Override

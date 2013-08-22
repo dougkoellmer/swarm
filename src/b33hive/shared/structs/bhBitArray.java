@@ -31,6 +31,11 @@ public class bhBitArray extends bhA_JsonEncodable
 		m_blocks = null;
 	}
 	
+	public int[] getRawBlocks()
+	{
+		return m_blocks;
+	}
+	
 	public bhBitArray(int bitCount)
 	{
 		init(bitCount);

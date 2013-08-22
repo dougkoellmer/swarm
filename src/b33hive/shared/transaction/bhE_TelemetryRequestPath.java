@@ -24,7 +24,7 @@ public enum bhE_TelemetryRequestPath implements bhI_RequestPath
 	@Override
 	public int getId()
 	{
-		return this.ordinal() + 1000000*3;
+		return bhE_RequestPathBlock.LIB_TELEMETRY.getPathId(this);
 	}
 
 	@Override

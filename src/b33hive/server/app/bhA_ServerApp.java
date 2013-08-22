@@ -99,7 +99,7 @@ public abstract class bhA_ServerApp extends bhA_App
 		
 		bh_s.jsonFactory = new bhServerJsonFactory();
 		bh_s.codeCompiler = new bhServerCodeCompiler();
-		bh.requestPathMngr = new bhRequestPathManager(bhS_App.VERBOSE_TRANSACTIONS);
+		bh.requestPathMngr = new bhRequestPathManager(bh_s.jsonFactory, bhS_App.VERBOSE_TRANSACTIONS);
 		bh_s.txnMngr = new bhServerTransactionManager((bhA_ServerJsonFactory) bh_s.jsonFactory, bh.requestPathMngr);
 		bh_s.inlineTxnMngr = new bhInlineTransactionManager((bhA_ServerJsonFactory) bh_s.jsonFactory);
 		bh_s.blobMngrFactory = new bhBlobManagerFactory();

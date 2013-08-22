@@ -195,7 +195,7 @@ public class bhA_ClientApp extends bhA_App implements bhI_TimeSource
 		bh_c.codeCache = new bhCellCodeCache(m_appConfig.codeCacheSize, m_appConfig.codeCacheExpiration_seconds, this);
 		bh_c.userMngr = new bhUserManager(bh_c.accountMngr, bh_c.codeCache, m_appConfig.user);
 		bh_c.gridMngr = new bhGridManager(m_appConfig.grid);
-		bh.requestPathMngr = new bhRequestPathManager(bhS_App.VERBOSE_TRANSACTIONS);
+		bh.requestPathMngr = new bhRequestPathManager(bh.jsonFactory, bhS_App.VERBOSE_TRANSACTIONS);
 		bh_c.txnMngr = new bhClientTransactionManager(bh.requestPathMngr);
 		
 		//--- DRK > Configure transaction stuff.

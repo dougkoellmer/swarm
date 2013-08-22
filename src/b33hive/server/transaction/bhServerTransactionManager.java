@@ -99,30 +99,31 @@ public class bhServerTransactionManager
 		m_scopeListeners.add(listener);
 	}
 	
-	private void createEarlyOutResponse(bhE_ResponseError responseError, bhI_JsonObject responseJson)
+	private bhTransactionResponse createEarlyOutResponse(bhE_ResponseError responseError)
 	{
 		bhTransactionResponse responseToReturn = new bhTransactionResponse();
 		responseToReturn.setError(responseError);
-		responseToReturn.writeJson(responseJson);
+		
+		return responseToReturn;
 	}
 	
 	public void handleRequestFromClient(final Object nativeRequest, final Object nativeResponse, Object nativeContext, bhI_JsonObject requestJson, bhI_JsonObject responseJson_out, boolean verboseJson)
 	{
 		m_jsonFactory.startScope(verboseJson);
 		
-		//--- DRK > Early out for problems with request json.
-		if( requestJson == null )
-		{
-			this.createEarlyOutResponse(bhE_ResponseError.REQUEST_READ_ERROR, responseJson_out);
-			
-			return;
-		}
-		
 		bhTransactionResponse responseToReturn = null;
 		
 		//--- DRK > Just being anal and putting everything within a try.
 		try
 		{
+			//--- DRK > Early out for problems with request json.
+			if( requestJson == null )
+			{
+				responseToReturn = this.createEarlyOutResponse(bhE_ResponseError.REQUEST_READ_ERROR);
+				
+				return; // hits finally block
+			}
+			
 			//--- DRK > Create a wrapper around the native request and see if there's a server version mismatch.
 			bhTransactionRequest wrappedRequest = new bhTransactionRequest(nativeRequest);
 			wrappedRequest.readJson(requestJson);
@@ -137,16 +138,16 @@ public class bhServerTransactionManager
 			//--- DRK > Early out for server version mismatches.
 			if( serverVersionMismatch )
 			{
-				this.createEarlyOutResponse(bhE_ResponseError.VERSION_MISMATCH, responseJson_out);
+				responseToReturn = this.createEarlyOutResponse(bhE_ResponseError.VERSION_MISMATCH);
 				
-				return;
+				return; // hits finally block
 			}
 			
 			if( wrappedRequest.getPath() == null )
 			{
-				this.createEarlyOutResponse(bhE_ResponseError.UNKNOWN_PATH, responseJson_out);
-				
-				return;
+				responseToReturn = this.createEarlyOutResponse(bhE_ResponseError.UNKNOWN_PATH);
+
+				return; // hits finally block
 			}
 			
 			boolean isBatch = wrappedRequest.getPath() == bhE_ReservedRequestPath.batch;
@@ -269,6 +270,8 @@ public class bhServerTransactionManager
 			{
 				responseToReturn = new bhTransactionResponse();
 				responseToReturn.setError(bhE_ResponseError.SERVER_EXCEPTION);
+				
+				s_logger.log(Level.SEVERE, "Response should not have been null.");
 			}
 			
 			responseToReturn.writeJson(responseJson_out);

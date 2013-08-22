@@ -8,10 +8,15 @@ import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import java.util.logging.Logger;
+
+import com.b33hive.server.entities.bhServerGridUpdate;
 
 public class bhServerBitArray extends bhBitArray implements Externalizable
 {
-	private static final int EXTERNAL_VERSION = 1;
+	private static final int EXTERNAL_VERSION = 2;
+	
+	private static final Logger s_logger = Logger.getLogger(bhServerBitArray.class.getName());
 	
 	public bhServerBitArray()
 	{
@@ -22,6 +27,7 @@ public class bhServerBitArray extends bhBitArray implements Externalizable
 	{
 		super(bitCount);
 	}
+	
 	
 	@Override
 	public void writeExternal(ObjectOutput out) throws IOException

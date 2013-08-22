@@ -203,10 +203,10 @@ public class bhCajaWrapper
 			cajaContainer.detachIfNecessary();
 		}
 		
-		// HACK: namespacing dynamic content separately to avoid "leaked" setInterval calls being able to
+		// HACK: namespacing dynamic content separately to avoid "leaked" setInterval calls, et al, being able to
 		//		modify static DOM elements that are namespaced normally without the prefix. This is pretty
 		//		much just a bandaid workaround...behind the scenes, user code may still try to access non-existent elements.
-		cellNamespace = "d_" + cellNamespace;
+		cellNamespace = "d_" + cellNamespace + bhS_Caja.CAJA_NAMESPACE_SUFFIX;
 		
 		native_start(this, hostElement, compiledHtml, compiledJs, cellNamespace, listener, m_apiNamespace);
 	}
@@ -312,7 +312,7 @@ public class bhCajaWrapper
 					thisArg.@b33hive.client.ui.tabs.code.bhCajaWrapper::onFrameLoad(Lcom/google/gwt/core/client/JavaScriptObject;)(frame);
 
 	   				frame.code('', 'text/html', compiledHtml)
-	   					 .api(mapeApi())
+	   					 .api(makeApi())
 	   					 .run();
 	   				
 	   				if( listener != null )

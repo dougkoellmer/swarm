@@ -47,10 +47,20 @@ public class bhBlobTransaction_CreateUser extends bhA_BlobTransaction
 	protected void performOperations() throws bhBlobException
 	{
 		m_user = null;
+		bhBlobTransaction_CreateCell createCellTxn = m_createCellTransaction;
 		
-		if( m_createCellTransaction != null )
+		if( createCellTxn != null )
 		{
-			m_createCellTransaction.performOperations();
+			try
+			{
+				createCellTxn.performOperations();
+			}
+			catch(bhBlobException e )
+			{
+				s_logger.severe("Couldn't claim cell due to: " + e);
+			}
+			
+			createCellTxn = null;
 		}
 		
 		bhI_BlobManager blobManager = bh_s.blobMngrFactory.create(bhE_BlobCacheLevel.PERSISTENT);
@@ -58,9 +68,9 @@ public class bhBlobTransaction_CreateUser extends bhA_BlobTransaction
 		//--- DRK > Add a user to the database.
 		m_user = new bhServerUser();
 		
-		if( m_createCellTransaction != null )
+		if( createCellTxn != null )
 		{
-			bhServerCellAddressMapping mapping = m_createCellTransaction.getMapping();
+			bhServerCellAddressMapping mapping = createCellTxn.getMapping();
 			m_user.addOwnedCell(mapping);
 		}
 		

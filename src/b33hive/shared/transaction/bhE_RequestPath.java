@@ -43,7 +43,7 @@ public enum bhE_RequestPath implements bhI_RequestPath
 	@Override
 	public int getId()
 	{
-		return this.ordinal();
+		return bhE_RequestPathBlock.LIB.getPathId(this);
 	}
 
 	@Override
