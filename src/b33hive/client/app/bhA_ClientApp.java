@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 
 import com.google.gwt.logging.client.TextLogFormatter;
 import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.ui.RootPanel;
 
 import b33hive.client.code.bhClientCodeCompiler;
 import b33hive.client.input.bhClickManager;
@@ -83,14 +84,19 @@ public class bhA_ClientApp extends bhA_App implements bhI_TimeSource
 	{
 		switch(stage)
 		{
+			case CHECK_BROWSER_SUPPORT:// this case goes async, so can't recurse immediately.
+			{
+				stage_browserSupportCheck();		return;
+			}
+			
 			case CONFIGURE_LOGGING:
 			{
 				stage_configureLogging();			break;
 			}
-		
-			case CHECK_BROWSER_SUPPORT:// this case goes async, so can't recurse immediately.
+			
+			case LOAD_SUPPORT_LIBRARIES:
 			{
-				stage_browserSupportCheck();		return;
+				stage_loadSupportLibraries();		break;
 			}
 			
 			case START_APP_MANAGERS:
@@ -184,6 +190,24 @@ public class bhA_ClientApp extends bhA_App implements bhI_TimeSource
 			}
 		}, m_appConfig.appId);
 	}
+	
+	protected void stage_loadSupportLibraries()
+	{
+		if( m_appConfig.publicRecaptchaKey != null )
+		{
+			//loadRecaptcha(m_appConfig.publicRecaptchaKey);
+		}
+	}
+	
+	private native void loadRecaptcha(String publicKey)
+	/*-{
+		var body= $doc.getElementsByTagName('body')[0];
+		
+		var script= $doc.createElement('script');
+		script.type= 'text/javascript';
+		script.src = 'http://www.google.com/recaptcha/api/challenge?k=' + publicKey;
+		body.appendChild(script);
+	}-*/;
 	
 	protected void stage_startAppManagers()
 	{

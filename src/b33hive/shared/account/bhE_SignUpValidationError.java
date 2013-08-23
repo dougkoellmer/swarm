@@ -9,15 +9,15 @@ public enum bhE_SignUpValidationError implements bhI_ValidationError
 	PASSWORD_TOO_SHORT,
 	
 	USERNAME_TOO_SHORT, // not used for now, but maybe could be in future, who knows.
-	USERNAME_TOO_LONG,
+	USERNAME_TOO_LONG, // generally should not be hit on client because UI enforces max length
 	USERNAME_INVALID,
 	USERNAME_TAKEN, // only generated on server
 	
-	EMAIL_TOO_LONG,
+	EMAIL_TOO_LONG, // generally should not be client because UI enforces max length
 	EMAIL_INVALID,
 	EMAIL_TAKEN, // only generated on server
 
-	CAPTCHA_INCORRECT,
+	CAPTCHA_INCORRECT, // only generated on server
 	
 	RESPONSE_ERROR; // for any kind of response error not really related to validation
 	
