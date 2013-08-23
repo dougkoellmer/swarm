@@ -10,8 +10,6 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.logging.Logger;
 
-import com.b33hive.server.entities.bhServerGridUpdate;
-
 public class bhServerBitArray extends bhBitArray implements Externalizable
 {
 	private static final int EXTERNAL_VERSION = 2;

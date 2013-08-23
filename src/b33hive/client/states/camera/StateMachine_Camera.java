@@ -67,9 +67,9 @@ public class StateMachine_Camera extends bhA_StateMachine implements bhI_StateEv
 	 */
 	static class CameraManager extends bhCameraManager
 	{
-		CameraManager(bhCamera camera, double minSnapTime, double snapTimeRange)
+		CameraManager(bhCamera camera, double minSnapTime, double maxSnapTime)
 		{
-			super(camera, minSnapTime, snapTimeRange);
+			super(camera, minSnapTime, maxSnapTime);
 		}
 		
 		@Override
@@ -523,10 +523,10 @@ public class StateMachine_Camera extends bhA_StateMachine implements bhI_StateEv
 	
 	private final bhCellAddressManagerListener m_addressManagerListener = new bhCellAddressManagerListener(this);
 	
-	public StateMachine_Camera(double minSnapTime, double snapTimeRange)
+	public StateMachine_Camera(double minSnapTime, double maxSnapTime)
 	{
 		m_camera = new bhCamera();
-		m_cameraManager = new CameraManager(m_camera, minSnapTime, snapTimeRange);
+		m_cameraManager = new CameraManager(m_camera, minSnapTime, maxSnapTime);
 		
 		//TODO(DRK): Not the biggest fan of setting these this way...
 		bh_c.camera = m_camera;

@@ -229,7 +229,7 @@ public class bhA_ClientApp extends bhA_App implements bhI_TimeSource
 			
 			bhA_State.register(new StateContainer_Base());
 			{
-				bhA_State.register(new StateMachine_Camera(m_appConfig.minSnapTime, m_appConfig.snapTimeRange));
+				bhA_State.register(new StateMachine_Camera(m_appConfig.minSnapTime, m_appConfig.maxSnapTime));
 				{
 					bhA_State.register(new State_CameraFloating());
 					bhA_State.register(new State_GettingMapping());

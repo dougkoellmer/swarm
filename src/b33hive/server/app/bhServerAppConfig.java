@@ -12,8 +12,7 @@ public class bhServerAppConfig extends bhAppConfig
 	public int gridExpansionDelta;
 	
 	public String mainPage;
-
-	public String publicRecaptchaKey;
+	
 	public String privateRecaptchaKey;
 	
 	public Class<? extends bhI_HomeCellCreator> T_homeCellCreator;

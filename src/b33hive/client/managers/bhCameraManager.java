@@ -35,10 +35,10 @@ public class bhCameraManager
 	private double m_minSnapTime = 0;
 	private double m_snapTimeRange = 0;
 	
-	public bhCameraManager(bhCamera camera, double minSnapTime, double snapTimeRange)
+	public bhCameraManager(bhCamera camera, double minSnapTime, double maxSnapTime)
 	{
 		m_minSnapTime = minSnapTime;
-		m_snapTimeRange = snapTimeRange;
+		m_snapTimeRange = maxSnapTime - minSnapTime;
 		
 		m_camera = camera;
 	}

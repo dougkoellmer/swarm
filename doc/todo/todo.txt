@@ -10,8 +10,6 @@
 
 - make sure cell buffer isn't getting updated twice while dragging
 
-- have a link to sandbox while inside the examples page.
-
 - test performance improvement if removing loading animation
 
 - get new caja version...might require api changes...using "frame" instead of caja instance for taming.
