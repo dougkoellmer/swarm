@@ -35,9 +35,9 @@ public class syncCode implements bhI_RequestHandler
 {
 	private static final Logger s_logger = Logger.getLogger(syncCode.class.getName());
 	
-	private boolean isSandBox(bhServerCellAddressMapping mapping)
+	protected boolean isSandBox(bhServerCellAddressMapping mapping)
 	{
-		return mapping.getCoordinate().getM() == bhS_App.SANDBOX_COORD_M && mapping.getCoordinate().getN() == bhS_App.SANDBOX_COORD_N;
+		return false;
 	}
 	
 	private boolean isAuthorized(bhI_BlobManager blobManager, bhServerCellAddressMapping mapping, bhTransactionRequest request, bhTransactionResponse response)

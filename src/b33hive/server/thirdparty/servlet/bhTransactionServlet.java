@@ -48,7 +48,7 @@ public class bhTransactionServlet extends bhA_BaseServlet
 		bhI_JsonObject requestJson = bhU_Servlet.getRequestJson(nativeRequest, isGet);
 		bhI_JsonObject responseJson = bh.jsonFactory.createJsonObject();
 		
-		bh_s.txnMngr.handleRequestFromClient(nativeRequest, nativeResponse, this.getServletContext(), requestJson, responseJson, bhS_App.VERBOSE_TRANSACTIONS);
+		bh_s.txnMngr.handleRequestFromClient(nativeRequest, nativeResponse, this.getServletContext(), requestJson, responseJson);
 		
 		bhU_Servlet.writeJsonResponse(responseJson, nativeResponse.getWriter());
 		

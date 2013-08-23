@@ -66,12 +66,15 @@ public class bhServerTransactionManager
 	private final ArrayList<bhI_DeferredRequestHandler> m_deferredHandlers = new ArrayList<bhI_DeferredRequestHandler>();
 	private final ArrayList<bhI_TransactionScopeListener> m_scopeListeners = new ArrayList<bhI_TransactionScopeListener>();
 	private final bhA_ServerJsonFactory m_jsonFactory;
+	private final boolean m_verboseJson;
 	
-	public bhServerTransactionManager(bhA_ServerJsonFactory jsonFactory, bhRequestPathManager requestPathMngr)
+	public bhServerTransactionManager(bhA_ServerJsonFactory jsonFactory, bhRequestPathManager requestPathMngr, boolean verboseTransactions)
 	{
 		m_jsonFactory = jsonFactory;
 		
 		requestPathMngr.register(bhE_ReservedRequestPath.values());
+		
+		m_verboseJson = verboseTransactions;
 	}
 	
 	public bhI_RequestHandler getRequestHandler(bhI_RequestPath path)
@@ -105,6 +108,11 @@ public class bhServerTransactionManager
 		responseToReturn.setError(responseError);
 		
 		return responseToReturn;
+	}
+	
+	public void handleRequestFromClient(final Object nativeRequest, final Object nativeResponse, Object nativeContext, bhI_JsonObject requestJson, bhI_JsonObject responseJson_out)
+	{
+		this.handleRequestFromClient(nativeRequest, nativeResponse, nativeContext, requestJson, responseJson_out, m_verboseJson);
 	}
 	
 	public void handleRequestFromClient(final Object nativeRequest, final Object nativeResponse, Object nativeContext, bhI_JsonObject requestJson, bhI_JsonObject responseJson_out, boolean verboseJson)

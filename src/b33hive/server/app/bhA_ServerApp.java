@@ -99,9 +99,9 @@ public abstract class bhA_ServerApp extends bhA_App
 		
 		bh_s.jsonFactory = new bhServerJsonFactory();
 		bh_s.codeCompiler = new bhServerCodeCompiler();
-		bh.requestPathMngr = new bhRequestPathManager(bh_s.jsonFactory, bhS_App.VERBOSE_TRANSACTIONS);
-		bh_s.txnMngr = new bhServerTransactionManager((bhA_ServerJsonFactory) bh_s.jsonFactory, bh.requestPathMngr);
-		bh_s.inlineTxnMngr = new bhInlineTransactionManager((bhA_ServerJsonFactory) bh_s.jsonFactory);
+		bh.requestPathMngr = new bhRequestPathManager(bh_s.jsonFactory, appConfig.verboseTransactions);
+		bh_s.txnMngr = new bhServerTransactionManager((bhA_ServerJsonFactory) bh_s.jsonFactory, bh.requestPathMngr, appConfig.verboseTransactions);
+		bh_s.inlineTxnMngr = new bhInlineTransactionManager((bhA_ServerJsonFactory) bh_s.jsonFactory, appConfig.verboseTransactions);
 		bh_s.blobMngrFactory = new bhBlobManagerFactory();
 		bh_s.sessionMngr = new bhSessionManager();
 		bh_s.accountMngr = new bhServerAccountManager(new bhAccountDatabase(appConfig.databaseUrl, appConfig.accountsDatabase));
@@ -160,7 +160,7 @@ public abstract class bhA_ServerApp extends bhA_App
 		bhServerTransactionManager txnManager = bh_s.txnMngr;
 		bh.requestPathMngr.register(bhE_AdminRequestPath.values());
 		
-		setAdminHandler(new createGrid(T_homeCellCreator, bhServerGrid.class),	bhE_AdminRequestPath.createGrid);
+		setAdminHandler(new createGrid(bhServerGrid.class),						bhE_AdminRequestPath.createGrid);
 		setAdminHandler(new deactivateUserCells(),								bhE_AdminRequestPath.deactivateUserCells);
 		setAdminHandler(new refreshHomeCells(T_homeCellCreator),				bhE_AdminRequestPath.refreshHomeCells);
 		setAdminHandler(new clearCell(),										bhE_AdminRequestPath.clearCell);

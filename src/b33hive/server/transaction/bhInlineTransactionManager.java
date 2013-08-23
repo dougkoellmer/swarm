@@ -39,10 +39,12 @@ public class bhInlineTransactionManager
 	private final ArrayList<bhI_TransactionScopeListener> m_scopeListeners = new ArrayList<bhI_TransactionScopeListener>();
 	
 	private final bhA_ServerJsonFactory m_jsonFactory;
+	private final boolean m_verboseTransactions;
 	
-	public bhInlineTransactionManager(bhA_ServerJsonFactory jsonFactory)
+	public bhInlineTransactionManager(bhA_ServerJsonFactory jsonFactory, boolean verboseTransactions)
 	{
 		m_jsonFactory = jsonFactory;
+		m_verboseTransactions = verboseTransactions;
 	}
 	
 	public void addScopeListener(bhI_TransactionScopeListener listener)
@@ -56,7 +58,7 @@ public class bhInlineTransactionManager
 		out.write("var bh_rl = [];");
 		m_context.set(new Context(out, request, response));
 		
-		m_jsonFactory.startScope(bhS_App.VERBOSE_TRANSACTIONS);
+		m_jsonFactory.startScope(m_verboseTransactions);
 		
 		for( int i = 0; i < m_scopeListeners.size(); i++ )
 		{

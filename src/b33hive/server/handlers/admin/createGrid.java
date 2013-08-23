@@ -41,14 +41,11 @@ public class createGrid implements bhI_RequestHandler
 {
 	private static final Logger s_logger = Logger.getLogger(createGrid.class.getName());
 	
-	private final Class<? extends bhI_HomeCellCreator> m_T_homeCellCreator;
-	
 	// TEMPORARY
 	private final Class<? extends bhServerGrid> m_T_grid;
 
-	public createGrid(Class<? extends bhI_HomeCellCreator> T_homeCellCreator, Class<? extends bhServerGrid> T_grid)
+	public createGrid(Class<? extends bhServerGrid> T_grid)
 	{
-		m_T_homeCellCreator = T_homeCellCreator;
 		m_T_grid = T_grid;
 	}
 	
