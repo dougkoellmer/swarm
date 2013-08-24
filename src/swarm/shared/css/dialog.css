@@ -1,0 +1,70 @@
+.sm_dialog
+{
+	/*width:512px;
+	height:256px;*/
+	display:block;
+}
+
+.sm_dialog_body_stack
+{
+	background:white;
+	font: 12px Helvetica, Arial, sans-serif;
+	padding-bottom:8px;
+	border: solid 1px #000000;
+	border-top:none;
+	
+	-webkit-border-bottom-left-radius: 8px;
+    -moz-border-radius-bottomleft: 8px;
+    border-bottom-left-radius: 8px;
+    -o-border-bottom-left-radius:8px;
+    
+    -webkit-border-bottom-right-radius: 8px;
+    -moz-border-radius-bottomright: 8px;
+    border-bottom-right-radius: 8px;
+     -o-border-bottom-right-radius:8px;
+     
+     /*margin-left:1px;
+     margin-right:-1px;*/
+}
+
+.sm_dialog_body
+{
+	width:100%;
+	max-width:100%;
+	display:block;
+	word-wrap:break-word;
+	overflow-y:auto;
+}
+
+.sm_dialog_header
+{
+	font: bold 14px Helvetica, Arial, sans-serif;
+	
+	width:100%;
+	height: 44px;
+	
+	border: solid 1px #000000;
+	background: #CCCCCC;
+	
+	-webkit-border-top-left-radius: 8px;
+    -moz-border-radius-topleft: 8px;
+    border-top-left-radius: 8px;
+    -o-border-top-left-radius:8px;
+    
+    -webkit-border-top-right-radius: 8px;
+    -moz-border-radius-topright: 8px;
+    border-top-right-radius: 8px;
+     -o-border-top-right-radius:8px;
+}
+
+.sm_dialog_glass, .sm_dialog_container
+{
+	position:absolute;
+	top:0px;
+	left:0px;
+}
+
+.sm_dialog_glass
+{
+	background-color: rgba(0, 0, 0, .75);
+}

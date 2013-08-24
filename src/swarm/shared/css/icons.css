@@ -1,0 +1,150 @@
+.sm_icon
+{
+    overflow: hidden;
+}
+
+.sm_icon
+{
+    background: url(../r.img/icons.png) no-repeat;
+}
+
+.sm_icon-back-png{
+    width: 24px;
+    height: 24px;
+    background-position: -140px -70px;
+}
+
+.sm_icon-back_disabled-png{
+    width: 24px;
+    height: 24px;
+    background-position: -142px -35px;
+}
+
+.sm_icon-close-png{
+    width: 14px;
+    height: 14px;
+    background-position: -140px -105px;
+}
+
+.sm_icon-flag-png{
+    width: 24px;
+    height: 24px;
+    background-position: -142px -0px;
+}
+
+.sm_icon-flag_disabled-png span{
+    width: 24px;
+    height: 24px;
+    background-position: -105px -105px;
+}
+
+.sm_icon-forward-png{
+    width: 24px;
+    height: 24px;
+    background-position: -70px -105px;
+}
+
+.sm_icon-forward_disabled-png{
+    width: 24px;
+    height: 24px;
+    background-position: -35px -105px;
+}
+
+.sm_icon-gear-png{
+    width: 26px;
+    height: 26px;
+    background-position: -0px -0px;
+}
+
+.sm_icon-home-png{
+    width: 24px;
+    height: 24px;
+    background-position: -0px -105px;
+}
+
+.sm_icon-maximize-png{
+    width: 8px;
+    height: 15px;
+    background-position: -159px -130px;
+}
+
+.sm_icon-minimize-png{
+    width: 8px;
+    height: 15px;
+    background-position: -140px -130px;
+}
+
+.sm_icon-refresh-png{
+    width: 24px;
+    height: 26px;
+    background-position: -72px -0px;
+}
+
+.sm_icon-refresh_disabled-png{
+    width: 24px;
+    height: 26px;
+    background-position: -37px -0px;
+}
+
+.sm_icon-star-png{
+    width: 24px;
+    height: 24px;
+    background-position: -105px -70px;
+}
+
+.sm_icon-star_disabled-png{
+    width: 24px;
+    height: 24px;
+    background-position: -70px -70px;
+}
+
+.sm_icon-zoom_drag-png{
+    width: 14px;
+    height: 4px;
+    background-position: -0px -156px;
+}
+
+.sm_icon-zoom_in-png{
+    width: 24px;
+    height: 24px;
+    background-position: -35px -70px;
+}
+
+.sm_icon-zoom_in_disabled-png{
+    width: 24px;
+    height: 24px;
+    background-position: -0px -70px;
+}
+
+.sm_icon-zoom_out-png{
+    width: 24px;
+    height: 24px;
+    background-position: -107px -35px;
+}
+
+.sm_icon-zoom_out_disabled-png{
+    width: 24px;
+    height: 24px;
+    background-position: -107px -0px;
+}
+
+.sm_icon-maximize-png{
+    position:relative;
+    left:2px;
+}
+
+
+.sm_icon-zoom_drag-png{
+	position:relative;
+	left:5px;
+}
+
+.sm_icon-close-png{
+	position:relative;
+	left:6px;
+}
+
+.sm_icon-refresh-png, .sm_icon-refresh_disabled-png{
+	position:relative;
+	left:1px;
+}

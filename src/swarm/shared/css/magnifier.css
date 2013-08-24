@@ -1,0 +1,99 @@
+.sm_magnifier
+{
+	position:absolute;
+	
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	-o-user-select: none;
+	user-select: none;
+}
+
+.sm_zoom_button
+{
+	width:32px;
+	height:32px;
+	
+	margin:0px;
+	
+	overflow:hidden;
+	padding: 0px;
+	
+	border-radius: 8px;
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+}
+
+.sm_zoom_in_button, .sm_zoom_in_button[disabled="disabled"], .sm_zoom_in_button[disabled], .sm_zoom_in_button[disabled="disabled"]:hover, .sm_zoom_in_button[disabled]:hover
+{
+	-webkit-border-bottom-left-radius: 0px;
+    -moz-border-radius-bottomleft: 0px;
+    border-bottom-left-radius: 0px;
+    
+    -webkit-border-bottom-right-radius: 0px;
+    -moz-border-radius-bottomright: 0px;
+    border-bottom-right-radius: 0px;
+}
+
+.sm_zoom_out_button, .sm_zoom_out_button[disabled="disabled"], .sm_zoom_out_button[disabled], .sm_zoom_out_button[disabled="disabled"]:hover, .sm_zoom_out_button[disabled]:hover
+{
+	-webkit-border-top-left-radius: 0px;
+    -moz-border-radius-topleft: 0px;
+    border-top-left-radius: 0px;
+    
+    -webkit-border-top-right-radius: 0px;
+    -moz-border-radius-topright: 0px;
+    border-top-right-radius: 0px;
+}
+
+.sm_zoom_drag_button
+{	
+	width:32px;
+	height:16px;
+	
+	position:absolute;
+	
+	left:0px;
+	
+	margin:0px;
+	
+	border-radius:0px;
+}
+
+.sm_zoom_slider
+{
+	margin:0px;
+	
+	width: 16px;
+	height: 128px;
+
+	border-radius:0px;
+    -webkit-border-radius: 0px;
+    -moz-border-radius: 0px;
+    
+    border-top:none;
+    border-bottom:none;
+}
+
+/* hack...no idea why this is necessary...*/
+.sm_zoom_slider
+{
+	position:relative;
+}
+.sm_zoom_slider
+{
+	left:8px;
+}
+
+.sm_zoom_slider:hover
+{
+	border-top:none;
+    border-bottom:none;
+}
+
+.sm_zoom_slider:active
+{
+	border-top:none;
+    border-bottom:none;
+}

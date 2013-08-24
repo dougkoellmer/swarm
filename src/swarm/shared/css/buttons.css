@@ -1,0 +1,61 @@
+.sm_button
+{
+	cursor: pointer;
+	
+    color: #484848;
+    text-decoration: none;
+    text-shadow: 0 1px 0 #fff;
+    font: bold 12px Helvetica, Arial, sans-serif;
+    display: block;
+    margin: 4px;
+    
+    background: #f0f0f0;
+    background: -webkit-linear-gradient(top, #f7f7f7, #d1d1d1);
+    background: -moz-linear-gradient(top, #f7f7f7, #d1d1d1);
+    background: -ms-linear-gradient(top, #f7f7f7, #d1d1d1);
+    background: -o-linear-gradient(top, #f7f7f7, #d1d1d1);
+    
+    border: solid 1px #7f7f7f;
+    
+    border-radius: 4px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+}
+
+.sm_button[disabled="disabled"], .sm_button[disabled],
+.sm_button[disabled="disabled"]:hover, .sm_button[disabled]:hover
+{
+	cursor:default;
+	border: solid 1px #C4C4C4;
+	background: #F0F0F0;
+	color: #C4C4C4;
+}
+
+.sm_button:hover
+{
+    border: solid 1px #333;
+    color: #282828;
+    
+    background: -webkit-linear-gradient(top, #ffffff, #dfdfdf);
+    background: -moz-linear-gradient(top, #ffffff, #dfdfdf);
+    background: -ms-linear-gradient(top, #ffffff, #dfdfdf);
+    background: -o-linear-gradient(top, #ffffff, #dfdfdf);
+}
+
+.sm_button:active
+{
+    border: solid 1px #7f7f7f;
+    
+    background: #d0d0d0;
+    background: -webkit-gradient(linear, left top, left bottom, from(#a8a8a8), color-stop(0.15, #c6c6c6), to(#d8d8d8));
+    background: -webkit-linear-gradient(top, #a8a8a8, #c6c6c6 15%, #d8d8d8);
+    background: -moz-linear-gradient(top, #a8a8a8, #c6c6c6 15%, #d8d8d8);
+    background: -ms-linear-gradient(top, #a8a8a8, #c6c6c6 15%, #d8d8d8);
+    background: -o-linear-gradient(top, #a8a8a8, #c6c6c6 15%, #d8d8d8);
+}
+
+/* Get rid of dotted lines on focused buttons. */
+button::-moz-focus-inner
+{
+  border: 0;
+}

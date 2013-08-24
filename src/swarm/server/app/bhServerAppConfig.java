@@ -1,0 +1,19 @@
+package swarm.server.app;
+
+import swarm.server.handlers.admin.bhI_HomeCellCreator;
+import swarm.shared.app.bhAppConfig;
+
+public class bhServerAppConfig extends bhAppConfig
+{
+	public String databaseUrl;
+	public String accountsDatabase;
+	public String telemetryDatabase;
+	public double startingZ;
+	public int gridExpansionDelta;
+	
+	public String mainPage;
+	
+	public String privateRecaptchaKey;
+	
+	public Class<? extends bhI_HomeCellCreator> T_homeCellCreator;
+}
