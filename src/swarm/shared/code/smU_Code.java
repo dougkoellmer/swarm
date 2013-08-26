@@ -13,6 +13,6 @@ public final class smU_Code
 		//TODO: Should ecmascript the string, except for forward slashes.
 		//StringEscapeUtils.escapeEcmaScript();
 		
-		return "javascript:bh.snap('"+cellAddress+"');"; // TODO: Get API namespace from somewhere.
+		return "javascript:sm.snap('"+cellAddress+"');"; // TODO: Get API namespace from somewhere.
 	}
 }

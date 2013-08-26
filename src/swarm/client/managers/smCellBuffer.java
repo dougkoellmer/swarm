@@ -42,9 +42,9 @@ public class smCellBuffer
 	
 	void setCellSize(int size)
 	{
-		if ( !bhU_BitTricks.isPowerOfTwo(size) )
+		if ( !smU_BitTricks.isPowerOfTwo(size) )
 		{
-			bhU_Debug.ASSERT(false, "setCellSize1");
+			smU_Debug.ASSERT(false, "setCellSize1");
 			return;
 		}
 		
@@ -90,7 +90,7 @@ public class smCellBuffer
 			smBufferCell cellRemoved = m_cells.remove(m_cells.size()-1);
 			if( cellRemoved != null )
 			{
-				bhU_Debug.ASSERT(false, "setExtents1");
+				smU_Debug.ASSERT(false, "setExtents1");
 			}
 		}
 	}
@@ -104,7 +104,7 @@ public class smCellBuffer
 	{
 		if ( !isInBoundsRelative(m, n) )
 		{
-			bhU_Debug.ASSERT(false, "smCellBuffer::setCell1");
+			smU_Debug.ASSERT(false, "smCellBuffer::setCell1");
 			return;
 		}
 		
@@ -165,11 +165,11 @@ public class smCellBuffer
 		return isInBoundsRelative(relativeM, relativeN);
 	}
 	
-	void imposeBuffer(smA_Grid grid, smCellBuffer otherBuffer, smI_LocalCodeRepository localCodeSource, int options__extends__bhF_BufferUpdateOption)
+	void imposeBuffer(smA_Grid grid, smCellBuffer otherBuffer, smI_LocalCodeRepository localCodeSource, int options__extends__smF_BufferUpdateOption)
 	{
-		boolean createVisualizations = (options__extends__bhF_BufferUpdateOption & bhF_BufferUpdateOption.CREATE_VISUALIZATIONS) != 0;
-		boolean communicateWithServer = (options__extends__bhF_BufferUpdateOption & bhF_BufferUpdateOption.COMMUNICATE_WITH_SERVER) != 0;
-		boolean flushPopulator = (options__extends__bhF_BufferUpdateOption & bhF_BufferUpdateOption.FLUSH_CELL_POPULATOR) != 0;
+		boolean createVisualizations = (options__extends__smF_BufferUpdateOption & smF_BufferUpdateOption.CREATE_VISUALIZATIONS) != 0;
+		boolean communicateWithServer = (options__extends__smF_BufferUpdateOption & smF_BufferUpdateOption.COMMUNICATE_WITH_SERVER) != 0;
+		boolean flushPopulator = (options__extends__smF_BufferUpdateOption & smF_BufferUpdateOption.FLUSH_CELL_POPULATOR) != 0;
 		
 		smBufferCell ithCell = null;
 		int i;
@@ -181,8 +181,8 @@ public class smCellBuffer
 		int thisCellCount = this.getCellCount();
 		int otherBufferCellCount = otherBuffer.getCellCount();
 		
-		bhGridCoordinate absCoord = s_utilCoord1;
-		bhGridCoordinate relThisCoord = s_utilCoord2;
+		smGridCoordinate absCoord = s_utilCoord1;
+		smGridCoordinate relThisCoord = s_utilCoord2;
 		
 		smCellPool pool = smCellPool.getInstance();
 		smCellCodeManager populator = smCellCodeManager.getInstance();
@@ -190,7 +190,7 @@ public class smCellBuffer
 		//--- DRK > Easy case is when we have a size change...then everything is recycled.
 		if ( otherSubCellCountDim != thisSubCellCountDim )
 		{
-			bhU_Debug.ASSERT(false); // asserting here until zoomed-out meta cells are implemented.
+			smU_Debug.ASSERT(false); // asserting here until zoomed-out meta cells are implemented.
 			
 			for ( i = 0; i < thisCellCount; i++ )
 			{
@@ -239,7 +239,7 @@ public class smCellBuffer
 				}
 			}*/
 			
-			bhGridCoordinate relOtherCoord = s_utilCoord3;
+			smGridCoordinate relOtherCoord = s_utilCoord3;
 			
 			int startM = 0, finishM = m_width, deltaM = 1;
 			int startN = 0, finishN = m_height, deltaN = 1;
@@ -286,7 +286,7 @@ public class smCellBuffer
 						
 						if ( otherCell == null )
 						{
-							bhU_Debug.ASSERT(false, "imposeBuffer1");
+							smU_Debug.ASSERT(false, "imposeBuffer1");
 						}
 						
 						//--- DRK > If possible, fill in the gap that is left in the other buffer with the cell
@@ -367,12 +367,12 @@ public class smCellBuffer
 				
 				if ( debug_dict.containsKey(debug_stringRep) )
 				{
-					bhU_Debug.ASSERT(debug_cell == debug_dict.get(debug_stringRep), "imposeBuffer2");
+					smU_Debug.ASSERT(debug_cell == debug_dict.get(debug_stringRep), "imposeBuffer2");
 					debug_thisBufferHitCount++;
 				}
 			}
 			
-			bhU_Debug.ASSERT(debug_otherBufferHitCount == debug_thisBufferHitCount, "imposeBuffer3");*/
+			smU_Debug.ASSERT(debug_otherBufferHitCount == debug_thisBufferHitCount, "imposeBuffer3");*/
 		}
 		
 		if( flushPopulator )
@@ -408,9 +408,9 @@ public class smCellBuffer
 		//---		will equal 4....4 != 10 - 9, so the assert can trip even though it shouldn't.
 		/*if( otherBufferCellCount > thisCellCount )
 		{
-			//--- DRK > This might not be a valid bhU_Debug.ASSERT case...if it trips, let me know.
+			//--- DRK > This might not be a valid smU_Debug.ASSERT case...if it trips, let me know.
 			String message = "nonNullCount, otherBufferCount, thisCellCount, " + debug_nonNullCount + " " + otherBufferCellCount + " " + thisCellCount;
-			bhU_Debug.ASSERT(debug_nonNullCount == otherBufferCellCount - thisCellCount, message);
+			smU_Debug.ASSERT(debug_nonNullCount == otherBufferCellCount - thisCellCount, message);
 		}*/
 	}
 	

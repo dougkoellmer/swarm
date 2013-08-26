@@ -24,7 +24,7 @@ public class signIn implements smI_RequestHandler
 		smSignInValidationResult result = new smSignInValidationResult();
 		String passwordChangeToken = sm.jsonFactory.getHelper().getString(request.getJson(), smE_JsonKey.passwordChangeToken);
 		
-		bhUserSession userSession = null;
+		smUserSession userSession = null;
 		
 		if( passwordChangeToken != null )
 		{

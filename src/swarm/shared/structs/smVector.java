@@ -21,9 +21,9 @@ public class smVector extends smA_Coordinate
 		super(0, 0, 0);
 	}
 	
-	public static bhVector newRotVector(double baseX, double baseY, double radians)
+	public static smVector newRotVector(double baseX, double baseY, double radians)
 	{
-		bhVector newVec = new smVector(baseX, baseY, 0);
+		smVector newVec = new smVector(baseX, baseY, 0);
 		newVec.rotate(radians, null);
 		return newVec;
 	}
@@ -31,9 +31,9 @@ public class smVector extends smA_Coordinate
 	@Override
 	public boolean isEqualTo(smA_Coordinate otherEntity, smTolerance tolerance)
 	{
-		tolerance = tolerance != null ? tolerance : bhTolerance.DEFAULT;
+		tolerance = tolerance != null ? tolerance : smTolerance.DEFAULT;
 	
-		bhU_Debug.ASSERT(false);
+		smU_Debug.ASSERT(false);
 		
 		/*if ( qb2_is(otherEntity, smVector) )
 		{
@@ -45,9 +45,9 @@ public class smVector extends smA_Coordinate
 	
 	public boolean isZeroLength(smTolerance tolerance)
 	{
-		tolerance = tolerance != null ? tolerance : bhTolerance.EXACT;
+		tolerance = tolerance != null ? tolerance : smTolerance.EXACT;
 		
-		return bhU_Math.equals(this.calcLengthSquared(), 0, tolerance.equalPoint);
+		return smU_Math.equals(this.calcLengthSquared(), 0, tolerance.equalPoint);
 	}
 
 	public void calcNormal(smVector outVector)
@@ -70,7 +70,7 @@ public class smVector extends smA_Coordinate
 		return getX() * otherVector.getX() + getY() * otherVector.getY() + getZ() * otherVector.getZ();
 	}
 
-	/*public void calcPerpVector(eDirection:qb2E_PerpVectorDirection, outVector:bhVector)
+	/*public void calcPerpVector(eDirection:qb2E_PerpVectorDirection, outVector:smVector)
 	{
 		outVector.setToPerpVector(eDirection);
 	}
@@ -105,28 +105,28 @@ public class smVector extends smA_Coordinate
 	
 	public boolean isUnitLength(smTolerance tolerance)
 	{
-		tolerance = tolerance != null ? tolerance : bhTolerance.DEFAULT;
+		tolerance = tolerance != null ? tolerance : smTolerance.DEFAULT;
 		
-		return bhU_Math.equals(1.0, this.calcLength(), tolerance.equalVector);
+		return smU_Math.equals(1.0, this.calcLength(), tolerance.equalVector);
 	}
 
 	public boolean isCodirectionalTo(smVector otherVector, smTolerance tolerance)
 	{
-		tolerance = tolerance != null ? tolerance : bhTolerance.DEFAULT;
+		tolerance = tolerance != null ? tolerance : smTolerance.DEFAULT;
 		
 		return this.calcAngleTo(otherVector) <= tolerance.equalAngle;
 	}
 
 	public boolean isAntidirectionalTo(smVector otherVector, smTolerance tolerance)
 	{
-		tolerance = tolerance != null ? tolerance : bhTolerance.DEFAULT;
+		tolerance = tolerance != null ? tolerance : smTolerance.DEFAULT;
 		
 		return this.calcAngleTo(otherVector) >= Math.PI - tolerance.equalAngle;
 	}
 		
 	public boolean isParallelTo(smVector otherVector, smTolerance tolerance)
 	{
-		tolerance = tolerance != null ? tolerance : bhTolerance.DEFAULT;
+		tolerance = tolerance != null ? tolerance : smTolerance.DEFAULT;
 		
 		double angle = this.calcAngleTo(otherVector);
 		return angle <= tolerance.equalAngle || angle >= Math.PI - tolerance.equalAngle;
@@ -134,15 +134,15 @@ public class smVector extends smA_Coordinate
 	
 	public boolean isPerpendicularTo(smVector otherVector, smTolerance tolerance)
 	{
-		tolerance = tolerance != null ? tolerance : bhTolerance.DEFAULT;
+		tolerance = tolerance != null ? tolerance : smTolerance.DEFAULT;
 		
-		return bhU_Math.equals(this.calcAngleTo(otherVector), Math.PI / 2, tolerance.equalAngle);
+		return smU_Math.equals(this.calcAngleTo(otherVector), Math.PI / 2, tolerance.equalAngle);
 	}
 
 	/*public override function mirror(plane:qb2I_GeoHyperPlane)
 	{
 		var line:qb2GeoLine = plane as qb2GeoLine;
-		var lineNormal:bhVector = new smVector();
+		var lineNormal:smVector = new smVector();
 		line.calcDirection(lineNormal, true);
 		var dot:Number = -getX() * lineNormal.getX() - getY() * lineNormal.getY();
 		getX() = getX() + 2 * lineNormal.getX() * dot;
@@ -168,9 +168,9 @@ public class smVector extends smA_Coordinate
 	
 	public double calcAngleTo(smVector otherVector)
 	{
-		bhVector thisNormal = new smVector();
+		smVector thisNormal = new smVector();
 		this.calcNormal(thisNormal);
-		bhVector otherNormal = new smVector();
+		smVector otherNormal = new smVector();
 		otherVector.calcNormal(otherNormal);
 		return Math.acos(thisNormal.calcDotProduct(otherNormal));
 	}
@@ -201,7 +201,7 @@ public class smVector extends smA_Coordinate
 	/*public override function draw(graphics:qb2I_Graphics2d, base:qb2GeoPoint, baseRadius:Number = 0, arrowSize:Number = 5, scale:Number = 1, makeBaseTheEndOfTheVector = false )
 	{
 		var beg:qb2GeoPoint, end:qb2GeoPoint;
-		var vec:bhVector = scale == 1 ? this : this.scaledBy(scale);
+		var vec:smVector = scale == 1 ? this : this.scaledBy(scale);
 		if ( makeBaseTheEndOfTheVector )
 		{
 			beg = base.translatedBy(vec.negated());

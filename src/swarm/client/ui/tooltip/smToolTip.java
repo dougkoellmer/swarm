@@ -6,7 +6,7 @@ import com.google.gwt.user.client.ui.Label;
 public class smToolTip extends Label
 {
 	private Element m_targetElement = null;
-	private bhToolTipConfig m_config;
+	private smToolTipConfig m_config;
 	
 	public smToolTip()
 	{

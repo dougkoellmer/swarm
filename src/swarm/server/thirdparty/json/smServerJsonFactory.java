@@ -99,7 +99,7 @@ public class smServerJsonFactory extends smA_ServerJsonFactory
 	@Override
 	public smJsonHelper getHelper()
 	{
-		bhJsonHelper helper = m_threadLocal.get();
+		smJsonHelper helper = m_threadLocal.get();
 		
 		if( helper == null )
 		{

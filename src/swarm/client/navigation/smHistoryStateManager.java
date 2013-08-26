@@ -18,7 +18,7 @@ public class smHistoryStateManager
 		@Override
 		public void onStateChange(String path, smI_JsonObject json)
 		{
-			bhHistoryState state = null;
+			smHistoryState state = null;
 			
 			if( json != null )
 			{
@@ -100,7 +100,7 @@ public class smHistoryStateManager
 	
 	public void pushState(String path, smHistoryState state)
 	{
-		bhHistoryState currentState = this.getCurrentState();
+		smHistoryState currentState = this.getCurrentState();
 		
 		if( currentState != null )
 		{
@@ -120,7 +120,7 @@ public class smHistoryStateManager
 		
 		if( json != null )
 		{
-			bhHistoryState state = new smHistoryState();
+			smHistoryState state = new smHistoryState();
 			state.readJson(json);
 			
 			return state;

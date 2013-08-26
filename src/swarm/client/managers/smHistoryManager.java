@@ -10,9 +10,9 @@ public class smHistoryManager
 	// TODO: Genericize the queue.
 	private final smQueue m_coords;
 	
-	private bhLinkedListNode m_currentNode = null;
+	private smLinkedListNode m_currentNode = null;
 	
-	private bhHistoryManager(int maxHistory)
+	private smHistoryManager(int maxHistory)
 	{
 		m_coords = new smQueue(maxHistory);
 	}
@@ -21,7 +21,7 @@ public class smHistoryManager
 	{
 		if( m_currentNode != null )
 		{
-			bhGridCoordinate currentCoord = (smGridCoordinate) m_currentNode.getObject();
+			smGridCoordinate currentCoord = (smGridCoordinate) m_currentNode.getObject();
 			if( currentCoord.isEqualTo(m, n) )
 			{
 				return;
@@ -49,7 +49,7 @@ public class smHistoryManager
 
 		m_currentNode = m_currentNode.getNext();
 		
-		bhGridCoordinate coord = (smGridCoordinate) m_currentNode.getObject();
+		smGridCoordinate coord = (smGridCoordinate) m_currentNode.getObject();
 		
 		return coord;
 	}
@@ -68,7 +68,7 @@ public class smHistoryManager
 
 		m_currentNode = m_currentNode.getPrevious();
 
-		bhGridCoordinate coord = (smGridCoordinate) m_currentNode.getObject();
+		smGridCoordinate coord = (smGridCoordinate) m_currentNode.getObject();
 		
 		return coord;
 	}

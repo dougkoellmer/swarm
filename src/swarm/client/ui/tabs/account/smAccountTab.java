@@ -34,7 +34,7 @@ public class smAccountTab extends smA_Tab
 	
 	private void updateToolTip()
 	{
-		bhToolTipManager tipManager = sm_c.toolTipMngr;
+		smToolTipManager tipManager = sm_c.toolTipMngr;
 		
 		if( sm_c.accountMngr.isSignedIn() )
 		{
@@ -82,14 +82,14 @@ public class smAccountTab extends smA_Tab
 						if( !smA_State.isForegrounded(StateMachine_Account.class) )
 						{
 							StateMachine_Base.OnAccountManagerResponse.Args args = event.getActionArgs();
-							bhClientAccountManager.E_ResponseType responseType = args.getType();
-							String text = bhU_ToString.get(responseType);
+							smClientAccountManager.E_ResponseType responseType = args.getType();
+							String text = smU_ToString.get(responseType);
 							
 							if( text != null )
 							{
-								bhAlignmentDefinition alignment = bhU_Alignment.createHorRightVerCenter(smS_UI.TOOl_TIP_PADDING);
+								smAlignmentDefinition alignment = smU_Alignment.createHorRightVerCenter(smS_UI.TOOl_TIP_PADDING);
 								smE_ToolTipMood severity = responseType.isGood() ? smE_ToolTipMood.PAT_ON_BACK : smE_ToolTipMood.OOPS;
-								bhToolTipConfig config = new smToolTipConfig(smE_ToolTipType.NOTIFICATION, alignment, text, severity);
+								smToolTipConfig config = new smToolTipConfig(smE_ToolTipType.NOTIFICATION, alignment, text, severity);
 								sm_c.toolTipMngr.addTip(m_tabButton, config);
 							}
 						}

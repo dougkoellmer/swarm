@@ -20,7 +20,7 @@ import swarm.shared.statemachine.smA_StateConstructor;
  */
 public class StateMachine_Account extends smA_StateMachine
 {
-	private static class AccountManagerDelegate implements bhClientAccountManager.I_Delegate
+	private static class AccountManagerDelegate implements smClientAccountManager.I_Delegate
 	{
 		AccountManagerDelegate()
 		{
@@ -35,7 +35,7 @@ public class StateMachine_Account extends smA_StateMachine
 		@Override
 		public void onAuthenticationError()
 		{
-			bhClientAccountManager accountManager = sm_c.accountMngr;
+			smClientAccountManager accountManager = sm_c.accountMngr;
 			
 			//--- DRK > Not entering this if block should be an extremely fringe, practically impossible case.
 			//---		It's still *technically* possible though, so we don't want to clear the spinner if we're still
@@ -56,7 +56,7 @@ public class StateMachine_Account extends smA_StateMachine
 			}
 			else
 			{
-				bhU_Debug.ASSERT(false);
+				smU_Debug.ASSERT(false);
 			}
 		}
 	}
@@ -71,7 +71,7 @@ public class StateMachine_Account extends smA_StateMachine
 	@Override
 	protected void didForeground(Class<? extends smA_State> revealingState, Object[] args)
 	{
-		bhClientAccountManager accountManager = sm_c.accountMngr;
+		smClientAccountManager accountManager = sm_c.accountMngr;
 		
 		accountManager.addDelegate(m_accountManagerDelegate);
 		
@@ -102,9 +102,9 @@ public class StateMachine_Account extends smA_StateMachine
 	
 	void popBlockerAndSetState()
 	{
-		bhU_Debug.ASSERT(this.isForegrounded(), "popBlockerAndSetState1");
+		smU_Debug.ASSERT(this.isForegrounded(), "popBlockerAndSetState1");
 		
-		bhClientAccountManager accountManager = sm_c.accountMngr;
+		smClientAccountManager accountManager = sm_c.accountMngr;
 		
 		machine_beginBatch(this);
 	
@@ -136,7 +136,7 @@ public class StateMachine_Account extends smA_StateMachine
 	@Override 
 	protected void willBackground(Class<? extends smA_State> blockingState)
 	{
-		bhClientAccountManager accountManager = sm_c.accountMngr;
+		smClientAccountManager accountManager = sm_c.accountMngr;
 		
 		accountManager.removeDelegate(m_accountManagerDelegate);
 		

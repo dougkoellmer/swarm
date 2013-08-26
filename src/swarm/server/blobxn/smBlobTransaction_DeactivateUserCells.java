@@ -41,7 +41,7 @@ public class smBlobTransaction_DeactivateUserCells extends smA_BlobTransaction
 	}
 	
 	@Override
-	protected void performOperations() throws bhBlobException
+	protected void performOperations() throws smBlobException
 	{
 		smI_BlobManager blobManager = sm_s.blobMngrFactory.create(smE_BlobCacheLevel.PERSISTENT);
 		
@@ -63,7 +63,7 @@ public class smBlobTransaction_DeactivateUserCells extends smA_BlobTransaction
 				return;
 			}
 			
-			bhBlobTransaction_DeactivateCell deactivateCellTransaction = new smBlobTransaction_DeactivateCell(mapping);
+			smBlobTransaction_DeactivateCell deactivateCellTransaction = new smBlobTransaction_DeactivateCell(mapping);
 			deactivateCellTransaction.performOperations();
 			
 			//mappingsForDeactivatedCells.add(deactivateCellTransaction.getNewMapping());

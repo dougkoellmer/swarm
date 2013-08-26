@@ -60,7 +60,7 @@ public class signUp implements smI_RequestHandler
 		
 		if( isCaptchaValid(creds, result, remoteAddress))
 		{
-			bhUserSession userSession = accountManager.attemptSignUp(creds, result);
+			smUserSession userSession = accountManager.attemptSignUp(creds, result);
 			
 			if( userSession != null )
 			{

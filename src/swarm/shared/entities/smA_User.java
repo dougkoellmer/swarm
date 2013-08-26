@@ -62,7 +62,7 @@ public abstract class smA_User extends smA_JsonEncodable
 	
 	public abstract boolean isCellOwner(smGridCoordinate coordinate);
 	
-	public abstract bhPoint getLastPosition();
+	public abstract smPoint getLastPosition();
 	
 	protected abstract void justReadMappingFromJson(smCellAddressMapping mapping);
 }

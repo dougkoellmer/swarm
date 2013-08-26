@@ -92,7 +92,7 @@ public abstract class smA_Cell extends smA_JsonEncodable
 	
 	public smCode getStandInCode(smE_CodeType eType)
 	{
-		bhCode code = getCode(eType);
+		smCode code = getCode(eType);
 		
 		if( code == null )
 		{
@@ -130,7 +130,7 @@ public abstract class smA_Cell extends smA_JsonEncodable
 		for( int i = 0; i < smE_CodeType.values().length; i++ )
 		{
 			smI_JsonKeySource key = smE_CodeType.values()[i].getJsonKey();
-			smI_JsonObject jsonForCode = bhU_Json.getJsonObject(json, key);
+			smI_JsonObject jsonForCode = smU_Json.getJsonObject(json, key);
 			
 			if( m_code[i] == null && jsonForCode == null )
 			{
@@ -138,7 +138,7 @@ public abstract class smA_Cell extends smA_JsonEncodable
 			}
 			else if( m_code[i] != null && jsonForCode != null )
 			{
-				bhU_Json.putJsonObject(json, smE_CodeType.values()[i].getJsonKey(), m_code[i].writeJson());
+				smU_Json.putJsonObject(json, smE_CodeType.values()[i].getJsonKey(), m_code[i].writeJson());
 			}
 			else
 			{
@@ -169,7 +169,7 @@ public abstract class smA_Cell extends smA_JsonEncodable
 	@Override
 	public void readJson(smI_JsonObject json)
 	{
-		if( bhCodePrivileges.isReadable(json) )
+		if( smCodePrivileges.isReadable(json) )
 		{
 			if( m_codePrivileges == null )
 			{

@@ -23,7 +23,7 @@ public class getCellAddress implements smI_RequestHandler
 	{
 		smServerCellAddressMapping mapping = new smServerCellAddressMapping(smE_GridType.ACTIVE);
 		mapping.readJson(request.getJson());
-		bhGetCellAddressResult result = new smGetCellAddressResult();
+		smGetCellAddressResult result = new smGetCellAddressResult();
 		
 		smI_BlobManager blobManager = sm_s.blobMngrFactory.create(smE_BlobCacheLevel.values());
 		

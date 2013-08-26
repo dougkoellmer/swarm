@@ -85,7 +85,7 @@ public class smInlineTransactionManager
 		String requestJson = request.writeJson().writeString();
 		String responseJson = response.writeJson().writeString();
 		
-		//TODO: Make this non application specific somehow, so the "bh" prefix is retreived from somewhere.
+		//TODO: Make this non application specific somehow, so the "sm" prefix is retreived from somewhere.
 		m_context.get().m_out.write(m_appId+"_rl.push(['"+requestJson+"', '"+responseJson+"']);");
 	}
 	
@@ -103,8 +103,8 @@ public class smInlineTransactionManager
 	
 	public smTransactionResponse makeInlineRequest(smE_RequestPath path, smI_JsonEncodable jsonEncodable) throws IOException
 	{
-		bhTransactionRequest request = new smTransactionRequest(m_context.get().m_nativeRequest);
-		bhTransactionResponse response = new smTransactionResponse(m_context.get().m_nativeResponse);
+		smTransactionRequest request = new smTransactionRequest(m_context.get().m_nativeRequest);
+		smTransactionResponse response = new smTransactionResponse(m_context.get().m_nativeResponse);
 		
 		request.setPath(path);
 		
@@ -120,8 +120,8 @@ public class smInlineTransactionManager
 	
 	public void makeInlineRequestWithResponse(smE_RequestPath path, smI_JsonEncodable requestJsonEncodable, smI_JsonEncodable responseJsonEncodable) throws IOException
 	{
-		bhTransactionRequest request = new smTransactionRequest(m_context.get().m_nativeRequest);
-		bhTransactionResponse response = new smTransactionResponse(m_context.get().m_nativeResponse);
+		smTransactionRequest request = new smTransactionRequest(m_context.get().m_nativeRequest);
+		smTransactionResponse response = new smTransactionResponse(m_context.get().m_nativeResponse);
 		
 		request.setPath(path);
 		if( requestJsonEncodable != null )

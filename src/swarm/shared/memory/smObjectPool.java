@@ -58,7 +58,7 @@ public class smObjectPool<T>
 		}
 		else
 		{
-			bhU_Debug.ASSERT(false, "Tried to deallocate from pool at zero size - " + m_class);
+			smU_Debug.ASSERT(false, "Tried to deallocate from pool at zero size - " + m_class);
 		}
 	}
 }

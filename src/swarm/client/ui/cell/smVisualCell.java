@@ -101,7 +101,7 @@ public class smVisualCell extends AbsolutePanel implements smI_BufferCellListene
 			currentBit <<= 1;
 		}*/
 		
-		//bhU_UI.toggleSelectability(//m_backgroundPanel.getElement(), false);
+		//smU_UI.toggleSelectability(//m_backgroundPanel.getElement(), false);
 		this.allowUserSelect(false);
 		
 		//this.add(//m_backgroundPanel);
@@ -182,7 +182,7 @@ public class smVisualCell extends AbsolutePanel implements smI_BufferCellListene
 			{
 				//m_backgroundPanel.getElement().getStyle().clearBackgroundColor();
 				
-				m_currentImageIndex = bhU_BitTricks.calcBitPosition(m_subCellDimension);
+				m_currentImageIndex = smU_BitTricks.calcBitPosition(m_subCellDimension);
 				//m_backgroundImages.get(m_currentImageIndex).getElement().getStyle().setDisplay(Display.BLOCK);
 			}
 			
@@ -337,7 +337,7 @@ public class smVisualCell extends AbsolutePanel implements smI_BufferCellListene
 		m_contentPanel.getElement().setInnerHTML(html);
 	}
 	
-	bhUIBlocker getBlocker()
+	smUIBlocker getBlocker()
 	{
 		return m_statusPanel;
 	}

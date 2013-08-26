@@ -45,7 +45,7 @@ public class getUserData implements smI_RequestHandler
 			return;
 		}
 		
-		bhUserSession userSession = sm_s.sessionMngr.getSession(request, response);
+		smUserSession userSession = sm_s.sessionMngr.getSession(request, response);
 
 		smServerUser user = null;
 		
@@ -74,7 +74,7 @@ public class getUserData implements smI_RequestHandler
 		{
 			try
 			{
-				bhBlobTransaction_CreateUser createUserTransaction = new smBlobTransaction_CreateUser(userSession, m_autoCreateHomeCell);
+				smBlobTransaction_CreateUser createUserTransaction = new smBlobTransaction_CreateUser(userSession, m_autoCreateHomeCell);
 				createUserTransaction.perform(smE_BlobTransactionType.MULTI_BLOB_TYPE, 5);
 				
 				//--- DRK > Not a huge fan of this method of letting client know that grid size changed.

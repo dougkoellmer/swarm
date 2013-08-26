@@ -18,20 +18,20 @@ import swarm.shared.app.sm;
 
 public class sm_c extends sm
 {
-	public static bhClickManager clickMngr;
-	public static bhPlatformInfo platformInfo;
+	public static smClickManager clickMngr;
+	public static smPlatformInfo platformInfo;
 	public static smCellAddressManager addressMngr;
-	public static bhUserManager userMngr;
-	public static bhClientAccountManager accountMngr;
-	public static bhClientTransactionManager txnMngr;
+	public static smUserManager userMngr;
+	public static smClientAccountManager accountMngr;
+	public static smClientTransactionManager txnMngr;
 	public static smCellCodeManager codeMngr;
-	public static bhGridManager gridMngr;
-	public static bhRecaptchaWrapper recaptchaWrapper;
-	public static bhToolTipManager toolTipMngr;
+	public static smGridManager gridMngr;
+	public static smRecaptchaWrapper recaptchaWrapper;
+	public static smToolTipManager toolTipMngr;
 	public static smCellSandbox cellSandbox;
-	public static bhMasterNavigator navigator;
-	public static bhCamera camera;
-	public static bhCameraManager cameraMngr;
+	public static smMasterNavigator navigator;
+	public static smCamera camera;
+	public static smCameraManager cameraMngr;
 	public static smCellCodeCache codeCache;
 	public static smA_ClientApp app;
 }

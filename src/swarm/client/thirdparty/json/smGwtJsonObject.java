@@ -24,7 +24,7 @@ public class smGwtJsonObject extends smA_JsonObject implements smI_JsonObject
 		m_object = new JSONObject(nativeJson);
 	}
 	
-	bhGwtJsonObject(JSONObject source)
+	smGwtJsonObject(JSONObject source)
 	{
 		m_object = source;
 	}

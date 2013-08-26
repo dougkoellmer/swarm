@@ -104,7 +104,7 @@ public class smGwtRequestDispatcher implements smI_AsyncRequestDispatcher, Reque
 	@Override
 	public void onResponseReceived(Request nativeRequest, Response nativeResponse)
 	{
-		bhTransactionRequest request = this.getDispatchedRequest(nativeRequest);
+		smTransactionRequest request = this.getDispatchedRequest(nativeRequest);
 		m_reusedResponse.reset();
 		int statusCode = nativeResponse.getStatusCode();
 		
@@ -121,7 +121,7 @@ public class smGwtRequestDispatcher implements smI_AsyncRequestDispatcher, Reque
 		smI_JsonObject responseJson = sm.jsonFactory.createJsonObject(nativeResponse.getText());
 		m_reusedResponse.readJson(responseJson);
 		
-		if( !(request instanceof bhTransactionRequestBatch) )
+		if( !(request instanceof smTransactionRequestBatch) )
 		{
 			m_callbacks.onResponseReceived(request, m_reusedResponse);
 		}
@@ -134,7 +134,7 @@ public class smGwtRequestDispatcher implements smI_AsyncRequestDispatcher, Reque
 				return;
 			}
 			
-			bhTransactionRequestBatch batch = (smTransactionRequestBatch) request;
+			smTransactionRequestBatch batch = (smTransactionRequestBatch) request;
 
 			smI_JsonArray responseList = sm.jsonFactory.getHelper().getJsonArray(responseJson, smE_JsonKey.responseList);
 			
@@ -151,7 +151,7 @@ public class smGwtRequestDispatcher implements smI_AsyncRequestDispatcher, Reque
 	@Override
 	public void onError(Request nativeRequest, Throwable exception)
 	{
-		bhTransactionRequest request = this.getDispatchedRequest(nativeRequest);
+		smTransactionRequest request = this.getDispatchedRequest(nativeRequest);
 		
 		m_reusedResponse.reset();
 		m_reusedResponse.setError(smE_ResponseError.CLIENT_ERROR);
@@ -166,14 +166,14 @@ public class smGwtRequestDispatcher implements smI_AsyncRequestDispatcher, Reque
 		m_nativeRequestMap.remove(nativeRequest);
 	}
 	
-	private bhTransactionRequest getDispatchedRequest(Request nativeRequest)
+	private smTransactionRequest getDispatchedRequest(Request nativeRequest)
 	{
 		if( this.m_nativeRequestMap.containsKey(nativeRequest) )
 		{
 			return this.m_nativeRequestMap.get(nativeRequest);
 		}
 		
-		bhU_Debug.ASSERT(false, "getRequest1");
+		smU_Debug.ASSERT(false, "getRequest1");
 		
 		return null;
 	}
@@ -183,13 +183,13 @@ public class smGwtRequestDispatcher implements smI_AsyncRequestDispatcher, Reque
 	{
 		for (Request nativeRequest : m_nativeRequestMap.keySet())
 		{
-			bhTransactionRequest request = m_nativeRequestMap.get(nativeRequest);
+			smTransactionRequest request = m_nativeRequestMap.get(nativeRequest);
 			
-			if( request instanceof bhTransactionRequestBatch )
+			if( request instanceof smTransactionRequestBatch )
 			{
-				bhTransactionRequestBatch batch = ((smTransactionRequestBatch) request);
+				smTransactionRequestBatch batch = ((smTransactionRequestBatch) request);
 				
-				bhTransactionRequest foundRequest = batch.getRequest(path, jsonQuery);
+				smTransactionRequest foundRequest = batch.getRequest(path, jsonQuery);
 				
 				if( foundRequest != null && foundRequest != exclusion_nullable )
 				{
@@ -226,13 +226,13 @@ public class smGwtRequestDispatcher implements smI_AsyncRequestDispatcher, Reque
 		while ( iterator.hasNext() )
 		{
 			Request nativeRequest = iterator.next();
-			bhTransactionRequest request = m_nativeRequestMap.get(nativeRequest);
+			smTransactionRequest request = m_nativeRequestMap.get(nativeRequest);
 			
 			boolean cancel = false;
 			
-			if( request instanceof bhTransactionRequestBatch )
+			if( request instanceof smTransactionRequestBatch )
 			{
-				bhTransactionRequestBatch batch = ((smTransactionRequestBatch) request);
+				smTransactionRequestBatch batch = ((smTransactionRequestBatch) request);
 				
 				if( batch.cancelRequestsByPath(path, exclusion_nullable) )
 				{

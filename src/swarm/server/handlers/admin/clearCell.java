@@ -36,7 +36,7 @@ public class clearCell implements smI_RequestHandler
 	{		
 		smServerCellAddress address = new smServerCellAddress(request.getJson());
 		
-		bhBlobTransaction_ClearCell transaction = new smBlobTransaction_ClearCell(address);
+		smBlobTransaction_ClearCell transaction = new smBlobTransaction_ClearCell(address);
 		
 		try {
 			transaction.perform(smE_BlobTransactionType.MULTI_BLOB_TYPE, 1);

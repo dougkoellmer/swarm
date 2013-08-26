@@ -27,7 +27,7 @@ public class logAssert implements smI_RequestHandler
 	@Override
 	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
 	{
-		bhUserSession session = sm_s.sessionMngr.getSession(request, response);
+		smUserSession session = sm_s.sessionMngr.getSession(request, response);
 		
 		int accountId = session != null ? session.getAccountId() : -1;
 		String ip = ((HttpServletRequest) request.getNativeRequest()).getRemoteAddr();

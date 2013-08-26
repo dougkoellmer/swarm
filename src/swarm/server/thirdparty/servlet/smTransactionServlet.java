@@ -42,15 +42,15 @@ public class smTransactionServlet extends smA_BaseServlet
 	
 	private void doGetOrPost(HttpServletRequest nativeRequest, HttpServletResponse nativeResponse, boolean isGet) throws ServletException, IOException
 	{		
-		//bhU_Servlet.simulateLag(1000);
-		//bhU_Servlet.simulateException(true);
+		//smU_Servlet.simulateLag(1000);
+		//smU_Servlet.simulateException(true);
 		
-		smI_JsonObject requestJson = bhU_Servlet.getRequestJson(nativeRequest, isGet);
+		smI_JsonObject requestJson = smU_Servlet.getRequestJson(nativeRequest, isGet);
 		smI_JsonObject responseJson = sm.jsonFactory.createJsonObject();
 		
 		sm_s.txnMngr.handleRequestFromClient(nativeRequest, nativeResponse, this.getServletContext(), requestJson, responseJson);
 		
-		bhU_Servlet.writeJsonResponse(responseJson, nativeResponse.getWriter());
+		smU_Servlet.writeJsonResponse(responseJson, nativeResponse.getWriter());
 		
 		nativeResponse.getWriter().flush();
 	}

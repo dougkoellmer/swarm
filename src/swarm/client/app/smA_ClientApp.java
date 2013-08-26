@@ -150,7 +150,7 @@ public class smA_ClientApp extends smA_App implements smI_TimeSource
 		    });
 		}
 		
-		bhU_Debug.setDelegate(new smI_AssertionDelegate()
+		smU_Debug.setDelegate(new smI_AssertionDelegate()
 		{
 			@Override
 			public void doAssert(String message)
@@ -161,7 +161,7 @@ public class smA_ClientApp extends smA_App implements smI_TimeSource
 				s_logger.severe("ASSERTION FAILED: " + message);
 				
 				String platform = sm_c.platformInfo.getRawPlatform();
-				bhTelemetryAssert telemetryAssert = new smTelemetryAssert(message, platform);
+				smTelemetryAssert telemetryAssert = new smTelemetryAssert(message, platform);
 				sm_c.txnMngr.makeRequest(smE_TelemetryRequestPath.logAssert, telemetryAssert);
 
 				//assert(false);
@@ -267,7 +267,7 @@ public class smA_ClientApp extends smA_App implements smI_TimeSource
 	protected void stage_establishTiming()
 	{
 		//--- DRK > Get timing and update loop going.
-		bhU_Time.startUp();
+		smU_Time.startUp();
 		Timer timer = new Timer()
 		{
 			@Override
@@ -322,7 +322,7 @@ public class smA_ClientApp extends smA_App implements smI_TimeSource
 	
 	public void update()
 	{
-		double currentTime = bhU_Time.getSeconds();
+		double currentTime = smU_Time.getSeconds();
 		smA_StateMachine.root_didUpdate(StateMachine_Base.class, currentTime - m_lastTime);
 		m_lastTime = currentTime;
 

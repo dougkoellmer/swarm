@@ -44,7 +44,7 @@ public class smVisualCellFocuser extends FlowPanel implements smI_UIElement
 	
 	private double m_startCameraDistance = 0;
 	
-	private bhVisualCell m_poppedCell = null;
+	private smVisualCell m_poppedCell = null;
 	private final smGridCoordinate m_poppedCellCoord = new smGridCoordinate();
 	
 	public smVisualCellFocuser(Panel parent)
@@ -72,7 +72,7 @@ public class smVisualCellFocuser extends FlowPanel implements smI_UIElement
 		
 		if( buffer.getSubCellCount() == 1 )
 		{
-			bhGridCoordinate targetCoord = null;
+			smGridCoordinate targetCoord = null;
 			
 			if( state instanceof State_CameraSnapping )
 			{
@@ -85,7 +85,7 @@ public class smVisualCellFocuser extends FlowPanel implements smI_UIElement
 			
 			if( targetCoord == null )
 			{
-				bhU_Debug.ASSERT(false, "popUpTargetCell1");
+				smU_Debug.ASSERT(false, "popUpTargetCell1");
 				
 				return false;
 			}
@@ -93,7 +93,7 @@ public class smVisualCellFocuser extends FlowPanel implements smI_UIElement
 			if( buffer.isInBoundsAbsolute(targetCoord) )
 			{
 				smBufferCell cell = buffer.getCellAtAbsoluteCoord(targetCoord);
-				bhVisualCell visualCell = (smVisualCell) cell.getVisualization();
+				smVisualCell visualCell = (smVisualCell) cell.getVisualization();
 				visualCell.popUp();
 				m_poppedCell = visualCell;
 				m_poppedCellCoord.copy(cell.getCoordinate());
@@ -152,7 +152,7 @@ public class smVisualCellFocuser extends FlowPanel implements smI_UIElement
 							
 							State_CameraSnapping snappingState = (State_CameraSnapping) cameraController.getCurrentState();
 							
-							bhGridCoordinate targetSnapCoord = snappingState.getTargetCoordinate();
+							smGridCoordinate targetSnapCoord = snappingState.getTargetCoordinate();
 							
 							if( !targetSnapCoord.isEqualTo(m_poppedCellCoord) )
 							{
@@ -211,8 +211,8 @@ public class smVisualCellFocuser extends FlowPanel implements smI_UIElement
 	private double calcCameraDistanceToTarget()
 	{
 		StateMachine_Camera cameraController = smA_State.getEnteredInstance(StateMachine_Camera.class);
-		bhPoint cameraPoint = sm_c.camera.getPosition();
-		bhPoint cameraTarget = cameraController.getCameraManager().getTargetPosition();
+		smPoint cameraPoint = sm_c.camera.getPosition();
+		smPoint cameraTarget = cameraController.getCameraManager().getTargetPosition();
 		return cameraTarget.calcDistanceTo(cameraPoint);
 	}
 	
@@ -348,7 +348,7 @@ public class smVisualCellFocuser extends FlowPanel implements smI_UIElement
 					{
 						//--- DRK > Snapping to the same coordinate you're viewing is now allowed, which
 						//---		doesn't trigger a state change, so this assert is now invalid.
-						//bhU_Debug.ASSERT(false, "bhVisucellfoc1");
+						//smU_Debug.ASSERT(false, "smVisucellfoc1");
 					}
 				}
 				

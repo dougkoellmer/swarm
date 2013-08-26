@@ -5,7 +5,7 @@ public final class smU_Debug
 {
 	private static smI_AssertionDelegate s_delegate;
 	
-	private bhU_Debug()
+	private smU_Debug()
 	{
 		
 	}
@@ -32,6 +32,6 @@ public final class smU_Debug
 	
 	public static void ASSERT(boolean condition)
 	{
-		bhU_Debug.ASSERT(condition, "");
+		smU_Debug.ASSERT(condition, "");
 	}
 }

@@ -179,7 +179,7 @@ public class smSplitPanel extends SplitLayoutPanel implements smI_UIElement
 	
 	private void updateToggleButton()
 	{
-		bhToolTipManager toolTipper = sm_c.toolTipMngr;
+		smToolTipManager toolTipper = sm_c.toolTipMngr;
 		
 		StateMachine_Tabs tabMachine = smA_State.getEnteredInstance(StateMachine_Tabs.class);
 		
@@ -273,13 +273,13 @@ public class smSplitPanel extends SplitLayoutPanel implements smI_UIElement
 			
 			case DID_PERFORM_ACTION:
 			{
-				//TODO(DRK): Pretty sure this can be moved to bhAccountTab...think it is here because
+				//TODO(DRK): Pretty sure this can be moved to smAccountTab...think it is here because
 				//			 at some point the tab UI didn't get state events if the tab content's state wasn't foregrounded.
 				if( event.getAction() == StateMachine_Base.OnAccountManagerResponse.class )
 				{
 					StateMachine_Base.OnAccountManagerResponse.Args args = event.getActionArgs();
-					bhClientAccountManager.E_ResponseType responseType = args.getType();
-					String text = bhU_ToString.get(responseType);
+					smClientAccountManager.E_ResponseType responseType = args.getType();
+					String text = smU_ToString.get(responseType);
 					
 					if( text != null )
 					{
@@ -287,10 +287,10 @@ public class smSplitPanel extends SplitLayoutPanel implements smI_UIElement
 						{
 							if( !smA_State.isForegrounded(StateMachine_Tabs.class) )
 							{
-								bhAlignmentDefinition alignment = bhU_Alignment.createHorRightVerCenter(smS_UI.TOOl_TIP_PADDING);
+								smAlignmentDefinition alignment = smU_Alignment.createHorRightVerCenter(smS_UI.TOOl_TIP_PADDING);
 	
 								smE_ToolTipMood severity = responseType.isGood() ? smE_ToolTipMood.PAT_ON_BACK : smE_ToolTipMood.OOPS;
-								bhToolTipConfig config = new smToolTipConfig(smE_ToolTipType.NOTIFICATION, alignment, text, severity);
+								smToolTipConfig config = new smToolTipConfig(smE_ToolTipType.NOTIFICATION, alignment, text, severity);
 								sm_c.toolTipMngr.addTip(m_panelButton, config);
 							}
 						}

@@ -44,7 +44,7 @@ public class smCellAddressMapping extends smA_JsonEncodable
 	
 	public static boolean isReadable(smI_JsonObject json)
 	{
-		return bhGridCoordinate.isReadable(json);
+		return smGridCoordinate.isReadable(json);
 	}
 	
 	public String writeString()

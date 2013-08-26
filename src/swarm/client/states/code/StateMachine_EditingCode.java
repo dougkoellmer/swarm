@@ -35,7 +35,7 @@ public class StateMachine_EditingCode extends smA_StateMachine implements smI_St
 {
 	private boolean m_waitingOnHtmlForViewedCell = false;
 	
-	bhCode m_code = null;
+	smCode m_code = null;
 	
 	@Override
 	protected void didEnter(smA_StateConstructor constructor)
@@ -44,7 +44,7 @@ public class StateMachine_EditingCode extends smA_StateMachine implements smI_St
 		m_code = null;
 	}
 	
-	bhCode getCode()
+	smCode getCode()
 	{
 		return m_code;
 	}
@@ -78,7 +78,7 @@ public class StateMachine_EditingCode extends smA_StateMachine implements smI_St
 	
 	void setBlockerReason(Reason reason)
 	{
-		bhU_Debug.ASSERT(this.isForegrounded(), "setBlockerReason1");
+		smU_Debug.ASSERT(this.isForegrounded(), "setBlockerReason1");
 	
 		if( this.getCurrentState() instanceof State_EditingCodeBlocker )
 		{
@@ -125,7 +125,7 @@ public class StateMachine_EditingCode extends smA_StateMachine implements smI_St
 				
 				State_ViewingCell viewingState = (State_ViewingCell) cameraState;
 				smBufferCell viewedCell = viewingState.getCell();
-				bhGridCoordinate coord = viewedCell.getCoordinate();
+				smGridCoordinate coord = viewedCell.getCoordinate();
 				smA_ClientUser user = sm_c.userMngr.getUser();
 				
 				if( user.isCellOwner(coord) )
@@ -142,18 +142,18 @@ public class StateMachine_EditingCode extends smA_StateMachine implements smI_St
 				
 				if( m_code == null )
 				{
-					bhClientTransactionManager manager = sm_c.txnMngr;
+					smClientTransactionManager manager = sm_c.txnMngr;
 					smCellCodeManager populator = smCellCodeManager.getInstance();
 					
 					if( viewedCell.getStatus(smE_CodeType.SOURCE) != smE_CodeStatus.HAS_CODE )
 					{
-						//--- DRK > I had this bhU_Debug.ASSERT here, but NEEDS_HTML is valid if this state is backgrounded.
+						//--- DRK > I had this smU_Debug.ASSERT here, but NEEDS_HTML is valid if this state is backgrounded.
 						//---		Technically as of this writing, the policy is to never get source html unless this
-						//---		state is or becomes foregrounded, so technically now I could early out of this method for this bhU_Debug.ASSERT case
+						//---		state is or becomes foregrounded, so technically now I could early out of this method for this smU_Debug.ASSERT case
 						//---		I'm NOT early outing for now so that if at any point in the future I decide that source html
 						//---		CAN be retrieved whilly nilly, everything will act appropriately without modification.
 						//---		As it is, the stuff below shouldn't be performance intensive anyway.
-						//bhU_Debug.ASSERT(viewedCell.getStatus(smE_HtmlType.SOURCE) != smE_HtmlStatus.NEEDS_HTML);
+						//smU_Debug.ASSERT(viewedCell.getStatus(smE_HtmlType.SOURCE) != smE_HtmlStatus.NEEDS_HTML);
 						
 						if( viewedCell.getStatus(smE_CodeType.SOURCE) == smE_CodeStatus.GET_ERROR )
 						{
@@ -173,7 +173,7 @@ public class StateMachine_EditingCode extends smA_StateMachine implements smI_St
 						//---		Note that this is not an error case, for now at least.
 						this.setBlockerReason(State_EditingCodeBlocker.Reason.NO_HTML);
 						
-						bhU_Debug.ASSERT(false, "Code should now not be null.");
+						smU_Debug.ASSERT(false, "Code should now not be null.");
 					}
 				}
 				else
@@ -229,7 +229,7 @@ public class StateMachine_EditingCode extends smA_StateMachine implements smI_St
 				{
 					State_ViewingCell viewingState = (State_ViewingCell) event.getState();
 					smBufferCell viewedCell = viewingState.getCell();
-					bhGridCoordinate coord = viewedCell.getCoordinate();
+					smGridCoordinate coord = viewedCell.getCoordinate();
 					
 					/*if( this.getCurrentState() instanceof State_EditingCodeBlocker )
 					{
@@ -237,11 +237,11 @@ public class StateMachine_EditingCode extends smA_StateMachine implements smI_St
 						if( blocker.getReason() == State_EditingCodeBlocker.Reason.SYNCING ||
 							blocker.getReason() == State_EditingCodeBlocker.Reason.PREVIEWING )
 						{
-							bhU_Debug.ASSERT(!m_waitingOnHtmlForViewedCell);
+							smU_Debug.ASSERT(!m_waitingOnHtmlForViewedCell);
 							
-							bhClientUser user = bhClientUser.getInstance();
+							smClientUser user = smClientUser.getInstance();
 							
-							bhU_Debug.ASSERT(user.isCellOwner(coord));
+							smU_Debug.ASSERT(user.isCellOwner(coord));
 							
 							if( !user.isSyncingOrPreviewing(coord) )
 							{
@@ -261,7 +261,7 @@ public class StateMachine_EditingCode extends smA_StateMachine implements smI_St
 						{
 							m_waitingOnHtmlForViewedCell = false;
 							
-							bhCode code = viewedCell.getCode(smE_CodeType.SOURCE);
+							smCode code = viewedCell.getCode(smE_CodeType.SOURCE);
 							
 							if( code == null )
 							{

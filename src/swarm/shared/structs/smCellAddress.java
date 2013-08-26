@@ -149,7 +149,7 @@ public class smCellAddress extends smA_JsonEncodable
 		{
 			String part = parts[i];
 			
-			if( !bhU_Regex.calcIsMatch(part, smS_Account.USERNAME_REGEX) )
+			if( !smU_Regex.calcIsMatch(part, smS_Account.USERNAME_REGEX) )
 			{
 				m_parseError = smE_CellAddressParseError.BAD_FORMAT;
 				

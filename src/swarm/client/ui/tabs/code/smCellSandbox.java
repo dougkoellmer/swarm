@@ -33,7 +33,7 @@ public class smCellSandbox
 	{
 		if( m_isRunning )
 		{
-			bhU_Debug.ASSERT(false, "bhHtmlSandbox::start1");
+			smU_Debug.ASSERT(false, "smHtmlSandbox::start1");
 			return;
 		}
 		
@@ -51,7 +51,7 @@ public class smCellSandbox
 	{
 		if( !m_isRunning )
 		{
-			bhU_Debug.ASSERT(false, "bhHtmlSandbox::stop1");
+			smU_Debug.ASSERT(false, "smHtmlSandbox::stop1");
 			return;
 		}
 		

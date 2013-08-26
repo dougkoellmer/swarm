@@ -12,7 +12,7 @@ import swarm.shared.utils.smU_TypeConversion;
 
 public final class smU_Serialization
 {
-	private bhU_Serialization()
+	private smU_Serialization()
 	{
 		
 	}
@@ -99,7 +99,7 @@ public final class smU_Serialization
 		
 		if( !isNull )
 		{
-			String enumName = bhU_TypeConversion.convertEnumToString(enumValue);
+			String enumName = smU_TypeConversion.convertEnumToString(enumValue);
 			out.writeUTF(enumName);
 		}
 	}
@@ -116,7 +116,7 @@ public final class smU_Serialization
 		{
 			String enumName = in.readUTF();
 			
-			T enumValue = bhU_TypeConversion.convertStringToEnum(enumName, enumValues);
+			T enumValue = smU_TypeConversion.convertStringToEnum(enumName, enumValues);
 			
 			if( enumValue == null )
 			{
@@ -135,7 +135,7 @@ public final class smU_Serialization
 		out.writeInt(listSize);
 		for( int i = 0; i < listSize; i++ )
 		{
-			bhU_Serialization.writeNullableObject(array[i], out);
+			smU_Serialization.writeNullableObject(array[i], out);
 		}
 	}
 
@@ -146,7 +146,7 @@ public final class smU_Serialization
 		
 		for( int i = 0; i < listSize; i++ )
 		{
-			T ithObject = bhU_Serialization.readNullableObject(T, in);
+			T ithObject = smU_Serialization.readNullableObject(T, in);
 			array[i] = ithObject;
 		}
 		
@@ -159,7 +159,7 @@ public final class smU_Serialization
 		out.writeInt(listSize);
 		for( int i = 0; i < listSize; i++ )
 		{
-			bhU_Serialization.writeNullableObject(list.get(i), out);
+			smU_Serialization.writeNullableObject(list.get(i), out);
 		}
 	}
 	
@@ -170,7 +170,7 @@ public final class smU_Serialization
 		int listSize = in.readInt();
 		for( int i = 0; i < listSize; i++ )
 		{
-			T ithObject = bhU_Serialization.readNullableObject(T, in);
+			T ithObject = smU_Serialization.readNullableObject(T, in);
 			outList.add(ithObject);
 		}
 	}

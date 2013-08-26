@@ -44,12 +44,12 @@ public class smVisualCellHighlight extends FlowPanel implements smI_UIElement
 	
 	private void update()
 	{
-		bhMouseNavigator navManager = bhMouseNavigator.getInstance();
+		smMouseNavigator navManager = smMouseNavigator.getInstance();
 		boolean isMouseTouchingSnappableCell = navManager.isMouseTouchingSnappableCell();
 		
 		//--- DRK > TODO: Really minor so might never fix, but this is kinda sloppy.
 		//---				There should probably be a "panning" state or something that the highlight listens for instead.
-		bhMouse mouse = navManager.getMouse();
+		smMouse mouse = navManager.getMouse();
 		boolean isPanning = mouse.isMouseDown() && mouse.hasMouseStrayedWhileDown();
 		
 		if( !isMouseTouchingSnappableCell || isPanning )
@@ -62,16 +62,16 @@ public class smVisualCellHighlight extends FlowPanel implements smI_UIElement
 		smCellBuffer buffer = smCellBufferManager.getInstance().getDisplayBuffer();
 		int subCellDim = buffer.getSubCellCount();
 		
-		bhCamera camera = sm_c.camera;
-		bhPoint basePoint = null;
+		smCamera camera = sm_c.camera;
+		smPoint basePoint = null;
 		double highlightScaling = camera.calcDistanceRatio();
 		
-		bhGridCoordinate mouseCoord = navManager.getMouseGridCoord();
+		smGridCoordinate mouseCoord = navManager.getMouseGridCoord();
 		smBufferCell cell = buffer.getCellAtAbsoluteCoord(mouseCoord);
 		
 		if( cell == null )
 		{
-			bhU_Debug.ASSERT(false, "Expected cell to be non null.");
+			smU_Debug.ASSERT(false, "Expected cell to be non null.");
 			
 			return;
 		}
@@ -83,9 +83,9 @@ public class smVisualCellHighlight extends FlowPanel implements smI_UIElement
 		//---		between the highlight and the actual mouse coordinate position for near-cell-boundary cases, but it's zoomed 
 		//---		out enough that it doesn't really matter...you'd really have to look for it to notice a discrepancy.
 		
-		bhVisualCellManager cellManager = sm_view.cellMngr;
+		smVisualCellManager cellManager = sm_view.cellMngr;
 		double lastScaling = cellManager.getLastScaling();
-		bhPoint lastBasePoint = cellManager.getLastBasePoint();
+		smPoint lastBasePoint = cellManager.getLastBasePoint();
 		
 		int bufferM = buffer.getCoordinate().getM() * subCellDim;
 		int bufferN = buffer.getCoordinate().getN() * subCellDim;
@@ -122,7 +122,7 @@ public class smVisualCellHighlight extends FlowPanel implements smI_UIElement
 			int shadowSize = (int) (((double)smS_UI.HIGHLIGHT_MAX_SIZE) * (scale));
 			shadowSize = shadowSize < smS_UI.HIGHLIGHT_MIN_SIZE ? smS_UI.HIGHLIGHT_MIN_SIZE : shadowSize;
 			
-			bhU_UI.setBoxShadow(this.getElement(), "0 0 "+shadowSize+"px " + smS_UI.HIGHLIGHT_COLOR);
+			smU_UI.setBoxShadow(this.getElement(), "0 0 "+shadowSize+"px " + smS_UI.HIGHLIGHT_COLOR);
 		}
 		
 		m_lastScaling = highlightScaling;

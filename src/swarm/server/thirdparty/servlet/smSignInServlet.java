@@ -78,7 +78,7 @@ public class smSignInServlet extends smA_BaseServlet
 						smSignInCredentials creds = new smSignInCredentials(false, email, password);
 						smSignInValidationResult result = new smSignInValidationResult();
 
-						bhUserSession session = accountMngr.attemptSignIn(creds, result);
+						smUserSession session = accountMngr.attemptSignIn(creds, result);
 						
 						if( session != null )
 						{

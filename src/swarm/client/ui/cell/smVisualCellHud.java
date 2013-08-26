@@ -44,7 +44,7 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 	
 	private class smHudButton extends smSpriteButton
 	{
-		private bhHudButton(String spriteId)
+		private smHudButton(String spriteId)
 		{
 			super(spriteId);
 			
@@ -103,7 +103,7 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 			@Override
 			public void onClick(ClickEvent event)
 			{
-				bhBrowserNavigator.getInstance().go(-1);
+				smBrowserNavigator.getInstance().go(-1);
 			}
 		});
 		
@@ -112,7 +112,7 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 			@Override
 			public void onClick(ClickEvent event)
 			{
-				bhBrowserNavigator.getInstance().go(1);
+				smBrowserNavigator.getInstance().go(1);
 			}
 		});*/
 		
@@ -138,13 +138,13 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 				
 				if( state == null )
 				{
-					bhU_Debug.ASSERT(false, "bhVisualCellHud::viewing state should have been entered.");
+					smU_Debug.ASSERT(false, "smVisualCellHud::viewing state should have been entered.");
 					
 					return;
 				}
 				
 				smBufferCell cell = state.getCell();
-				bhGridCoordinate coord = cell.getCoordinate();
+				smGridCoordinate coord = cell.getCoordinate();
 				smA_Grid grid = cell.getGrid();
 				
 				coord.calcCenterPoint(s_utilPoint1, grid.getCellWidth(), grid.getCellHeight(), grid.getCellPadding(), 1);
@@ -155,7 +155,7 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 			}
 		});
 		
-		bhToolTipManager toolTipper = sm_c.toolTipMngr;
+		smToolTipManager toolTipper = sm_c.toolTipMngr;
 		
 		//toolTipper.addTip(m_back, new smToolTipConfig(smE_ToolTipType.MOUSE_OVER, "Go back."));
 		//toolTipper.addTip(m_forward, new smToolTipConfig(smE_ToolTipType.MOUSE_OVER, "Go forward."));
@@ -180,10 +180,10 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 	
 	private void updatePosition(State_ViewingCell state)
 	{
-		bhCamera camera = sm_c.camera;
+		smCamera camera = sm_c.camera;
 		smBufferCell cell = ((State_ViewingCell)state).getCell();
 		smA_Grid grid = cell.getGrid();
-		bhGridCoordinate coord = cell.getCoordinate();
+		smGridCoordinate coord = cell.getCoordinate();
 		coord.calcPoint(s_utilPoint1, grid.getCellWidth(), grid.getCellHeight(), grid.getCellPadding(), 1);
 		camera.calcScreenPoint(s_utilPoint1, s_utilPoint2);
 		this.getElement().getStyle().setLeft(s_utilPoint2.getX(), Unit.PX);
@@ -265,7 +265,7 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 					
 					if( state != null )
 					{
-						bhVisualCellHud.this.updatePosition(state);
+						smVisualCellHud.this.updatePosition(state);
 					}
 				}
 				else if((	event.getAction() == State_ViewingCell.Refresh.class				||

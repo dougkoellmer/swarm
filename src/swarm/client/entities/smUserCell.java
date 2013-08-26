@@ -30,7 +30,7 @@ public class smUserCell extends smA_Cell
 		m_address = address;
 	}
 	
-	bhCode getChangedCode()
+	smCode getChangedCode()
 	{
 		return m_changedCode;
 	}
@@ -57,7 +57,7 @@ public class smUserCell extends smA_Cell
 	
 	void onSyncStart(smCode compiledCode)
 	{
-		bhCode sourceCode = new smCode(this.getChangedCode().getRawCode(), smE_CodeType.SOURCE);
+		smCode sourceCode = new smCode(this.getChangedCode().getRawCode(), smE_CodeType.SOURCE);
 		
 		this.setCode(smE_CodeType.SOURCE, sourceCode);
 		this.setCode(smE_CodeType.COMPILED, compiledCode);

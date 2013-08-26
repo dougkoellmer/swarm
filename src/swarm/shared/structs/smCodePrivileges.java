@@ -36,7 +36,7 @@ public class smCodePrivileges extends smA_JsonEncodable
 		{
 			setToDefault();
 			
-			bhU_Debug.ASSERT(false, "Expected privileges to be not null in copy.");
+			smU_Debug.ASSERT(false, "Expected privileges to be not null in copy.");
 			
 			return;
 		}

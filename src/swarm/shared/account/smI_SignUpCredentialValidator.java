@@ -19,7 +19,7 @@ public interface smI_SignUpCredentialValidator
 			{
 				return smE_SignUpValidationError.EMAIL_TOO_LONG;
 			}
-			else if( !bhU_Regex.calcIsMatch(credential, smS_Account.EMAIL_REGEX) )
+			else if( !smU_Regex.calcIsMatch(credential, smS_Account.EMAIL_REGEX) )
 			{
 				return smE_SignUpValidationError.EMAIL_INVALID;
 			}
@@ -40,7 +40,7 @@ public interface smI_SignUpCredentialValidator
 			{
 				return smE_SignUpValidationError.USERNAME_TOO_LONG;
 			}
-			else if( !bhU_Regex.calcIsMatch(credential, smS_Account.USERNAME_REGEX) )
+			else if( !smU_Regex.calcIsMatch(credential, smS_Account.USERNAME_REGEX) )
 			{
 				return smE_SignUpValidationError.USERNAME_INVALID;
 			}

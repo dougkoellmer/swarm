@@ -31,7 +31,7 @@ public class smU_UI
 		"MozTransformOrigin"
 	};
 	
-	private bhU_UI()
+	private smU_UI()
 	{
 		
 	}

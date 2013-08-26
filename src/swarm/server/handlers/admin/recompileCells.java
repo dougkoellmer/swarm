@@ -59,7 +59,7 @@ public class recompileCells implements smI_RequestHandler
 		{
 			grid = blobManager.getBlob(smE_GridType.ACTIVE, smServerGrid.class);
 		}
-		catch( bhBlobException e)
+		catch( smBlobException e)
 		{
 			response.setError(smE_ResponseError.SERVICE_EXCEPTION);
 			
@@ -86,7 +86,7 @@ public class recompileCells implements smI_RequestHandler
 				mapping.getCoordinate().set(j,  i);
 				if( grid.isTaken(mapping.getCoordinate()) )
 				{
-					smServerCell cell = bhU_CellCode.getCellForCompile(blobManager, mapping, response);
+					smServerCell cell = smU_CellCode.getCellForCompile(blobManager, mapping, response);
 					
 					if( cell == null )
 					{
@@ -98,7 +98,7 @@ public class recompileCells implements smI_RequestHandler
 						break;
 					}
 					
-					bhU_CellCode.removeFromCache(mapping);
+					smU_CellCode.removeFromCache(mapping);
 				}
 			}
 		}
@@ -106,24 +106,24 @@ public class recompileCells implements smI_RequestHandler
 	
 	private boolean recompile(smI_BlobManager blobManager, smServerCell persistedCell, smServerCellAddressMapping mapping, smTransactionResponse response)
 	{
-		bhCode sourceCode = persistedCell.getCode(smE_CodeType.SOURCE);
+		smCode sourceCode = persistedCell.getCode(smE_CodeType.SOURCE);
 		
 		if( sourceCode == null )
 		{
 			return true;
 		}
 		
-		bhCompilerResult result = bhU_CellCode.compileCell(persistedCell, sourceCode, mapping);
+		smCompilerResult result = smU_CellCode.compileCell(persistedCell, sourceCode, mapping);
 		
 		if( result.getStatus() != smE_CompilationStatus.NO_ERROR )
 		{
-			bhCode emptySplashCode = new smCode("", smE_CodeType.SPLASH, smE_CodeType.COMPILED);
+			smCode emptySplashCode = new smCode("", smE_CodeType.SPLASH, smE_CodeType.COMPILED);
 			persistedCell.setCode(smE_CodeType.SPLASH, emptySplashCode);
 			persistedCell.setCode(smE_CodeType.COMPILED, null);
 			
 			s_logger.severe("Source code now has an error in it...presumably it did not before.");
 		}
 		
-		return bhU_CellCode.saveBackCompiledCell(blobManager, mapping, persistedCell, response);
+		return smU_CellCode.saveBackCompiledCell(blobManager, mapping, persistedCell, response);
 	}
 }

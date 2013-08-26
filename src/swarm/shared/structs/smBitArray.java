@@ -134,7 +134,7 @@ public class smBitArray extends smA_JsonEncodable
 				//--- DRK > Strip off first part of the current old block.
 				if( oldStartBitIndexIntoBlock > 0 )
 				{
-					int mask = bhU_BitTricks.calcMaskBeforeBit(oldStartBitIndexIntoBlock);
+					int mask = smU_BitTricks.calcMaskBeforeBit(oldStartBitIndexIntoBlock);
 					oldDoubleBlock &= ~mask;
 				}
 				
@@ -143,7 +143,7 @@ public class smBitArray extends smA_JsonEncodable
 				{
 					if( oldEndBitIndexIntoBlock < (BLOCK_SIZE_LONG-1) )
 					{
-						int mask = bhU_BitTricks.calcMaskAfterBit(oldEndBitIndexIntoBlock);
+						int mask = smU_BitTricks.calcMaskAfterBit(oldEndBitIndexIntoBlock);
 						oldDoubleBlock &= ~mask;
 						oldDoubleBlock &= BLOCK_MASK_SHIFTED_NOT;
 					}
@@ -172,7 +172,7 @@ public class smBitArray extends smA_JsonEncodable
 					
 						long oldDoubleBlockEnd = oldBlocks[col_oldBlocks+1];
 						oldDoubleBlock |= (oldDoubleBlockEnd<<BLOCK_SIZE_LONG);
-						long mask = bhU_BitTricks.calcMaskAfterBit(maskStart);
+						long mask = smU_BitTricks.calcMaskAfterBit(maskStart);
 						oldDoubleBlock &= ~(mask<<BLOCK_SIZE_LONG);
 					}
 				}
@@ -212,7 +212,7 @@ public class smBitArray extends smA_JsonEncodable
 		int bitIndexIntoBlock = calcBitIndexModBlock(bitIndex);
 		int blockIndex = calcBlockIndex(bitIndex, bitIndexIntoBlock);
 		int block = m_blocks[blockIndex];
-		int blockBit = bhU_BitTricks.calcOrdinalBit(bitIndexIntoBlock);
+		int blockBit = smU_BitTricks.calcOrdinalBit(bitIndexIntoBlock);
 		
 		if( value )
 		{
@@ -231,7 +231,7 @@ public class smBitArray extends smA_JsonEncodable
 		int bitIndexIntoBlock = calcBitIndexModBlock(bitIndex);
 		int blockIndex = calcBlockIndex(bitIndex, bitIndexIntoBlock);
 		int block = m_blocks[blockIndex];
-		int blockBit = bhU_BitTricks.calcOrdinalBit(bitIndexIntoBlock);
+		int blockBit = smU_BitTricks.calcOrdinalBit(bitIndexIntoBlock);
 		
 		if( (block & blockBit) != 0 )
 		{

@@ -5,7 +5,7 @@ import swarm.shared.debugging.smTelemetryAssert;
 import swarm.shared.json.smI_JsonObject;
 import swarm.shared.structs.smTuple;
 
-public class smServerTelemetryAssert extends bhTelemetryAssert implements smI_SqlEncodable
+public class smServerTelemetryAssert extends smTelemetryAssert implements smI_SqlEncodable
 {
 	private final String m_ip;
 	private final Integer m_accountId;

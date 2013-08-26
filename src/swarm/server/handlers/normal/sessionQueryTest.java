@@ -39,7 +39,7 @@ public class sessionQueryTest implements smI_RequestHandler
 			return;
 		}
 		
-		bhUserSession session = sm_s.sessionMngr.getSession(request, response);
+		smUserSession session = sm_s.sessionMngr.getSession(request, response);
 		
 		int accountId = session.getAccountId();
 		

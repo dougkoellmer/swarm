@@ -5,7 +5,7 @@ import swarm.shared.json.smI_JsonObject;
 
 class smCompilerCell extends smA_Cell
 {
-	bhCompilerCell()
+	smCompilerCell()
 	{
 		super();
 	}

@@ -97,7 +97,7 @@ public class smServerAccountManager
 	
 	public boolean isPasswordChangeTokenValid(String changeToken)
 	{
-		byte[] tokenBytes = bhU_Hashing.convertHashStringToBytes(changeToken);
+		byte[] tokenBytes = smU_Hashing.convertHashStringToBytes(changeToken);
 		
 		Timestamp time = getPasswordChangeTokenTimestamp();
 		
@@ -127,16 +127,16 @@ public class smServerAccountManager
 		String email				= credentials.get(smE_SignInCredentialType.EMAIL);
 		String plainTextPassword	= credentials.get(smE_SignInCredentialType.PASSWORD);
     	
-    	byte[] passwordSalt = bhU_Hashing.calcRandomSaltBytes(smS_ServerAccount.PASSWORD_SALT_BYTE_LENGTH);
-		byte[] passwordHash = bhU_Hashing.hashWithSalt(plainTextPassword, passwordSalt);
-		byte[] changeToken = bhU_Hashing.calcRandomSaltBytes(smS_ServerAccount.PASSWORD_CHANGE_TOKEN_BYTE_LENGTH);
+    	byte[] passwordSalt = smU_Hashing.calcRandomSaltBytes(smS_ServerAccount.PASSWORD_SALT_BYTE_LENGTH);
+		byte[] passwordHash = smU_Hashing.hashWithSalt(plainTextPassword, passwordSalt);
+		byte[] changeToken = smU_Hashing.calcRandomSaltBytes(smS_ServerAccount.PASSWORD_CHANGE_TOKEN_BYTE_LENGTH);
 		
     	try
     	{
     		Timestamp time = new Timestamp(new java.util.Date().getTime());
     		if( m_accountDb.setNewDesiredPassword(email, passwordHash, passwordSalt, changeToken, time) )
     		{
-    			return bhU_Hashing.convertBytesToUrlSafeString(changeToken);
+    			return smU_Hashing.convertBytesToUrlSafeString(changeToken);
     		}
     	}
     	catch(SQLException e)
@@ -171,8 +171,8 @@ public class smServerAccountManager
 		
 		Random random = new Random();
 		int id = random.nextInt(Integer.MAX_VALUE);
-		byte[] passwordSalt = bhU_Hashing.calcRandomSaltBytes(smS_ServerAccount.PASSWORD_SALT_BYTE_LENGTH);
-		byte[] passwordHash = bhU_Hashing.hashWithSalt(plainTextPassword, passwordSalt);
+		byte[] passwordSalt = smU_Hashing.calcRandomSaltBytes(smS_ServerAccount.PASSWORD_SALT_BYTE_LENGTH);
+		byte[] passwordHash = smU_Hashing.hashWithSalt(plainTextPassword, passwordSalt);
 		smE_Role role = smE_Role.USER;
 		
 		int attemptCount = 0;
@@ -183,7 +183,7 @@ public class smServerAccountManager
 			{
 				m_accountDb.addAccount(id, email, username, passwordHash, passwordSalt, role);
 				
-				bhUserSession userSession = new smUserSession(id, username, role);
+				smUserSession userSession = new smUserSession(id, username, role);
 				
 				return userSession;
 			}
@@ -210,12 +210,12 @@ public class smServerAccountManager
 					
 					if( flags != 0 )
 					{
-						if ( (flags & bhF_SignUpExistance.EMAIL_EXISTS) != 0 )
+						if ( (flags & smF_SignUpExistance.EMAIL_EXISTS) != 0 )
 						{
 							result_out.setError(smE_SignUpCredentialType.EMAIL, smE_SignUpValidationError.EMAIL_TAKEN);
 						}
 						
-						if( (flags & bhF_SignUpExistance.USERNAME_EXISTS) != 0 )
+						if( (flags & smF_SignUpExistance.USERNAME_EXISTS) != 0 )
 						{
 							result_out.setError(smE_SignUpCredentialType.USERNAME, smE_SignUpValidationError.USERNAME_TAKEN);
 						}
@@ -270,11 +270,11 @@ public class smServerAccountManager
 	        }
 	        else
 	        {
-	        	byte[] passwordHash	= bhU_Hashing.hashWithSalt(plainTextPassword, salt);
+	        	byte[] passwordHash	= smU_Hashing.hashWithSalt(plainTextPassword, salt);
 	        	Timestamp time = getPasswordChangeTokenTimestamp();
-	        	byte[] changeTokenBytes = bhU_Hashing.convertHashStringToBytes(passwordResetToken);
+	        	byte[] changeTokenBytes = smU_Hashing.convertHashStringToBytes(passwordResetToken);
 	            
-	        	bhUserSession userSession = m_accountDb.confirmNewPassword(email, passwordHash, salt, changeTokenBytes, time);
+	        	smUserSession userSession = m_accountDb.confirmNewPassword(email, passwordHash, salt, changeTokenBytes, time);
 	        	
 	            if (userSession == null)
 	            {
@@ -311,9 +311,9 @@ public class smServerAccountManager
 	        }
 	        else
 	        {
-	        	byte[] passwordHash	= bhU_Hashing.hashWithSalt(plainTextPassword, salt);
+	        	byte[] passwordHash	= smU_Hashing.hashWithSalt(plainTextPassword, salt);
 	            
-	        	bhUserSession userSession = m_accountDb.containsSignInCredentials(email, passwordHash);
+	        	smUserSession userSession = m_accountDb.containsSignInCredentials(email, passwordHash);
 	            if (userSession == null)
 	            {
 	            	result_out.setBadCombinationError();

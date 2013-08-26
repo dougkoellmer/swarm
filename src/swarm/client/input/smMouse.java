@@ -111,7 +111,7 @@ public class smMouse implements MouseDownHandler, MouseUpHandler, MouseMoveHandl
 		}
 		else
 		{
-			bhU_Debug.ASSERT(false);
+			smU_Debug.ASSERT(false);
 			return null;
 		}
 	}

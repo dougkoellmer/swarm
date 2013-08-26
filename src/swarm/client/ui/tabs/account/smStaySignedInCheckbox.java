@@ -9,7 +9,7 @@ import com.google.gwt.dom.client.Style.Cursor;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.ui.CheckBox;
 
-public class smStaySignedInCheckbox extends bhCheckBox
+public class smStaySignedInCheckbox extends smCheckBox
 {
 	smStaySignedInCheckbox()
 	{
@@ -18,7 +18,7 @@ public class smStaySignedInCheckbox extends bhCheckBox
 		//this.getElement().getStyle().setMarginBottom(16, Unit.PX);
 		this.setSize("100px", "20px"); // TODO: no, no, no
 		
-		bhToolTipConfig config = new smToolTipConfig(smE_ToolTipType.MOUSE_OVER, "Remembers you.");
+		smToolTipConfig config = new smToolTipConfig(smE_ToolTipType.MOUSE_OVER, "Remembers you.");
 		sm_c.toolTipMngr.addTip(this.getClickCatcher(), config);
 		
 		//this.get

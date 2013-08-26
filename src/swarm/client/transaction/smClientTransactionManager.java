@@ -47,7 +47,7 @@ public class smClientTransactionManager
 	private final smListenerManager<smI_TransactionResponseHandler> m_handlers = new smListenerManager<smI_TransactionResponseHandler>();
 	private final smListenerManager<smI_ResponseBatchListener> m_batchListeners = new smListenerManager<smI_ResponseBatchListener>();
 	
-	private bhTransactionRequestBatch m_transactionRequestBatch = null;
+	private smTransactionRequestBatch m_transactionRequestBatch = null;
 	
 	private smI_SyncRequestDispatcher m_syncDispatcher = null;
 	private smI_AsyncRequestDispatcher m_asyncDispatcher = null;
@@ -56,31 +56,31 @@ public class smClientTransactionManager
 	
 	private boolean m_isInsideBatch = false;
 	
-	private bhTransactionRequestBatch m_currentRequestBatch = null;
+	private smTransactionRequestBatch m_currentRequestBatch = null;
 	private smI_JsonArray m_currentResponseList = null;
-	private bhTransactionResponse m_currentErrorResponse = null;
+	private smTransactionResponse m_currentErrorResponse = null;
 	private int m_currentBatchIndex = 0;
 	
-	private bhTransactionRequest m_currentlyHandledRequest;
+	private smTransactionRequest m_currentlyHandledRequest;
 	
 	private final smI_ResponseCallbacks m_callbacks = new smI_ResponseCallbacks()
 	{
 		@Override
 		public void onResponseReceived(smTransactionRequest request, smTransactionResponse response)
 		{
-			bhClientTransactionManager.this.onResponseReceived(request, response);
+			smClientTransactionManager.this.onResponseReceived(request, response);
 		}
 		
 		@Override
 		public void onResponseReceived(smTransactionRequestBatch requestBatch, smI_JsonArray jsonResponseBatch)
 		{
-			bhClientTransactionManager.this.onResponseReceived(requestBatch, jsonResponseBatch);
+			smClientTransactionManager.this.onResponseReceived(requestBatch, jsonResponseBatch);
 		}
 		
 		@Override
 		public void onError(smTransactionRequest request, smTransactionResponse response)
 		{
-			bhClientTransactionManager.this.onError(request, response);
+			smClientTransactionManager.this.onError(request, response);
 		}
 	};
 	
@@ -103,7 +103,7 @@ public class smClientTransactionManager
 	
 	private void callSuccessHandlers(smTransactionRequest request, smTransactionResponse response)
 	{
-		bhU_Debug.ASSERT(request.isCancelled() == false, "callSuccessHandlers1");
+		smU_Debug.ASSERT(request.isCancelled() == false, "callSuccessHandlers1");
 		
 		m_currentlyHandledRequest = request;
 		
@@ -124,7 +124,7 @@ public class smClientTransactionManager
 	
 	private void callErrorHandlers(smTransactionRequest request, smTransactionResponse response)
 	{
-		bhU_Debug.ASSERT(request.isCancelled() == false, "callErrorHandlers");
+		smU_Debug.ASSERT(request.isCancelled() == false, "callErrorHandlers");
 		
 		m_currentlyHandledRequest = request;
 		
@@ -154,14 +154,14 @@ public class smClientTransactionManager
 	
 	public void queueRequest(smE_RequestPath path, smI_JsonEncodable jsonEncodable)
 	{
-		bhTransactionRequest request = new smTransactionRequest(path);
+		smTransactionRequest request = new smTransactionRequest(path);
 		jsonEncodable.writeJson(request.getJson());
 		queueRequest(request);
 	}
 	
 	public void queueRequest(smE_RequestPath requestPath)
 	{
-		bhTransactionRequest request = new smTransactionRequest(requestPath);
+		smTransactionRequest request = new smTransactionRequest(requestPath);
 		queueRequest(request);
 	}
 	
@@ -196,32 +196,32 @@ public class smClientTransactionManager
 	
 	public void makeRequest(smI_RequestPath path, smI_JsonObject jsonArgs)
 	{
-		bhTransactionRequest request = new smTransactionRequest(path, jsonArgs);
+		smTransactionRequest request = new smTransactionRequest(path, jsonArgs);
 		makeRequest(request);
 	}
 	
 	public void makeRequest(smI_RequestPath path, smI_JsonEncodable jsonEncodable)
 	{
-		bhTransactionRequest request = new smTransactionRequest(path);
+		smTransactionRequest request = new smTransactionRequest(path);
 		jsonEncodable.writeJson(request.getJson());
 		makeRequest(request);
 	}
 	
 	public void makeRequest(smI_RequestPath path)
 	{
-		bhTransactionRequest request = new smTransactionRequest(path);
+		smTransactionRequest request = new smTransactionRequest(path);
 		makeRequest(request);
 	}
 	
 	public void performAction(smE_TransactionAction action, smE_RequestPath requestPath)
 	{
-		bhTransactionRequest request = new smTransactionRequest(requestPath);
+		smTransactionRequest request = new smTransactionRequest(requestPath);
 		performAction(action, request);
 	}
 	
 	public void performAction(smE_TransactionAction action, smE_RequestPath requestPath, smI_JsonEncodable jsonEncodable)
 	{
-		bhTransactionRequest request = new smTransactionRequest(requestPath);
+		smTransactionRequest request = new smTransactionRequest(requestPath);
 		jsonEncodable.writeJson(request.getJson());
 		performAction(action, request);
 	}
@@ -285,7 +285,7 @@ public class smClientTransactionManager
 			else
 			{
 				smI_JsonObject responseJson = (smI_JsonObject) responseObject;
-				bhTransactionResponse response = new smTransactionResponse();
+				smTransactionResponse response = new smTransactionResponse();
 				response.readJson(responseJson);
 				
 				return response;
@@ -306,7 +306,7 @@ public class smClientTransactionManager
 
 		for( int i = m_currentBatchIndex-1; i >= 0; i-- )
 		{
-			bhTransactionRequest previousRequest = m_currentRequestBatch.getRequest(i);
+			smTransactionRequest previousRequest = m_currentRequestBatch.getRequest(i);
 			
 			if( previousRequest.isCancelled() )  continue;
 			
@@ -395,7 +395,7 @@ public class smClientTransactionManager
 	
 	public smTransactionRequest getDispatchedRequest(smI_RequestPath path, smJsonQuery jsonQuery)
 	{
-		bhTransactionRequest dispatchedRequest = m_asyncDispatcher.getDispatchedRequest(path, jsonQuery, m_currentlyHandledRequest);
+		smTransactionRequest dispatchedRequest = m_asyncDispatcher.getDispatchedRequest(path, jsonQuery, m_currentlyHandledRequest);
 		
 		return dispatchedRequest;
 	}
@@ -434,7 +434,7 @@ public class smClientTransactionManager
 		{
 			this.m_currentBatchIndex = i;
 			
-			bhTransactionRequest ithRequest = requestBatch.getRequest(i);
+			smTransactionRequest ithRequest = requestBatch.getRequest(i);
 			
 			if( ithRequest.isCancelled() )
 			{
@@ -477,13 +477,13 @@ public class smClientTransactionManager
 	
 	void onError(smTransactionRequest request, smTransactionResponse response)
 	{			
-		if( !(request instanceof bhTransactionRequestBatch) )
+		if( !(request instanceof smTransactionRequestBatch) )
 		{
 			this.callErrorHandlers(request, response);
 		}
 		else
 		{
-			bhTransactionRequestBatch batch = (smTransactionRequestBatch) request;
+			smTransactionRequestBatch batch = (smTransactionRequestBatch) request;
 			
 			if( batch.getSize() > 1 )
 			{

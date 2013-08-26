@@ -29,7 +29,7 @@ public class smCamera
 	
 	public void onGridSizeChanged()
 	{
-		bhCamera.this.m_cachedMaxZ = DIRTY_VALUE;
+		smCamera.this.m_cachedMaxZ = DIRTY_VALUE;
 	}
 	
 	private static double calcZFromDistanceRatio(double distanceRatio, double depthOfField)
@@ -46,7 +46,7 @@ public class smCamera
 			return m_cachedMaxZ;
 		}
 		
-		bhClientGrid grid = bhClientGrid.getInstance();
+		smClientGrid grid = smClientGrid.getInstance();
 		double maxDimension = this.calcMinViewDimension();
 		double maxDistanceRatio = (maxDimension/2) / grid.calcPixelWidth();
 		m_cachedMaxZ = calcZFromDistanceRatio(maxDistanceRatio, smS_App.DEPTH_OF_FIELD);

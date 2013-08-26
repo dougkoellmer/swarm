@@ -102,9 +102,9 @@ public class smServerTransactionManager
 		m_scopeListeners.add(listener);
 	}
 	
-	private bhTransactionResponse createEarlyOutResponse(smE_ResponseError responseError)
+	private smTransactionResponse createEarlyOutResponse(smE_ResponseError responseError)
 	{
-		bhTransactionResponse responseToReturn = new smTransactionResponse();
+		smTransactionResponse responseToReturn = new smTransactionResponse();
 		responseToReturn.setError(responseError);
 		
 		return responseToReturn;
@@ -119,7 +119,7 @@ public class smServerTransactionManager
 	{
 		m_jsonFactory.startScope(verboseJson);
 		
-		bhTransactionResponse responseToReturn = null;
+		smTransactionResponse responseToReturn = null;
 		
 		//--- DRK > Just being anal and putting everything within a try.
 		try
@@ -133,7 +133,7 @@ public class smServerTransactionManager
 			}
 			
 			//--- DRK > Create a wrapper around the native request and see if there's a server version mismatch.
-			bhTransactionRequest wrappedRequest = new smTransactionRequest(nativeRequest);
+			smTransactionRequest wrappedRequest = new smTransactionRequest(nativeRequest);
 			wrappedRequest.readJson(requestJson);
 			Integer serverVersionAsFarAsClientKnows = wrappedRequest.getServerVersion();
 			boolean serverVersionMismatch = false;
@@ -172,22 +172,22 @@ public class smServerTransactionManager
 				final smTransactionResponseBatch responseBatch = new smTransactionResponseBatch();
 				responseToReturn = responseBatch;
 				
-				bhU_RequestBatch.I_JsonReadDelegate readDelegate = new smU_RequestBatch.I_JsonReadDelegate()
+				smU_RequestBatch.I_JsonReadDelegate readDelegate = new smU_RequestBatch.I_JsonReadDelegate()
 				{
 					@Override
 					public void onRequestFound(smI_JsonObject requestJson)
 					{
-						bhTransactionRequest batchedRequest = new smTransactionRequest(nativeRequest);
+						smTransactionRequest batchedRequest = new smTransactionRequest(nativeRequest);
 						batchedRequest.readJson(requestJson);
-						bhTransactionResponse batchedResponse = new smTransactionResponse(nativeResponse);
+						smTransactionResponse batchedResponse = new smTransactionResponse(nativeResponse);
 						
 						context.addTransaction(batchedRequest, batchedResponse);
 					}
 				};
 				
-				bhU_RequestBatch.readRequestList(requestJson, readDelegate);
+				smU_RequestBatch.readRequestList(requestJson, readDelegate);
 				
-				bhTransactionBatch transactionBatch = context.getBatch();
+				smTransactionBatch transactionBatch = context.getBatch();
 				
 				int transactionCount = transactionBatch.getCount();
 				if( transactionCount > 1 )
@@ -200,8 +200,8 @@ public class smServerTransactionManager
 				
 				for( int i = 0; i < transactionBatch.getCount(); i++ )
 				{
-					bhTransactionRequest batchedRequest = transactionBatch.getRequest(i);
-					bhTransactionResponse batchedResponse = transactionBatch.getResponse(i);
+					smTransactionRequest batchedRequest = transactionBatch.getRequest(i);
+					smTransactionResponse batchedResponse = transactionBatch.getResponse(i);
 					
 					callRequestHandler(context, batchedRequest, batchedResponse);
 					
@@ -215,7 +215,7 @@ public class smServerTransactionManager
 				
 				if( context.getDeferredCount() > 0 )
 				{
-					bhTransactionBatch deferredBatch = context.getDeferredBatch();
+					smTransactionBatch deferredBatch = context.getDeferredBatch();
 					
 					for( int i = 0; i < m_deferredHandlers.size(); i++ )
 					{

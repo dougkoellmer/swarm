@@ -20,7 +20,7 @@ class smBlobManager_LocalCache extends smA_BlobManagerWithCache
 {
 	private final smLocalBlobCache m_localCache;
 	
-	bhBlobManager_LocalCache(smBlobTemplateManager templateMngr, smLocalBlobCache localCache, smI_BlobManager wrappedManager)
+	smBlobManager_LocalCache(smBlobTemplateManager templateMngr, smLocalBlobCache localCache, smI_BlobManager wrappedManager)
 	{
 		super(templateMngr, wrappedManager);
 		
@@ -39,10 +39,10 @@ class smBlobManager_LocalCache extends smA_BlobManagerWithCache
 	 * @param keySources
 	 * @param outBlobs
 	 * @return
-	 * @throws bhBlobException
+	 * @throws smBlobException
 	 */
 	@Override
-	protected Map<smI_BlobKey, smI_Blob> getBlobsFromCache(Map<smI_BlobKey, Class<? extends smI_Blob>> values) throws bhBlobException
+	protected Map<smI_BlobKey, smI_Blob> getBlobsFromCache(Map<smI_BlobKey, Class<? extends smI_Blob>> values) throws smBlobException
 	{
 		Map<smI_BlobKey, smI_Blob> toReturn = null;
 		
@@ -71,25 +71,25 @@ class smBlobManager_LocalCache extends smA_BlobManagerWithCache
 	}
 
 	@Override
-	protected void putBlobIntoCache(String generatedKey, smI_Blob blob) throws bhBlobException
+	protected void putBlobIntoCache(String generatedKey, smI_Blob blob) throws smBlobException
 	{
 		m_localCache.putBlob(generatedKey, blob);
 	}
 
 	@Override
-	protected <T extends smI_Blob> smI_Blob getBlobFromCache(String generatedKey, Class<? extends T> blobType) throws bhBlobException
+	protected <T extends smI_Blob> smI_Blob getBlobFromCache(String generatedKey, Class<? extends T> blobType) throws smBlobException
 	{
 		return m_localCache.getBlob(generatedKey);
 	}
 	
 	@Override
-	protected void deleteBlobFromCache(String generatedKey) throws bhBlobException
+	protected void deleteBlobFromCache(String generatedKey) throws smBlobException
 	{
 		m_localCache.deleteBlob(generatedKey);
 	}
 
 	@Override
-	protected void putBlobsIntoCache(Map<smI_BlobKey, smI_Blob> values) throws bhBlobException
+	protected void putBlobsIntoCache(Map<smI_BlobKey, smI_Blob> values) throws smBlobException
 	{
 		Iterator<smI_BlobKey> iterator = values.keySet().iterator();
 		while( iterator.hasNext() )
@@ -105,7 +105,7 @@ class smBlobManager_LocalCache extends smA_BlobManagerWithCache
 	}
 
 	@Override
-	protected void deleteBlobsFromCache(Map<smI_BlobKey, Class<? extends smI_Blob>> values) throws bhBlobException
+	protected void deleteBlobsFromCache(Map<smI_BlobKey, Class<? extends smI_Blob>> values) throws smBlobException
 	{
 		Iterator<smI_BlobKey> iterator = values.keySet().iterator();
 		while( iterator.hasNext() )

@@ -42,7 +42,7 @@ public class renameCell implements smI_RequestHandler
 		smServerCellAddress oldAddress = new smServerCellAddress(oldRawAddress);
 		smServerCellAddress newAddress = new smServerCellAddress(newRawAddress);
 		
-		bhBlobTransaction_SetCellAddress transaction = new smBlobTransaction_SetCellAddress(oldAddress, newAddress);
+		smBlobTransaction_SetCellAddress transaction = new smBlobTransaction_SetCellAddress(oldAddress, newAddress);
 		
 		try {
 			transaction.perform(smE_BlobTransactionType.MULTI_BLOB_TYPE, 1);

@@ -13,7 +13,7 @@ public class smU_Regex
 		return matchFound;
 	}
 	
-	private bhU_Regex()
+	private smU_Regex()
 	{
 		
 	}

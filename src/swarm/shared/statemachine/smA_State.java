@@ -172,8 +172,8 @@ public abstract class smA_State extends smA_BaseStateObject
 	
 	protected void setPerformableOverride(Class<? extends smA_Action> T, boolean perfomable)
 	{
-		bhU_Debug.ASSERT(m_parent != null );
-		bhU_Debug.ASSERT(m_isEntered);
+		smU_Debug.ASSERT(m_parent != null );
+		smU_Debug.ASSERT(m_isEntered);
 		
 		m_isPerformableOverrides.put(T, perfomable);
 	}
@@ -261,7 +261,7 @@ public abstract class smA_State extends smA_BaseStateObject
 	{
 		if ( !this.m_isEntered )
 		{
-			bhU_Debug.ASSERT(false);
+			smU_Debug.ASSERT(false);
 			return false;
 		}
 		
@@ -349,7 +349,7 @@ public abstract class smA_State extends smA_BaseStateObject
 	{
 		smStateTreeRoot root = m_root;
 		
-		bhU_Debug.ASSERT(m_isEntered, "smA_State::update1");
+		smU_Debug.ASSERT(m_isEntered, "smA_State::update1");
 		
 		if( !m_isEntered )  return;
 		
@@ -471,13 +471,13 @@ public abstract class smA_State extends smA_BaseStateObject
 		{
 			if ( registeredState.isEntered() )
 			{
-				bhU_Debug.ASSERT(false, "Tried to reuse state instance.");
+				smU_Debug.ASSERT(false, "Tried to reuse state instance.");
 			}
 			
 			return registeredState;
 		}
 
-		bhU_Debug.ASSERT(false, "No state instance registered.");
+		smU_Debug.ASSERT(false, "No state instance registered.");
 		
 		return null;
 	}

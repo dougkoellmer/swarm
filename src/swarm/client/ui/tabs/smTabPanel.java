@@ -54,7 +54,7 @@ public class smTabPanel extends AbsolutePanel implements smI_UIElement
 	private final FlowPanel m_contentContainer = new FlowPanel();
 	
 	private smI_TabContent m_currentContent = null;
-	private bhButtonWithText m_currentTab = null;
+	private smButtonWithText m_currentTab = null;
 	
 	private static final StateMachine_Tabs.SelectTab.Args m_args_SelectTab = new StateMachine_Tabs.SelectTab.Args();
 	
@@ -115,7 +115,7 @@ public class smTabPanel extends AbsolutePanel implements smI_UIElement
 	
 	private void addTab(smI_Tab tab, final int tabIndex)
 	{
-		bhButtonWithText tabButton = new smButtonWithText();
+		smButtonWithText tabButton = new smButtonWithText();
 		tabButton.addStyleName("sm_tab");
 		tabButton.setText(tab.getName()); 
 		sm_c.clickMngr.addClickHandler(tabButton, new smI_ClickHandler()
@@ -140,7 +140,7 @@ public class smTabPanel extends AbsolutePanel implements smI_UIElement
 		
 		if( newContent == m_currentContent )
 		{
-			bhU_Debug.ASSERT(false, "selectTab3");
+			smU_Debug.ASSERT(false, "selectTab3");
 			
 			return;
 		}
@@ -151,12 +151,12 @@ public class smTabPanel extends AbsolutePanel implements smI_UIElement
 			m_currentTab.addStyleName("sm_tab");
 			m_currentTab.setEnabled(true);
 			
-			bhU_Debug.ASSERT(m_currentContent.asWidget().getParent() != null, "selectTab1");
+			smU_Debug.ASSERT(m_currentContent.asWidget().getParent() != null, "selectTab1");
 			
 			m_currentContent.asWidget().removeFromParent();
 		}
 
-		//bhU_Debug.ASSERT(newContent.asWidget().getParent() == null, "selectTab2");
+		//smU_Debug.ASSERT(newContent.asWidget().getParent() == null, "selectTab2");
 
 		if( newContent.asWidget().getParent() == null )
 		{
@@ -164,7 +164,7 @@ public class smTabPanel extends AbsolutePanel implements smI_UIElement
 		}
 		m_currentContent = newContent;
 		
-		bhButtonWithText newTab = (smButtonWithText) m_tabContainer.getWidget(index);
+		smButtonWithText newTab = (smButtonWithText) m_tabContainer.getWidget(index);
 		newTab.removeStyleName("sm_tab");
 		newTab.addStyleName("sm_tab_selected");
 		newTab.setEnabled(false);

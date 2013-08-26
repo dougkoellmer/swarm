@@ -74,11 +74,11 @@ public class smSessionManager implements smI_TransactionScopeListener
 		
 		if( type == smE_SessionType.PERSISTENT )
 		{
-			bhU_Cookie.add(nativeResponse, type.getCookieName(), cookieValueJson, smS_Session.SESSION_TIMEOUT, true);
+			smU_Cookie.add(nativeResponse, type.getCookieName(), cookieValueJson, smS_Session.SESSION_TIMEOUT, true);
 		}
 		else
 		{
-			bhU_Cookie.add(nativeResponse, type.getCookieName(), cookieValueJson, true);
+			smU_Cookie.add(nativeResponse, type.getCookieName(), cookieValueJson, true);
 		}
 		
 		return cookieValue;
@@ -87,12 +87,12 @@ public class smSessionManager implements smI_TransactionScopeListener
 	private smSessionCookieValue getSessionCookieValue(smTransactionRequest request, smE_SessionType type)
 	{
 		HttpServletRequest nativeRequest = ((HttpServletRequest) request.getNativeRequest());
-		Cookie sessionCookie = bhU_Cookie.get(nativeRequest, type.getCookieName());
+		Cookie sessionCookie = smU_Cookie.get(nativeRequest, type.getCookieName());
 		smSessionCookieValue cookieValue = null;
 		
 		if( sessionCookie != null )
 		{
-			if( bhU_Cookie.isDeleted(sessionCookie) )
+			if( smU_Cookie.isDeleted(sessionCookie) )
 			{
 				//--- A cookie that is "deleted" gets its expiration time set to the past and the browser
 				//--- should remove it from disk immediately, or at least never send it back up.
@@ -166,9 +166,9 @@ public class smSessionManager implements smI_TransactionScopeListener
 		}
 	}
 	
-	private bhUserSession getSessionByCookieValue(smSessionCookieValue cookieValue)
+	private smUserSession getSessionByCookieValue(smSessionCookieValue cookieValue)
 	{
-		bhUserSession userSession = null;
+		smUserSession userSession = null;
 		
 		try
 		{
@@ -215,7 +215,7 @@ public class smSessionManager implements smI_TransactionScopeListener
 		return userSession;
 	}
 	
-	private bhUserSession getSessionByType(smTransactionRequest request, smE_SessionType type)
+	private smUserSession getSessionByType(smTransactionRequest request, smE_SessionType type)
 	{
 		smSessionCookieValue cookieValue = this.getSessionCookieValue(request, type);
 		
@@ -230,7 +230,7 @@ public class smSessionManager implements smI_TransactionScopeListener
 	public smUserSession getSession(smTransactionRequest request, smTransactionResponse response)
 	{
 		//--- DRK > Early-out for when we have a session cached here.
-		bhUserSession userSession = m_sessionCache.get();
+		smUserSession userSession = m_sessionCache.get();
 		if( userSession != null )
 		{
 			if( userSession == m_nullSession )
@@ -299,7 +299,7 @@ public class smSessionManager implements smI_TransactionScopeListener
 		{
 			if( transCookieValue != null )
 			{
-				bhU_Cookie.delete((HttpServletResponse) response.getNativeResponse(), smE_SessionType.TRANSIENT.getCookieName());
+				smU_Cookie.delete((HttpServletResponse) response.getNativeResponse(), smE_SessionType.TRANSIENT.getCookieName());
 				
 				if( persCookieValue == null )
 				{
@@ -307,7 +307,7 @@ public class smSessionManager implements smI_TransactionScopeListener
 				}
 				else
 				{
-					bhU_Cookie.delete((HttpServletResponse) response.getNativeResponse(), smE_SessionType.PERSISTENT.getCookieName());
+					smU_Cookie.delete((HttpServletResponse) response.getNativeResponse(), smE_SessionType.PERSISTENT.getCookieName());
 					
 					HashMap<smI_BlobKey, Class<? extends smI_Blob>> map = new HashMap<smI_BlobKey, Class<? extends smI_Blob>>();
 					map.put(transCookieValue, smUserSession.class);
@@ -321,7 +321,7 @@ public class smSessionManager implements smI_TransactionScopeListener
 				
 				if( persCookieValue != null )
 				{
-					bhU_Cookie.delete((HttpServletResponse) response.getNativeResponse(), smE_SessionType.PERSISTENT.getCookieName());
+					smU_Cookie.delete((HttpServletResponse) response.getNativeResponse(), smE_SessionType.PERSISTENT.getCookieName());
 					
 					m_blobManager.deleteBlobAsync(persCookieValue, smUserSession.class);
 				}
@@ -335,7 +335,7 @@ public class smSessionManager implements smI_TransactionScopeListener
 	
 	public boolean isSessionActive(smTransactionRequest request, smTransactionResponse response)
 	{
-		bhUserSession session = this.getSession(request, response);
+		smUserSession session = this.getSession(request, response);
 		
 		return session != null;
 	}
@@ -356,7 +356,7 @@ public class smSessionManager implements smI_TransactionScopeListener
 		boolean authorized = false;
 		boolean authenticated = false;
 		
-		bhUserSession userSession = getSession(request, response);
+		smUserSession userSession = getSession(request, response);
 		
 		if( userSession != null )
 		{

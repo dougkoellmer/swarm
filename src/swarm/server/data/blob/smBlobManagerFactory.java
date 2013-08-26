@@ -10,7 +10,7 @@ public class smBlobManagerFactory implements smI_TransactionScopeListener
 	
 	public smBlobManagerFactory()
 	{
-		bhBlobTransactionManager.startUp(); // TODO(DRK): Shouldn't be singleton.
+		smBlobTransactionManager.startUp(); // TODO(DRK): Shouldn't be singleton.
 	}
 	
 	private smI_BlobManager createInstance(smE_BlobCacheLevel cacheLevel, smI_BlobManager wrappedManager)

@@ -18,7 +18,7 @@ public class smS_App
 	
 	public static final int MAX_IMAGED_CELL_SIZE = 128;
 	
-	public static final int MAX_CELL_IMAGES = bhU_BitTricks.calcBitPosition(MAX_IMAGED_CELL_SIZE);
+	public static final int MAX_CELL_IMAGES = smU_BitTricks.calcBitPosition(MAX_IMAGED_CELL_SIZE);
 	
 	public static final int MAX_CELL_ADDRESS_PARTS = 12; //TODO: arbitrary...
 }

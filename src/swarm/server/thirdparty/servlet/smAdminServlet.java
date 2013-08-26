@@ -85,7 +85,7 @@ public class smAdminServlet extends smA_BaseServlet
 				
 				sm_s.txnMngr.handleRequestFromClient(nativeRequest, nativeResponse, this.getServletContext(), requestJson, responseJson, true);
 				
-				bhU_Servlet.writeJsonResponse(responseJson, nativeResponse.getWriter());
+				smU_Servlet.writeJsonResponse(responseJson, nativeResponse.getWriter());
 			}
 			
 			writer.flush();

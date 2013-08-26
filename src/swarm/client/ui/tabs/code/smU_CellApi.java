@@ -247,12 +247,12 @@ public class smU_CellApi
 	
 	private static void alert(String message)
 	{
-		bhAlertManager.getInstance().queue(message);
+		smAlertManager.getInstance().queue(message);
 	}
 	
 	private static void snapToPoint(double x, double y, double z)
 	{
-		bhPoint point = new smPoint(x, y, z);
+		smPoint point = new smPoint(x, y, z);
 
 		m_snapPointArgs.initialize(point, false);
 		smA_Action.perform(StateMachine_Camera.SetCameraTarget.class, m_snapPointArgs);
@@ -260,14 +260,14 @@ public class smU_CellApi
 	
 	/*private static void snapToRelativePoint(double x, double y, double z)
 	{
-		bhPoint point = sm_c.camera.getPosition();
+		smPoint point = sm_c.camera.getPosition();
 		
 		snapToPoint(point.getX() + x, point.getY() + y, point.getZ() + z);
 	}*/
 	
 	private static void snapToCoordinate(double m, double n)
 	{
-		bhGridCoordinate coordinate = new smGridCoordinate((int)m, (int)n);
+		smGridCoordinate coordinate = new smGridCoordinate((int)m, (int)n);
 		
 		smA_Grid grid = sm_c.gridMngr.getGrid();
 		
@@ -301,7 +301,7 @@ public class smU_CellApi
 		return cell.getCoordinate().getN();
 	}
 	
-	private static bhPoint getPosition()
+	private static smPoint getPosition()
 	{
 		StateMachine_Camera machine = smA_State.getEnteredInstance(StateMachine_Camera.class);
 		
@@ -330,9 +330,9 @@ public class smU_CellApi
 	
 	private static String getUsername()
 	{
-		bhClientAccountManager accountManager = sm_c.accountMngr;
+		smClientAccountManager accountManager = sm_c.accountMngr;
 		
-		bhAccountInfo accountInfo = accountManager.getAccountInfo();
+		smAccountInfo accountInfo = accountManager.getAccountInfo();
 		
 		if( accountInfo == null )
 		{
@@ -360,7 +360,7 @@ public class smU_CellApi
 		
 		if( viewingState == null )
 		{
-			bhU_Debug.ASSERT(false, "Expected to be in viewing state for caja api- or uri-related action.");
+			smU_Debug.ASSERT(false, "Expected to be in viewing state for caja api- or uri-related action.");
 		}
 		
 		return viewingState;

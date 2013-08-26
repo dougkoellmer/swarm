@@ -2,7 +2,7 @@ package swarm.shared.json;
 
 import swarm.shared.json.smJsonQuery.Condition;
 
-public class smMutableJsonQuery extends bhJsonQuery
+public class smMutableJsonQuery extends smJsonQuery
 {
 	public smMutableJsonQuery()
 	{

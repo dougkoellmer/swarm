@@ -30,9 +30,9 @@ public class smPoint extends smA_Coordinate
 	@Override
 	public boolean isEqualTo(smA_Coordinate otherEntity, smTolerance tolerance)
 	{
-		tolerance = tolerance != null ? tolerance : bhTolerance.DEFAULT;
+		tolerance = tolerance != null ? tolerance : smTolerance.DEFAULT;
 		
-		if ( otherEntity instanceof bhPoint )
+		if ( otherEntity instanceof smPoint )
 		{
 			return this.calcDistanceTo(((smPoint)otherEntity)) <= tolerance.equalPoint;
 		}
@@ -47,7 +47,7 @@ public class smPoint extends smA_Coordinate
 
 	public smVector minus(smPoint otherPoint)
 	{
-		bhVector vec = new smVector();
+		smVector vec = new smVector();
 		vec.set(getX() - otherPoint.getX(), getY() - otherPoint.getY(), getZ() - otherPoint.getZ());
 		return vec;
 	}
@@ -59,7 +59,7 @@ public class smPoint extends smA_Coordinate
 
 	public void calcMidwayPoint(smPoint otherPoint, smPoint outPoint)
 	{
-		bhVector translater = otherPoint.minus(this);
+		smVector translater = otherPoint.minus(this);
 		translater.scaleByNumber(.5);
 		outPoint.copy(this);
 		outPoint.translate(translater);

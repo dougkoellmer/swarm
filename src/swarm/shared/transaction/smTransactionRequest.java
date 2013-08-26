@@ -127,7 +127,7 @@ public class smTransactionRequest extends smA_TransactionObject
 	@Override
 	public boolean isEqualTo(smA_TransactionObject otherObject)
 	{
-		if( otherObject instanceof bhTransactionRequest )
+		if( otherObject instanceof smTransactionRequest )
 		{
 			if( this.getPath() != ((smTransactionRequest)otherObject).getPath() )
 			{

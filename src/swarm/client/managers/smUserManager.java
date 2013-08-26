@@ -104,17 +104,17 @@ public class smUserManager implements smI_TransactionResponseHandler, smClientAc
 		Boolean createdUser = sm.jsonFactory.getHelper().getBoolean(response.getJson(), smE_JsonKey.createdUser);
 		createdUser = createdUser != null ? createdUser : false; // can be null when reading inline transaction from the page and the user is already created.
 		
-		Iterator<? extends bhUserCell> cellIterator = user.getCells();
+		Iterator<? extends smUserCell> cellIterator = user.getCells();
 		
 		boolean firstIteration = true;
 		
 		while( cellIterator.hasNext() )
 		{
-			bhUserCell userCell = cellIterator.next();
+			smUserCell userCell = cellIterator.next();
 			
 			if( firstIteration )
 			{
-				bhAccountInfo info = m_accountManager.getAccountInfo();
+				smAccountInfo info = m_accountManager.getAccountInfo();
 				userCell.setAddress(new smCellAddress(info.get(smAccountInfo.Type.USERNAME)));
 				
 				firstIteration = false;
@@ -135,7 +135,7 @@ public class smUserManager implements smI_TransactionResponseHandler, smClientAc
 				userCell.setCode(smE_CodeType.COMPILED, new smCode("", smE_CodeType.COMPILED));
 				
 				smCellBuffer buffer = smCellBufferManager.getInstance().getDisplayBuffer();
-				bhGridCoordinate coord = userCell.getCoordinate();
+				smGridCoordinate coord = userCell.getCoordinate();
 				
 				if( buffer.getSubCellCount() == 1 )
 				{
@@ -170,7 +170,7 @@ public class smUserManager implements smI_TransactionResponseHandler, smClientAc
 	{
 		if( request.getPath() == smE_RequestPath.getStartingPosition )
 		{
-			bhPoint startingPosition = new smPoint();
+			smPoint startingPosition = new smPoint();
 			startingPosition.readJson(response.getJson());
 			
 			m_user.getLastPosition().copy(startingPosition);
@@ -275,21 +275,21 @@ public class smUserManager implements smI_TransactionResponseHandler, smClientAc
 			
 			user.clearAllLocalChanges();
 			
-			Iterator<? extends bhUserCell> cellIterator = user.getCells();
+			Iterator<? extends smUserCell> cellIterator = user.getCells();
 			
 			smCellBuffer buffer = smCellBufferManager.getInstance().getDisplayBuffer();
 			
 			while( cellIterator.hasNext() )
 			{
-				bhUserCell userCell = cellIterator.next();
-				bhGridCoordinate coord = userCell.getCoordinate();
+				smUserCell userCell = cellIterator.next();
+				smGridCoordinate coord = userCell.getCoordinate();
 				
 				if( buffer.getSubCellCount() == 1 )
 				{
 					if( buffer.isInBoundsAbsolute(coord) )
 					{
 						smBufferCell bufferCell = buffer.getCellAtAbsoluteCoord(coord);
-						bhCode sourceCode = userCell.getCode(smE_CodeType.SOURCE);
+						smCode sourceCode = userCell.getCode(smE_CodeType.SOURCE);
 						
 						if( sourceCode != null )
 						{
@@ -298,7 +298,7 @@ public class smUserManager implements smI_TransactionResponseHandler, smClientAc
 						
 						if( bufferCell.isFocused() )
 						{
-							bhCode compiledCode = userCell.getCode(smE_CodeType.COMPILED);
+							smCode compiledCode = userCell.getCode(smE_CodeType.COMPILED);
 							
 							if( compiledCode != null )
 							{

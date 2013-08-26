@@ -64,7 +64,7 @@ public class smCellAddressManager implements smI_TransactionResponseHandler
 	
 	public void start(I_Listener listener)
 	{
-		bhClientTransactionManager txnMngr = sm_c.txnMngr;
+		smClientTransactionManager txnMngr = sm_c.txnMngr;
 		
 		txnMngr.addHandler(this);
 		
@@ -73,7 +73,7 @@ public class smCellAddressManager implements smI_TransactionResponseHandler
 	
 	public void stop()
 	{
-		bhClientTransactionManager txnMngr = sm_c.txnMngr;
+		smClientTransactionManager txnMngr = sm_c.txnMngr;
 		txnMngr.removeHandler(this);
 		
 		m_listener = null;
@@ -81,7 +81,7 @@ public class smCellAddressManager implements smI_TransactionResponseHandler
 	
 	public boolean isWaitingOnResponse(smCellAddressMapping mapping)
 	{
-		bhClientTransactionManager txnMngr = sm_c.txnMngr;
+		smClientTransactionManager txnMngr = sm_c.txnMngr;
 		m_query.setCondition(0, mapping);
 		
 		return txnMngr.containsDispatchedRequest(smE_RequestPath.getCellAddress, m_query);
@@ -89,7 +89,7 @@ public class smCellAddressManager implements smI_TransactionResponseHandler
 	
 	public boolean isWaitingOnResponse(smCellAddress address)
 	{
-		bhClientTransactionManager txnMngr = sm_c.txnMngr;
+		smClientTransactionManager txnMngr = sm_c.txnMngr;
 		m_query.setCondition(0, address);
 		
 		return txnMngr.containsDispatchedRequest(smE_RequestPath.getCellAddressMapping, m_query);
@@ -124,7 +124,7 @@ public class smCellAddressManager implements smI_TransactionResponseHandler
 		}
 		
 		//--- DRK > Try to get address from user.
-		bhUserManager userManager = sm_c.userMngr;
+		smUserManager userManager = sm_c.userMngr;
 		smA_ClientUser user = userManager.getUser();
 		address = user.getCellAddress(mapping);
 		if( address != null )
@@ -146,7 +146,7 @@ public class smCellAddressManager implements smI_TransactionResponseHandler
 		//--- DRK > If all else fails, we have to contact server.
 		if( !isWaitingOnResponse(mapping) )
 		{
-			bhClientTransactionManager txnMngr = sm_c.txnMngr;
+			smClientTransactionManager txnMngr = sm_c.txnMngr;
 			txnMngr.performAction(action, smE_RequestPath.getCellAddress, mapping);
 		}
 	}
@@ -173,7 +173,7 @@ public class smCellAddressManager implements smI_TransactionResponseHandler
 		}
 		
 		//--- DRK > Try to get mapping from user.
-		bhUserManager userManager = sm_c.userMngr;
+		smUserManager userManager = sm_c.userMngr;
 		smA_ClientUser user = userManager.getUser();
 		mapping = user.getCellAddressMapping(address);
 		if( mapping != null )
@@ -195,7 +195,7 @@ public class smCellAddressManager implements smI_TransactionResponseHandler
 		//--- DRK > If all else fails, we must contact server.
 		if( !isWaitingOnResponse(address) )
 		{
-			bhClientTransactionManager txnMngr = sm_c.txnMngr;
+			smClientTransactionManager txnMngr = sm_c.txnMngr;
 			txnMngr.performAction(action, smE_RequestPath.getCellAddressMapping, address);
 		}
 	}

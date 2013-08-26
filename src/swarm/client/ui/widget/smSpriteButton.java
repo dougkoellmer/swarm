@@ -2,7 +2,7 @@ package swarm.client.ui.widget;
 
 import com.google.gwt.dom.client.Element;
 
-public class smSpriteButton extends bhButton
+public class smSpriteButton extends smButton
 {
 	private static final String INNER_HTML = "<table style='width:100%; height:100%;'><tr><td style='width:100%; height:100%;'><div></div></div></td></tr></table>";
 	private String m_spriteId = null;

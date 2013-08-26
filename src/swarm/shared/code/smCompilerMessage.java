@@ -10,7 +10,7 @@ public class smCompilerMessage extends smA_JsonEncodable
 {
 	private smE_CompilerMessageLevel m_level;
 	private String m_message;
-	private bhFileRange m_range;
+	private smFileRange m_range;
 	
 	public smCompilerMessage(smE_CompilerMessageLevel type, String message, smFileRange range)
 	{

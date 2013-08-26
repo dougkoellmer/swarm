@@ -62,11 +62,11 @@ public class smServerUser extends smA_User implements smI_Blob
 		out.writeInt(EXTERNAL_VERSION);
 		
 		m_lastPosition.writeExternal(out);
-		bhU_Serialization.writeArrayList(m_ownedCells, out);
+		smU_Serialization.writeArrayList(m_ownedCells, out);
 		
 		m_lastUpdated.writeExternal(out);
 		
-		bhU_Serialization.writeNullableEnum(this.getEditingPermission(), out);
+		smU_Serialization.writeNullableEnum(this.getEditingPermission(), out);
 	}
 
 	@Override
@@ -75,11 +75,11 @@ public class smServerUser extends smA_User implements smI_Blob
 		int externalVersion = in.readInt();
 		
 		m_lastPosition.readExternal(in);
-		bhU_Serialization.readArrayList(m_ownedCells, smServerCellAddressMapping.class, in);
+		smU_Serialization.readArrayList(m_ownedCells, smServerCellAddressMapping.class, in);
 		
 		m_lastUpdated.readExternal(in);
 
-		smE_EditingPermission editingPermission = bhU_Serialization.readNullableEnum(smE_EditingPermission.values(), in);
+		smE_EditingPermission editingPermission = smU_Serialization.readNullableEnum(smE_EditingPermission.values(), in);
 		this.setEditingPermission(editingPermission);
 	}
 	

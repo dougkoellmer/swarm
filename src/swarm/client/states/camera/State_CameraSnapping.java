@@ -89,7 +89,7 @@ public class State_CameraSnapping extends smA_State implements smI_StateEventLis
 	{
 		m_cellHudHeight = cellHudHeight;
 		
-		bhUserManager userManager = sm_c.userMngr;
+		smUserManager userManager = sm_c.userMngr;
 		smA_ClientUser user = userManager.getUser();
 		
 		m_externalCompiledStaticCodeRepo.addSource(user);
@@ -203,7 +203,7 @@ public class State_CameraSnapping extends smA_State implements smI_StateEventLis
 		}
 		else
 		{
-			bhU_Debug.ASSERT(false, "requestCodeForTargetCell1");
+			smU_Debug.ASSERT(false, "requestCodeForTargetCell1");
 			
 			m_hasRequestedSourceCode = true;
 			m_hasRequestedCompiledCode = true;
@@ -217,10 +217,10 @@ public class State_CameraSnapping extends smA_State implements smI_StateEventLis
 		smA_Grid grid = sm_c.gridMngr.getGrid();
 		smI_LocalCodeRepository htmlSource = m_internalCodeRepo;
 		
-		int options = bhF_BufferUpdateOption.COMMUNICATE_WITH_SERVER;
+		int options = smF_BufferUpdateOption.COMMUNICATE_WITH_SERVER;
 		if( flushPopulator )
 		{
-			options |= bhF_BufferUpdateOption.FLUSH_CELL_POPULATOR;
+			options |= smF_BufferUpdateOption.FLUSH_CELL_POPULATOR;
 		}
 		
 		m_snapBufferManager.update(grid, m_snapCamera, htmlSource, options);
@@ -257,7 +257,7 @@ public class State_CameraSnapping extends smA_State implements smI_StateEventLis
 		
 		m_targetGridCoordinate.set(-1, -1);
 		
-		bhCamera camera = sm_c.camera;
+		smCamera camera = sm_c.camera;
 		
 		m_snapCamera.setViewRect(camera.getViewWidth(), camera.getViewHeight());
 		
@@ -339,7 +339,7 @@ public class State_CameraSnapping extends smA_State implements smI_StateEventLis
 			{
 				if( event.getAction() == StateMachine_Camera.SetCameraViewSize.class )
 				{
-					bhCamera camera = sm_c.camera;
+					smCamera camera = sm_c.camera;
 					m_snapCamera.setViewRect(camera.getViewWidth(), camera.getViewHeight());
 					
 					this.updateSnapBufferManager(true);

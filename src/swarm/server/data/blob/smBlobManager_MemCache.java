@@ -26,7 +26,7 @@ class smBlobManager_MemCache extends smA_BlobManagerWithCache
 {
 	private static final Logger s_logger = Logger.getLogger(smBlobManager_MemCache.class.getName());
 	
-	bhBlobManager_MemCache(smBlobTemplateManager templateMngr, smI_BlobManager wrappedManager)
+	smBlobManager_MemCache(smBlobTemplateManager templateMngr, smI_BlobManager wrappedManager)
 	{
 		super(templateMngr, wrappedManager);
 	}
@@ -37,11 +37,11 @@ class smBlobManager_MemCache extends smA_BlobManagerWithCache
 	}
 	
 	@Override
-	protected void putBlobIntoCache(String generatedKey, smI_Blob blob) throws bhBlobException
+	protected void putBlobIntoCache(String generatedKey, smI_Blob blob) throws smBlobException
 	{
 		AsyncMemcacheService memCache = MemcacheServiceFactory.getAsyncMemcacheService();
 		
-		byte[] blobBytes = bhU_Blob.convertToBytes(blob);
+		byte[] blobBytes = smU_Blob.convertToBytes(blob);
 		
 		try
 		{
@@ -54,7 +54,7 @@ class smBlobManager_MemCache extends smA_BlobManagerWithCache
 	}
 	
 	@Override
-	protected <T extends smI_Blob> smI_Blob getBlobFromCache(String generatedKey, Class<? extends T> blobType) throws bhBlobException
+	protected <T extends smI_Blob> smI_Blob getBlobFromCache(String generatedKey, Class<? extends T> blobType) throws smBlobException
 	{
 		MemcacheService memCache = MemcacheServiceFactory.getMemcacheService();
 		
@@ -71,8 +71,8 @@ class smBlobManager_MemCache extends smA_BlobManagerWithCache
 		
 		if( blobBytes != null )
 		{
-			smI_Blob blob = bhU_Blob.createBlobInstance(blobType);
-			bhU_Blob.readBytes(blob, blobBytes);
+			smI_Blob blob = smU_Blob.createBlobInstance(blobType);
+			smU_Blob.readBytes(blob, blobBytes);
 			
 			return blob;
 		}
@@ -81,7 +81,7 @@ class smBlobManager_MemCache extends smA_BlobManagerWithCache
 	}
 	
 	@Override
-	protected void deleteBlobFromCache(String generatedKey) throws bhBlobException
+	protected void deleteBlobFromCache(String generatedKey) throws smBlobException
 	{
 		AsyncMemcacheService memCache = MemcacheServiceFactory.getAsyncMemcacheService();
 		
@@ -96,7 +96,7 @@ class smBlobManager_MemCache extends smA_BlobManagerWithCache
 	}
 	
 	@Override
-	protected void deleteBlobsFromCache(Map<smI_BlobKey, Class<? extends smI_Blob>> values) throws bhBlobException
+	protected void deleteBlobsFromCache(Map<smI_BlobKey, Class<? extends smI_Blob>> values) throws smBlobException
 	{
 		AsyncMemcacheService memCache = MemcacheServiceFactory.getAsyncMemcacheService();
 		
@@ -131,7 +131,7 @@ class smBlobManager_MemCache extends smA_BlobManagerWithCache
 	}
 	
 	@Override
-	protected void putBlobsIntoCache(Map<smI_BlobKey, smI_Blob> values) throws bhBlobException
+	protected void putBlobsIntoCache(Map<smI_BlobKey, smI_Blob> values) throws smBlobException
 	{
 		HashMap<String, byte[]> entries = null;
 		
@@ -148,7 +148,7 @@ class smBlobManager_MemCache extends smA_BlobManagerWithCache
 				
 			entries = entries != null ? entries : new HashMap<String, byte[]>();
 			
-			byte[] blobBytes = bhU_Blob.convertToBytes(blob);
+			byte[] blobBytes = smU_Blob.convertToBytes(blob);
 			entries.put(keySource.createBlobKey(blob), blobBytes);
 		}
 		
@@ -167,7 +167,7 @@ class smBlobManager_MemCache extends smA_BlobManagerWithCache
 	}
 	
 	@Override
-	protected Map<smI_BlobKey, smI_Blob> getBlobsFromCache(Map<smI_BlobKey, Class<? extends smI_Blob>> values) throws bhBlobException
+	protected Map<smI_BlobKey, smI_Blob> getBlobsFromCache(Map<smI_BlobKey, Class<? extends smI_Blob>> values) throws smBlobException
 	{
 		ArrayList<String> generatedKeys = new ArrayList<String>();
 		Map<String, smBlobTuple> generatedKeysToTuples = new HashMap<String, smBlobTuple>();
@@ -210,10 +210,10 @@ class smBlobManager_MemCache extends smA_BlobManagerWithCache
 			
 			if( blobBytes == null )  continue;
 			
-			bhBlobTuple tuple = generatedKeysToTuples.get(generatedKey);
+			smBlobTuple tuple = generatedKeysToTuples.get(generatedKey);
 	
-			smI_Blob blob = bhU_Blob.createBlobInstance(tuple.m_blobType);
-			bhU_Blob.readBytes(blob, blobBytes);
+			smI_Blob blob = smU_Blob.createBlobInstance(tuple.m_blobType);
+			smU_Blob.readBytes(blob, blobBytes);
 			
 			toReturn.put(tuple.m_keySource, blob);
 		}

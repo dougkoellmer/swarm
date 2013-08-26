@@ -24,7 +24,7 @@ public class getCellAddressMapping implements smI_RequestHandler
 		smServerCellAddress address = new smServerCellAddress();
 		address.readJson(request.getJson());
 		smE_CellAddressParseError parseError = address.getParseError();
-		bhGetCellAddressMappingResult result = new smGetCellAddressMappingResult();
+		smGetCellAddressMappingResult result = new smGetCellAddressMappingResult();
 		
 		if( parseError == smE_CellAddressParseError.NO_ERROR )
 		{

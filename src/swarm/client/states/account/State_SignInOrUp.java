@@ -46,7 +46,7 @@ public class State_SignInOrUp extends smA_State
 		{
 			smSignInCredentials creds = ((SignIn.Args) args).m_creds;
 			
-			bhClientAccountManager manager = sm_c.accountMngr;
+			smClientAccountManager manager = sm_c.accountMngr;
 			manager.setNewDesiredPassword(creds);
 			
 			machine_pushState(this.getState().getParent(), State_AccountStatusPending.class);	
@@ -82,8 +82,8 @@ public class State_SignInOrUp extends smA_State
 		{
 			smSignInCredentials creds = ((Args) args).m_creds;
 
-			bhUserManager userManager = sm_c.userMngr;
-			bhClientAccountManager accountManager = sm_c.accountMngr;
+			smUserManager userManager = sm_c.userMngr;
+			smClientAccountManager accountManager = sm_c.accountMngr;
 			
 			accountManager.signIn(creds, smE_TransactionAction.QUEUE_REQUEST);
 			userManager.populateUser(smE_TransactionAction.QUEUE_REQUEST_AND_FLUSH);
@@ -117,7 +117,7 @@ public class State_SignInOrUp extends smA_State
 		
 		boolean everythingOk = smSignInValidator.getInstance().validate(creds).isEverythingOk();
 		
-		bhU_Debug.ASSERT(everythingOk, "SignIn1");
+		smU_Debug.ASSERT(everythingOk, "SignIn1");
 		
 		return everythingOk;
 	}
@@ -139,8 +139,8 @@ public class State_SignInOrUp extends smA_State
 		{
 			smSignUpCredentials creds = ((Args) args).m_creds;
 
-			bhUserManager userManager = sm_c.userMngr;
-			bhClientAccountManager accountManager = sm_c.accountMngr;
+			smUserManager userManager = sm_c.userMngr;
+			smClientAccountManager accountManager = sm_c.accountMngr;
 			
 			accountManager.signUp(creds, smE_TransactionAction.QUEUE_REQUEST);
 			userManager.populateUser(smE_TransactionAction.QUEUE_REQUEST_AND_FLUSH);
@@ -162,7 +162,7 @@ public class State_SignInOrUp extends smA_State
 			smSignUpCredentials creds = ((Args) args).m_creds;
 			boolean everythingOk = smSignUpValidator.getInstance().validate(creds).isEverythingOk();
 			
-			bhU_Debug.ASSERT(everythingOk, "SignUp1");
+			smU_Debug.ASSERT(everythingOk, "SignUp1");
 			
 			return everythingOk;
 		}

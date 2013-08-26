@@ -30,9 +30,9 @@ public class smCodeEditor extends FlowPanel implements smI_StateEventListener
 	
 	private final smCodeMirrorWrapper m_codeMirror_writable;
 	private final smCodeMirrorWrapper m_codeMirror_readOnly;
-	private bhCodeMirrorWrapper m_currentCodeMirror = null;
+	private smCodeMirrorWrapper m_currentCodeMirror = null;
 	
-	bhCodeEditor(smI_CodeMirrorListener listener)
+	smCodeEditor(smI_CodeMirrorListener listener)
 	{
 		m_codeMirror_writable = new smCodeMirrorWrapper(listener, false);
 		m_codeMirror_readOnly = new smCodeMirrorWrapper(null, true);

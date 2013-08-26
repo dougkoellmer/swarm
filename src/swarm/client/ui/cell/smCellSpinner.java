@@ -28,7 +28,7 @@ public class smCellSpinner extends FlowPanel
 		
 		m_inner.getElement().getStyle().setDisplay(Display.INLINE_BLOCK);
 		m_inner.setSize("100%", "100%");
-		//bhU_UI.setTransformOrigin(m_inner.getElement(), "50%", "50%");
+		//smU_UI.setTransformOrigin(m_inner.getElement(), "50%", "50%");
 		
 		
 		for( int i = 0; i < m_b33s.length; i++ )
@@ -66,8 +66,8 @@ public class smCellSpinner extends FlowPanel
 	{
 		double deg = m_currentRotation * (180/Math.PI);
 		deg = Math.round(deg);
-		String transform = bhU_UI.createRotate2dTransform(deg);
-		bhU_UI.setTransform(m_inner.getElement(), transform);
+		String transform = smU_UI.createRotate2dTransform(deg);
+		smU_UI.setTransform(m_inner.getElement(), transform);
 	}
 	
 	public void update(double timeStep)

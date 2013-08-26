@@ -86,9 +86,9 @@ public class smServerCell extends smA_Cell implements smI_Blob
 	{
 		out.writeInt(EXTERNAL_VERSION);
 		
-		bhU_Serialization.writeNullableObject(this.getServerCode(smE_CodeType.SOURCE), out);
-		bhU_Serialization.writeNullableObject(this.getServerCode(smE_CodeType.SPLASH), out);
-		bhU_Serialization.writeNullableObject(this.getServerCode(smE_CodeType.COMPILED), out);
+		smU_Serialization.writeNullableObject(this.getServerCode(smE_CodeType.SOURCE), out);
+		smU_Serialization.writeNullableObject(this.getServerCode(smE_CodeType.SPLASH), out);
+		smU_Serialization.writeNullableObject(this.getServerCode(smE_CodeType.COMPILED), out);
 
 		m_address.writeExternal(out);
 		
@@ -106,13 +106,13 @@ public class smServerCell extends smA_Cell implements smI_Blob
 
 		smServerCode code = null;
 		
-		code = bhU_Serialization.readNullableObject(smServerCode.class, in);
+		code = smU_Serialization.readNullableObject(smServerCode.class, in);
 		this.setCode(smE_CodeType.SOURCE, code);
 		
-		code = bhU_Serialization.readNullableObject(smServerCode.class, in);
+		code = smU_Serialization.readNullableObject(smServerCode.class, in);
 		this.setCode(smE_CodeType.SPLASH, code);
 		
-		code = bhU_Serialization.readNullableObject(smServerCode.class, in);
+		code = smU_Serialization.readNullableObject(smServerCode.class, in);
 		this.setCode(smE_CodeType.COMPILED, code);
 
 		m_address.readExternal(in);

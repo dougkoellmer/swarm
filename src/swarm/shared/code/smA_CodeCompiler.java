@@ -15,11 +15,11 @@ public abstract class smA_CodeCompiler
 	{
 	}
 	
-	protected abstract bhCompilerResult createResult();
+	protected abstract smCompilerResult createResult();
 	
 	public smCompilerResult compile(smCode sourceCode, smCodePrivileges privileges, String namespace /*?????*/)
 	{
-		bhCompilerResult result = this.createResult();
+		smCompilerResult result = this.createResult();
 		
 		if( sourceCode.isEmpty() )
 		{

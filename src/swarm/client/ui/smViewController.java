@@ -54,9 +54,9 @@ public class smViewController extends Object implements smI_StateEventListener
 	protected void startUpCoreUI()
 	{
 		sm_view.splitPanel = new smSplitPanel(m_viewConfig);
-		bhVisualCellContainer cellContainer = sm_view.splitPanel.getCellContainer();
+		smVisualCellContainer cellContainer = sm_view.splitPanel.getCellContainer();
 		
-		bhMouse mouse = new smMouse(cellContainer.getMouseEnabledLayer());
+		smMouse mouse = new smMouse(cellContainer.getMouseEnabledLayer());
 		
 		// TODO: Clean this up so that all this crap doesn't add itself to parent containers in constructors.
 		m_listeners.add(sm_c.navigator = new smMasterNavigator(mouse, m_viewConfig.defaultPageTitle, m_appConfig.floatingHistoryUpdateFreq_seconds));

@@ -93,7 +93,7 @@ public class smBlobTransaction_CreateCell extends smA_BlobTransaction
 	}
 
 	@Override
-	protected void performOperations() throws bhBlobException
+	protected void performOperations() throws smBlobException
 	{
 		this.clear();
 		

@@ -10,7 +10,7 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.logging.Logger;
 
-public class smServerBitArray extends bhBitArray implements Externalizable
+public class smServerBitArray extends smBitArray implements Externalizable
 {
 	private static final int EXTERNAL_VERSION = 2;
 	

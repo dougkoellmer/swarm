@@ -67,7 +67,7 @@ public class smSignInCredentials extends smA_AccountCredentials
 	{
 		super.writeJson(json);
 		
-		bhU_Account.cropPassword(m_credentials, smE_SignInCredentialType.PASSWORD.ordinal());
+		smU_Account.cropPassword(m_credentials, smE_SignInCredentialType.PASSWORD.ordinal());
 		
 		smI_JsonArray creds = sm.jsonFactory.createJsonArray();
 		
@@ -93,7 +93,7 @@ public class smSignInCredentials extends smA_AccountCredentials
 			m_credentials[i] = creds.getString(i);
 		}
 		
-		bhU_Account.cropPassword(m_credentials, smE_SignInCredentialType.PASSWORD.ordinal());
+		smU_Account.cropPassword(m_credentials, smE_SignInCredentialType.PASSWORD.ordinal());
 		
 		this.toLowerCase();
 	}

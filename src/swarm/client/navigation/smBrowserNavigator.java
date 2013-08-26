@@ -64,7 +64,7 @@ public class smBrowserNavigator implements smI_StateEventListener
 	
 	private final double m_floatingHistoryUpdateRate;
 	
-	bhBrowserNavigator(String defaultPageTitle, double floatingHistoryUpdateRate_seconds)
+	smBrowserNavigator(String defaultPageTitle, double floatingHistoryUpdateRate_seconds)
 	{
 		m_floatingHistoryUpdateRate = floatingHistoryUpdateRate_seconds;
 		
@@ -78,7 +78,7 @@ public class smBrowserNavigator implements smI_StateEventListener
 			{
 				if( state == null )
 				{
-					bhU_Debug.ASSERT(false, "History state shouldn't be null.");
+					smU_Debug.ASSERT(false, "History state shouldn't be null.");
 					
 					return;
 				}
@@ -164,7 +164,7 @@ public class smBrowserNavigator implements smI_StateEventListener
 			{
 				if ( event.getState() instanceof StateMachine_Camera )
 				{
-					bhHistoryState currentHistoryState = m_historyManager.getCurrentState();
+					smHistoryState currentHistoryState = m_historyManager.getCurrentState();
 					smCellAddress address = getBrowserCellAddress();
 					
 					if( currentHistoryState == null || currentHistoryState.isEmpty() )
@@ -217,7 +217,7 @@ public class smBrowserNavigator implements smI_StateEventListener
 					{
 						if( m_lastSnapAction == StateMachine_Camera.SnapToCoordinate.class )
 						{
-							bhU_Debug.ASSERT(m_args_OnMappingResponse == null, "sm_bro_nav_112387");
+							smU_Debug.ASSERT(m_args_OnMappingResponse == null, "sm_bro_nav_112387");
 							
 							boolean pushEmptyState = false;
 							smCellAddressMapping mapping = null;
@@ -227,7 +227,7 @@ public class smBrowserNavigator implements smI_StateEventListener
 							
 								if( m_args_OnAddressResponse.getType() == StateMachine_Camera.OnAddressResponse.E_Type.ON_FOUND )
 								{
-									bhHistoryState state = new smHistoryState(m_args_OnAddressResponse.getMapping());
+									smHistoryState state = new smHistoryState(m_args_OnAddressResponse.getMapping());
 									
 									if( m_stateAlreadyPushedForViewingExit )
 									{
@@ -264,7 +264,7 @@ public class smBrowserNavigator implements smI_StateEventListener
 						}
 						else if( m_lastSnapAction == StateMachine_Camera.SnapToAddress.class )
 						{
-							bhU_Debug.ASSERT(m_args_OnAddressResponse == null, "sm_bro_nav_112387");
+							smU_Debug.ASSERT(m_args_OnAddressResponse == null, "sm_bro_nav_112387");
 							
 							if( m_args_OnMappingResponse != null )
 							{
@@ -279,7 +279,7 @@ public class smBrowserNavigator implements smI_StateEventListener
 										}
 										else
 										{
-											bhU_Debug.ASSERT(false, "with current history state null with last snap action being to address, browser address should have existed");
+											smU_Debug.ASSERT(false, "with current history state null with last snap action being to address, browser address should have existed");
 										}
 									}
 									else
@@ -296,17 +296,17 @@ public class smBrowserNavigator implements smI_StateEventListener
 								}
 								else
 								{
-									bhU_Debug.ASSERT(false, "sm_bro_nav_asaswwewe");
+									smU_Debug.ASSERT(false, "sm_bro_nav_asaswwewe");
 								}
 							}
 							else
 							{
-								bhU_Debug.ASSERT(false, "sm_bro_nav_87654332");
+								smU_Debug.ASSERT(false, "sm_bro_nav_87654332");
 							}
 						}
 						else
 						{
-							bhU_Debug.ASSERT(false, "sm_bro_nav_193498");
+							smU_Debug.ASSERT(false, "sm_bro_nav_193498");
 						}
 					}
 					
@@ -423,7 +423,7 @@ public class smBrowserNavigator implements smI_StateEventListener
 					}
 					else
 					{
-						bhU_Debug.ASSERT(false, "sm_nav_1");
+						smU_Debug.ASSERT(false, "sm_nav_1");
 					}
 				}
 				else if( event.getAction() == State_GettingMapping.OnResponse.class )
@@ -494,7 +494,7 @@ public class smBrowserNavigator implements smI_StateEventListener
 							
 							if( m_receivedFloatingStateEntered )
 							{
-								bhPoint point = args.getPoint();
+								smPoint point = args.getPoint();
 								
 								if( point != null )
 								{
@@ -505,7 +505,7 @@ public class smBrowserNavigator implements smI_StateEventListener
 					}
 					else
 					{
-						bhU_Debug.ASSERT(false, "floating state should have been entered.");
+						smU_Debug.ASSERT(false, "floating state should have been entered.");
 					}
 				}
 				

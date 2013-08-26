@@ -12,11 +12,11 @@ import swarm.shared.app.sm;
 public class sm_s extends sm
 {
 	public static smServerTransactionManager txnMngr;
-	public static bhInlineTransactionManager inlineTxnMngr;
-	public static bhBlobManagerFactory blobMngrFactory;
+	public static smInlineTransactionManager inlineTxnMngr;
+	public static smBlobManagerFactory blobMngrFactory;
 	public static smSessionManager sessionMngr;
 	public static smServerAccountManager accountMngr;
-	public static bhTelemetryDatabase telemetryDb;
+	public static smTelemetryDatabase telemetryDb;
 	public static smA_ServerApp app;
 	public static smI_RequestRedirector requestRedirector;
 }

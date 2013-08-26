@@ -14,7 +14,7 @@ public class smTransactionResponse extends smA_TransactionObject
 	private smE_ResponseError m_error = smE_ResponseError.NO_ERROR;
 	protected Throwable m_clientException = null;
 	
-	private bhCachePolicy m_cachePolicy = null;
+	private smCachePolicy m_cachePolicy = null;
 	
 	public smTransactionResponse() 
 	{

@@ -6,7 +6,7 @@ import swarm.shared.transaction.smTransactionRequest;
 
 public interface smI_AsyncRequestDispatcher extends smI_RequestDispatcher
 {
-	bhTransactionRequest getDispatchedRequest(smI_RequestPath path, smJsonQuery jsonQuery, smTransactionRequest exclusion_nullable);
+	smTransactionRequest getDispatchedRequest(smI_RequestPath path, smJsonQuery jsonQuery, smTransactionRequest exclusion_nullable);
 	
 	void cancelRequestsByPath(smI_RequestPath path, smTransactionRequest exclusion_nullable);
 }

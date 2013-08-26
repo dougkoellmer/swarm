@@ -44,10 +44,10 @@ public class smBlobTransaction_CreateUser extends smA_BlobTransaction
 	}
 	
 	@Override
-	protected void performOperations() throws bhBlobException
+	protected void performOperations() throws smBlobException
 	{
 		m_user = null;
-		bhBlobTransaction_CreateCell createCellTxn = m_createCellTransaction;
+		smBlobTransaction_CreateCell createCellTxn = m_createCellTransaction;
 		
 		if( createCellTxn != null )
 		{

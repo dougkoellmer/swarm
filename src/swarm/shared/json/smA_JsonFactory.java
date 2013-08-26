@@ -15,7 +15,7 @@ public abstract class smA_JsonFactory
 		return this.getJsonArrayClass().newInstance();
 	}
 	
-	public abstract bhJsonHelper getHelper();
+	public abstract smJsonHelper getHelper();
 	
 	public abstract smI_JsonObject createJsonObject(String data);
 	

@@ -49,7 +49,7 @@ public class smInlineRequestDispatcher implements smI_SyncRequestDispatcher
 	{
 		m_appId = appId;
 		
-		JsArray batch = bhU_Native.getGlobalArray(m_appId+"_rl");
+		JsArray batch = smU_Native.getGlobalArray(m_appId+"_rl");
 		
 		for( int i = 0; i < batch.length(); i++ )
 		{
@@ -58,8 +58,8 @@ public class smInlineRequestDispatcher implements smI_SyncRequestDispatcher
 			String requestJson = entry.get(0);
 			String responseJson = entry.get(1);
 			
-			bhTransactionRequest request = new smTransactionRequest();
-			bhTransactionResponse response = new smTransactionResponse();
+			smTransactionRequest request = new smTransactionRequest();
+			smTransactionResponse response = new smTransactionResponse();
 			
 			try
 			{
@@ -70,12 +70,12 @@ public class smInlineRequestDispatcher implements smI_SyncRequestDispatcher
 			}
 			catch(Throwable e)
 			{
-				bhU_Debug.ASSERT(false, "Couldn't read inline request (" + requestJson + ") or response(" + responseJson + ")");
+				smU_Debug.ASSERT(false, "Couldn't read inline request (" + requestJson + ") or response(" + responseJson + ")");
 			}
 		}
 		
 		//--- DRK > Release memory to GC.
-		bhU_Native.setGlobalObject(m_appId+"_rl", null);
+		smU_Native.setGlobalObject(m_appId+"_rl", null);
 	}
 	
 	@Override
@@ -103,7 +103,7 @@ public class smInlineRequestDispatcher implements smI_SyncRequestDispatcher
 	
 	private void getBackToManager(smTransactionRequest request, Object responseObject)
 	{
-		if( request instanceof bhTransactionRequestBatch )
+		if( request instanceof smTransactionRequestBatch )
 		{
 			m_callbacks.onResponseReceived((smTransactionRequestBatch)request, (smI_JsonArray)responseObject);
 		}
@@ -118,17 +118,17 @@ public class smInlineRequestDispatcher implements smI_SyncRequestDispatcher
 	{
 		if( m_inlineTransactions.size() == 0 )  return false;
 		
-		if( request instanceof bhTransactionRequestBatch )
+		if( request instanceof smTransactionRequestBatch )
 		{
-			bhTransactionRequestBatch requestBatch = (smTransactionRequestBatch) request;
+			smTransactionRequestBatch requestBatch = (smTransactionRequestBatch) request;
 			
 			smI_JsonArray responseBatch = null;//
-			bhTransactionRequestBatch inlineRequestBatch = null;
+			smTransactionRequestBatch inlineRequestBatch = null;
 			
 			int handledCount = 0;
 			for( int i = 0; i < requestBatch.getSize(); i++ )
 			{
-				bhTransactionRequest ithRequest = requestBatch.getRequest(i);
+				smTransactionRequest ithRequest = requestBatch.getRequest(i);
 				InlineTransaction transaction = getTransaction(ithRequest);
 				
 				if( transaction != null )
@@ -175,7 +175,7 @@ public class smInlineRequestDispatcher implements smI_SyncRequestDispatcher
 		for( int i = 0; i < m_inlineTransactions.size(); i++ )
 		{
 			InlineTransaction transaction = m_inlineTransactions.get(i);
-			bhTransactionRequest inlineRequest = transaction.m_request;
+			smTransactionRequest inlineRequest = transaction.m_request;
 			
 			if( inlineRequest.isEqualTo(request) )
 			{

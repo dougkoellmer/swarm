@@ -34,7 +34,7 @@ public class smTelemetryDatabase extends smA_SqlDatabase
 			
 			boolean first = true;
 			ArrayList<Object> values = new ArrayList<Object>();
-			for( bhTuple<String, Object> tuple = null; (tuple = sqlEncodable.nextColumn()) != null; )
+			for( smTuple<String, Object> tuple = null; (tuple = sqlEncodable.nextColumn()) != null; )
 			{
 				if( !first )
 				{

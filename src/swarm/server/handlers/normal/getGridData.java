@@ -32,7 +32,7 @@ public class getGridData implements smI_RequestHandler
 		{
 			grid = blobManager.getBlob(smE_GridType.ACTIVE, smServerGrid.class);
 		}
-		catch( bhBlobException e)
+		catch( smBlobException e)
 		{
 			response.setError(smE_ResponseError.SERVICE_EXCEPTION);
 			

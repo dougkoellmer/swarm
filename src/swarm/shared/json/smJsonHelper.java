@@ -87,7 +87,7 @@ public class smJsonHelper
 		String name = getString(json, key);
 		if( name != null )
 		{
-			return (T) bhU_TypeConversion.convertStringToEnum(name, values);
+			return (T) smU_TypeConversion.convertStringToEnum(name, values);
 		}
 		
 		return null;

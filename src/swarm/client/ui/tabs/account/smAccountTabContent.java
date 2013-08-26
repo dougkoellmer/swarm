@@ -56,13 +56,13 @@ public class smAccountTabContent extends AbsolutePanel implements smI_TabContent
 			{
 				if( event.getState() instanceof State_SignInOrUp )
 				{
-					bhU_Debug.ASSERT(m_signUpOrIn.getParent() == null);
+					smU_Debug.ASSERT(m_signUpOrIn.getParent() == null);
 					
 					this.add(m_signUpOrIn);
 				}
 				else if( event.getState() instanceof State_ManageAccount )
 				{
-					bhU_Debug.ASSERT(m_manage.getParent() == null);
+					smU_Debug.ASSERT(m_manage.getParent() == null);
 					
 					this.add(m_manage);
 				}
@@ -74,8 +74,8 @@ public class smAccountTabContent extends AbsolutePanel implements smI_TabContent
 			{
 				if( event.getState() instanceof State_AccountStatusPending )
 				{
-					bhConsoleBlocker.getInstance().attachTo(this);
-					bhConsoleBlocker.getInstance().setHtml("Wait a second...");
+					smConsoleBlocker.getInstance().attachTo(this);
+					smConsoleBlocker.getInstance().setHtml("Wait a second...");
 				}
 				else if( event.getState() instanceof StateMachine_Tabs )
 				{
@@ -84,7 +84,7 @@ public class smAccountTabContent extends AbsolutePanel implements smI_TabContent
 						//--- DRK > This goes along with the sleight of hand we pull below for not detaching the blocker while animating out.
 						//---		This just makes sure that the console blocker gets detached...it might be the case that it gets immediately
 						//---		reattached.
-						bhConsoleBlocker.getInstance().detachFrom(this);
+						smConsoleBlocker.getInstance().detachFrom(this);
 					}
 				}
 			
@@ -101,13 +101,13 @@ public class smAccountTabContent extends AbsolutePanel implements smI_TabContent
 			{
 				if( event.getState() instanceof State_SignInOrUp )
 				{
-					bhU_Debug.ASSERT(m_signUpOrIn.getParent() == this);
+					smU_Debug.ASSERT(m_signUpOrIn.getParent() == this);
 					
 					this.remove(m_signUpOrIn);
 				}
 				else if( event.getState() instanceof State_ManageAccount )
 				{
-					bhU_Debug.ASSERT(m_manage.getParent() == this);
+					smU_Debug.ASSERT(m_manage.getParent() == this);
 					
 					this.remove(m_manage);
 				}
@@ -120,7 +120,7 @@ public class smAccountTabContent extends AbsolutePanel implements smI_TabContent
 						//--- DRK > This should be called in the "exit" event because background event could be called for something
 						//---		like an error dialog being pushed over the topmost state in the machine.
 						//---		Other tabs needing the console blocker will simply take over if they need it anyway.
-						bhConsoleBlocker.getInstance().detachFrom(this);
+						smConsoleBlocker.getInstance().detachFrom(this);
 					}
 				}
 				break;

@@ -43,13 +43,13 @@ public class smCajaWrapper
 	
 	private final smUriData m_utilUriData = new smUriData();
 	
-	bhCajaWrapper(I_StartUpCallback callback, String apiNamespace)
+	smCajaWrapper(I_StartUpCallback callback, String apiNamespace)
 	{
 		m_apiNamespace = apiNamespace;
 		
 		m_callback = callback;
 		
-		bhU_CellApi.registerApi(apiNamespace);
+		smU_CellApi.registerApi(apiNamespace);
 		
 		initialize_native(this, apiNamespace);
 	}
@@ -227,17 +227,17 @@ public class smCajaWrapper
 			m_utilUriData.scheme = null;
 		}
 		
-		smBufferCell cell = bhU_CellApi.getCurrentCell();
-		bhCodePrivileges privileges = cell.getCodePrivileges();
+		smBufferCell cell = smU_CellApi.getCurrentCell();
+		smCodePrivileges privileges = cell.getCodePrivileges();
 		
 		if( privileges == null )
 		{
-			bhU_Debug.ASSERT(false, "Expected privileges to not be null.");
+			smU_Debug.ASSERT(false, "Expected privileges to not be null.");
 			
 			privileges = new smCodePrivileges();
 		}
 		
-		String newUri = bhU_UriPolicy.rewriteUri(privileges.getNetworkPrivilege(), m_utilUriData, null);
+		String newUri = smU_UriPolicy.rewriteUri(privileges.getNetworkPrivilege(), m_utilUriData, null);
 		
 		return newUri;
 	}

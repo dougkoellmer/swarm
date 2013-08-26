@@ -6,7 +6,7 @@ public final class smU_Logging
 {
 	//private static final NumberFormat s_format = NumberFormat.get();
 	
-	private bhU_Logging()
+	private smU_Logging()
 	{
 		
 	}

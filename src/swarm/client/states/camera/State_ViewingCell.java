@@ -92,7 +92,7 @@ public class State_ViewingCell extends smA_State implements smI_StateEventListen
 	void refreshCell()
 	{
 		smBufferCell cell = this.getCell();
-		bhGridCoordinate coord = cell.getCoordinate();
+		smGridCoordinate coord = cell.getCoordinate();
 		
 		//--- DRK > Even though "everything" is nuked from cell here, a user's cell will be immediately
 		//---		repopulated from the user data itself, so no server request will go out needlessly.
@@ -124,7 +124,7 @@ public class State_ViewingCell extends smA_State implements smI_StateEventListen
 		codeManager.populateCell(cell, localCodeRepo, 1, false, true, smE_CodeType.SPLASH);
 		codeManager.populateCell(cell, localCodeRepo, 1, false, true, smE_CodeType.COMPILED);
 		
-		bhClientTransactionManager txnMngr = sm_c.txnMngr;
+		smClientTransactionManager txnMngr = sm_c.txnMngr;
 		txnMngr.flushRequestQueue();
 	}
 
@@ -153,7 +153,7 @@ public class State_ViewingCell extends smA_State implements smI_StateEventListen
 		//--- DRK > This ensures that any "preview" operations performed get cleared out.
 		//---		My programmer senses are tingling on this one, telling me it might be a
 		//---		hacky solution, at least as far as readability.
-		bhUserManager userMngr = sm_c.userMngr;
+		smUserManager userMngr = sm_c.userMngr;
 		smA_ClientUser user = userMngr.getUser();
 		user.tryPopulatingCell(m_cell.getCoordinate(), smE_CodeType.COMPILED, m_cell);
 		
@@ -189,7 +189,7 @@ public class State_ViewingCell extends smA_State implements smI_StateEventListen
 				{
 					if( m_cell.getStatus(smE_CodeType.SOURCE) == smE_CodeStatus.NEEDS_CODE )
 					{
-						bhU_Debug.ASSERT(!m_hasRequestedSourceCode);
+						smU_Debug.ASSERT(!m_hasRequestedSourceCode);
 						
 						this.requestSourceHtmlForTargetCell();
 					}

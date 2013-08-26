@@ -24,16 +24,16 @@ class smBlobManager_Persistent extends smA_BlobManager
 {
 	private final smBlobTemplateManager m_templateMngr;
 	
-	bhBlobManager_Persistent(smBlobTemplateManager templateMngr)
+	smBlobManager_Persistent(smBlobTemplateManager templateMngr)
 	{
 		m_templateMngr = templateMngr;
 	}
 	
-	private Entity createEntityForPut(smI_BlobKey keySource, smI_Blob blob) throws bhBlobException
+	private Entity createEntityForPut(smI_BlobKey keySource, smI_Blob blob) throws smBlobException
 	{
 		Key keyObject = KeyFactory.createKey(blob.getKind(), keySource.createBlobKey(blob));
 		Entity entity = new Entity(keyObject);
-		byte[] blobBytes = bhU_Blob.convertToBytes(blob);
+		byte[] blobBytes = smU_Blob.convertToBytes(blob);
 		Blob blobData = new Blob(blobBytes);
 		entity.setUnindexedProperty(smS_Blob.DATA_FIELD_NAME, blobData);
 		
@@ -51,7 +51,7 @@ class smBlobManager_Persistent extends smA_BlobManager
 	}
 	
 	@Override
-	public void putBlob(smI_BlobKey keySource, smI_Blob blob) throws bhBlobException, ConcurrentModificationException
+	public void putBlob(smI_BlobKey keySource, smI_Blob blob) throws smBlobException, ConcurrentModificationException
 	{
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		
@@ -59,7 +59,7 @@ class smBlobManager_Persistent extends smA_BlobManager
 		
 		try
 		{
-			Transaction currentTransaction_canBeNull = bhBlobTransactionManager.getInstance().getCurrentTransaction(datastore);
+			Transaction currentTransaction_canBeNull = smBlobTransactionManager.getInstance().getCurrentTransaction(datastore);
 			
 			datastore.put(currentTransaction_canBeNull, entity);
 		}
@@ -74,11 +74,11 @@ class smBlobManager_Persistent extends smA_BlobManager
 	}
 
 	@Override
-	public void putBlobAsync(smI_BlobKey keySource, smI_Blob blob) throws bhBlobException
+	public void putBlobAsync(smI_BlobKey keySource, smI_Blob blob) throws smBlobException
 	{
 		AsyncDatastoreService datastore = DatastoreServiceFactory.getAsyncDatastoreService();
 		
-		Transaction currentTransaction = bhBlobTransactionManager.getInstance().getCurrentTransaction(datastore);
+		Transaction currentTransaction = smBlobTransactionManager.getInstance().getCurrentTransaction(datastore);
 		
 		if( currentTransaction != null )
 		{
@@ -102,7 +102,7 @@ class smBlobManager_Persistent extends smA_BlobManager
 	}
 	
 	@Override
-	public <T extends smI_Blob> T getBlob(smI_BlobKey keySource, Class<? extends T> T) throws bhBlobException
+	public <T extends smI_Blob> T getBlob(smI_BlobKey keySource, Class<? extends T> T) throws smBlobException
 	{
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		
@@ -112,16 +112,16 @@ class smBlobManager_Persistent extends smA_BlobManager
 	
 		try
 		{
-			Transaction currentTransaction_canBeNull = bhBlobTransactionManager.getInstance().getCurrentTransaction(datastore);
+			Transaction currentTransaction_canBeNull = smBlobTransactionManager.getInstance().getCurrentTransaction(datastore);
 			
 			Entity entity = datastore.get(currentTransaction_canBeNull, keyObject);
 			
 			//--- DRK > As I understand it, entity should never be null if exception isn't thrown, but just making sure.
 			if( entity != null )
 			{
-				smI_Blob toReturn = bhU_Blob.createBlobInstance(T);
+				smI_Blob toReturn = smU_Blob.createBlobInstance(T);
 				
-				bhU_Blob.readBytes(toReturn, entity);
+				smU_Blob.readBytes(toReturn, entity);
 				
 				return (T) toReturn;
 			}
@@ -141,7 +141,7 @@ class smBlobManager_Persistent extends smA_BlobManager
 	}
 	
 	@Override
-	public Map<smI_BlobKey, smI_Blob> getBlobs(Map<smI_BlobKey, Class<? extends smI_Blob>> values) throws bhBlobException
+	public Map<smI_BlobKey, smI_Blob> getBlobs(Map<smI_BlobKey, Class<? extends smI_Blob>> values) throws smBlobException
 	{
 		ArrayList<Key> keyObjects = new ArrayList<Key>();
 		Map<String, smBlobTuple> generatedKeysToTuples = new HashMap<String, smBlobTuple>();
@@ -162,7 +162,7 @@ class smBlobManager_Persistent extends smA_BlobManager
 		try
 		{
 			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-			Transaction currentTransaction_canBeNull = bhBlobTransactionManager.getInstance().getCurrentTransaction(datastore);
+			Transaction currentTransaction_canBeNull = smBlobTransactionManager.getInstance().getCurrentTransaction(datastore);
 			Map<Key, Entity> entities = datastore.get(currentTransaction_canBeNull, keyObjects);
 			
 			if( entities != null && entities.size() > 0 )
@@ -174,10 +174,10 @@ class smBlobManager_Persistent extends smA_BlobManager
 					Entity entity = entities.get(keyObject);
 					
 					String generatedKey = keyObject.getName();
-					bhBlobTuple tuple = generatedKeysToTuples.get(generatedKey);
+					smBlobTuple tuple = generatedKeysToTuples.get(generatedKey);
 			
-					smI_Blob blob = bhU_Blob.createBlobInstance(tuple.m_blobType);
-					bhU_Blob.readBytes(blob, entity);
+					smI_Blob blob = smU_Blob.createBlobInstance(tuple.m_blobType);
+					smU_Blob.readBytes(blob, entity);
 					
 					toReturn.put(tuple.m_keySource, blob);
 				}
@@ -193,7 +193,7 @@ class smBlobManager_Persistent extends smA_BlobManager
 		return null;
 	}
 	
-	private List<Entity> createEntitiesForPut(Map<smI_BlobKey, smI_Blob> values) throws bhBlobException
+	private List<Entity> createEntitiesForPut(Map<smI_BlobKey, smI_Blob> values) throws smBlobException
 	{
 		ArrayList<Entity> entities = new ArrayList<Entity>();
 		
@@ -211,14 +211,14 @@ class smBlobManager_Persistent extends smA_BlobManager
 	}
 	
 	@Override
-	public void putBlobs(Map<smI_BlobKey, smI_Blob> values) throws bhBlobException
+	public void putBlobs(Map<smI_BlobKey, smI_Blob> values) throws smBlobException
 	{
 		List<Entity> entities = createEntitiesForPut(values);
 		
 		try
 		{
 			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-			Transaction currentTransaction_canBeNull = bhBlobTransactionManager.getInstance().getCurrentTransaction(datastore);
+			Transaction currentTransaction_canBeNull = smBlobTransactionManager.getInstance().getCurrentTransaction(datastore);
 			datastore.put(currentTransaction_canBeNull, entities);
 		}
 		catch(Exception e)
@@ -228,12 +228,12 @@ class smBlobManager_Persistent extends smA_BlobManager
 	}
 	
 	@Override
-	public void putBlobsAsync(Map<smI_BlobKey, smI_Blob> values) throws bhBlobException
+	public void putBlobsAsync(Map<smI_BlobKey, smI_Blob> values) throws smBlobException
 	{
 		List<Entity> entities = createEntitiesForPut(values);
 		
 		AsyncDatastoreService datastore = DatastoreServiceFactory.getAsyncDatastoreService();
-		Transaction currentTransaction = bhBlobTransactionManager.getInstance().getCurrentTransaction(datastore);
+		Transaction currentTransaction = smBlobTransactionManager.getInstance().getCurrentTransaction(datastore);
 		
 		if( currentTransaction != null )
 		{
@@ -251,7 +251,7 @@ class smBlobManager_Persistent extends smA_BlobManager
 	}
 
 	@Override
-	public void deleteBlob(smI_BlobKey keySource, Class<? extends smI_Blob> blobType) throws bhBlobException
+	public void deleteBlob(smI_BlobKey keySource, Class<? extends smI_Blob> blobType) throws smBlobException
 	{
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		
@@ -261,7 +261,7 @@ class smBlobManager_Persistent extends smA_BlobManager
 	
 		try
 		{
-			Transaction currentTransaction_canBeNull = bhBlobTransactionManager.getInstance().getCurrentTransaction(datastore);
+			Transaction currentTransaction_canBeNull = smBlobTransactionManager.getInstance().getCurrentTransaction(datastore);
 			
 			datastore.delete(currentTransaction_canBeNull, keyObject);
 		}
@@ -272,11 +272,11 @@ class smBlobManager_Persistent extends smA_BlobManager
 	}
 	
 	@Override
-	public void deleteBlobAsync(smI_BlobKey keySource, Class<? extends smI_Blob> blobType) throws bhBlobException
+	public void deleteBlobAsync(smI_BlobKey keySource, Class<? extends smI_Blob> blobType) throws smBlobException
 	{
 		AsyncDatastoreService datastore = DatastoreServiceFactory.getAsyncDatastoreService();
 		
-		Transaction currentTransaction = bhBlobTransactionManager.getInstance().getCurrentTransaction(datastore);
+		Transaction currentTransaction = smBlobTransactionManager.getInstance().getCurrentTransaction(datastore);
 		
 		if( currentTransaction != null )
 		{
@@ -297,7 +297,7 @@ class smBlobManager_Persistent extends smA_BlobManager
 		}
 	}
 	
-	private List<Key> createKeysForBatchDelete(Map<smI_BlobKey, Class<? extends smI_Blob>> values) throws bhBlobException
+	private List<Key> createKeysForBatchDelete(Map<smI_BlobKey, Class<? extends smI_Blob>> values) throws smBlobException
 	{
 		ArrayList<Key> keys = new ArrayList<Key>();
 		
@@ -316,7 +316,7 @@ class smBlobManager_Persistent extends smA_BlobManager
 	}
 	
 	@Override
-	public void deleteBlobs(Map<smI_BlobKey, Class<? extends smI_Blob>> values) throws bhBlobException
+	public void deleteBlobs(Map<smI_BlobKey, Class<? extends smI_Blob>> values) throws smBlobException
 	{
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		
@@ -324,7 +324,7 @@ class smBlobManager_Persistent extends smA_BlobManager
 		
 		try
 		{
-			Transaction currentTransaction_canBeNull = bhBlobTransactionManager.getInstance().getCurrentTransaction(datastore);
+			Transaction currentTransaction_canBeNull = smBlobTransactionManager.getInstance().getCurrentTransaction(datastore);
 			
 			datastore.delete(currentTransaction_canBeNull, keys);
 		}
@@ -335,11 +335,11 @@ class smBlobManager_Persistent extends smA_BlobManager
 	}
 	
 	@Override
-	public void deleteBlobsAsync(Map<smI_BlobKey, Class<? extends smI_Blob>> values) throws bhBlobException
+	public void deleteBlobsAsync(Map<smI_BlobKey, Class<? extends smI_Blob>> values) throws smBlobException
 	{
 		AsyncDatastoreService datastore = DatastoreServiceFactory.getAsyncDatastoreService();
 		
-		Transaction currentTransaction = bhBlobTransactionManager.getInstance().getCurrentTransaction(datastore);
+		Transaction currentTransaction = smBlobTransactionManager.getInstance().getCurrentTransaction(datastore);
 		
 		if( currentTransaction != null )
 		{
@@ -359,7 +359,7 @@ class smBlobManager_Persistent extends smA_BlobManager
 	}
 
 	@Override
-	public Map<smI_BlobKey, smI_Blob> performQuery(smBlobQuery query) throws bhBlobException
+	public Map<smI_BlobKey, smI_Blob> performQuery(smBlobQuery query) throws smBlobException
 	{
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		

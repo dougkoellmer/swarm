@@ -16,7 +16,7 @@ class smLocalBlobCache
 	
 	private final ThreadLocal<Context> m_context = new ThreadLocal<Context>();
 	
-	bhLocalBlobCache()
+	smLocalBlobCache()
 	{
 		
 	}

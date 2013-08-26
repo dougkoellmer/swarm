@@ -55,7 +55,7 @@ public abstract class smA_Coordinate extends smA_JsonEncodable
 	
 	public boolean isEqualTo(smA_Coordinate otherEntity, smTolerance tolerance)
 	{
-		tolerance = tolerance != null ? tolerance : bhTolerance.DEFAULT;
+		tolerance = tolerance != null ? tolerance : smTolerance.DEFAULT;
 		
 		smA_Coordinate asCoord = (smA_Coordinate) otherEntity;
 		if ( asCoord != null )
@@ -146,7 +146,7 @@ public abstract class smA_Coordinate extends smA_JsonEncodable
 		
 		if ( origin != null)
 		{
-			bhVector vec = (new smPoint()).minus(origin);
+			smVector vec = (new smPoint()).minus(origin);
 			this.translate(vec);
 			this.set(getX() * vector.getX(), getY() * vector.getY(), getZ() * vector.getZ());
 			vec.negate();
@@ -163,7 +163,7 @@ public abstract class smA_Coordinate extends smA_JsonEncodable
 
 	public void rotate(double radians, Object axis)
 	{
-		bhPoint axis2d = (smPoint) axis;
+		smPoint axis2d = (smPoint) axis;
 		
 		double originX, originY;//, originZ;
 		if ( axis2d != null )
@@ -224,6 +224,6 @@ public abstract class smA_Coordinate extends smA_JsonEncodable
 	@Override
 	public String toString()
 	{
-		return "["+this.getClass().getName()+"(x="+bhU_Logging.toFixed(m_x)+", y="+bhU_Logging.toFixed(m_y)+", z="+bhU_Logging.toFixed(m_z)+"]";
+		return "["+this.getClass().getName()+"(x="+smU_Logging.toFixed(m_x)+", y="+smU_Logging.toFixed(m_y)+", z="+smU_Logging.toFixed(m_z)+"]";
 	}
 }

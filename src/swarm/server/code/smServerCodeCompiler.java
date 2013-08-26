@@ -157,7 +157,7 @@ public class smServerCodeCompiler extends smA_CodeCompiler
 	{
 		namespace += smS_Caja.CAJA_NAMESPACE_SUFFIX;
 		
-		bhCompilerResult result = (smCompilerResult) super.compile(sourceCode, privileges, namespace);
+		smCompilerResult result = (smCompilerResult) super.compile(sourceCode, privileges, namespace);
 		
 		if( result.getStatus() != smE_CompilationStatus.NO_ERROR )
 		{
@@ -173,7 +173,7 @@ public class smServerCodeCompiler extends smA_CodeCompiler
 			 }
 		};
 		
-		bhUriPolicy uriPolicy = new smUriPolicy(privileges.getNetworkPrivilege());
+		smUriPolicy uriPolicy = new smUriPolicy(privileges.getNetworkPrivilege());
 		
 		PluginMeta meta = new PluginMeta(fetcher, uriPolicy);
 		meta.setIdClass(namespace);
@@ -197,8 +197,8 @@ public class smServerCodeCompiler extends smA_CodeCompiler
 			return result.onFailure(smE_CompilationStatus.COMPILER_EXCEPTION);
 		}
 		
-		bhHtmlSchema schema = new smHtmlSchema(this.getHtmlSchema());
-		bhHtmlPreProcessor preProcessor = new smHtmlPreProcessor(htmlDom, schema);
+		smHtmlSchema schema = new smHtmlSchema(this.getHtmlSchema());
+		smHtmlPreProcessor preProcessor = new smHtmlPreProcessor(htmlDom, schema);
 		
 		boolean hasNoscriptContent = preProcessor.hasNoscriptContent();
 		Dom noScriptHtmlDom = htmlDom;
@@ -313,7 +313,7 @@ public class smServerCodeCompiler extends smA_CodeCompiler
 			
 			if( message.getMessageLevel().ordinal() >= lowestReportingLevel.ordinal() )
 			{
-				bhCompilerMessage compilerError = createMessage(message);
+				smCompilerMessage compilerError = createMessage(message);
 				
 				result_out.addMessage(compilerError);
 				
@@ -347,9 +347,9 @@ public class smServerCodeCompiler extends smA_CodeCompiler
 		return null;
 	}
 	
-	private static bhCompilerMessage createMessage(Message message)
+	private static smCompilerMessage createMessage(Message message)
 	{
-		bhFileRange range = null;
+		smFileRange range = null;
 		String formattedMessage = null;
 		smE_CompilerMessageLevel level = null;
 		

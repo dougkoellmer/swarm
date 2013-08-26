@@ -45,7 +45,7 @@ public class smCode extends smA_JsonEncodable
 	
 	private void initWithStandInType(smE_CodeType standInType)
 	{
-		m_standInFlags |= bhU_BitTricks.calcOrdinalBit(standInType.ordinal());
+		m_standInFlags |= smU_BitTricks.calcOrdinalBit(standInType.ordinal());
 	}
 	
 	private void init(smE_CodeType[] standInTypes)

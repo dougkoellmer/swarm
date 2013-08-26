@@ -143,7 +143,7 @@ public class StateMachine_Base extends smA_StateMachine implements smI_Transacti
 		}
 	}
 	
-	private static class AccountManagerDelegate implements bhClientAccountManager.I_Delegate
+	private static class AccountManagerDelegate implements smClientAccountManager.I_Delegate
 	{
 		@Override
 		public void onAccountTransactionResponse(E_ResponseType type)

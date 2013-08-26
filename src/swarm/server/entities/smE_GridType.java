@@ -25,6 +25,6 @@ public enum smE_GridType implements smI_BlobKey
 	@Override
 	public String createBlobKey(smI_Blob blob)
 	{
-		return bhU_Blob.generateKey(blob, getKeyComponent());
+		return smU_Blob.generateKey(blob, getKeyComponent());
 	}
 }

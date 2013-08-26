@@ -156,7 +156,7 @@ public abstract class smA_Action extends smA_BaseStateObject
 		{
 			if ( registeredAction.m_state != null )
 			{
-				bhU_Debug.ASSERT(false, "Action reuse.");
+				smU_Debug.ASSERT(false, "Action reuse.");
 			}
 			
 			return registeredAction;

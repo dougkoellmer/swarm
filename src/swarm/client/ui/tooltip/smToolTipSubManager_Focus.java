@@ -25,7 +25,7 @@ class smToolTipSubManager_Focus implements FocusHandler, BlurHandler, smI_ToolTi
 	
 	private final HashMap<Element, smToolTipConfig> m_tipMap = new HashMap<Element, smToolTipConfig>();
 	
-	bhToolTipSubManager_Focus(smToolTipManager toolTipManager)
+	smToolTipSubManager_Focus(smToolTipManager toolTipManager)
 	{
 		m_toolTipManager = toolTipManager;
 	}
@@ -35,7 +35,7 @@ class smToolTipSubManager_Focus implements FocusHandler, BlurHandler, smI_ToolTi
 	{
 		if( !m_isFocused )
 		{
-			//bhU_Debug.ASSERT(false, "onBlur1");
+			//smU_Debug.ASSERT(false, "onBlur1");
 			return;
 		}
 		
@@ -51,15 +51,15 @@ class smToolTipSubManager_Focus implements FocusHandler, BlurHandler, smI_ToolTi
 	{
 		if( m_isFocused )
 		{
-			//bhU_Debug.ASSERT(false, "onFocus1");
+			//smU_Debug.ASSERT(false, "onFocus1");
 			return;
 		}
 
 		m_currentElement = event.getRelativeElement();
 		
-		bhToolTipConfig config = m_tipMap.get(m_currentElement);
+		smToolTipConfig config = m_tipMap.get(m_currentElement);
 		
-		bhU_Debug.ASSERT(config!= null, "bhToolTipSubManager_Focus::onFocus1");
+		smU_Debug.ASSERT(config!= null, "smToolTipSubManager_Focus::onFocus1");
 
 		m_toolTipManager.prepareTip(m_toolTip, m_currentElement, config);
 		

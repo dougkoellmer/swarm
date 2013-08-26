@@ -65,13 +65,13 @@ public class smU_InlineTransactions
 			return;
 		}
 		
-		bhInlineTransactionManager transactionManager = sm_s.inlineTxnMngr;
+		smInlineTransactionManager transactionManager = sm_s.inlineTxnMngr;
 		
 		try
 		{
 			transactionManager.beginBatch(out, nativeRequest, nativeResponse);
 			
-			bhGetCellAddressMappingResult mappingResult = new smGetCellAddressMappingResult();
+			smGetCellAddressMappingResult mappingResult = new smGetCellAddressMappingResult();
 			boolean getAddressMapping = true;
 			
 			if( parseError != smE_CellAddressParseError.NO_ERROR )
@@ -87,9 +87,9 @@ public class smU_InlineTransactions
 				getAddressMapping = false;
 			}
 			
-			bhTransactionRequest dummyRequest = new smTransactionRequest(nativeRequest);
-			bhTransactionResponse dummyResponse = new smTransactionResponse(nativeResponse);
-			bhUserSession session = sm_s.sessionMngr.getSession(dummyRequest, dummyResponse);
+			smTransactionRequest dummyRequest = new smTransactionRequest(nativeRequest);
+			smTransactionResponse dummyResponse = new smTransactionResponse(nativeResponse);
+			smUserSession session = sm_s.sessionMngr.getSession(dummyRequest, dummyResponse);
 			boolean isSessionActive = session != null;
 			
 			transactionManager.makeInlineRequest(smE_RequestPath.getPasswordChangeToken);
@@ -180,12 +180,12 @@ public class smU_InlineTransactions
 			
 			if( makeGridRequest )
 			{
-				bhTransactionResponse response = transactionManager.makeInlineRequest(smE_RequestPath.getGridData);
+				smTransactionResponse response = transactionManager.makeInlineRequest(smE_RequestPath.getGridData);
 				grid = new smA_Grid(){};
 				grid.readJson(response.getJson());
 			}
 	
-			bhPoint startingPosition = new smPoint();
+			smPoint startingPosition = new smPoint();
 			if( mappingResult.isEverythingOk() )
 			{
 				mappingResult.getMapping().getCoordinate().calcCenterPoint(startingPosition, grid.getCellWidth(), grid.getCellHeight(), grid.getCellPadding(), 1);

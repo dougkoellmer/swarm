@@ -113,10 +113,10 @@ public class State_Initializing extends smA_State implements smI_TransactionResp
 			
 			StateMachine_Base baseController = smA_State.getEnteredInstance(StateMachine_Base.class);
 			
-			bhClientAccountManager accountManager = sm_c.accountMngr;
-			bhClientAccountManager.E_PasswordChangeTokenState resetTokenState = accountManager.getPasswordChangeTokenState();
+			smClientAccountManager accountManager = sm_c.accountMngr;
+			smClientAccountManager.E_PasswordChangeTokenState resetTokenState = accountManager.getPasswordChangeTokenState();
 			
-			if( resetTokenState == bhClientAccountManager.E_PasswordChangeTokenState.INVALID )
+			if( resetTokenState == smClientAccountManager.E_PasswordChangeTokenState.INVALID )
 			{
 				State_GenericDialog.Constructor constructor = new State_GenericDialog.Constructor
 				(
@@ -128,7 +128,7 @@ public class State_Initializing extends smA_State implements smI_TransactionResp
 					
 				return;
 			}
-			else if( resetTokenState == bhClientAccountManager.E_PasswordChangeTokenState.VALID )
+			else if( resetTokenState == smClientAccountManager.E_PasswordChangeTokenState.VALID )
 			{
 				State_GenericDialog.Constructor constructor = new State_GenericDialog.Constructor
 				(

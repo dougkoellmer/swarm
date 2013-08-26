@@ -14,7 +14,7 @@ public abstract class smA_App
 		s_instance = this;
 	}
 	
-	public bhE_AppEnvironment getEnvironment()
+	public smE_AppEnvironment getEnvironment()
 	{
 		return m_environment;
 	}

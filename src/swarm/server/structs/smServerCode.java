@@ -11,7 +11,7 @@ import swarm.shared.entities.smE_CodeType;
 import swarm.shared.json.smI_JsonObject;
 import swarm.shared.structs.smCode;
 
-public class smServerCode extends bhCode implements Externalizable
+public class smServerCode extends smCode implements Externalizable
 {
 	private static final int EXTERNAL_VERSION = 2;
 	
@@ -41,8 +41,8 @@ public class smServerCode extends bhCode implements Externalizable
 		out.writeInt(EXTERNAL_VERSION);
 		
 		out.writeInt(this.m_standInFlags);
-		bhU_Serialization.writeNullableString(m_rawCode, out);
-		bhU_Serialization.writeNullableEnum(m_safetyLevel, out);
+		smU_Serialization.writeNullableString(m_rawCode, out);
+		smU_Serialization.writeNullableEnum(m_safetyLevel, out);
 	}
 
 	@Override
@@ -55,7 +55,7 @@ public class smServerCode extends bhCode implements Externalizable
 		{
 			//--- DRK > Should do an admin bulk recompile of cells, which should be the only time this case is hit.
 			//---		Can remove sometime in future.
-			String[] codeParts = bhU_Serialization.readJavaArray(String.class, in);
+			String[] codeParts = smU_Serialization.readJavaArray(String.class, in);
 			if( codeParts != null && codeParts.length > 0 )
 			{
 				m_rawCode = codeParts[0];
@@ -63,9 +63,9 @@ public class smServerCode extends bhCode implements Externalizable
 		}
 		else
 		{
-			m_rawCode = bhU_Serialization.readNullableString(in);
+			m_rawCode = smU_Serialization.readNullableString(in);
 		}
 		
-		m_safetyLevel = bhU_Serialization.readNullableEnum(smE_CodeSafetyLevel.values(), in);
+		m_safetyLevel = smU_Serialization.readNullableEnum(smE_CodeSafetyLevel.values(), in);
 	}
 }

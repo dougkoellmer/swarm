@@ -10,7 +10,7 @@ import swarm.shared.entities.smE_CharacterQuota;
 import swarm.shared.structs.smCodePrivileges;
 import swarm.shared.structs.smE_NetworkPrivilege;
 
-public class smServerCodePrivileges extends bhCodePrivileges implements Externalizable
+public class smServerCodePrivileges extends smCodePrivileges implements Externalizable
 {
 	private static final int EXTERNAL_VERSION = 1;
 	
@@ -29,8 +29,8 @@ public class smServerCodePrivileges extends bhCodePrivileges implements External
 	{
 		out.writeInt(EXTERNAL_VERSION);
 		
-		bhU_Serialization.writeNullableEnum(m_network, out);
-		bhU_Serialization.writeNullableEnum(m_characterQuota, out);
+		smU_Serialization.writeNullableEnum(m_network, out);
+		smU_Serialization.writeNullableEnum(m_characterQuota, out);
 	}
 
 	@Override
@@ -38,7 +38,7 @@ public class smServerCodePrivileges extends bhCodePrivileges implements External
 	{
 		int externalVersion = in.readInt();
 		
-		m_network = bhU_Serialization.readNullableEnum(smE_NetworkPrivilege.values(), in);
-		m_characterQuota = bhU_Serialization.readNullableEnum(smE_CharacterQuota.values(), in);
+		m_network = smU_Serialization.readNullableEnum(smE_NetworkPrivilege.values(), in);
+		m_characterQuota = smU_Serialization.readNullableEnum(smE_CharacterQuota.values(), in);
 	}
 }

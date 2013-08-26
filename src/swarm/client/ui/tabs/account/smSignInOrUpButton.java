@@ -6,7 +6,7 @@ import swarm.client.ui.tooltip.smToolTipManager;
 import swarm.client.ui.widget.smDefaultButton;
 import com.google.gwt.dom.client.Style.Unit;
 
-public class smSignInOrUpButton extends bhDefaultButton
+public class smSignInOrUpButton extends smDefaultButton
 {
 	smSignInOrUpButton()
 	{

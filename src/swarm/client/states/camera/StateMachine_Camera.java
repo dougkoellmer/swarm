@@ -61,11 +61,11 @@ public class StateMachine_Camera extends smA_StateMachine implements smI_StateEv
 	public static final double IGNORED_COMPONENT = Double.NaN;
 	
 	/**
-	 * This makes various methods of bhCameraManager effectively "friended" to this StateMachine_Camera.
+	 * This makes various methods of smCameraManager effectively "friended" to this StateMachine_Camera.
 	 * @author Doug
 	 *
 	 */
-	static class CameraManager extends bhCameraManager
+	static class CameraManager extends smCameraManager
 	{
 		CameraManager(smCamera camera, double minSnapTime, double maxSnapTime)
 		{
@@ -96,7 +96,7 @@ public class StateMachine_Camera extends smA_StateMachine implements smI_StateEv
 	{
 		public static class Args extends smA_ActionArgs
 		{
-			private bhPoint m_point;
+			private smPoint m_point;
 			
 			public void setPoint(smPoint point)
 			{
@@ -109,7 +109,7 @@ public class StateMachine_Camera extends smA_StateMachine implements smI_StateEv
 		{
 			StateMachine_Camera machine = this.getState();
 			
-			bhPoint point = ((Args)args).m_point;
+			smPoint point = ((Args)args).m_point;
 			
 			CameraManager manager = (CameraManager) machine.getCameraManager();
 			manager.setCameraPosition(point, false);
@@ -179,7 +179,7 @@ public class StateMachine_Camera extends smA_StateMachine implements smI_StateEv
 	{
 		public static class Args extends smA_ActionArgs
 		{
-			private bhPoint m_point;
+			private smPoint m_point;
 			private boolean m_instant;
 			
 			public Args()
@@ -228,7 +228,7 @@ public class StateMachine_Camera extends smA_StateMachine implements smI_StateEv
 			
 			if( args == null )  return;
 			
-			bhPoint point = ((Args)args).m_point;
+			smPoint point = ((Args)args).m_point;
 			boolean instant = ((Args)args).isInstant();
 			
 			if( point == null )  return;
@@ -262,7 +262,7 @@ public class StateMachine_Camera extends smA_StateMachine implements smI_StateEv
 	{
 		public static class Args extends smA_ActionArgs
 		{
-			private bhGridCoordinate m_coordinate;
+			private smGridCoordinate m_coordinate;
 			private boolean m_onlyCausedRefresh = false;
 			
 			public Args()
@@ -289,7 +289,7 @@ public class StateMachine_Camera extends smA_StateMachine implements smI_StateEv
 		@Override
 		public void perform(smA_ActionArgs args)
 		{
-			bhGridCoordinate coordinate = ((Args) args).m_coordinate;
+			smGridCoordinate coordinate = ((Args) args).m_coordinate;
 			StateMachine_Camera machine = this.getState();
 			smA_State currentState = machine.getCurrentState();
 			
@@ -311,7 +311,7 @@ public class StateMachine_Camera extends smA_StateMachine implements smI_StateEv
 		@Override
 		public boolean isPerformable(smA_ActionArgs args)
 		{
-			bhGridCoordinate coordinate = ((Args) args).m_coordinate;
+			smGridCoordinate coordinate = ((Args) args).m_coordinate;
 			
 			smA_Grid grid = sm_c.gridMngr.getGrid();
 			
@@ -639,7 +639,7 @@ public class StateMachine_Camera extends smA_StateMachine implements smI_StateEv
 					if( result.getMessages() != null )
 					{
 						title = "Warnings...fix them if you want.";
-						body = bhCompilerErrorMessageGenerator.getInstance().generate(result);
+						body = smCompilerErrorMessageGenerator.getInstance().generate(result);
 					}
 				}
 				else
@@ -653,7 +653,7 @@ public class StateMachine_Camera extends smA_StateMachine implements smI_StateEv
 						title = "Compiler Error";
 					}
 					
-					body = bhCompilerErrorMessageGenerator.getInstance().generate(result);
+					body = smCompilerErrorMessageGenerator.getInstance().generate(result);
 				}
 				
 				if( title != null )
@@ -713,7 +713,7 @@ public class StateMachine_Camera extends smA_StateMachine implements smI_StateEv
 			State_CameraSnapping snappingState = ((State_CameraSnapping)this.getCurrentState());
 			smI_LocalCodeRepository compiledStaticHtmlSource = snappingState.getCompiledStaticHtmlSource();
 			
-			int options = bhF_BufferUpdateOption.CREATE_VISUALIZATIONS;
+			int options = smF_BufferUpdateOption.CREATE_VISUALIZATIONS;
 			
 			smCellBufferManager.getInstance().update(sm_c.gridMngr.getGrid(), sm_c.camera, compiledStaticHtmlSource, options);
 			
@@ -737,7 +737,7 @@ public class StateMachine_Camera extends smA_StateMachine implements smI_StateEv
 		}
 		else
 		{
-			int options = bhF_BufferUpdateOption.ALL;
+			int options = smF_BufferUpdateOption.ALL;
 			smCellBufferManager.getInstance().update(sm_c.gridMngr.getGrid(), sm_c.camera, m_codeRepo, options);
 		}
 	}

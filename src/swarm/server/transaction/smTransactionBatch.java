@@ -22,7 +22,7 @@ public class smTransactionBatch
 	
 	private final ArrayList<Transaction> m_queue = new ArrayList<Transaction>();
 	
-	bhTransactionBatch()
+	smTransactionBatch()
 	{
 		
 	}

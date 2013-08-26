@@ -1,6 +1,6 @@
 package swarm.shared.structs;
 
-public class smQueue extends bhLinkedList
+public class smQueue extends smLinkedList
 {	
 	private int m_maxSize = 0;
 	

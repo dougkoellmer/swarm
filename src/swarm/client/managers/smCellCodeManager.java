@@ -80,7 +80,7 @@ public class smCellCodeManager implements smI_TransactionResponseHandler
 	
 	public void start(I_SyncOrPreviewDelegate syncOrPreviewErrorDelegate)
 	{
-		bhClientTransactionManager txnMngr = sm_c.txnMngr;
+		smClientTransactionManager txnMngr = sm_c.txnMngr;
 		txnMngr.addHandler(this);
 		
 		m_syncOrPreviewErrorDelegate = syncOrPreviewErrorDelegate;
@@ -88,7 +88,7 @@ public class smCellCodeManager implements smI_TransactionResponseHandler
 	
 	public void stop()
 	{
-		bhClientTransactionManager txnMngr = sm_c.txnMngr;
+		smClientTransactionManager txnMngr = sm_c.txnMngr;
 		txnMngr.removeHandler(this);
 		
 		m_syncOrPreviewErrorDelegate = null;
@@ -96,7 +96,7 @@ public class smCellCodeManager implements smI_TransactionResponseHandler
 	
 	public void flush()
 	{
-		bhClientTransactionManager txnMngr = sm_c.txnMngr;
+		smClientTransactionManager txnMngr = sm_c.txnMngr;
 		txnMngr.flushRequestQueue();
 	}
 	
@@ -138,19 +138,19 @@ public class smCellCodeManager implements smI_TransactionResponseHandler
 	
 	public void syncCell(smBufferCell cell, smCode sourceCode)
 	{
-		bhGridCoordinate coord = cell.getCoordinate();
+		smGridCoordinate coord = cell.getCoordinate();
 		
-		bhTransactionRequest request = new smTransactionRequest(smE_RequestPath.syncCode);
+		smTransactionRequest request = new smTransactionRequest(smE_RequestPath.syncCode);
 		sourceCode.writeJson(request.getJson());
 		coord.writeJson(request.getJson());
 
 		sm_c.txnMngr.makeRequest(request);
 
-		bhCode compiledCode = new smCode(sourceCode.getRawCode(), smE_CodeType.COMPILED);
+		smCode compiledCode = new smCode(sourceCode.getRawCode(), smE_CodeType.COMPILED);
 		compiledCode.setSafetyLevel(smE_CodeSafetyLevel.REQUIRES_DYNAMIC_SANDBOX);
 		cell.onSyncStart(sourceCode, compiledCode);
 		
-		bhUserManager userManager = sm_c.userMngr;
+		smUserManager userManager = sm_c.userMngr;
 		smA_ClientUser user = userManager.getUser();
 		user.onSyncStart(coord, compiledCode);
 		
@@ -163,7 +163,7 @@ public class smCellCodeManager implements smI_TransactionResponseHandler
 		//---		With the new scheme, with code being sandboxed client-side, we
 		//---		just route things directly back to the cell.
 		//syncOrPreviewCell(cell, sourceCode, false);
-		bhCode previewCode = new smCode(sourceCode.getRawCode(), smE_CodeType.COMPILED);
+		smCode previewCode = new smCode(sourceCode.getRawCode(), smE_CodeType.COMPILED);
 		previewCode.setSafetyLevel(smE_CodeSafetyLevel.REQUIRES_DYNAMIC_SANDBOX);
 		cell.onPreviewSuccess(previewCode);
 	}
@@ -171,16 +171,16 @@ public class smCellCodeManager implements smI_TransactionResponseHandler
 	private boolean isSyncing(smGridCoordinate coord)
 	{
 		preparePostQuery(coord);
-		bhClientTransactionManager txnMngr = sm_c.txnMngr;
+		smClientTransactionManager txnMngr = sm_c.txnMngr;
 		
 		return txnMngr.containsDispatchedRequest(smE_RequestPath.syncCode, m_postQuery);
 	}
 	
 	public void populateCell(smBufferCell cell, smI_LocalCodeRepository localHtmlSource, int cellSize, boolean recycled, boolean communicateWithServer, smE_CodeType eType)
 	{
-		bhClientTransactionManager txnMngr = sm_c.txnMngr;
+		smClientTransactionManager txnMngr = sm_c.txnMngr;
 		
-		bhGridCoordinate absCoord = cell.getCoordinate();
+		smGridCoordinate absCoord = cell.getCoordinate();
 		
 		if ( recycled )
 		{
@@ -212,7 +212,7 @@ public class smCellCodeManager implements smI_TransactionResponseHandler
 						//---		succeed, and editing the cell is still allowed...this is an unlikely scenario on many accounts though.
 						if( isSyncing(absCoord) )
 						{
-							bhU_Debug.ASSERT(eType != smE_CodeType.SOURCE, "populateCell1");
+							smU_Debug.ASSERT(eType != smE_CodeType.SOURCE, "populateCell1");
 							
 							cell.onServerRequest(eType);
 							
@@ -231,7 +231,7 @@ public class smCellCodeManager implements smI_TransactionResponseHandler
 						prepareGetQuery(cell.getCoordinate(), eType);
 						if( !txnMngr.containsDispatchedRequest(smE_RequestPath.getCode, m_getQuery) )
 						{
-							bhTransactionRequest request = new smTransactionRequest(smE_RequestPath.getCode);
+							smTransactionRequest request = new smTransactionRequest(smE_RequestPath.getCode);
 							
 							cell.getCoordinate().writeJson(request.getJson());
 							sm.jsonFactory.getHelper().putInt(request.getJson(), smE_JsonKey.codeType, eType.ordinal());
@@ -245,7 +245,7 @@ public class smCellCodeManager implements smI_TransactionResponseHandler
 			}
 			else
 			{
-				bhU_Debug.ASSERT(eType != smE_CodeType.SOURCE, "populateCell2");
+				smU_Debug.ASSERT(eType != smE_CodeType.SOURCE, "populateCell2");
 				
 				// TODO: Need to put image url for generated meta image.
 			}
@@ -258,12 +258,12 @@ public class smCellCodeManager implements smI_TransactionResponseHandler
 		m_utilCoord.readJson(request.getJson());
 		m_utilCell.getCoordinate().copy(m_utilCoord);
 
-		bhUserManager userManager = sm_c.userMngr;
+		smUserManager userManager = sm_c.userMngr;
 		smA_ClientUser user = userManager.getUser();
 		
 		int typeOrdinal = sm.jsonFactory.getHelper().getInt(request.getJson(), smE_JsonKey.codeType);
 		smE_CodeType eCodeType = smE_CodeType.values()[typeOrdinal];
-		bhCode code = m_utilCell.getCode(eCodeType);
+		smCode code = m_utilCell.getCode(eCodeType);
 		
 		if( code == null )
 		{
@@ -281,7 +281,7 @@ public class smCellCodeManager implements smI_TransactionResponseHandler
 		{
 			if( isSyncing(m_utilCoord) )
 			{
-				bhU_Debug.ASSERT(false, "Shouldn't be getting source while posting.");
+				smU_Debug.ASSERT(false, "Shouldn't be getting source while posting.");
 				
 				return;
 			}
@@ -289,7 +289,7 @@ public class smCellCodeManager implements smI_TransactionResponseHandler
 		
 		if( user.isCellOwner(m_utilCoord) )
 		{
-			bhU_Debug.ASSERT(!isCodeNull, "onGetCellDataSuccess1");
+			smU_Debug.ASSERT(!isCodeNull, "onGetCellDataSuccess1");
 
 			if( !user.setInitialCellData(m_utilCoord, m_utilCell) )
 			{
@@ -332,7 +332,7 @@ public class smCellCodeManager implements smI_TransactionResponseHandler
 		}
 		else if( request.getPath() == smE_RequestPath.syncCode )
 		{
-			bhUserManager userManager = sm_c.userMngr;
+			smUserManager userManager = sm_c.userMngr;
 			smA_ClientUser user = userManager.getUser();
 			m_utilCoord.readJson(request.getJson());
 			
@@ -345,15 +345,15 @@ public class smCellCodeManager implements smI_TransactionResponseHandler
 			//---		totally fringe or even impossible as that may be, then we shouldn't update cell code.
 			boolean isStillCellOwner = user.isCellOwner(m_utilCoord);
 			
-			bhCompilerResult result = new smCompilerResult();
+			smCompilerResult result = new smCompilerResult();
 			result.readJson(response.getJson());
 			
-			bhCode sourceCode = new smCode(request.getJson(), smE_CodeType.SOURCE);
+			smCode sourceCode = new smCode(request.getJson(), smE_CodeType.SOURCE);
 			
 			if( result.getStatus() == smE_CompilationStatus.NO_ERROR )
 			{
-				bhCode splashScreenCode = result.getCode(smE_CodeType.SPLASH);
-				bhCode compiledCode = result.getCode(smE_CodeType.COMPILED);
+				smCode splashScreenCode = result.getCode(smE_CodeType.SPLASH);
+				smCode compiledCode = result.getCode(smE_CodeType.COMPILED);
 				
 				//s_logger.info(compiledHtmlStatic + "\n" + compiledDynamicHtml);
 				
@@ -419,9 +419,9 @@ public class smCellCodeManager implements smI_TransactionResponseHandler
 	private void assertNotPosting(smGridCoordinate coord)
 	{
 		preparePostQuery(m_utilCoord);
-		bhClientTransactionManager txnMngr = sm_c.txnMngr;
+		smClientTransactionManager txnMngr = sm_c.txnMngr;
 		
-		bhU_Debug.ASSERT(!txnMngr.containsDispatchedRequest(smE_RequestPath.syncCode, m_postQuery), "assertNotPosting1");
+		smU_Debug.ASSERT(!txnMngr.containsDispatchedRequest(smE_RequestPath.syncCode, m_postQuery), "assertNotPosting1");
 	}
 	
 	private void cell_onServerError(smGridCoordinate coordinate, smE_CodeType eCodeType, boolean isSync)
@@ -493,12 +493,12 @@ public class smCellCodeManager implements smI_TransactionResponseHandler
 				return smE_ResponseErrorControl.BREAK;
 			}
 
-			bhUserManager userManager = sm_c.userMngr;
+			smUserManager userManager = sm_c.userMngr;
 			smA_ClientUser user = userManager.getUser();
 			
 			m_utilCoord.readJson(request.getJson());
 			
-			bhCompilerResult result = new smCompilerResult();
+			smCompilerResult result = new smCompilerResult();
 			result.onFailure(smE_CompilationStatus.RESPONSE_ERROR);
 
 			if( user.isCellOwner(m_utilCoord) )

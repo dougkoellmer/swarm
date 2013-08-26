@@ -44,7 +44,7 @@ public class smBlobTransaction_DeactivateCell extends smA_BlobTransaction
 	}
 	
 	@Override
-	protected void performOperations() throws bhBlobException
+	protected void performOperations() throws smBlobException
 	{
 		m_newMapping = null;
 		

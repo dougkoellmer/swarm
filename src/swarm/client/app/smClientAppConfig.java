@@ -5,7 +5,7 @@ import swarm.client.ui.smViewController;
 import swarm.shared.app.smAppConfig;
 import swarm.shared.entities.smA_Grid;
 
-public class smClientAppConfig extends bhAppConfig
+public class smClientAppConfig extends smAppConfig
 {
 	public double floatingHistoryUpdateFreq_seconds = .75;
 	public double cellHudHeight;

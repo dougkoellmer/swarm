@@ -18,28 +18,28 @@ public class smA_BaseStateObject extends Object
 	
 	protected void container_enterState(smA_State thisArg, Class<? extends smA_State> T, smA_StateConstructor constructor)
 	{
-		bhU_Debug.ASSERT(thisArg instanceof smA_StateContainer);
+		smU_Debug.ASSERT(thisArg instanceof smA_StateContainer);
 		
 		((smA_StateContainer) thisArg).internal_enterState(T, constructor);
 	}
 	
 	protected void container_foregroundState(smA_State thisArg, Class<? extends smA_State> T)
 	{
-		bhU_Debug.ASSERT(thisArg instanceof smA_StateContainer);
+		smU_Debug.ASSERT(thisArg instanceof smA_StateContainer);
 		
 		((smA_StateContainer) thisArg).internal_foregroundState(T);
 	}
 	
 	protected void container_backgroundState(smA_State thisArg, Class<? extends smA_State> T)
 	{
-		bhU_Debug.ASSERT(thisArg instanceof smA_StateContainer);
+		smU_Debug.ASSERT(thisArg instanceof smA_StateContainer);
 		
 		((smA_StateContainer) thisArg).internal_backgroundState(T);
 	}
 	
 	protected void container_exitState(smA_State thisArg, Class<? extends smA_State> T)
 	{
-		bhU_Debug.ASSERT(thisArg instanceof smA_StateContainer);
+		smU_Debug.ASSERT(thisArg instanceof smA_StateContainer);
 		
 		((smA_StateContainer) thisArg).internal_exitState(T);
 	}
@@ -51,18 +51,18 @@ public class smA_BaseStateObject extends Object
 	
 	protected void machine_pushState(smA_State thisArg, Class<? extends smA_State> T, smA_StateConstructor constructor)
 	{
-		//bhU_Debug.ASSERT(m_parent.checkLegalStateManipulation());
+		//smU_Debug.ASSERT(m_parent.checkLegalStateManipulation());
 		
-		bhU_Debug.ASSERT(thisArg instanceof smA_StateMachine);
+		smU_Debug.ASSERT(thisArg instanceof smA_StateMachine);
 		
 		((smA_StateMachine) thisArg).pushState_internal(T, constructor);
 	}
 	
 	protected void machine_popState(smA_State thisArg, Object ... args)
 	{
-		//bhU_Debug.ASSERT(this.checkLegalStateManipulation());
+		//smU_Debug.ASSERT(this.checkLegalStateManipulation());
 		
-		bhU_Debug.ASSERT(thisArg instanceof smA_StateMachine);
+		smU_Debug.ASSERT(thisArg instanceof smA_StateMachine);
 		
 		((smA_StateMachine) thisArg).popState_internal(args);
 	}
@@ -84,9 +84,9 @@ public class smA_BaseStateObject extends Object
 	
 	protected void machine_setState(smA_State thisArg, Class<? extends smA_State> T, smA_StateConstructor constructor)
 	{
-		//bhU_Debug.ASSERT(this.checkLegalStateManipulation());
+		//smU_Debug.ASSERT(this.checkLegalStateManipulation());
 
-		bhU_Debug.ASSERT(thisArg instanceof smA_StateMachine);
+		smU_Debug.ASSERT(thisArg instanceof smA_StateMachine);
 		
 		((smA_StateMachine) thisArg).internal_setState(T, constructor);
 	}

@@ -48,7 +48,7 @@ public class smMouseNavigator implements smI_UIElement, smMouse.I_Listener
 	private static final double DISTANCE_SCROLL_SCALE = 10;
 	private static final smTolerance MOUSE_TOLERANCE = new smTolerance(smTolerance.DEFAULT);
 	
-	private static bhMouseNavigator s_instance = null;
+	private static smMouseNavigator s_instance = null;
 	
 	private final smPoint m_mouseZoomPoint2d = new smPoint();
 	private final smPoint m_mouseZoomPoint3d = new smPoint();
@@ -74,7 +74,7 @@ public class smMouseNavigator implements smI_UIElement, smMouse.I_Listener
 	private final smMouse m_mouse;
 	private boolean m_mouseWentDownOnViewedCell = false;
 	
-	bhMouseNavigator(smMouse mouse)
+	smMouseNavigator(smMouse mouse)
 	{
 		m_mouse = mouse;
 		
@@ -83,11 +83,11 @@ public class smMouseNavigator implements smI_UIElement, smMouse.I_Listener
 		s_instance = this;
 	}
 	
-	public static bhMouseNavigator getInstance()
+	public static smMouseNavigator getInstance()
 	{
 		if( s_instance == null )
 		{
-			bhU_Debug.ASSERT(false);
+			smU_Debug.ASSERT(false);
 		}
 		
 		return s_instance;
@@ -206,8 +206,8 @@ public class smMouseNavigator implements smI_UIElement, smMouse.I_Listener
 					}
 				}
 				
-				bhCamera camera = sm_c.camera;
-				bhPoint cameraPosition = m_utilPoint1;
+				smCamera camera = sm_c.camera;
+				smPoint cameraPosition = m_utilPoint1;
 				cameraPosition.copy(camera.getPosition());
 				
 				if ( cameraPosition.getZ() == 0 && event.getScrollDelta() > 0 )
@@ -249,11 +249,11 @@ public class smMouseNavigator implements smI_UIElement, smMouse.I_Listener
 						}
 					}
 					
-					double scrollDelta = bhU_Math.clamp(event.getScrollDelta(), -SCROLL_CAP, SCROLL_CAP);
+					double scrollDelta = smU_Math.clamp(event.getScrollDelta(), -SCROLL_CAP, SCROLL_CAP);
 					scrollDelta *= BASE_SCROLL_SCALE;
 					
 					// TODO: Don't really like this zoom behavior...have to scale zom bsaed on distance somehow though.
-					scrollDelta += bhU_Math.sign(scrollDelta) * camera.getPosition().getZ() * .5;
+					scrollDelta += smU_Math.sign(scrollDelta) * camera.getPosition().getZ() * .5;
 					
 				//	trace(event.getScrollDelta(), scrollDelta, camera.getPosition().getZ());
 					
@@ -284,7 +284,7 @@ public class smMouseNavigator implements smI_UIElement, smMouse.I_Listener
 					}
 					else
 					{
-						/*bhPoint cameraPointProjected = m_utilPoint1;
+						/*smPoint cameraPointProjected = m_utilPoint1;
 						cameraPointProjected.copy(camera.getPosition());
 						cameraPointProjected.setZ(0);
 						mousePointInWorld.calcDifference(cameraPointProjected, m_utilVector);
@@ -316,7 +316,7 @@ public class smMouseNavigator implements smI_UIElement, smMouse.I_Listener
 	
 	private void screenToWorld(smPoint screenPoint, smPoint outPoint)
 	{
-		bhCamera camera = sm_c.camera;
+		smCamera camera = sm_c.camera;
 		
 		outPoint.set(0, 0, 0);
 		camera.calcWorldPoint(screenPoint, outPoint);
@@ -360,7 +360,7 @@ public class smMouseNavigator implements smI_UIElement, smMouse.I_Listener
 			m_isMouseTouchingCell = false;
 		}*/
 		
-		bhGridCoordinate viewedOrTargetCoord = null;
+		smGridCoordinate viewedOrTargetCoord = null;
 		
 		if( m_cameraState instanceof State_ViewingCell )
 		{
@@ -394,7 +394,7 @@ public class smMouseNavigator implements smI_UIElement, smMouse.I_Listener
 	
 	private void updateMouse()
 	{
-		bhCamera camera = sm_c.camera;
+		smCamera camera = sm_c.camera;
 
 		updateMouseGridCoord(); // DRK > NOTE: This must be updated every frame, even with mouse still, mouse can still be moving in the world.
 		
@@ -407,9 +407,9 @@ public class smMouseNavigator implements smI_UIElement, smMouse.I_Listener
 		{
 			if ( m_cameraState instanceof State_CameraFloating )
 			{
-				bhPoint mouseDown3d = m_grabPoint;
-				bhPoint mouseCurrent3d = m_utilPoint1;
-				bhPoint camera3d = camera.getPosition();
+				smPoint mouseDown3d = m_grabPoint;
+				smPoint mouseCurrent3d = m_utilPoint1;
+				smPoint camera3d = camera.getPosition();
 				
 				//camera.calcWorldPoint(m_mouse.getMouseDownPoint(), mouseDown3d);
 				camera.calcWorldPoint(m_mouse.getMousePoint(), mouseCurrent3d);
@@ -452,7 +452,7 @@ public class smMouseNavigator implements smI_UIElement, smMouse.I_Listener
 					m_utilVector.setLength(10);
 					m_utilVector.rotate(Math.PI / 4);
 					m_scrollArrow.graphics.moveTo(m_mouseDownPoint.getX(), m_mouseDownPoint.getY());
-					bhPoint drawPoint = m_mouseDownPoint.clone();
+					smPoint drawPoint = m_mouseDownPoint.clone();
 					drawPoint.add(m_utilVector);
 					m_scrollArrow.graphics.lineTo(drawPoint.getX(), drawPoint.getY());
 					m_utilVector.rotate( -Math.PI / 2)

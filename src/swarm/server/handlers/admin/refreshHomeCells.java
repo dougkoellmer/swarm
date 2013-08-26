@@ -40,7 +40,7 @@ public class refreshHomeCells implements smI_RequestHandler
 	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
 	{
 		smI_BlobManager blobManager = sm_s.blobMngrFactory.create(smE_BlobCacheLevel.values());
-		bhUserSession session = sm_s.sessionMngr.getSession(request, response);
+		smUserSession session = sm_s.sessionMngr.getSession(request, response);
 		
 		smServerUser user = null;
 		try
@@ -56,7 +56,7 @@ public class refreshHomeCells implements smI_RequestHandler
 			return;
 		}
 		
-		smI_HomeCellCreator homeCellCreator = bhU_Handler.newObjectInstance(m_T_homeCellCreator, response);
+		smI_HomeCellCreator homeCellCreator = smU_Handler.newObjectInstance(m_T_homeCellCreator, response);
 		
 		if( homeCellCreator == null )  return;
 		

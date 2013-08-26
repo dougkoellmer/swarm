@@ -87,14 +87,14 @@ public class smVisualCellManager implements smI_UIElement, smI_CellPoolDelegate
 			public void onOkPressed()
 			{
 				smBufferCell bufferCell = getCurrentBufferCell();
-				bhVisualCell visualCell = (smVisualCell) bufferCell.getVisualization();
+				smVisualCell visualCell = (smVisualCell) bufferCell.getVisualization();
 				visualCell.getBlocker().setContent(null);
 				
-				bhAlertManager.getInstance().onHandled();
+				smAlertManager.getInstance().onHandled();
 			}
 		});
 		
-		bhAlertManager.getInstance().setDelegate(new smAlertManager.I_Delegate()
+		smAlertManager.getInstance().setDelegate(new smAlertManager.I_Delegate()
 		{
 			@Override
 			public void showAlert(String message)
@@ -115,12 +115,12 @@ public class smVisualCellManager implements smI_UIElement, smI_CellPoolDelegate
 					SafeHtml safeHtml = SafeHtmlUtils.fromString(message);
 					m_alertDialog.setTitle(title);
 					m_alertDialog.setBodySafeHtml(safeHtml);
-					bhVisualCell visualCell = (smVisualCell) bufferCell.getVisualization();
+					smVisualCell visualCell = (smVisualCell) bufferCell.getVisualization();
 					visualCell.getBlocker().setContent(m_alertDialog);
 				}
 				else
 				{
-					bhU_Debug.ASSERT(false, "Expected current cell to be set.");
+					smU_Debug.ASSERT(false, "Expected current cell to be set.");
 				}
 			}
 		});
@@ -130,11 +130,11 @@ public class smVisualCellManager implements smI_UIElement, smI_CellPoolDelegate
 	{
 		for( int i = m_queuedRemovals.size()-1; i >= 0; i-- )
 		{
-			bhVisualCell ithCell = m_queuedRemovals.get(i);
+			smVisualCell ithCell = m_queuedRemovals.get(i);
 			
 			if( ithCell.getParent() != null )
 			{
-				bhU_Debug.ASSERT(ithCell.getParent() == m_container, "processRemovals1");
+				smU_Debug.ASSERT(ithCell.getParent() == m_container, "processRemovals1");
 				
 				ithCell.removeFromParent();
 			}
@@ -147,13 +147,13 @@ public class smVisualCellManager implements smI_UIElement, smI_CellPoolDelegate
 	
 	public smI_BufferCellListener createVisualization(int width, int height, int padding, int subCellDim)
 	{
-		bhVisualCell newVisualCell = m_pool.allocate();
+		smVisualCell newVisualCell = m_pool.allocate();
 		
 		//s_logger.severe("Creating: " + newVisualCell.getId() + " at " + smCellBufferManager.getInstance().getUpdateCount());
 		
 		if( newVisualCell.getParent() != null )
 		{
-			bhU_Debug.ASSERT(false, "createVisualization1");
+			smU_Debug.ASSERT(false, "createVisualization1");
 		}
 		
 		newVisualCell.onCreate(width, height, padding, subCellDim);
@@ -163,7 +163,7 @@ public class smVisualCellManager implements smI_UIElement, smI_CellPoolDelegate
 	
 	public void destroyVisualization(smI_BufferCellListener visualization)
 	{
-		bhVisualCell visualCell = (smVisualCell) visualization;
+		smVisualCell visualCell = (smVisualCell) visualization;
 		
 		//s_logger.severe("Destroying: " + visualCell.getId() + " at " + smCellBufferManager.getInstance().getUpdateCount());
 		
@@ -176,7 +176,7 @@ public class smVisualCellManager implements smI_UIElement, smI_CellPoolDelegate
 			//---		forces a refresh of the cell buffer in the same update loop, right after the refresh that caused the 
 			//---		visualization to get created. Because this manager lazily adds/removes cells, the cell didn't have a
 			//---		chance to get a parent.
-			//bhU_Debug.ASSERT(false, "destroyVisualization1....bad parent: " + visualCell.getParent());
+			//smU_Debug.ASSERT(false, "destroyVisualization1....bad parent: " + visualCell.getParent());
 		}
 		
 		m_queuedRemovals.add(visualCell);
@@ -186,7 +186,7 @@ public class smVisualCellManager implements smI_UIElement, smI_CellPoolDelegate
 	{
 		if( m_cameraController == null )
 		{
-			bhU_Debug.ASSERT(false);
+			smU_Debug.ASSERT(false);
 			
 			return false;
 		}
@@ -208,13 +208,13 @@ public class smVisualCellManager implements smI_UIElement, smI_CellPoolDelegate
 		int bufferWidth = cellBuffer.getWidth();
 		int bufferHeight = cellBuffer.getHeight();
 		
-		bhCamera camera = sm_c.camera;
+		smCamera camera = sm_c.camera;
 		
 		double distanceRatio = camera.calcDistanceRatio();
 		
 		int subCellCount = cellBuffer.getSubCellCount();
 		
-		bhPoint basePoint = m_utilPoint1;
+		smPoint basePoint = m_utilPoint1;
 		cellBuffer.getCoordinate().calcPoint(basePoint, grid.getCellWidth(), grid.getCellHeight(), grid.getCellPadding(), 1);
 		camera.calcScreenPoint(basePoint, m_utilPoint2);
 		basePoint = m_utilPoint2;
@@ -224,7 +224,7 @@ public class smVisualCellManager implements smI_UIElement, smI_CellPoolDelegate
 		
 		m_lastBasePoint.copy(basePoint);
 		
-		double scaling = bhU_Grid.calcCellScaling(distanceRatio, subCellCount, grid.getCellPadding(), grid.getCellWidth());
+		double scaling = smU_Grid.calcCellScaling(distanceRatio, subCellCount, grid.getCellPadding(), grid.getCellWidth());
 		/*double factor = 1e5; // = 1 * 10^5 = 100000.
 		scaling = Math.round(scaling * factor) / factor;*/
 		
@@ -246,7 +246,7 @@ public class smVisualCellManager implements smI_UIElement, smI_CellPoolDelegate
 			cellHeightPlusPadding = grid.getCellHeight() * scaling;
 		}
 	
-		String scaleProperty = scaling < NO_SCALING ? bhU_UI.createScaleTransform(scaling) : null;
+		String scaleProperty = scaling < NO_SCALING ? smU_UI.createScaleTransform(scaling) : null;
 		
 		
 		
@@ -262,7 +262,7 @@ public class smVisualCellManager implements smI_UIElement, smI_CellPoolDelegate
 			//--- DRK > Serious malfunction here if hit.
 			//--- NOTE: Now cell buffer can have null cells (i.e. if they aren't owned).
 			//---		So this assert is now invalid...keeping for historical reference.
-			//bhU_Debug.ASSERT(cellBuffer.getCellCount() == m_pool.getAllocCount(), "bhVisualCellManager::update1");
+			//smU_Debug.ASSERT(cellBuffer.getCellCount() == m_pool.getAllocCount(), "smVisualCellManager::update1");
 			
 			for ( int i = 0; i < bufferSize; i++ )
 			{
@@ -276,15 +276,15 @@ public class smVisualCellManager implements smI_UIElement, smI_CellPoolDelegate
 				double offsetX = (ix * (cellWidthPlusPadding));
 				double offsetY = (iy * (cellHeightPlusPadding));
 				
-				bhVisualCell ithVisualCell = (smVisualCell) ithBufferCell.getVisualization();
+				smVisualCell ithVisualCell = (smVisualCell) ithBufferCell.getVisualization();
 				
 				ithVisualCell.validate();
 				
 				double translateX = basePoint.getX() + offsetX;
 				double translateY = basePoint.getY() + offsetY;
-				String translateProperty = bhU_UI.createTranslateTransform(translateX, translateY);
+				String translateProperty = smU_UI.createTranslateTransform(translateX, translateY);
 				String transform = scaleProperty != null ? translateProperty + " " + scaleProperty : translateProperty;
-				bhU_UI.setTransform(ithVisualCell.getElement(), transform);
+				smU_UI.setTransform(ithVisualCell.getElement(), transform);
 				
 				ithVisualCell.update(timeStep);
 				
@@ -315,7 +315,7 @@ public class smVisualCellManager implements smI_UIElement, smI_CellPoolDelegate
 			
 			if( ithBufferCell == null ) continue;
 			
-			bhVisualCell ithVisualCell = (smVisualCell) ithBufferCell.getVisualization();
+			smVisualCell ithVisualCell = (smVisualCell) ithBufferCell.getVisualization();
 			ithVisualCell.update(timeStep);
 		}
 	}
@@ -412,20 +412,20 @@ public class smVisualCellManager implements smI_UIElement, smI_CellPoolDelegate
 	
 	public void clearAlerts()
 	{
-		bhAlertManager.getInstance().clear();
+		smAlertManager.getInstance().clear();
 		
 		smBufferCell bufferCell = getCurrentBufferCell();
 		
 		if( bufferCell != null )
 		{
-			bhVisualCell cell = (smVisualCell) bufferCell.getVisualization();
+			smVisualCell cell = (smVisualCell) bufferCell.getVisualization();
 			cell.getBlocker().setContent(null);
 		}
 		else
 		{
 			//--- DRK > Below assert trips badly when exiting view state...state is already
 			//---		exited when we get to here.
-			//bhU_Debug.ASSERT(false, "Expected current cell to be set.");
+			//smU_Debug.ASSERT(false, "Expected current cell to be set.");
 		}
 	}
 }

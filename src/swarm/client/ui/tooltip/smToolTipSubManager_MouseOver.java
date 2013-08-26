@@ -57,7 +57,7 @@ class smToolTipSubManager_MouseOver implements smI_ToolTipSubManager, MouseOverH
 		}
 	};
 	
-	bhToolTipSubManager_MouseOver(smToolTipManager toolTipManager, int delayMilliseconds)
+	smToolTipSubManager_MouseOver(smToolTipManager toolTipManager, int delayMilliseconds)
 	{
 		m_delayMilliseconds = delayMilliseconds;
 		m_toolTipManager = toolTipManager;
@@ -67,7 +67,7 @@ class smToolTipSubManager_MouseOver implements smI_ToolTipSubManager, MouseOverH
 	{
 		if( m_moveHandler != null )
 		{
-			//--- DRK > NOTE: Should prolly be an bhU_Debug.ASSERT case normally, but the whole event flow is spaghettied, so screw it.
+			//--- DRK > NOTE: Should prolly be an smU_Debug.ASSERT case normally, but the whole event flow is spaghettied, so screw it.
 			
 			return;
 		}
@@ -79,7 +79,7 @@ class smToolTipSubManager_MouseOver implements smI_ToolTipSubManager, MouseOverH
 	{
 		if( m_upHandler != null )
 		{
-			//bhU_Debug.ASSERT(false); // TODO: something's hitting this...no idea why
+			//smU_Debug.ASSERT(false); // TODO: something's hitting this...no idea why
 			
 			return;
 		}
@@ -138,9 +138,9 @@ class smToolTipSubManager_MouseOver implements smI_ToolTipSubManager, MouseOverH
 		
 		Element element = event.getRelativeElement();
 		
-		bhToolTipConfig config = m_tipMap.get(element);
+		smToolTipConfig config = m_tipMap.get(element);
 		
-		bhU_Debug.ASSERT(config!= null, "bhToolTipSubManager_MouseOver::onMouseOver1");
+		smU_Debug.ASSERT(config!= null, "smToolTipSubManager_MouseOver::onMouseOver1");
 
 		m_toolTipManager.prepareTip(m_toolTip, element, config);
 

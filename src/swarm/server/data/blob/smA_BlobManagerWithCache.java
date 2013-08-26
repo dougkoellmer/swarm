@@ -24,14 +24,14 @@ abstract class smA_BlobManagerWithCache extends smA_BlobManager
 	
 	//--- DRK > The following abstract methods somewhat mirror the interface methods, and are
 	//---		overridden instead of the interface methods, which are finalized here.
-	protected abstract void putBlobIntoCache(String generatedKey, smI_Blob blob) throws bhBlobException;
-	protected abstract <T extends smI_Blob> smI_Blob getBlobFromCache(String generatedKey, Class<? extends T> blobType) throws bhBlobException;
-	protected abstract Map<smI_BlobKey, smI_Blob> getBlobsFromCache(Map<smI_BlobKey, Class<? extends smI_Blob>> values) throws bhBlobException;
-	protected abstract void deleteBlobFromCache(String generatedKey) throws bhBlobException;
-	protected abstract void deleteBlobsFromCache(Map<smI_BlobKey, Class<? extends smI_Blob>> values) throws bhBlobException;
-	protected abstract void putBlobsIntoCache(Map<smI_BlobKey, smI_Blob> values) throws bhBlobException;
+	protected abstract void putBlobIntoCache(String generatedKey, smI_Blob blob) throws smBlobException;
+	protected abstract <T extends smI_Blob> smI_Blob getBlobFromCache(String generatedKey, Class<? extends T> blobType) throws smBlobException;
+	protected abstract Map<smI_BlobKey, smI_Blob> getBlobsFromCache(Map<smI_BlobKey, Class<? extends smI_Blob>> values) throws smBlobException;
+	protected abstract void deleteBlobFromCache(String generatedKey) throws smBlobException;
+	protected abstract void deleteBlobsFromCache(Map<smI_BlobKey, Class<? extends smI_Blob>> values) throws smBlobException;
+	protected abstract void putBlobsIntoCache(Map<smI_BlobKey, smI_Blob> values) throws smBlobException;
 	
-	private void private_putBlobIntoCache(String generatedKey, smI_Blob blob) throws bhBlobException
+	private void private_putBlobIntoCache(String generatedKey, smI_Blob blob) throws smBlobException
 	{
 		if( this.isCacheable(blob) )
 		{
@@ -45,7 +45,7 @@ abstract class smA_BlobManagerWithCache extends smA_BlobManager
 	}
 	
 	@Override
-	public final void putBlob(smI_BlobKey keySource, smI_Blob blob) throws bhBlobException, ConcurrentModificationException
+	public final void putBlob(smI_BlobKey keySource, smI_Blob blob) throws smBlobException, ConcurrentModificationException
 	{
 		if( m_wrappedManager != null )
 		{
@@ -56,7 +56,7 @@ abstract class smA_BlobManagerWithCache extends smA_BlobManager
 	}
 	
 	@Override
-	public final <T extends smI_Blob> T getBlob(smI_BlobKey keySource, Class<? extends T> blobType) throws bhBlobException
+	public final <T extends smI_Blob> T getBlob(smI_BlobKey keySource, Class<? extends T> blobType) throws smBlobException
 	{
 		smI_Blob template = m_templateMngr.getTemplate(blobType);
 		
@@ -81,7 +81,7 @@ abstract class smA_BlobManagerWithCache extends smA_BlobManager
 	}
 	
 	@Override
-	public final void deleteBlob(smI_BlobKey keySource, Class<? extends smI_Blob> blobType) throws bhBlobException
+	public final void deleteBlob(smI_BlobKey keySource, Class<? extends smI_Blob> blobType) throws smBlobException
 	{
 		smI_Blob blobTemplate = m_templateMngr.getTemplate(blobType);
 		
@@ -94,13 +94,13 @@ abstract class smA_BlobManagerWithCache extends smA_BlobManager
 	}
 	
 	@Override
-	public final void deleteBlobAsync(smI_BlobKey keySource, Class<? extends smI_Blob> blobType) throws bhBlobException
+	public final void deleteBlobAsync(smI_BlobKey keySource, Class<? extends smI_Blob> blobType) throws smBlobException
 	{
 		this.deleteBlob(keySource, blobType);
 	}
 	
 	@Override
-	public final void deleteBlobs(Map<smI_BlobKey, Class<? extends smI_Blob>> values) throws bhBlobException
+	public final void deleteBlobs(Map<smI_BlobKey, Class<? extends smI_Blob>> values) throws smBlobException
 	{
 		this.deleteBlobsFromCache(values);
 		
@@ -111,13 +111,13 @@ abstract class smA_BlobManagerWithCache extends smA_BlobManager
 	}
 	
 	@Override
-	public final void deleteBlobsAsync(Map<smI_BlobKey, Class<? extends smI_Blob>> values) throws bhBlobException
+	public final void deleteBlobsAsync(Map<smI_BlobKey, Class<? extends smI_Blob>> values) throws smBlobException
 	{
 		this.deleteBlobs(values);
 	}
 	
 	@Override
-	public final void putBlobs(Map<smI_BlobKey, smI_Blob> values) throws bhBlobException
+	public final void putBlobs(Map<smI_BlobKey, smI_Blob> values) throws smBlobException
 	{
 		if( this.m_wrappedManager != null)
 		{
@@ -128,7 +128,7 @@ abstract class smA_BlobManagerWithCache extends smA_BlobManager
 	}
 	
 	@Override
-	public final Map<smI_BlobKey, smI_Blob> getBlobs(Map<smI_BlobKey, Class<? extends smI_Blob>> values) throws bhBlobException
+	public final Map<smI_BlobKey, smI_Blob> getBlobs(Map<smI_BlobKey, Class<? extends smI_Blob>> values) throws smBlobException
 	{
 		Map<smI_BlobKey, smI_Blob> cachedBlobs = this.getBlobsFromCache(values);
 		
@@ -211,7 +211,7 @@ abstract class smA_BlobManagerWithCache extends smA_BlobManager
 	}
 	
 	@Override
-	public Map<smI_BlobKey, smI_Blob> performQuery(smBlobQuery query) throws bhBlobException
+	public Map<smI_BlobKey, smI_Blob> performQuery(smBlobQuery query) throws smBlobException
 	{
 		//--- DRK > Probably never going to support queries here.
 		if( this.m_wrappedManager != null )
@@ -223,7 +223,7 @@ abstract class smA_BlobManagerWithCache extends smA_BlobManager
 	}
 	
 	@Override
-	public final void putBlobAsync(smI_BlobKey keySource, smI_Blob blob) throws bhBlobException
+	public final void putBlobAsync(smI_BlobKey keySource, smI_Blob blob) throws smBlobException
 	{
 		//--- DRK > Probably never going to support queries here.
 		if( this.m_wrappedManager != null )
@@ -235,7 +235,7 @@ abstract class smA_BlobManagerWithCache extends smA_BlobManager
 	}
 	
 	@Override
-	public final void putBlobsAsync(Map<smI_BlobKey, smI_Blob> values) throws bhBlobException
+	public final void putBlobsAsync(Map<smI_BlobKey, smI_Blob> values) throws smBlobException
 	{
 		//--- DRK > Probably never going to support queries here.
 		if( this.m_wrappedManager != null )

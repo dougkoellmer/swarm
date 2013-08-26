@@ -132,12 +132,12 @@ public class State_EditingCode extends smA_State
 	{
 		State_ViewingCell viewingState = smA_State.getForegroundedInstance(State_ViewingCell.class);
 		smBufferCell viewedCell = viewingState.getCell();
-		bhGridCoordinate coord = viewedCell.getCoordinate();
+		smGridCoordinate coord = viewedCell.getCoordinate();
 		
 		smA_ClientUser user = sm_c.userMngr.getUser();
-		bhCode sourceCode = user.getCode(coord, smE_CodeType.SOURCE);
+		smCode sourceCode = user.getCode(coord, smE_CodeType.SOURCE);
 		
-		bhCompilerResult compilerResult = sm_c.codeCompiler.compile(sourceCode, viewedCell.getCodePrivileges(), /*namespace=*/null);
+		smCompilerResult compilerResult = sm_c.codeCompiler.compile(sourceCode, viewedCell.getCodePrivileges(), /*namespace=*/null);
 		
 		if( compilerResult.getStatus() == smE_CompilationStatus.NO_ERROR )
 		{
@@ -153,13 +153,13 @@ public class State_EditingCode extends smA_State
 			}
 			else
 			{
-				bhU_Debug.ASSERT(false, "performCommitOrPreview");
+				smU_Debug.ASSERT(false, "performCommitOrPreview");
 			}
 		}
 		else
 		{
 			String title = "Compiler Error";
-			String body = bhCompilerErrorMessageGenerator.getInstance().generate(compilerResult);
+			String body = smCompilerErrorMessageGenerator.getInstance().generate(compilerResult);
 			
 			StateMachine_Base baseController = smA_State.getEnteredInstance(StateMachine_Base.class);
 			
@@ -196,7 +196,7 @@ public class State_EditingCode extends smA_State
 		
 		//--- DRK > There are other mechanisms in place to prevent syncing/previewing from clashing with
 		//---		account management transactions, but the more the merrier I say.
-		bhClientAccountManager.E_WaitReason waitReason = sm_c.accountMngr.getWaitReason();
+		smClientAccountManager.E_WaitReason waitReason = sm_c.accountMngr.getWaitReason();
 		switch(waitReason)
 		{
 			case SIGNING_IN:
@@ -241,7 +241,7 @@ public class State_EditingCode extends smA_State
 	
 	public smCode getCode()
 	{
-		bhCode code = ((StateMachine_EditingCode)getParent()).getCode();
+		smCode code = ((StateMachine_EditingCode)getParent()).getCode();
 		return code != null ? code : new smCode("", smE_CodeType.SOURCE);
 	}
 	

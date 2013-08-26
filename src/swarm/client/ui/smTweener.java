@@ -37,7 +37,7 @@ public class smTweener
 	{
 		m_elapsedTime += timeStep;
 		
-		m_elapsedTime = bhU_Math.clamp(m_elapsedTime, 0, m_tweenTime);
+		m_elapsedTime = smU_Math.clamp(m_elapsedTime, 0, m_tweenTime);
 		
 		double timeRatio = 1 - m_elapsedTime / m_tweenTime;
 		

@@ -6,7 +6,7 @@ public class smU_Time
 {
 	private static long s_startTime = 0;
 	
-	private bhU_Time()
+	private smU_Time()
 	{
 		
 	}

@@ -155,11 +155,11 @@ public class smSignUpPanel extends VerticalPanel implements smI_StateEventListen
 		
 		m_button.addStyleName("sm_signup_button");
 		
-		bhAlignmentDefinition alignment = bhU_Alignment.createHorRightVerCenter(smS_UI.TOOl_TIP_PADDING);
+		smAlignmentDefinition alignment = smU_Alignment.createHorRightVerCenter(smS_UI.TOOl_TIP_PADDING);
 		alignment.setPadding(smE_AlignmentType.MASTER_ANCHOR_VERTICAL, -1.0);
 		
-		bhToolTipManager toolTipper = sm_c.toolTipMngr;
-		bhToolTipConfig config = null;
+		smToolTipManager toolTipper = sm_c.toolTipMngr;
+		smToolTipConfig config = null;
 		
 		config = new smToolTipConfig(smE_ToolTipType.FOCUS, alignment, "Uniquely identifies you.  Invisible to others.");
 		toolTipper.addTip(m_emailInput.getTextBox(), config);
@@ -215,8 +215,8 @@ public class smSignUpPanel extends VerticalPanel implements smI_StateEventListen
 		m_stack.add(bottomDock);
 		
 		/*final Label legal = new Label();
-		String termsHref = bhU_Code.transformPathToJavascript("b33hive/terms");
-		String privacyHref = bhU_Code.transformPathToJavascript("b33hive/privacy");
+		String termsHref = smU_Code.transformPathToJavascript("b33hive/terms");
+		String privacyHref = smU_Code.transformPathToJavascript("b33hive/privacy");
 		legal.getElement().setInnerHTML("By signing up you agree to our<br><a class='sm_terms_anchor' href=\""+termsHref+"\">Terms</a> and <a class='sm_terms_anchor' href=\""+privacyHref+"\">Privacy Policy</a>.");
 		m_stack.add(legal);
 		m_stack.setCellHorizontalAlignment(legal, HasHorizontalAlignment.ALIGN_RIGHT);*/
@@ -361,7 +361,7 @@ public class smSignUpPanel extends VerticalPanel implements smI_StateEventListen
 	
 	private void updateToolTips()
 	{
-		bhToolTipManager toolTipper = sm_c.toolTipMngr;
+		smToolTipManager toolTipper = sm_c.toolTipMngr;
 		
 		for( int i = 0; i < m_inputs.length; i++ )
 		{
@@ -383,7 +383,7 @@ public class smSignUpPanel extends VerticalPanel implements smI_StateEventListen
 			{
 				if( event.getState() instanceof State_SignInOrUp )
 				{
-					bhClientAccountManager accountManager = sm_c.accountMngr;
+					smClientAccountManager accountManager = sm_c.accountMngr;
 					smSignUpValidationResult result = accountManager.checkOutLatestBadSignUpResult();
 					
 					if( result != null )
@@ -423,7 +423,7 @@ public class smSignUpPanel extends VerticalPanel implements smI_StateEventListen
 				{
 					StateMachine_Base.OnAccountManagerResponse.Args args = event.getActionArgs();
 					
-					bhClientAccountManager.E_ResponseType responseType = args.getType();
+					smClientAccountManager.E_ResponseType responseType = args.getType();
 					
 					switch(responseType)
 					{

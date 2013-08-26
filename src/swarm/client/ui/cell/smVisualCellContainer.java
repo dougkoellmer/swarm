@@ -79,7 +79,7 @@ public class smVisualCellContainer extends FlowPanel implements ResizeHandler, s
 		
 		Window.addResizeHandler(this);
 
-		//bhU_UI.toggleSelectability(this.getElement(), false);
+		//smU_UI.toggleSelectability(this.getElement(), false);
 		
 		final LayoutPanel magnifierContainer = new LayoutPanel();
 		magnifierContainer.setSize("100%", "100%");
@@ -148,13 +148,13 @@ public class smVisualCellContainer extends FlowPanel implements ResizeHandler, s
 			return;
 		}
 		
-		bhCamera camera = sm_c.camera;
+		smCamera camera = sm_c.camera;
 	
 		double gridWidthInPixels = grid.calcPixelWidth();
 		double gridHeightInPixels = grid.calcPixelHeight();
 		
-		bhPoint worldPoint = s_utilPoint1;
-		bhPoint screenPoint = s_utilPoint2;
+		smPoint worldPoint = s_utilPoint1;
+		smPoint screenPoint = s_utilPoint2;
 
 		worldPoint.zeroOut();
 		worldPoint.inc(gridWidthInPixels, gridHeightInPixels, 0);
@@ -216,9 +216,9 @@ public class smVisualCellContainer extends FlowPanel implements ResizeHandler, s
 				{
 					//TODO: Make sure cell exits cleanly, somehow.
 					
-					//bhVisualCell viewedVisualCell = (smVisualCell) m_viewedCell.getVisualization();
+					//smVisualCell viewedVisualCell = (smVisualCell) m_viewedCell.getVisualization();
 					
-					//bhU_UI.toggleSelectability(m_cellContainerInner.getElement(), false);
+					//smU_UI.toggleSelectability(m_cellContainerInner.getElement(), false);
 					
 					//viewedVisualCell.getElement().blur(); // TODO: This doesn't work to clear selection of cell contents if you navigate away.
 					
@@ -242,20 +242,20 @@ public class smVisualCellContainer extends FlowPanel implements ResizeHandler, s
 					{
 						smBufferCell viewedCell = ((State_ViewingCell) event.getState()).getCell();
 						
-						bhMouseNavigator navigator = bhMouseNavigator.getInstance();
+						smMouseNavigator navigator = smMouseNavigator.getInstance();
 	
 						/*if( navigator.getMouseGridCoord().isEqualTo(viewedCell.getCoordinate()) )
 						{
-							bhU_UI.toggleSelectability(m_cellContainerInner.getElement(), true);
+							smU_UI.toggleSelectability(m_cellContainerInner.getElement(), true);
 						}
 						else
 						{
-							bhU_UI.toggleSelectability(m_cellContainerInner.getElement(), false);
+							smU_UI.toggleSelectability(m_cellContainerInner.getElement(), false);
 						}*/
 					}
 					else
 					{
-						//bhU_UI.toggleSelectability(m_cellContainerInner.getElement(), false);
+						//smU_UI.toggleSelectability(m_cellContainerInner.getElement(), false);
 					}
 				}
 				

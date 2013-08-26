@@ -12,11 +12,11 @@ import swarm.shared.transaction.smTransactionRequest;
 import swarm.shared.transaction.smTransactionResponse;
 
 
-class smTransactionResponseBatch extends bhTransactionResponse
+class smTransactionResponseBatch extends smTransactionResponse
 {
 	private final ArrayList<smTransactionResponse> m_responses = new ArrayList<smTransactionResponse>();
 	
-	bhTransactionResponseBatch()
+	smTransactionResponseBatch()
 	{
 		super();
 	}
@@ -35,7 +35,7 @@ class smTransactionResponseBatch extends bhTransactionResponse
 		
 		for ( int i = 0; i < m_responses.size(); i++ )
 		{
-			bhTransactionResponse ithResponse = m_responses.get(i);
+			smTransactionResponse ithResponse = m_responses.get(i);
 			
 			responsesJson.addObject(ithResponse.writeJson());
 		}

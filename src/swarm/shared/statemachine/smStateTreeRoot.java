@@ -139,7 +139,7 @@ public class smStateTreeRoot
 	
 	private void cleanListeners()
 	{
-		bhU_Debug.ASSERT(!m_processEventQueue_hasEntered);
+		smU_Debug.ASSERT(!m_processEventQueue_hasEntered);
 		
 		for( int i = m_listeners.size()-1; i >= 0; i-- )
 		{
@@ -237,7 +237,7 @@ public class smStateTreeRoot
 		
 		if( m_eventQueueIndex >= m_eventQueue.size() )
 		{
-			bhU_Debug.ASSERT(m_eventQueueIndex == m_eventQueue.size() );
+			smU_Debug.ASSERT(m_eventQueueIndex == m_eventQueue.size() );
 			
 			m_eventQueue.clear();
 			m_eventQueueIndex= 0;

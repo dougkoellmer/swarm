@@ -2,7 +2,7 @@ package swarm.shared.utils;
 
 public final class smU_Math
 {
-	private bhU_Math()
+	private smU_Math()
 	{
 		
 	}

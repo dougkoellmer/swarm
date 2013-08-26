@@ -50,9 +50,9 @@ public class deactivateUserCells implements smI_RequestHandler
 			return;
 		}
 		
-		bhUserSession dummySession = new smUserSession(accountId, "", smE_Role.USER);
+		smUserSession dummySession = new smUserSession(accountId, "", smE_Role.USER);
 		
-		bhBlobTransaction_DeactivateUserCells deactivateCells = new smBlobTransaction_DeactivateUserCells(dummySession);
+		smBlobTransaction_DeactivateUserCells deactivateCells = new smBlobTransaction_DeactivateUserCells(dummySession);
 		
 		try
 		{

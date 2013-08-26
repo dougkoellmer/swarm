@@ -10,19 +10,19 @@ import com.google.appengine.api.datastore.TransactionOptions;
 
 public class smBlobTransactionManager
 {
-	private static bhBlobTransactionManager s_instance = null;
+	private static smBlobTransactionManager s_instance = null;
 	
 	static void startUp()
 	{
 		s_instance = new smBlobTransactionManager();
 	}
 	
-	bhBlobTransactionManager()
+	smBlobTransactionManager()
 	{
 		
 	}
 	
-	static bhBlobTransactionManager getInstance()
+	static smBlobTransactionManager getInstance()
 	{
 		return s_instance;
 	}
@@ -63,7 +63,7 @@ public class smBlobTransactionManager
 		return transaction;
 	}
 	
-	void beginTransaction(smE_BlobTransactionType type) throws bhBlobException
+	void beginTransaction(smE_BlobTransactionType type) throws smBlobException
 	{
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		
@@ -103,7 +103,7 @@ public class smBlobTransactionManager
 		}
 	}
 	
-	void endTransaction() throws bhBlobException, ConcurrentModificationException
+	void endTransaction() throws smBlobException, ConcurrentModificationException
 	{
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		

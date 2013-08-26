@@ -50,11 +50,11 @@ class smSessionCookieValue extends smA_JsonEncodable implements smI_BlobKey
 	
 	public smSessionCookieValue(Integer accountId, smE_SessionType type)
 	{
-		m_token = bhU_Hashing.calcRandomSaltString(smS_Session.SESSION_TOKEN_BYTES);
-		m_tokenSalt = bhU_Hashing.calcRandomSaltString(smS_Session.SESSION_TOKEN_BYTES);
+		m_token = smU_Hashing.calcRandomSaltString(smS_Session.SESSION_TOKEN_BYTES);
+		m_tokenSalt = smU_Hashing.calcRandomSaltString(smS_Session.SESSION_TOKEN_BYTES);
 		m_accountId = accountId;
 		
-		m_hashedToken = bhU_Hashing.hashWithSalt(m_token, m_tokenSalt);
+		m_hashedToken = smU_Hashing.hashWithSalt(m_token, m_tokenSalt);
 		
 		m_type = type;
 	}
@@ -79,12 +79,12 @@ class smSessionCookieValue extends smA_JsonEncodable implements smI_BlobKey
 		m_accountId = sm.jsonFactory.getHelper().getInt(json, JsonKey.ACCOUNT_ID);
 		m_tokenSalt = sm.jsonFactory.getHelper().getString(json, JsonKey.TOKEN_SALT);
 		
-		m_hashedToken = bhU_Hashing.hashWithSalt(m_token, m_tokenSalt);
+		m_hashedToken = smU_Hashing.hashWithSalt(m_token, m_tokenSalt);
 	}
 
 	@Override
 	public String createBlobKey(smI_Blob blob)
 	{
-		return bhU_Blob.generateKey(blob, m_type.getBlobKeyComponent(), m_hashedToken);
+		return smU_Blob.generateKey(blob, m_type.getBlobKeyComponent(), m_hashedToken);
 	}
 }

@@ -129,13 +129,13 @@ public class smCellBufferManager implements smI_LocalCodeRepository
 		m_backBuffer.drain();
 	}
 
-	public void update(smA_Grid grid, smCamera camera, smI_LocalCodeRepository alternativeCodeSource, int options__extends__bhF_BufferUpdateOption)
+	public void update(smA_Grid grid, smCamera camera, smI_LocalCodeRepository alternativeCodeSource, int options__extends__smF_BufferUpdateOption)
 	{
 		m_updateCount++;
 		
 		//--- DRK > Figure out how big each cell is relative to a fully zoomed in cell.
 		/*int gridSize = grid.getSize();
-		int gridSizeUpperOf2 = gridSize == 0 ? 0 : bhU_BitTricks.calcUpperPowerOfTwo(gridSize);
+		int gridSizeUpperOf2 = gridSize == 0 ? 0 : smU_BitTricks.calcUpperPowerOfTwo(gridSize);
 		double distanceRatio = camera.calcDistanceRatio();
 		int cellSize = 1;
 		double pixelCount = smS_App.CELL_PLUS_SPACING_PIXEL_COUNT;
@@ -143,7 +143,7 @@ public class smCellBufferManager implements smI_LocalCodeRepository
 		double n = smS_App.CELL_PIXEL_COUNT / cellNMultiplier;
 		n = n < 1 ? 1 : n;
 		cellSize = (int) Math.floor(n);
-		cellSize = bhU_BitTricks.calcLowerPowerOfTwo(cellSize);
+		cellSize = smU_BitTricks.calcLowerPowerOfTwo(cellSize);
 		cellSize = cellSize <= 4 ? 1 : cellSize; // COMMENT OUT TO get correct cell sizes.
 		cellSize = cellSize > gridSizeUpperOf2 ? gridSizeUpperOf2 : cellSize;*/
 		
@@ -195,7 +195,7 @@ public class smCellBufferManager implements smI_LocalCodeRepository
 		
 		m_backBuffer.setExtents(m_utilCoord1.getM(), m_utilCoord1.getN(), newBufferWidth, newBufferHeight);
 		m_backBuffer.setCellSize(subCellDim);
-		m_backBuffer.imposeBuffer(grid, m_displayBuffer, alternativeCodeSource, options__extends__bhF_BufferUpdateOption);
+		m_backBuffer.imposeBuffer(grid, m_displayBuffer, alternativeCodeSource, options__extends__smF_BufferUpdateOption);
 		
 		//s_logger.info(smCellPool.getInstance().getAllocCount() + "");
 		
@@ -212,9 +212,9 @@ public class smCellBufferManager implements smI_LocalCodeRepository
 			return;
 		}
 		
-		bhGridCoordinate coordOfCenterCell = topLeft_out;
-		bhPoint worldPointOfCenterCell = m_utilPoint1;
-		bhPoint screenPointOfCenterCell = m_utilPoint2;
+		smGridCoordinate coordOfCenterCell = topLeft_out;
+		smPoint worldPointOfCenterCell = m_utilPoint1;
+		smPoint screenPointOfCenterCell = m_utilPoint2;
 		double distanceRatio = camera.calcDistanceRatio();
 		
 		double cellWidthPlusPadding = (grid.getCellWidth() + grid.getCellPadding()) * subCellCountDim;
@@ -250,7 +250,7 @@ public class smCellBufferManager implements smI_LocalCodeRepository
 	@Override
 	public boolean tryPopulatingCell(smGridCoordinate coordinate, smE_CodeType eType, smA_Cell outCell)
 	{
-		bhCode toReturn = null;
+		smCode toReturn = null;
 		smBufferCell thisCell = null;
 		
 		if( m_displayBuffer.isInBoundsAbsolute(coordinate) )
@@ -274,7 +274,7 @@ public class smCellBufferManager implements smI_LocalCodeRepository
 					
 					if( thisCell.getStatus(ithType) == smE_CodeStatus.HAS_CODE )
 					{
-						bhCode potentialStandIn = thisCell.getCode(ithType);
+						smCode potentialStandIn = thisCell.getCode(ithType);
 						
 						if( potentialStandIn != null )
 						{
@@ -287,7 +287,7 @@ public class smCellBufferManager implements smI_LocalCodeRepository
 						}
 						else
 						{
-							bhU_Debug.ASSERT(false, "Code shouldn't be null here.");
+							smU_Debug.ASSERT(false, "Code shouldn't be null here.");
 						}
 					}
 				}

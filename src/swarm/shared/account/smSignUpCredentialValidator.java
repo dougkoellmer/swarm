@@ -22,7 +22,7 @@ public class smSignUpCredentialValidator implements smI_SignUpCredentialValidato
 		{
 			return smE_SignUpValidationError.USERNAME_TOO_LONG;
 		}
-		else if( !bhU_Regex.calcIsMatch(credential, smS_Account.USERNAME_REGEX) )
+		else if( !smU_Regex.calcIsMatch(credential, smS_Account.USERNAME_REGEX) )
 		{
 			return smE_SignUpValidationError.USERNAME_INVALID;
 		}

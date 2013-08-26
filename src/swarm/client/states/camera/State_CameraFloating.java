@@ -24,7 +24,7 @@ public class State_CameraFloating extends smA_State
 	{
 		if ( revealingState == null )
 		{
-		//	bhCamera camera = (getParent() as StateMachine_CameraController).getCamera();
+		//	smCamera camera = (getParent() as StateMachine_CameraController).getCamera();
 			//m_targetPosition.copy(camera.getPosition());
 		}
 	}
@@ -32,7 +32,7 @@ public class State_CameraFloating extends smA_State
 	@Override
 	protected void update(double timeStep)
 	{
-		//bhCamera camera = (getParent() as StateMachine_CameraController).getCamera();
+		//smCamera camera = (getParent() as StateMachine_CameraController).getCamera();
 	}
 	
 	@Override

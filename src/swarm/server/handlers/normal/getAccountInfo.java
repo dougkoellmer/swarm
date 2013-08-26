@@ -20,8 +20,8 @@ public class getAccountInfo implements smI_RequestHandler
 			return;
 		}
 		
-		bhUserSession userSession = sm_s.sessionMngr.getSession(request, response);
-		bhAccountInfo accountInfo = new smAccountInfo(userSession.getUsername());
+		smUserSession userSession = sm_s.sessionMngr.getSession(request, response);
+		smAccountInfo accountInfo = new smAccountInfo(userSession.getUsername());
 		accountInfo.writeJson(response.getJson());
 	}
 }

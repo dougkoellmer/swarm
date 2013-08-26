@@ -22,7 +22,7 @@ import com.google.gwt.http.client.RequestBuilder;
  * ...
  * @author 
  */
-public class smTransactionRequestBatch extends bhTransactionRequest
+public class smTransactionRequestBatch extends smTransactionRequest
 {	
 	private final ArrayList<smTransactionRequest> m_requestList = new ArrayList<smTransactionRequest>();
 	
@@ -60,7 +60,7 @@ public class smTransactionRequestBatch extends bhTransactionRequest
 	{
 		for( int i = m_requestList.size()-1; i >= 0; i-- )
 		{
-			bhTransactionRequest ithRequest =  m_requestList.get(i);
+			smTransactionRequest ithRequest =  m_requestList.get(i);
 			
 			if( ithRequest.isCancelled() )  continue;
 			
@@ -96,7 +96,7 @@ public class smTransactionRequestBatch extends bhTransactionRequest
 		
 		for( int i = m_requestList.size()-1; i >= 0; i-- )
 		{
-			bhTransactionRequest request = m_requestList.get(i);
+			smTransactionRequest request = m_requestList.get(i);
 			
 			if( request.getPath() == path && request != exclusion_nullable )
 			{
@@ -135,7 +135,7 @@ public class smTransactionRequestBatch extends bhTransactionRequest
 		
 		for ( int i = 0; i < m_requestList.size(); i++ )
 		{
-			bhTransactionRequest ithRequest = m_requestList.get(i);
+			smTransactionRequest ithRequest = m_requestList.get(i);
 			
 			//--- DRK > Request can be cancelled by a synchronous request dispatcher.
 			if( !ithRequest.isCancelled() )

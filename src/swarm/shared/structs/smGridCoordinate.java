@@ -53,7 +53,7 @@ public class smGridCoordinate extends smA_JsonEncodable
 	@Override
 	public boolean equals(Object object)
 	{
-		if( object instanceof bhGridCoordinate )
+		if( object instanceof smGridCoordinate )
 		{
 			return this.isEqualTo((smGridCoordinate) object);
 		}

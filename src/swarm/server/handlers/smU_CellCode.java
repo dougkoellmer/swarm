@@ -47,7 +47,7 @@ public final class smU_CellCode
 {
 	private static final Logger s_logger = Logger.getLogger(smU_CellCode.class.getName());
 	
-	private bhU_CellCode()
+	private smU_CellCode()
 	{
 	}
 	
@@ -72,7 +72,7 @@ public final class smU_CellCode
 			return false;
 		}
 		
-		bhU_CellCode.removeFromCache(mapping);
+		smU_CellCode.removeFromCache(mapping);
 		
 		return true;
 	}
@@ -113,11 +113,11 @@ public final class smU_CellCode
 		return persistedCell;
 	}
 	
-	public static bhCompilerResult compileCell(smServerCell cell, smCode sourceCode, smCellAddressMapping mapping)
+	public static smCompilerResult compileCell(smServerCell cell, smCode sourceCode, smCellAddressMapping mapping)
 	{
 		cell.setCode(smE_CodeType.SOURCE, sourceCode); // DRK > may be redundant.
 		
-		bhCompilerResult result = sm.codeCompiler.compile(sourceCode, cell.getCodePrivileges(), mapping.writeString());
+		smCompilerResult result = sm.codeCompiler.compile(sourceCode, cell.getCodePrivileges(), mapping.writeString());
 		
 		if( result.getStatus() == smE_CompilationStatus.NO_ERROR )
 		{

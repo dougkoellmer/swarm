@@ -24,7 +24,7 @@ public class State_ManageAccount extends smA_State
 		@Override
 		public void perform(smA_ActionArgs args)
 		{
-			bhClientAccountManager accountManager = sm_c.accountMngr;
+			smClientAccountManager accountManager = sm_c.accountMngr;
 			accountManager.signOut();
 			
 			machine_pushState(this.getState().getParent(), State_AccountStatusPending.class);			
@@ -39,7 +39,7 @@ public class State_ManageAccount extends smA_State
 		@Override
 		public boolean isPerformable(smA_ActionArgs args)
 		{
-			bhClientAccountManager accountManager = sm_c.accountMngr;
+			smClientAccountManager accountManager = sm_c.accountMngr;
 			return accountManager.isSignedIn();
 		}
 	}

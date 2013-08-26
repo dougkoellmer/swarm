@@ -79,7 +79,7 @@ public abstract class smA_ServerApp extends smA_App
 		m_appConfig = appConfig;
 		sm_s.app = this;
 		
-		bhU_Debug.setDelegate(new smI_AssertionDelegate()
+		smU_Debug.setDelegate(new smI_AssertionDelegate()
 		{
 			@Override
 			public void doAssert(String message)

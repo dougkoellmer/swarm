@@ -53,7 +53,7 @@ private static final Logger s_logger = Logger.getLogger(smBlobTransaction_AddCel
 		m_session = session;
 	}
 	
-	bhBlobTransaction_AddCellToUser(smUserSession session, smServerCellAddress[] cellAddresses)
+	smBlobTransaction_AddCellToUser(smUserSession session, smServerCellAddress[] cellAddresses)
 	{
 		m_createCellTransaction = new smBlobTransaction_CreateCell(cellAddresses, null, null);
 		
@@ -61,7 +61,7 @@ private static final Logger s_logger = Logger.getLogger(smBlobTransaction_AddCel
 	}
 
 	@Override
-	protected void performOperations() throws bhBlobException
+	protected void performOperations() throws smBlobException
 	{
 		m_user = null;
 		

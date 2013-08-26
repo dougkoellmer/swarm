@@ -97,7 +97,7 @@ public class smManageAccountPanel extends FlowPanel implements smI_StateEventLis
 	
 	private void updateLayout()
 	{
-		double contentHeight = RootPanel.get().getOffsetHeight() - bhTabPanel.TAB_HEIGHT*2 - smS_UI.MAGIC_UI_SPACING*2;
+		double contentHeight = RootPanel.get().getOffsetHeight() - smTabPanel.TAB_HEIGHT*2 - smS_UI.MAGIC_UI_SPACING*2;
 		m_contentPanel.setSize(sm_view.splitPanel.getTabPanelWidth() + "px", contentHeight + "px");
 	}
 
@@ -110,10 +110,10 @@ public class smManageAccountPanel extends FlowPanel implements smI_StateEventLis
 			{
 				if( event.getState() instanceof State_ManageAccount )
 				{
-					bhAccountInfo info = sm_c.accountMngr.getAccountInfo();
+					smAccountInfo info = sm_c.accountMngr.getAccountInfo();
 					String username = info.get(smAccountInfo.Type.USERNAME);
 					String welcomeText = "Welcome, " + username + ".";
-					String href = bhU_Code.transformPathToJavascript(username);
+					String href = smU_Code.transformPathToJavascript(username);
 					welcomeText += "<br><br><a href=\""+href+"\">Click here</a> to visit your cell.";
 					m_welcomeLabel.getElement().setInnerHTML(welcomeText);
 				}

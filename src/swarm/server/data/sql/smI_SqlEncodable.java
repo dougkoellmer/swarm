@@ -6,5 +6,5 @@ public interface smI_SqlEncodable
 {
 	String getTable();
 	
-	bhTuple<String, Object> nextColumn();
+	smTuple<String, Object> nextColumn();
 }

@@ -17,22 +17,22 @@ class smHistoryState extends smA_JsonEncodable
 	//private static int s_currentFreeIndex = 0;
 	
 	//private int m_index;
-	private bhPoint m_point = null;
+	private smPoint m_point = null;
 	private smCellAddressMapping m_mapping = null;
 	
-	bhHistoryState()
+	smHistoryState()
 	{
 		//initIndex();
 	}
 	
-	bhHistoryState(smCellAddressMapping mapping)
+	smHistoryState(smCellAddressMapping mapping)
 	{
 		m_mapping = mapping;
 		
 		//initIndex();
 	}
 	
-	bhHistoryState(smPoint point)
+	smHistoryState(smPoint point)
 	{
 		m_point = point;
 		
@@ -49,7 +49,7 @@ class smHistoryState extends smA_JsonEncodable
 	@Override
 	public void writeJson(smI_JsonObject json)
 	{
-		//bhU_Json.putInt(json, smE_JsonKey.HISTORY_STATE_INDEX, m_index);
+		//smU_Json.putInt(json, smE_JsonKey.HISTORY_STATE_INDEX, m_index);
 		
 		if( m_mapping != null )
 		{
@@ -65,7 +65,7 @@ class smHistoryState extends smA_JsonEncodable
 	@Override
 	public void readJson(smI_JsonObject json)
 	{
-		/*m_index = bhU_Json.getInt(json, smE_JsonKey.HISTORY_STATE_INDEX);
+		/*m_index = smU_Json.getInt(json, smE_JsonKey.HISTORY_STATE_INDEX);
 		
 		if( m_index >= s_currentFreeIndex )
 		{
@@ -77,7 +77,7 @@ class smHistoryState extends smA_JsonEncodable
 			m_mapping = new smCellAddressMapping();
 			m_mapping.readJson(json);
 		}
-		else if( bhPoint.isReadable(json) )
+		else if( smPoint.isReadable(json) )
 		{
 			m_point = new smPoint();
 			m_point.readJson(json);

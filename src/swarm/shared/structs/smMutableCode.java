@@ -3,7 +3,7 @@ package swarm.shared.structs;
 import swarm.shared.entities.smE_CodeType;
 import swarm.shared.json.smI_JsonObject;
 
-public class smMutableCode extends bhCode
+public class smMutableCode extends smCode
 {
 	public smMutableCode(smE_CodeType ... types)
 	{

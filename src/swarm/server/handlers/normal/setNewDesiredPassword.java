@@ -36,7 +36,7 @@ public class setNewDesiredPassword implements smI_RequestHandler
 		smServerAccountManager accountManager = sm_s.accountMngr;
 		
 		//--- DRK > Just a sanity check...probably meaningless.
-		bhUserSession session = sm_s.sessionMngr.getSession(request, response);
+		smUserSession session = sm_s.sessionMngr.getSession(request, response);
 		if( session != null )
 		{
 			response.setError(smE_ResponseError.BAD_STATE);

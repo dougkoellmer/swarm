@@ -52,7 +52,7 @@ public class createGrid implements smI_RequestHandler
 	@Override
 	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
 	{		
-		bhUserSession session = sm_s.sessionMngr.getSession(request, response);
+		smUserSession session = sm_s.sessionMngr.getSession(request, response);
 		
 		smI_BlobManager blobManager = sm_s.blobMngrFactory.create(smE_BlobCacheLevel.values());
 		
@@ -62,7 +62,7 @@ public class createGrid implements smI_RequestHandler
 		{
 			activeGrid = blobManager.getBlob(smE_GridType.ACTIVE, smServerGrid.class);
 		}
-		catch( bhBlobException e)
+		catch( smBlobException e)
 		{
 			response.setError(smE_ResponseError.SERVICE_EXCEPTION);
 			
@@ -83,7 +83,7 @@ public class createGrid implements smI_RequestHandler
 		try
 		{
 			HashMap<smI_BlobKey, smI_Blob> grids = new HashMap<smI_BlobKey, smI_Blob>();
-			activeGrid = bhU_Handler.newObjectInstance(m_T_grid, response);
+			activeGrid = smU_Handler.newObjectInstance(m_T_grid, response);
 			
 			blobManager.putBlob(smE_GridType.ACTIVE, activeGrid);
 		}
@@ -121,7 +121,7 @@ public class createGrid implements smI_RequestHandler
 		}
 		
 		//--- DRK > Create the user.
-		bhBlobTransaction_CreateUser createUserTransaction = new smBlobTransaction_CreateUser(session, false);
+		smBlobTransaction_CreateUser createUserTransaction = new smBlobTransaction_CreateUser(session, false);
 		try
 		{
 			createUserTransaction.perform(smE_BlobTransactionType.SINGLE_BLOB_TYPE, 1);
@@ -142,7 +142,7 @@ public class createGrid implements smI_RequestHandler
 			return;
 		}
 
-		smI_HomeCellCreator homeCellCreator = bhU_Handler.newObjectInstance(m_T_homeCellCreator, response);
+		smI_HomeCellCreator homeCellCreator = smU_Handler.newObjectInstance(m_T_homeCellCreator, response);
 		
 		if( homeCellCreator == null )  return;
 		

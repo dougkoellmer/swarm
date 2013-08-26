@@ -124,7 +124,7 @@ public class smMagnifier extends FlowPanel implements smI_StateEventListener
 		m_zoomIn.setEnabled(false);
 		m_slider.setEnabled(false);
 		
-		bhToolTipManager toolTipper = sm_c.toolTipMngr;
+		smToolTipManager toolTipper = sm_c.toolTipMngr;
 		toolTipper.addTip(m_zoomIn, new smToolTipConfig(smE_ToolTipType.MOUSE_OVER, "Zoom In"));
 		toolTipper.addTip(m_zoomOut, new smToolTipConfig(smE_ToolTipType.MOUSE_OVER, "Zoom Out"));
 		toolTipper.addTip(m_dragger, new smToolTipConfig(smE_ToolTipType.MOUSE_OVER, "Drag'n'Zoom"));
@@ -150,9 +150,9 @@ public class smMagnifier extends FlowPanel implements smI_StateEventListener
 					newRatio = (m_currentRatio - mod) - m_tickRatio;
 				}
 				
-				newRatio = bhU_Math.clamp(newRatio, 0, 1);
+				newRatio = smU_Math.clamp(newRatio, 0, 1);
 				
-				bhMagnifier.this.setDraggerPosition(newRatio, true);
+				smMagnifier.this.setDraggerPosition(newRatio, true);
 			}
 		});
 		
@@ -173,9 +173,9 @@ public class smMagnifier extends FlowPanel implements smI_StateEventListener
 					newRatio = (m_currentRatio - mod) + m_tickRatio*2;
 				}
 				
-				newRatio = bhU_Math.clamp(newRatio, 0, 1);
+				newRatio = smU_Math.clamp(newRatio, 0, 1);
 				
-				bhMagnifier.this.setDraggerPosition(newRatio, true);
+				smMagnifier.this.setDraggerPosition(newRatio, true);
 			}
 		});
 		
@@ -185,7 +185,7 @@ public class smMagnifier extends FlowPanel implements smI_StateEventListener
 			public void onClick(ClickEvent event)
 			{
 				double mouseY = event.getRelativeY(smMagnifier.this.m_slider.getElement());
-				bhMagnifier.this.setDraggerPositionFromMouse(mouseY);
+				smMagnifier.this.setDraggerPositionFromMouse(mouseY);
 			}
 		});
 		
@@ -276,7 +276,7 @@ public class smMagnifier extends FlowPanel implements smI_StateEventListener
 		if( m_isMouseDown )
 		{
 			double mouseY = relativeY;
-			bhMagnifier.this.setDraggerPositionFromMouse(mouseY + m_mouseDownOffset);
+			smMagnifier.this.setDraggerPositionFromMouse(mouseY + m_mouseDownOffset);
 			
 			event.preventDefault();
 		}
@@ -296,7 +296,7 @@ public class smMagnifier extends FlowPanel implements smI_StateEventListener
 			}
 			
 			double mouseY = relativeY;
-			bhMagnifier.this.setDraggerPositionFromMouse(mouseY + m_mouseDownOffset);
+			smMagnifier.this.setDraggerPositionFromMouse(mouseY + m_mouseDownOffset);
 			
 			m_isMouseDown = false;
 		}
@@ -315,17 +315,17 @@ public class smMagnifier extends FlowPanel implements smI_StateEventListener
 		mouseY -= DRAGGER_HEIGHT_DIV_2;
 		double clickArea = (SLIDER_HEIGHT - DRAGGER_HEIGHT);
 		double ratio = mouseY / clickArea;
-		ratio = bhU_Math.clamp(ratio, 0, 1);
+		ratio = smU_Math.clamp(ratio, 0, 1);
 		
 		this.setDraggerPosition(ratio, true);
 	}
 	
 	private void setDraggerPositionFromCamera()
 	{
-		bhCamera camera = sm_c.camera;
+		smCamera camera = sm_c.camera;
 		double maxZ = camera.calcMaxZ();
 		double ratio = camera.getPosition().getZ() / maxZ;
-		ratio = bhU_Math.clamp(ratio, 0, 1); // window resizes can make camera be temporarily zoomed out further than its max constraint.
+		ratio = smU_Math.clamp(ratio, 0, 1); // window resizes can make camera be temporarily zoomed out further than its max constraint.
 		ratio = Math.sqrt(ratio);
 		
 		/*s_logger.info("ratio: " + ratio);
@@ -369,7 +369,7 @@ public class smMagnifier extends FlowPanel implements smI_StateEventListener
 		
 		if( moveCamera )
 		{
-			bhCamera camera = sm_c.camera;
+			smCamera camera = sm_c.camera;
 			double maxZ = camera.calcMaxZ();
 			m_utilPoint.copy(camera.getPosition());
 			m_utilPoint.setZ((ratio*ratio)*maxZ);
@@ -489,7 +489,7 @@ public class smMagnifier extends FlowPanel implements smI_StateEventListener
 							if( event.getState().isEntered() )
 							{
 								double timeMantissa = event.getState().getTimeInState(smE_StateTimeType.TOTAL) / m_fadeInTime_seconds;
-								timeMantissa = bhU_Math.clamp(timeMantissa, 0, 1);
+								timeMantissa = smU_Math.clamp(timeMantissa, 0, 1);
 								
 								this.setAlpha(m_baseAlpha + (1-m_baseAlpha)*timeMantissa);
 							}
@@ -505,7 +505,7 @@ public class smMagnifier extends FlowPanel implements smI_StateEventListener
 				{
 					if( event.getActionArgs() != null )
 					{
-						if( event.getActionArgs().getUserData() != bhMagnifier.class )
+						if( event.getActionArgs().getUserData() != smMagnifier.class )
 						{
 							m_underThisControl = false;
 						}

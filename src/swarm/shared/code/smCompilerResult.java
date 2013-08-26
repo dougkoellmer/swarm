@@ -15,7 +15,7 @@ import swarm.shared.structs.smCode;
 
 public class smCompilerResult extends smA_JsonEncodable
 {
-	private bhCompilerCell m_codeCell = null;
+	private smCompilerCell m_codeCell = null;
 	
 	private smE_CompilationStatus m_status;
 	
@@ -72,7 +72,7 @@ public class smCompilerResult extends smA_JsonEncodable
 	{
 		initCell();
 		
-		bhCode emptyCode = new smCode((String)null, smE_CodeType.values());
+		smCode emptyCode = new smCode((String)null, smE_CodeType.values());
 		
 		this.m_codeCell.setCode(smE_CodeType.SOURCE, null);
 		
@@ -127,12 +127,12 @@ public class smCompilerResult extends smA_JsonEncodable
 		}
 		else
 		{
-			bhU_Debug.ASSERT(m_status != smE_CompilationStatus.COMPILATION_ERRORS, "Expected compiler errors while writing result json.");
+			smU_Debug.ASSERT(m_status != smE_CompilationStatus.COMPILATION_ERRORS, "Expected compiler errors while writing result json.");
 		}
 		
 		if( m_status == null )
 		{
-			bhU_Debug.ASSERT(false, "Response error of compilation result should never be null when writing to json.");
+			smU_Debug.ASSERT(false, "Response error of compilation result should never be null when writing to json.");
 			
 			m_status = smE_CompilationStatus.COMPILER_EXCEPTION;
 		}
@@ -158,7 +158,7 @@ public class smCompilerResult extends smA_JsonEncodable
 			for( int i = 0; i < compilerMessageJsonArray.getSize(); i++ )
 			{
 				smI_JsonObject compilerErrorJson = compilerMessageJsonArray.getObject(i);
-				bhCompilerMessage error = new smCompilerMessage(compilerErrorJson);
+				smCompilerMessage error = new smCompilerMessage(compilerErrorJson);
 				
 				m_compilerMessages.add(error);
 			}
@@ -166,7 +166,7 @@ public class smCompilerResult extends smA_JsonEncodable
 		else
 		{
 			m_compilerMessages = null;
-			bhU_Debug.ASSERT(m_status != smE_CompilationStatus.COMPILATION_ERRORS, "Expected compiler error messages.");
+			smU_Debug.ASSERT(m_status != smE_CompilationStatus.COMPILATION_ERRORS, "Expected compiler error messages.");
 		}
 	}
 }

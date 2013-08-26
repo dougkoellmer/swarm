@@ -23,7 +23,7 @@ public class smDialogManager implements smI_UIElement
 	private final Panel m_outerContainer;
 	private FocusPanel m_focusPanel = null;//new FocusPanel();
 	private AbsolutePanel m_innerContainer = null;//new AbsolutePanel();
-	private bhDialog m_dialog = null;//new smDialog();
+	private smDialog m_dialog = null;//new smDialog();
 	
 	private FlowPanel m_dialogGlass = null;//new FlowPanel();
 	private HorizontalPanel m_dialogContainer = null;//new HorizontalPanel();

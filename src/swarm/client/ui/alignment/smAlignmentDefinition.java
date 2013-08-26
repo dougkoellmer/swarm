@@ -6,7 +6,7 @@ public class smAlignmentDefinition
 	private Double[] m_definitions = new Double[smE_AlignmentType.values().length];
 	private Double[] m_paddings = new Double[smE_AlignmentType.values().length];
 	
-	private bhAlignmentRect m_masterRect = null;
+	private smAlignmentRect m_masterRect = null;
 	
 	public smAlignmentDefinition()
 	{

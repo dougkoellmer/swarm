@@ -14,16 +14,16 @@ import com.google.gwt.user.client.ui.Panel;
  * @author Doug
  *
  */
-public class smConsoleBlocker extends bhUIBlocker
+public class smConsoleBlocker extends smUIBlocker
 {
-	private static bhConsoleBlocker s_instance = null;
+	private static smConsoleBlocker s_instance = null;
 	
-	private bhConsoleBlocker()
+	private smConsoleBlocker()
 	{
 		smE_ZIndex.CONSOLE_BLOCKER.assignTo(this);
 	}
 	
-	public static bhConsoleBlocker getInstance()
+	public static smConsoleBlocker getInstance()
 	{
 		if( s_instance == null)
 		{

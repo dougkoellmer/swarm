@@ -15,7 +15,7 @@ public class smU_Alignment
 			
 			smE_AlignmentPosition slaveAnchor = alignment.getPosition(slaveType);
 			
-			bhAlignmentRect masterOverrideRect = alignment.getMasterRect();
+			smAlignmentRect masterOverrideRect = alignment.getMasterRect();
 			
 			Object rectSource = masterOverrideRect != null ? masterOverrideRect : master;
 			
@@ -57,7 +57,7 @@ public class smU_Alignment
 	
 	public static double getPosition(Object element, int componentIndex)
 	{
-		if( element instanceof bhAlignmentRect )
+		if( element instanceof smAlignmentRect )
 		{
 			return ((smAlignmentRect)element).getPositionComponent(componentIndex);
 		}
@@ -75,7 +75,7 @@ public class smU_Alignment
 	
 	public static double getDimension(Object element, int componentIndex)
 	{
-		if( element instanceof bhAlignmentRect )
+		if( element instanceof smAlignmentRect )
 		{
 			return ((smAlignmentRect)element).getDimensionComponent(componentIndex);
 		}
@@ -102,9 +102,9 @@ public class smU_Alignment
 		}
 	}
 	
-	public static bhAlignmentDefinition createHorRightVerCenter(double padding)
+	public static smAlignmentDefinition createHorRightVerCenter(double padding)
 	{
-		bhAlignmentDefinition alignment = new smAlignmentDefinition();
+		smAlignmentDefinition alignment = new smAlignmentDefinition();
 		
 		alignment.setPosition(smE_AlignmentType.MASTER_ANCHOR_VERTICAL, smE_AlignmentPosition.CENTER);
 		alignment.setPosition(smE_AlignmentType.SLAVE_ANCHOR_VERTICAL, smE_AlignmentPosition.CENTER);

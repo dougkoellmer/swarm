@@ -46,7 +46,7 @@ class smToolTipSubManager_Notification implements smI_ToolTipSubManager
 	
 	private final ArrayList<Notification> m_notifications = new ArrayList<Notification>();
 	
-	bhToolTipSubManager_Notification(smToolTipManager toolTipManager)
+	smToolTipSubManager_Notification(smToolTipManager toolTipManager)
 	{
 		m_toolTipManager = toolTipManager;
 	}

@@ -4,7 +4,7 @@ import swarm.shared.lang.smI_SerializableEnum;
 
 public class smU_TypeConversion
 {
-	private bhU_TypeConversion()
+	private smU_TypeConversion()
 	{
 		
 	}

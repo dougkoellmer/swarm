@@ -8,11 +8,11 @@ import java.io.ObjectOutput;
 import swarm.shared.structs.smPoint;
 
 /**
- * Externalizable can't be used on the client, so we must needs create a server version of bhPoint just to read/write byte streams.
+ * Externalizable can't be used on the client, so we must needs create a server version of smPoint just to read/write byte streams.
  * @author Doug
  *
  */
-public class smServerPoint extends bhPoint implements Externalizable
+public class smServerPoint extends smPoint implements Externalizable
 {
 	private static final int EXTERNAL_VERSION = 1;
 	

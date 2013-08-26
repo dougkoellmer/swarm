@@ -15,7 +15,7 @@ import com.google.appengine.api.datastore.Entity;
 
 public class smU_Blob
 {
-	private bhU_Blob()
+	private smU_Blob()
 	{
 		
 	}
@@ -32,7 +32,7 @@ public class smU_Blob
 		return key;
 	}
 	
-	public static smI_Blob createBlobInstance(Class<? extends smI_Blob> T) throws bhBlobException
+	public static smI_Blob createBlobInstance(Class<? extends smI_Blob> T) throws smBlobException
 	{
 		smI_Blob blob = null;
 		
@@ -52,7 +52,7 @@ public class smU_Blob
 		return blob;
 	}
 	
-	static byte[] convertToBytes(smI_Blob blob) throws bhBlobException
+	static byte[] convertToBytes(smI_Blob blob) throws smBlobException
 	{
 		byte[] blobBytes = null;
 		
@@ -72,16 +72,16 @@ public class smU_Blob
 		return blobBytes;
 	}
 	
-	static void readBytes(smI_Blob blob, Entity entity) throws bhBlobException
+	static void readBytes(smI_Blob blob, Entity entity) throws smBlobException
 	{
 		Blob blobData = (Blob) entity.getProperty(smS_Blob.DATA_FIELD_NAME);
 		
 		byte[] blobBytes = blobData.getBytes();
 		
-		bhU_Blob.readBytes(blob, blobBytes);
+		smU_Blob.readBytes(blob, blobBytes);
 	}
 	
-	static void readBytes(smI_Blob blob, byte[] blobBytes) throws bhBlobException
+	static void readBytes(smI_Blob blob, byte[] blobBytes) throws smBlobException
 	{
 		try
 		{

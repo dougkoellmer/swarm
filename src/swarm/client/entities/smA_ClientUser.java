@@ -51,7 +51,7 @@ public class smA_ClientUser extends smA_User implements smI_LocalCodeRepository
 		@Override
 		public smUserCell next()
 		{
-			bhUserCell next = m_cells.get(m_currentIndex);
+			smUserCell next = m_cells.get(m_currentIndex);
 			m_currentIndex++;
 			return next;
 		}
@@ -59,7 +59,7 @@ public class smA_ClientUser extends smA_User implements smI_LocalCodeRepository
 		@Override
 		public void remove()
 		{
-			bhU_Debug.ASSERT(false, "Can't remove.");
+			smU_Debug.ASSERT(false, "Can't remove.");
 		}
 	}
 	
@@ -76,7 +76,7 @@ public class smA_ClientUser extends smA_User implements smI_LocalCodeRepository
 	
 	public smCode getCode(smGridCoordinate coord, smE_CodeType eType)
 	{
-		bhUserCell cell = getCellStrict(coord);
+		smUserCell cell = getCellStrict(coord);
 		
 		if( cell != null )
 		{
@@ -97,9 +97,9 @@ public class smA_ClientUser extends smA_User implements smI_LocalCodeRepository
 	{
 		for( int i = 0; i < m_cells.size(); i++ )
 		{
-			bhUserCell cell = m_cells.get(i);
+			smUserCell cell = m_cells.get(i);
 
-			bhGridCoordinate coordinate = cell.getCoordinate();
+			smGridCoordinate coordinate = cell.getCoordinate();
 			
 			if( coordinate.isEqualTo(mapping.getCoordinate()) )
 			{
@@ -116,7 +116,7 @@ public class smA_ClientUser extends smA_User implements smI_LocalCodeRepository
 	{
 		for( int i = 0; i < m_cells.size(); i++ )
 		{
-			bhUserCell cell = m_cells.get(i);
+			smUserCell cell = m_cells.get(i);
 
 			smCellAddress ithAddress = cell.getAddress();
 			
@@ -135,11 +135,11 @@ public class smA_ClientUser extends smA_User implements smI_LocalCodeRepository
 	@Override
 	public boolean tryPopulatingCell(smGridCoordinate coord, smE_CodeType eType, smA_Cell outCell)
 	{
-		bhUserCell thisCell = getCellLenient(coord);
+		smUserCell thisCell = getCellLenient(coord);
 		
 		if( thisCell != null )
 		{
-			bhCode toReturn = null;
+			smCode toReturn = null;
 			
 			if( thisCell.m_hasChangedCode && eType == smE_CodeType.SOURCE )
 			{
@@ -147,7 +147,7 @@ public class smA_ClientUser extends smA_User implements smI_LocalCodeRepository
 			}
 			else
 			{
-				bhCode code = thisCell.getCode(eType);
+				smCode code = thisCell.getCode(eType);
 				
 				if( code != null )
 				{
@@ -178,7 +178,7 @@ public class smA_ClientUser extends smA_User implements smI_LocalCodeRepository
 	//TODO(DRK) Returning a boolean is kinda ghetto here.
 	public boolean setInitialCellData(smGridCoordinate coord, smA_Cell newCellData)
 	{
-		bhUserCell thisCell = getCellStrict(coord);
+		smUserCell thisCell = getCellStrict(coord);
 		
 		if( thisCell != null )
 		{
@@ -190,11 +190,11 @@ public class smA_ClientUser extends smA_User implements smI_LocalCodeRepository
 			for( int i = 0; i < smE_CodeType.values().length; i++ )
 			{
 				smE_CodeType eType = smE_CodeType.values()[i];
-				bhCode newCode = newCellData.getCode(eType);
+				smCode newCode = newCellData.getCode(eType);
 				
 				if( newCode != null )
 				{
-					bhCode existingCode = thisCell.getCode(eType);
+					smCode existingCode = thisCell.getCode(eType);
 					
 					if( existingCode == null )
 					{
@@ -207,7 +207,7 @@ public class smA_ClientUser extends smA_User implements smI_LocalCodeRepository
 						boolean isSource = eType == smE_CodeType.SOURCE;
 						if( isSource )
 						{
-							bhU_Debug.ASSERT(false, "Didn't expect source in setInitialData");
+							smU_Debug.ASSERT(false, "Didn't expect source in setInitialData");
 							
 							return false;
 						}
@@ -233,7 +233,7 @@ public class smA_ClientUser extends smA_User implements smI_LocalCodeRepository
 												newCode.isStandInFor(smE_CodeType.COMPILED);
 							
 							// Fringe case can trip this assert...
-							bhU_Debug.ASSERT(isOverlap, "Expected code for type " + eType + " to be null in setInitialCode.");
+							smU_Debug.ASSERT(isOverlap, "Expected code for type " + eType + " to be null in setInitialCode.");
 							
 							return false;
 						}
@@ -243,7 +243,7 @@ public class smA_ClientUser extends smA_User implements smI_LocalCodeRepository
 		}
 		else
 		{
-			bhU_Debug.ASSERT(false, "Expected non-null cell in setInitialCode");
+			smU_Debug.ASSERT(false, "Expected non-null cell in setInitialCode");
 		}
 		
 		return true;
@@ -251,11 +251,11 @@ public class smA_ClientUser extends smA_User implements smI_LocalCodeRepository
 	
 	public boolean isEditable(smGridCoordinate coord)
 	{
-		bhUserCell cell = getCellLenient(coord);
+		smUserCell cell = getCellLenient(coord);
 
 		if( cell != null )
 		{			
-			bhCode code = cell.getCode(smE_CodeType.SOURCE);
+			smCode code = cell.getCode(smE_CodeType.SOURCE);
 			
 			//--- DRK > Not a huge fan of this method of seeing if a cell is editable, 
 			//---		but we'll see if it remains "good enough".
@@ -272,21 +272,21 @@ public class smA_ClientUser extends smA_User implements smI_LocalCodeRepository
 	
 	public boolean isSourceCodeChanged(smGridCoordinate coord)
 	{
-		bhUserCell cell = getCellStrict(coord);
+		smUserCell cell = getCellStrict(coord);
 
 		return cell.m_hasChangedCode;
 	}
 	
 	public void onSourceCodeChanged(smGridCoordinate coord, String sourceCode)
 	{
-		bhUserCell cell = getCellStrict(coord);
+		smUserCell cell = getCellStrict(coord);
 
 		cell.setChangedCode(sourceCode);
 	}
 	
 	public void onSyncResponseError(smGridCoordinate coord)
 	{
-		bhUserCell cell = getCellStrict(coord);
+		smUserCell cell = getCellStrict(coord);
 
 		if( cell != null )
 		{
@@ -296,7 +296,7 @@ public class smA_ClientUser extends smA_User implements smI_LocalCodeRepository
 	
 	public void onSyncSuccess(smGridCoordinate coord, smCode splashScreenCode, smCode compiledCode)
 	{
-		bhUserCell cell = getCellStrict(coord);
+		smUserCell cell = getCellStrict(coord);
 
 		if( cell != null )
 		{
@@ -306,7 +306,7 @@ public class smA_ClientUser extends smA_User implements smI_LocalCodeRepository
 	
 	public void onSyncStart(smGridCoordinate coord, smCode compiledCode)
 	{
-		bhUserCell cell = getCellStrict(coord);
+		smUserCell cell = getCellStrict(coord);
 
 		if( cell != null )
 		{
@@ -323,7 +323,7 @@ public class smA_ClientUser extends smA_User implements smI_LocalCodeRepository
 	{
 		for( int i = 0; i < m_cells.size(); i++ )
 		{
-			bhUserCell cell = m_cells.get(i);
+			smUserCell cell = m_cells.get(i);
 			
 			if( cell.getCoordinate().isEqualTo(coord) )
 			{
@@ -334,11 +334,11 @@ public class smA_ClientUser extends smA_User implements smI_LocalCodeRepository
 		return null;
 	}
 
-	private bhUserCell getCellStrict(smGridCoordinate coord)
+	private smUserCell getCellStrict(smGridCoordinate coord)
 	{
-		bhUserCell cell = getCellLenient(coord);
+		smUserCell cell = getCellLenient(coord);
 
-		bhU_Debug.ASSERT(cell != null, "Expected user cell to not be null in getCell.");
+		smU_Debug.ASSERT(cell != null, "Expected user cell to not be null in getCell.");
 		
 		return cell;
 	}
@@ -368,7 +368,7 @@ public class smA_ClientUser extends smA_User implements smI_LocalCodeRepository
 	{
 		for( int i = 0; i < m_cells.size(); i++ )
 		{
-			bhUserCell cell = m_cells.get(i);
+			smUserCell cell = m_cells.get(i);
 			
 			cell.setChangedCode(null);
 		}
@@ -381,7 +381,7 @@ public class smA_ClientUser extends smA_User implements smI_LocalCodeRepository
 		m_isPopulated = false;
 	}
 	
-	public Iterator<? extends bhUserCell> getCells()
+	public Iterator<? extends smUserCell> getCells()
 	{
 		return new smCellIterator(m_cells);
 	}
@@ -389,7 +389,7 @@ public class smA_ClientUser extends smA_User implements smI_LocalCodeRepository
 	@Override
 	protected void justReadMappingFromJson(smCellAddressMapping mapping)
 	{
-		bhUserCell newCell = new smUserCell(mapping.getCoordinate());
+		smUserCell newCell = new smUserCell(mapping.getCoordinate());
 		m_cells.add(newCell);
 	}
 

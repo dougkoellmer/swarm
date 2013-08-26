@@ -75,7 +75,7 @@ public class smBufferCell extends smA_Cell
 		}
 		else
 		{
-			bhU_Debug.ASSERT(false, "smBufferCell::Can't preview cell if it isn't focused.");
+			smU_Debug.ASSERT(false, "smBufferCell::Can't preview cell if it isn't focused.");
 		}
 	}
 	
@@ -179,7 +179,7 @@ public class smBufferCell extends smA_Cell
 			
 			if( compiledStatus == smE_CodeStatus.HAS_CODE )
 			{
-				bhCode code = this.getCode(type);
+				smCode code = this.getCode(type);
 				
 				if( code.isStandInFor(smE_CodeType.SPLASH) )
 				{
@@ -187,7 +187,7 @@ public class smBufferCell extends smA_Cell
 					//---				and that the splash code is identical to the compiled code, so we don't do anything
 					//---				for reasons of optimization.  This may be a bad assumption however...time will tell.
 					
-					bhU_Debug.ASSERT(this.getCode(smE_CodeType.SPLASH).isStandInFor(smE_CodeType.COMPILED), "onFocusGained1");
+					smU_Debug.ASSERT(this.getCode(smE_CodeType.SPLASH).isStandInFor(smE_CodeType.COMPILED), "onFocusGained1");
 				}
 				else
 				{
@@ -216,18 +216,18 @@ public class smBufferCell extends smA_Cell
 				//---	NOTE: This above problem might be because I was an idiot and didn't have a WAITING_ON_CODE case defined above...now there is one.
 				
 				smE_CodeStatus splashStatus = this.getStatus(smE_CodeType.SPLASH);
-				bhCode code = this.getCode(type);
+				smCode code = this.getCode(type);
 				if( splashStatus == smE_CodeStatus.HAS_CODE && code != null && code.isStandInFor(smE_CodeType.COMPILED))
 				{
 					m_visualization.setCode(code, this.getCellNamespace());
 					
-					bhU_Debug.ASSERT(compiledStatus == smE_CodeStatus.WAITING_ON_CODE, "onFocusGained2 " + compiledStatus);
+					smU_Debug.ASSERT(compiledStatus == smE_CodeStatus.WAITING_ON_CODE, "onFocusGained2 " + compiledStatus);
 				}
 				else
 				{
 					m_visualization.onError(type);
 
-					bhU_Debug.ASSERT(compiledStatus == smE_CodeStatus.WAITING_ON_CODE, "onFocusGained3 " + compiledStatus);
+					smU_Debug.ASSERT(compiledStatus == smE_CodeStatus.WAITING_ON_CODE, "onFocusGained3 " + compiledStatus);
 				}
 			}
 		}
@@ -404,8 +404,8 @@ public class smBufferCell extends smA_Cell
 		
 		if
 		(
-			bhU_Math.isWithin(point.getX(), s_utilPoint.getX(), s_utilPoint.getX() + cellWidthPlusPadding) &&
-			bhU_Math.isWithin(point.getY(), s_utilPoint.getY(), s_utilPoint.getY() + cellHeightPlusPadding)
+			smU_Math.isWithin(point.getX(), s_utilPoint.getX(), s_utilPoint.getX() + cellWidthPlusPadding) &&
+			smU_Math.isWithin(point.getY(), s_utilPoint.getY(), s_utilPoint.getY() + cellHeightPlusPadding)
 		)
 		{
 			return true;
@@ -437,7 +437,7 @@ public class smBufferCell extends smA_Cell
 		
 		this.setStatusAll(smE_CodeStatus.NEEDS_CODE);
 		
-		bhU_Debug.ASSERT(!m_isFocused);
+		smU_Debug.ASSERT(!m_isFocused);
 		
 		m_isFocused = false;
 		m_address = null;

@@ -12,12 +12,12 @@ import swarm.shared.json.smI_JsonObject;
 import swarm.shared.structs.smGridCoordinate;
 
 /**
- * Externalizable can't be used on the client, so we must needs create a server version of bhPoint just to read/write byte streams.
+ * Externalizable can't be used on the client, so we must needs create a server version of smPoint just to read/write byte streams.
  * 
  * @author Doug
  *
  */
-public class smServerGridCoordinate extends bhGridCoordinate implements Externalizable
+public class smServerGridCoordinate extends smGridCoordinate implements Externalizable
 {
 	private static final int EXTERNAL_VERSION = 1;
 	

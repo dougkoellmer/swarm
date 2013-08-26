@@ -2,8 +2,8 @@ package swarm.shared.structs;
 
 public class smLinkedList
 {
-	private bhLinkedListNode m_first = null;
-	private bhLinkedListNode m_last = null;
+	private smLinkedListNode m_first = null;
+	private smLinkedListNode m_last = null;
 	
 	public smLinkedList()
 	{
@@ -22,7 +22,7 @@ public class smLinkedList
 
 	public void addObject(Object object)
 	{
-		bhLinkedListNode newLast = new smLinkedListNode(object);
+		smLinkedListNode newLast = new smLinkedListNode(object);
 		if( m_first == null )
 		{
 			m_first = m_last = newLast;

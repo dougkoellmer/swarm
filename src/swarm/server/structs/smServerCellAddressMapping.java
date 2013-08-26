@@ -55,7 +55,7 @@ public class smServerCellAddressMapping extends smCellAddressMapping implements 
 		
 		((smServerGridCoordinate)m_coordinate).writeExternal(out);
 		
-		bhU_Serialization.writeNullableEnum(m_gridType, out);
+		smU_Serialization.writeNullableEnum(m_gridType, out);
 	}
 
 	@Override
@@ -65,7 +65,7 @@ public class smServerCellAddressMapping extends smCellAddressMapping implements 
 		
 		((smServerGridCoordinate)m_coordinate).readExternal(in);
 		
-		m_gridType = bhU_Serialization.readNullableEnum(smE_GridType.values(), in);
+		m_gridType = smU_Serialization.readNullableEnum(smE_GridType.values(), in);
 	}
 
 	@Override
@@ -83,7 +83,7 @@ public class smServerCellAddressMapping extends smCellAddressMapping implements 
 	@Override
 	public String createBlobKey(smI_Blob blob)
 	{
-		return bhU_Blob.generateKey(blob, m_gridType.getKeyComponent(), m_coordinate.writeString());
+		return smU_Blob.generateKey(blob, m_gridType.getKeyComponent(), m_coordinate.writeString());
 	}
 	
 	@Override

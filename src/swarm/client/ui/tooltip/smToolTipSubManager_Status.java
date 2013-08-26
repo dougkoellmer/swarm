@@ -19,7 +19,7 @@ class smToolTipSubManager_Status implements smI_ToolTipSubManager
 	
 	private final HashMap<Element, smToolTip> m_tipMap = new HashMap<Element, smToolTip>();
 	
-	bhToolTipSubManager_Status(smToolTipManager toolTipManager)
+	smToolTipSubManager_Status(smToolTipManager toolTipManager)
 	{
 		m_toolTipManager = toolTipManager;
 	}
@@ -40,7 +40,7 @@ class smToolTipSubManager_Status implements smI_ToolTipSubManager
 	public void addTip(IsWidget widget, smToolTipConfig config)
 	{
 		Element targetElement = widget.asWidget().getElement();
-		bhToolTip toolTip = new smToolTip();
+		smToolTip toolTip = new smToolTip();
 		m_toolTipManager.prepareTip(toolTip, targetElement, config);
 		m_toolTipManager.showTip(toolTip, null);
 		m_tipMap.put(targetElement, toolTip);
@@ -56,7 +56,7 @@ class smToolTipSubManager_Status implements smI_ToolTipSubManager
 	public void removeTip(IsWidget widget)
 	{
 		Element targetElement = widget.asWidget().getElement();
-		bhToolTip tip = m_tipMap.get(targetElement);
+		smToolTip tip = m_tipMap.get(targetElement);
 		
 		if( tip != null )
 		{

@@ -89,7 +89,7 @@ public final class smU_UriPolicy
 				
 				if( uriData.client )
 				{
-					return bhU_Code.transformPathToJavascript(b33hivePath);
+					return smU_Code.transformPathToJavascript(b33hivePath);
 				}
 				else
 				{

@@ -205,7 +205,7 @@ public class smServerGrid extends smA_Grid implements smI_Blob
 		m_width = width;
 		m_height = height;
 		
-		bhBitArray oldArray = m_ownership;
+		smBitArray oldArray = m_ownership;
 		
 		m_ownership = new smServerBitArray(m_width*m_height);
 		
@@ -214,7 +214,7 @@ public class smServerGrid extends smA_Grid implements smI_Blob
 			m_ownership.or(oldArray, oldWidth, m_width);
 		}
 		
-		//bhT_Grid.validateExpansion(m_bitArray, oldSize, m_size);
+		//smT_Grid.validateExpansion(m_bitArray, oldSize, m_size);
 	}
 
 	@Override
@@ -228,7 +228,7 @@ public class smServerGrid extends smA_Grid implements smI_Blob
 		out.writeInt(this.getCellHeight());
 		out.writeInt(this.getCellPadding());
 		
-		bhU_Serialization.writeNullableObject((smServerBitArray)m_ownership, out);
+		smU_Serialization.writeNullableObject((smServerBitArray)m_ownership, out);
 		
 		m_lastUpdated.writeExternal(out);
 	}
@@ -247,7 +247,7 @@ public class smServerGrid extends smA_Grid implements smI_Blob
 			m_cellPadding = in.readInt();
 		}
 		
-		m_ownership = bhU_Serialization.readNullableObject(smServerBitArray.class, in);
+		m_ownership = smU_Serialization.readNullableObject(smServerBitArray.class, in);
 		
 		m_lastUpdated.readExternal(in);
 	}

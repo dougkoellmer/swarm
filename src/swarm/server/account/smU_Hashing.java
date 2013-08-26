@@ -30,7 +30,7 @@ public class smU_Hashing
 	
 	private static final SecureRandom s_random = new SecureRandom(); // thread safe
 
-	private bhU_Hashing()
+	private smU_Hashing()
 	{
 	}
 	

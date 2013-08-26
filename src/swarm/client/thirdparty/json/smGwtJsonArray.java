@@ -21,7 +21,7 @@ public class smGwtJsonArray extends Object implements smI_JsonArray
 		return m_object;
 	}
 	
-	bhGwtJsonArray(JSONArray source)
+	smGwtJsonArray(JSONArray source)
 	{
 		m_object = source;
 	}

@@ -81,7 +81,7 @@ public class smClientAccountManager implements smI_TransactionResponseHandler
 	private smSignUpValidationResult m_latestBadSignUpResult = null;
 	private smSignInValidationResult m_latestBadSignInResult = null;
 	
-	private bhAccountInfo m_accountInfo = null;
+	private smAccountInfo m_accountInfo = null;
 	
 	private String m_passwordChangeToken = null;
 	
@@ -123,7 +123,7 @@ public class smClientAccountManager implements smI_TransactionResponseHandler
 			}
 		}
 		
-		bhU_Debug.ASSERT(false, "bhAcountManager::removeDelegate");
+		smU_Debug.ASSERT(false, "smAcountManager::removeDelegate");
 	}
 	
 	private void onResponse(E_ResponseType type)
@@ -131,7 +131,7 @@ public class smClientAccountManager implements smI_TransactionResponseHandler
 		//--- DRK > Now an invalid assert, because transaction manager is more correct
 		//---		in telling us that, inside a response handler, a given request
 		//---		isn't actually "dispatched" anymore, because it's returned and being handle.
-		//bhU_Debug.ASSERT(getWaitReason() != E_WaitReason.NONE, "bhClientAccountManager::onResponse " + type);
+		//smU_Debug.ASSERT(getWaitReason() != E_WaitReason.NONE, "smClientAccountManager::onResponse " + type);
 		
 		switch( type)
 		{
@@ -207,11 +207,11 @@ public class smClientAccountManager implements smI_TransactionResponseHandler
 	{
 		if( isWaitingOnServer() || m_isSignedIn )
 		{
-			bhU_Debug.ASSERT(false, "signUp1");
+			smU_Debug.ASSERT(false, "signUp1");
 			return;
 		}
 		
-		bhTransactionRequest request = new smTransactionRequest(smE_RequestPath.signUp);
+		smTransactionRequest request = new smTransactionRequest(smE_RequestPath.signUp);
 		credentials.writeJson(request.getJson());
 		
 		sm_c.txnMngr.performAction(action, request);
@@ -223,7 +223,7 @@ public class smClientAccountManager implements smI_TransactionResponseHandler
 		
 		if( isWaitingOnServer() )
 		{
-			bhU_Debug.ASSERT(false, "init client AM");
+			smU_Debug.ASSERT(false, "init client AM");
 			return;
 		}
 
@@ -237,7 +237,7 @@ public class smClientAccountManager implements smI_TransactionResponseHandler
 		
 		if( isWaitingOnServer() || m_isSignedIn )
 		{
-			bhU_Debug.ASSERT(false, "signIn1");
+			smU_Debug.ASSERT(false, "signIn1");
 			return;
 		}
 		
@@ -249,11 +249,11 @@ public class smClientAccountManager implements smI_TransactionResponseHandler
 	{
 		if( isWaitingOnServer() || m_isSignedIn )
 		{
-			bhU_Debug.ASSERT(false, "signIn1");
+			smU_Debug.ASSERT(false, "signIn1");
 			return;
 		}
 		
-		bhTransactionRequest request = new smTransactionRequest(smE_RequestPath.signIn);
+		smTransactionRequest request = new smTransactionRequest(smE_RequestPath.signIn);
 		credentials.writeJson(request.getJson());
 		
 		if( m_passwordChangeToken != null )
@@ -271,12 +271,12 @@ public class smClientAccountManager implements smI_TransactionResponseHandler
 	{
 		if( isWaitingOnServer() || !m_isSignedIn )
 		{
-			bhU_Debug.ASSERT(false, "signOut3");
+			smU_Debug.ASSERT(false, "signOut3");
 			
 			return;
 		}
 		
-		bhTransactionRequest request = new smTransactionRequest(smE_RequestPath.signOut);
+		smTransactionRequest request = new smTransactionRequest(smE_RequestPath.signOut);
 
 		sm_c.txnMngr.makeRequest(request);
 	}
@@ -288,7 +288,7 @@ public class smClientAccountManager implements smI_TransactionResponseHandler
 	
 	public E_WaitReason getWaitReason()
 	{
-		bhClientTransactionManager manager = sm_c.txnMngr;
+		smClientTransactionManager manager = sm_c.txnMngr;
 		
 		if( manager.containsDispatchedRequest(smE_RequestPath.signIn) )
 		{
@@ -315,11 +315,11 @@ public class smClientAccountManager implements smI_TransactionResponseHandler
 	{
 		if( request.getPath() == smE_RequestPath.getAccountInfo )
 		{
-			bhClientTransactionManager manager = sm_c.txnMngr;
+			smClientTransactionManager manager = sm_c.txnMngr;
 			
 			if( manager.hasPreviousBatchResponse(smE_RequestPath.signIn) )
 			{				
-				bhTransactionResponse signInResponse = manager.getPreviousBatchResponse(smE_RequestPath.signIn);
+				smTransactionResponse signInResponse = manager.getPreviousBatchResponse(smE_RequestPath.signIn);
 				
 				smSignInValidationResult result = new smSignInValidationResult();
 				
@@ -431,11 +431,11 @@ public class smClientAccountManager implements smI_TransactionResponseHandler
 	{
 		if( request.getPath() == smE_RequestPath.getAccountInfo )
 		{
-			bhClientTransactionManager manager = sm_c.txnMngr;
+			smClientTransactionManager manager = sm_c.txnMngr;
 			
 			if( manager.hasPreviousBatchResponse(smE_RequestPath.signIn) )
 			{
-				bhTransactionResponse previousResponse = manager.getPreviousBatchResponse(smE_RequestPath.signIn);
+				smTransactionResponse previousResponse = manager.getPreviousBatchResponse(smE_RequestPath.signIn);
 				
 				m_latestBadSignInResult = new smSignInValidationResult();
 				

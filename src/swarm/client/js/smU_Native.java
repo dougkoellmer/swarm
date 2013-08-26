@@ -10,7 +10,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 
 public class smU_Native
 {
-	private bhU_Native()
+	private smU_Native()
 	{
 		
 	}

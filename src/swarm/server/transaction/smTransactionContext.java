@@ -20,13 +20,13 @@ public class smTransactionContext
 	
 	private final HashMap<Integer, PathContext> m_pathContexts;
 	
-	private bhTransactionBatch m_deferredBatch;
+	private smTransactionBatch m_deferredBatch;
 	
 	private final smTransactionBatch m_batch;
 	
 	private final Object m_nativeContext;
 	
-	bhTransactionContext(boolean isInBatch, Object nativeContext)
+	smTransactionContext(boolean isInBatch, Object nativeContext)
 	{
 		m_isInBatch = isInBatch;
 		
@@ -49,7 +49,7 @@ public class smTransactionContext
 		return m_nativeContext;
 	}
 	
-	bhTransactionBatch getBatch()
+	smTransactionBatch getBatch()
 	{
 		return m_batch;
 	}
@@ -130,7 +130,7 @@ public class smTransactionContext
 		return 0;
 	}
 	
-	bhTransactionBatch getDeferredBatch()
+	smTransactionBatch getDeferredBatch()
 	{
 		return m_deferredBatch;
 	}

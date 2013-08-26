@@ -65,7 +65,7 @@ public class smSignInPanel extends VerticalPanel implements smI_StateEventListen
 	private final smStaySignedInCheckbox m_checkbox = new smStaySignedInCheckbox();
 	
 	private smSignInOrUpErrorField 	m_errorFields[] = {m_emailErrorField, m_passwordErrorField};
-	private bhTextBoxWrapper	m_inputs[] = {m_emailInput, m_passwordInput};
+	private smTextBoxWrapper	m_inputs[] = {m_emailInput, m_passwordInput};
 	
 	private int m_lastFocusedFieldIndex = -1;
 	
@@ -329,7 +329,7 @@ public class smSignInPanel extends VerticalPanel implements smI_StateEventListen
 			{
 				if( event.getState() instanceof State_SignInOrUp )
 				{
-					bhClientAccountManager accountManager = sm_c.accountMngr;
+					smClientAccountManager accountManager = sm_c.accountMngr;
 					smSignInValidationResult result = accountManager.checkOutLatestBadSignInResult();
 					if( result != null )
 					{
@@ -358,7 +358,7 @@ public class smSignInPanel extends VerticalPanel implements smI_StateEventListen
 				if( event.getAction() == StateMachine_Base.OnAccountManagerResponse.class )
 				{
 					StateMachine_Base.OnAccountManagerResponse.Args args = event.getActionArgs();
-					bhClientAccountManager.E_ResponseType responseType = args.getType();
+					smClientAccountManager.E_ResponseType responseType = args.getType();
 					
 					switch(responseType)
 					{

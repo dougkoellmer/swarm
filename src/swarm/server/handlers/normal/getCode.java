@@ -69,7 +69,7 @@ public class getCode implements smI_RequestHandler, smI_DeferredRequestHandler
 	@Override
 	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
 	{
-		//bhU_Servlet.simulateException(true);
+		//smU_Servlet.simulateException(true);
 		
 		smServerCellAddressMapping mapping = new smServerCellAddressMapping(smE_GridType.ACTIVE);
 		mapping.readJson(request.getJson());
@@ -105,9 +105,9 @@ public class getCode implements smI_RequestHandler, smI_DeferredRequestHandler
 		writeResponse(eCodeType, persistedCell, response);
 	}
 	
-	private bhCode writeResponse(smE_CodeType eCodeType, smServerCell persistedCell, smTransactionResponse response)
+	private smCode writeResponse(smE_CodeType eCodeType, smServerCell persistedCell, smTransactionResponse response)
 	{
-		bhCode responseCode = null;
+		smCode responseCode = null;
 		
 		if( persistedCell == null )
 		{
@@ -131,7 +131,7 @@ public class getCode implements smI_RequestHandler, smI_DeferredRequestHandler
 		//--- DRK > Figure out what privileges information to send down to client, if anything.
 		//---		Just piggy-backing here cause it will be needed anyway for source.
 		//---		If this turns out to be null, no privileges information is sent down.
-		bhCodePrivileges privileges = null;
+		smCodePrivileges privileges = null;
 		if( responseCode!= null && (responseCode.isStandInFor(smE_CodeType.SOURCE) || responseCode.getSafetyLevel() == smE_CodeSafetyLevel.REQUIRES_DYNAMIC_SANDBOX) )
 		{
 			if( persistedCell == null )
@@ -184,8 +184,8 @@ public class getCode implements smI_RequestHandler, smI_DeferredRequestHandler
 		
 		for( int i = 0; i < batch.getCount(); i++ )
 		{
-			bhTransactionRequest request = batch.getRequest(i);
-			bhTransactionResponse response = batch.getResponse(i);
+			smTransactionRequest request = batch.getRequest(i);
+			smTransactionResponse response = batch.getResponse(i);
 			
 			if( request.getPath() != smE_RequestPath.getCode )  continue;
 			
@@ -221,7 +221,7 @@ public class getCode implements smI_RequestHandler, smI_DeferredRequestHandler
 			
 			if( typesAlreadyReturnedForCoord != null )
 			{
-				int typeBit = bhU_BitTricks.calcOrdinalBit(eCodeType.ordinal());
+				int typeBit = smU_BitTricks.calcOrdinalBit(eCodeType.ordinal());
 				if( (typesAlreadyReturnedForCoord & typeBit) != 0 )
 				{
 					response.setError(smE_ResponseError.REDUNDANT);
@@ -230,7 +230,7 @@ public class getCode implements smI_RequestHandler, smI_DeferredRequestHandler
 				}
 			}
 
-			bhCode code = this.writeResponse(eCodeType, persistedCell, response);
+			smCode code = this.writeResponse(eCodeType, persistedCell, response);
 			
 			typesAlreadyReturnedForCoord = typesAlreadyReturnedForCoord == null ? 0 : typesAlreadyReturnedForCoord;
 			

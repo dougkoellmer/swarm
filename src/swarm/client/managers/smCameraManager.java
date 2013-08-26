@@ -105,7 +105,7 @@ public class smCameraManager
 	{
 		smA_Grid grid = sm_c.gridMngr.getGrid();
 		
-		bhPoint oldTargetPosition = m_utilPoint;
+		smPoint oldTargetPosition = m_utilPoint;
 		oldTargetPosition.copy(m_targetPosition);
 		double maxZ = m_camera.calcMaxZ();
 		
@@ -184,7 +184,7 @@ public class smCameraManager
 			//m_snapTime = 0.01;
 		}
 		
-		//timeToTravel = bhU_Math.clamp(timeToTravel, smS_App.MIN_SNAP_TIME, smS_App.MAX_SNAP_TIME);
+		//timeToTravel = smU_Math.clamp(timeToTravel, smS_App.MIN_SNAP_TIME, smS_App.MAX_SNAP_TIME);
 
 		
 		
@@ -193,7 +193,7 @@ public class smCameraManager
 		final double EXPONENT_RANGE = MAX_EXPONENT - MIN_EXPONENT;
 		
 		m_exponent = MIN_EXPONENT + distanceRatio * EXPONENT_RANGE;
-		//m_exponent = bhU_Math.clamp(m_exponent, MIN_EXPONENT, MAX_EXPONENT);
+		//m_exponent = smU_Math.clamp(m_exponent, MIN_EXPONENT, MAX_EXPONENT);
 
 		m_startY = calcY(m_snapTime);
 		
@@ -242,7 +242,7 @@ public class smCameraManager
 	{
 		if( m_cameraAtRestFrameCount >= 1 )
 		{
-			bhU_Debug.ASSERT(m_targetPosition.isEqualTo(m_camera.getPosition(), smTolerance.EXACT), "isCameraAtRest1");
+			smU_Debug.ASSERT(m_targetPosition.isEqualTo(m_camera.getPosition(), smTolerance.EXACT), "isCameraAtRest1");
 			
 			return true;
 		}

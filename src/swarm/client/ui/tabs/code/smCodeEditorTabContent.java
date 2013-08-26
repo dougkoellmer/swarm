@@ -58,7 +58,7 @@ public class smCodeEditorTabContent extends AbsolutePanel implements smI_TabCont
 	private final FlowPanel m_buttonTrayWrapper = new FlowPanel();
 	private final HorizontalPanel m_buttonTray = new HorizontalPanel();
 	
-	private bhCodeEditor m_editor = null;
+	private smCodeEditor m_editor = null;
 	
 	private final State_EditingCode.CodeChanged.Args m_args_CodeChanged = new State_EditingCode.CodeChanged.Args();
 	
@@ -90,8 +90,8 @@ public class smCodeEditorTabContent extends AbsolutePanel implements smI_TabCont
 			}
 		};
 		
-		bhToolTipManager tipManager = sm_c.toolTipMngr;
-		bhClickManager clickMngr = new smClickManager();
+		smToolTipManager tipManager = sm_c.toolTipMngr;
+		smClickManager clickMngr = new smClickManager();
 		
 		clickMngr.addClickHandler(m_saveButton, commitHandler);
 		m_saveButton.setText("Save");
@@ -152,7 +152,7 @@ public class smCodeEditorTabContent extends AbsolutePanel implements smI_TabCont
 	private void updateLayout()
 	{
 		double tabButtonContainerHeight = sm_view.splitPanel.getTabPanel().getTabButtonContainerHeight();
-		double editorHeight = RootPanel.get().getOffsetHeight() - bhTabPanel.TAB_HEIGHT - smS_UI.MAGIC_UI_SPACING*2 - tabButtonContainerHeight;
+		double editorHeight = RootPanel.get().getOffsetHeight() - smTabPanel.TAB_HEIGHT - smS_UI.MAGIC_UI_SPACING*2 - tabButtonContainerHeight;
 		m_editor.setSize(sm_view.splitPanel.getTabPanelWidth() + "px", editorHeight + "px");
 		
 		m_editor.updateLayout();
@@ -235,7 +235,7 @@ public class smCodeEditorTabContent extends AbsolutePanel implements smI_TabCont
 				}
 				else if( event.getState() instanceof State_EditingCodeBlocker )
 				{
-					bhConsoleBlocker.getInstance().attachTo(this);
+					smConsoleBlocker.getInstance().attachTo(this);
 					
 					updateConsoleBlocker();
 				}
@@ -246,7 +246,7 @@ public class smCodeEditorTabContent extends AbsolutePanel implements smI_TabCont
 						//--- DRK > This goes along with the sleight of hand we pull below for not detaching the blocker while animating out.
 						//---		This just makes sure that the console blocker gets detached...it might be the case that it gets immediately
 						//---		reattached.
-						bhConsoleBlocker.getInstance().detachFrom(this);
+						smConsoleBlocker.getInstance().detachFrom(this);
 					}
 				}
 				
@@ -278,7 +278,7 @@ public class smCodeEditorTabContent extends AbsolutePanel implements smI_TabCont
 						//--- DRK > This should be called in the "exit" event because background event could be called for something
 						//---		like an error dialog being pushed over the topmost state in the machine.
 						//---		Other tabs needing the console blocker will simply take over if they need it anyway.
-						bhConsoleBlocker.getInstance().detachFrom(this);
+						smConsoleBlocker.getInstance().detachFrom(this);
 					}
 				}
 				
@@ -340,7 +340,7 @@ public class smCodeEditorTabContent extends AbsolutePanel implements smI_TabCont
 			case PREVIEWING:		statusText = "Generating preview...";			break;
 		}
 		
-		bhConsoleBlocker.getInstance().setHtml(statusText);
+		smConsoleBlocker.getInstance().setHtml(statusText);
 
 		if( reason != State_EditingCodeBlocker.Reason.SYNCING && reason != State_EditingCodeBlocker.Reason.PREVIEWING)
 		{
@@ -362,7 +362,7 @@ public class smCodeEditorTabContent extends AbsolutePanel implements smI_TabCont
 		
 		if( viewingState != null && !smA_State.isForegrounded(State_EditingCodeBlocker.class) )
 		{
-			bhCodePrivileges privileges = viewingState.getCell().getCodePrivileges();
+			smCodePrivileges privileges = viewingState.getCell().getCodePrivileges();
 			
 			int charCount = m_editor.getContent().length();
 			

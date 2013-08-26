@@ -40,7 +40,7 @@ public class smVelocitySmoother
 		
 		if( count > 0 )
 		{
-			bhVector longest = null;
+			smVector longest = null;
 			for( int i = 0; i < count; i++ )
 			{
 				if( longest == null || m_vectors[i].calcLengthSquared() > longest.calcLengthSquared() )

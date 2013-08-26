@@ -47,7 +47,7 @@ public class smAccountDatabase extends smA_SqlDatabase
 		statement.setString(3,	username);
 		statement.setBytes(4,	passwordHash);
 		statement.setBytes(5,	passwordSalt);
-		statement.setString(6,	bhU_TypeConversion.convertEnumToString(role));
+		statement.setString(6,	smU_TypeConversion.convertEnumToString(role));
 
 		statement.executeUpdate();
 	}
@@ -90,7 +90,7 @@ public class smAccountDatabase extends smA_SqlDatabase
 			{
 				if( resultEmail.equals(email) )
 				{
-					flags |= bhF_SignUpExistance.EMAIL_EXISTS;
+					flags |= smF_SignUpExistance.EMAIL_EXISTS;
 				}
 			}
 			
@@ -99,7 +99,7 @@ public class smAccountDatabase extends smA_SqlDatabase
 			{
 				if( resultUsername.equals(username) )
 				{
-					flags |= bhF_SignUpExistance.USERNAME_EXISTS;
+					flags |= smF_SignUpExistance.USERNAME_EXISTS;
 				}
 			}
 		}
@@ -111,7 +111,7 @@ public class smAccountDatabase extends smA_SqlDatabase
 	{
 		Connection connection = null;
 		
-		bhUserSession userSession = null;
+		smUserSession userSession = null;
 		connection = getConnection();
 		
 		PreparedStatement statement = connection.prepareStatement(smS_AccountQuery.CONTAINS_ACCOUNT_ID);
@@ -124,7 +124,7 @@ public class smAccountDatabase extends smA_SqlDatabase
 			int id = result.getInt(1);
 			String username = result.getString(2);
 			String roleName = result.getString(3);
-			smE_Role role = bhU_TypeConversion.convertStringToEnum(roleName, smE_Role.values());
+			smE_Role role = smU_TypeConversion.convertStringToEnum(roleName, smE_Role.values());
 			
 			userSession = new smUserSession(id, username, role);
 		}
@@ -132,7 +132,7 @@ public class smAccountDatabase extends smA_SqlDatabase
 		return userSession;
 	}*/
 	
-	private bhUserSession getUserSessionFromSignInQuery(PreparedStatement statement) throws SQLException
+	private smUserSession getUserSessionFromSignInQuery(PreparedStatement statement) throws SQLException
 	{
 		ResultSet result = statement.executeQuery();
 
@@ -141,7 +141,7 @@ public class smAccountDatabase extends smA_SqlDatabase
 			int id = result.getInt(1);
 			String username = result.getString(2);
 			String roleName = result.getString(3);
-			smE_Role role = bhU_TypeConversion.convertStringToEnum(roleName, smE_Role.values());
+			smE_Role role = smU_TypeConversion.convertStringToEnum(roleName, smE_Role.values());
 			
 			return new smUserSession(id, username, role);
 		}
@@ -170,7 +170,7 @@ public class smAccountDatabase extends smA_SqlDatabase
 		statement.setBytes(3, changeToken);
 		statement.setTimestamp(4, expirationThreshold);
 
-		bhUserSession userSession = getUserSessionFromSignInQuery(statement);
+		smUserSession userSession = getUserSessionFromSignInQuery(statement);
 		
 		if( userSession != null )
 		{
@@ -184,7 +184,7 @@ public class smAccountDatabase extends smA_SqlDatabase
 			statement.setString(7, email);
 			statement.setBytes(8, newPasswordHash);
 			
-			if( !bhU_Sql.isSuccessfulUpdate(statement.executeUpdate()) )
+			if( !smU_Sql.isSuccessfulUpdate(statement.executeUpdate()) )
 			{
 				s_logger.warning("Was able to confirm new password, but couldn't then switch password.");
 				
@@ -228,6 +228,6 @@ public class smAccountDatabase extends smA_SqlDatabase
 		statement.setTimestamp(4, time);
 		statement.setString(5, email);
 
-		return bhU_Sql.isSuccessfulUpdate(statement.executeUpdate());
+		return smU_Sql.isSuccessfulUpdate(statement.executeUpdate());
 	}
 }

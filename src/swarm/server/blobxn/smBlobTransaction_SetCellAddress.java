@@ -36,7 +36,7 @@ public class smBlobTransaction_SetCellAddress extends smA_BlobTransaction
 	}
 	
 	@Override
-	protected void performOperations() throws bhBlobException
+	protected void performOperations() throws smBlobException
 	{
 		smI_BlobManager blobManager = sm_s.blobMngrFactory.create(smE_BlobCacheLevel.MEMCACHE, smE_BlobCacheLevel.PERSISTENT);
 		

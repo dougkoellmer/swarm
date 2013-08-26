@@ -42,11 +42,11 @@ public class previewCode implements smI_RequestHandler
 		//--- DRK > Obviously we're trusting the client here as to their privileges, which could easily be hacked, but it doesn't really matter.
 		//---		This handler should be completely self-contained, so there's no chance of the hacked code leaking into the database.
 		//---		This is an optimization so that we don't have to hit the database, but in the future I might just hit the database for it.
-		bhCodePrivileges privileges = new smCodePrivileges(request.getJson());
+		smCodePrivileges privileges = new smCodePrivileges(request.getJson());
 		
-		bhCode sourceCode = new smCode(request.getJson(), smE_CodeType.SOURCE);
+		smCode sourceCode = new smCode(request.getJson(), smE_CodeType.SOURCE);
 		
-		bhCompilerResult result = sm.codeCompiler.compile(sourceCode, privileges, coordinate.writeString());
+		smCompilerResult result = sm.codeCompiler.compile(sourceCode, privileges, coordinate.writeString());
 		
 		result.writeJson(response.getJson());
 	}

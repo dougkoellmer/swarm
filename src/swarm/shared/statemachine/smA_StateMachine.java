@@ -38,7 +38,7 @@ public abstract class smA_StateMachine extends smA_State
 		smA_State newState		= smA_State.getInstance(T);
 		smA_State currentState = this.getCurrentState();
 		
-		bhU_Debug.ASSERT(currentState != null);
+		smU_Debug.ASSERT(currentState != null);
 		
 		if( currentState == null )
 		{
@@ -66,7 +66,7 @@ public abstract class smA_StateMachine extends smA_State
 		smA_State stateBeneath = poppedState.getStateBeneath();
 		
 		boolean validPop = poppedState != null && stateBeneath != null;
-		bhU_Debug.ASSERT(validPop, "internal_popState1");
+		smU_Debug.ASSERT(validPop, "internal_popState1");
 		
 		if( !validPop )
 		{
@@ -91,7 +91,7 @@ public abstract class smA_StateMachine extends smA_State
 	@Override
 	void didEnter_internal(smA_StateConstructor constructor)
 	{
-		bhU_Debug.ASSERT(m_currentState == null);
+		smU_Debug.ASSERT(m_currentState == null);
 
 		super.didEnter_internal(constructor);
 	}
@@ -162,9 +162,9 @@ public abstract class smA_StateMachine extends smA_State
 	{
 		boolean invalidSet = (this.m_currentState != null) && m_currentState == stateToEnter && m_currentState.isEntered();
 		
-		bhU_Debug.ASSERT(!invalidSet, "enterSubState1");
+		smU_Debug.ASSERT(!invalidSet, "enterSubState1");
 		
-		//bhU_Debug.ASSERT(this.checkLegalStateManipulation());
+		//smU_Debug.ASSERT(this.checkLegalStateManipulation());
 	
 		stateToEnter.m_stateBeneath = stateBeneath;
 		stateToEnter.m_previousState = isPush ? null : (this.m_currentState != null ? this.m_currentState.getClass() : null);

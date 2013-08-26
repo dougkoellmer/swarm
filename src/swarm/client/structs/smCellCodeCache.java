@@ -15,7 +15,7 @@ public class smCellCodeCache implements smI_LocalCodeRepository
 {
 	private static final class smCacheCell extends smA_Cell
 	{
-		bhCacheCell()
+		smCacheCell()
 		{
 		}
 	}
@@ -30,7 +30,7 @@ public class smCellCodeCache implements smI_LocalCodeRepository
 	
 	public void cacheCell(smA_Cell cell)
 	{
-		bhCacheCell cachedCell = this.getOrCreateCell(cell.getCoordinate(), true);
+		smCacheCell cachedCell = this.getOrCreateCell(cell.getCoordinate(), true);
 		if( cell.getCodePrivileges() != null )
 		{
 			cachedCell.getCodePrivileges().copy(cell.getCodePrivileges());
@@ -39,7 +39,7 @@ public class smCellCodeCache implements smI_LocalCodeRepository
 		for( int i = 0; i < smE_CodeType.values().length; i++ )
 		{
 			smE_CodeType eType = smE_CodeType.values()[i];
-			bhCode code = cell.getCode(eType);
+			smCode code = cell.getCode(eType);
 			
 			if( code != null )
 			{
@@ -48,10 +48,10 @@ public class smCellCodeCache implements smI_LocalCodeRepository
 		}
 	}
 	
-	private bhCacheCell getOrCreateCell(smGridCoordinate coord, boolean forceCreate)
+	private smCacheCell getOrCreateCell(smGridCoordinate coord, boolean forceCreate)
 	{
 		String coordHash = coord.writeString();
-		bhCacheCell cell = (smCacheCell) m_cache.get(coordHash);
+		smCacheCell cell = (smCacheCell) m_cache.get(coordHash);
 		
 		if( cell == null && forceCreate )
 		{
@@ -64,7 +64,7 @@ public class smCellCodeCache implements smI_LocalCodeRepository
 	
 	public void cacheCode(smGridCoordinate coord, smCode code, smE_CodeType eType)
 	{
-		bhCacheCell cell = this.getOrCreateCell(coord, true);
+		smCacheCell cell = this.getOrCreateCell(coord, true);
 		cacheCode_private(cell, code, eType);
 	}
 	
@@ -76,14 +76,14 @@ public class smCellCodeCache implements smI_LocalCodeRepository
 	@Override
 	public boolean tryPopulatingCell(smGridCoordinate coordinate, smE_CodeType eType, smA_Cell outCell)
 	{
-		bhCacheCell cachedCell = this.getOrCreateCell(coordinate, false);
+		smCacheCell cachedCell = this.getOrCreateCell(coordinate, false);
 		
 		if( cachedCell == null )
 		{
 			return false;
 		}
 		
-		bhCode code = cachedCell.getCode(eType);
+		smCode code = cachedCell.getCode(eType);
 		
 		boolean foundCode = false;
 		

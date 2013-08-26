@@ -77,7 +77,7 @@ public class smUserSession implements smI_Blob, smI_BlobKey
 		out.writeInt(EXTERNAL_VERSION);
 		
 		out.writeInt(m_accountId);
-		bhU_Serialization.writeNullableEnum(m_role, out);
+		smU_Serialization.writeNullableEnum(m_role, out);
 		out.writeUTF(m_username);
 
 		m_lastTouched.writeExternal(out);
@@ -89,7 +89,7 @@ public class smUserSession implements smI_Blob, smI_BlobKey
 		int externalVersion = in.readInt();
 		
 		m_accountId = in.readInt();
-		m_role = bhU_Serialization.readNullableEnum(smE_Role.values(), in);
+		m_role = smU_Serialization.readNullableEnum(smE_Role.values(), in);
 		m_username = in.readUTF();
 
 		m_lastTouched.readExternal(in);
@@ -98,7 +98,7 @@ public class smUserSession implements smI_Blob, smI_BlobKey
 	@Override
 	public String createBlobKey(smI_Blob blob)
 	{
-		return bhU_Blob.generateKey(blob, getAccountIdString());
+		return smU_Blob.generateKey(blob, getAccountIdString());
 	}
 
 	@Override

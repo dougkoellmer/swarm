@@ -145,8 +145,8 @@ public class smToolTipManager
 	void showTip(smToolTip toolTip, smPoint mousePoint)
 	{
 		Element targetElement = toolTip.getTargetElement();
-		bhToolTipConfig config = toolTip.getConfig();
-		bhAlignmentDefinition alignment = config.getAlignmentDefinition();
+		smToolTipConfig config = toolTip.getConfig();
+		smAlignmentDefinition alignment = config.getAlignmentDefinition();
 		
 		if( alignment != null )
 		{
@@ -159,7 +159,7 @@ public class smToolTipManager
 	
 		setAlignmentDefaults(toolTip, m_reusedAlignment, mousePoint);
 		
-		bhU_Alignment.performAlignment(targetElement, toolTip.getElement(), m_reusedAlignment);
+		smU_Alignment.performAlignment(targetElement, toolTip.getElement(), m_reusedAlignment);
 		/*
 		int targetElementBottom = targetElement.getAbsoluteBottom();
 		int targetElementHeight = targetElement.getClientHeight();
@@ -208,7 +208,7 @@ public class smToolTipManager
 		{
 			RootPanel.get().add(toolTip);
 			
-			bhU_Debug.ASSERT(m_activeTips.indexOf(toolTip) == -1, "prepareTip1");
+			smU_Debug.ASSERT(m_activeTips.indexOf(toolTip) == -1, "prepareTip1");
 			
 			m_activeTips.add(toolTip);
 		}
@@ -226,7 +226,7 @@ public class smToolTipManager
 			
 			int index = m_activeTips.indexOf(toolTip);
 			
-			bhU_Debug.ASSERT(index != -1, "endTip1");
+			smU_Debug.ASSERT(index != -1, "endTip1");
 			
 			if( index >= 0 )
 			{
@@ -273,7 +273,7 @@ public class smToolTipManager
 		
 		for( int i = 0; i < m_activeTips.size(); i++ )
 		{
-			bhToolTip ithTip = m_activeTips.get(i);
+			smToolTip ithTip = m_activeTips.get(i);
 			
 			if( ithTip.getTargetElement() == widget.asWidget().getElement() )
 			{
@@ -281,7 +281,7 @@ public class smToolTipManager
 				{
 					this.prepareTip(ithTip, ithTip.getTargetElement(), config);
 					
-					bhPoint mousePoint = null;
+					smPoint mousePoint = null;
 					
 					if( config.getType() == smE_ToolTipType.MOUSE_OVER )
 					{

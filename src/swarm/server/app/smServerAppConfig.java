@@ -3,7 +3,7 @@ package swarm.server.app;
 import swarm.server.handlers.admin.smI_HomeCellCreator;
 import swarm.shared.app.smAppConfig;
 
-public class smServerAppConfig extends bhAppConfig
+public class smServerAppConfig extends smAppConfig
 {
 	public String databaseUrl;
 	public String accountsDatabase;

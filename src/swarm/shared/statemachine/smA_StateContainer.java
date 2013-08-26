@@ -21,19 +21,19 @@ public abstract class smA_StateContainer extends smA_State
 	
 	private smA_State getChildForManipulation(Class<? extends smA_State> T)
 	{
-		bhU_Debug.ASSERT(this.isForegrounded());
+		smU_Debug.ASSERT(this.isForegrounded());
 		
 		smA_State state = m_children.get(T);
 		
 		if ( state == null )
 		{
-			bhU_Debug.ASSERT(false);
+			smU_Debug.ASSERT(false);
 			return null;
 		}
 		
 		if ( !state.isEntered() )
 		{
-			bhU_Debug.ASSERT(false);
+			smU_Debug.ASSERT(false);
 			return null;
 		}
 		
@@ -60,13 +60,13 @@ public abstract class smA_StateContainer extends smA_State
 	{
 		if ( !this.isForegrounded() )
 		{
-			bhU_Debug.ASSERT(false);
+			smU_Debug.ASSERT(false);
 			return;
 		}
 		
 		if ( m_children.get(T) != null )
 		{
-			bhU_Debug.ASSERT(false);
+			smU_Debug.ASSERT(false);
 			return;
 		}
 		
@@ -84,7 +84,7 @@ public abstract class smA_StateContainer extends smA_State
 	{
 		if ( !this.isForegrounded() )
 		{
-			bhU_Debug.ASSERT(false);
+			smU_Debug.ASSERT(false);
 			return;
 		}
 		
@@ -92,7 +92,7 @@ public abstract class smA_StateContainer extends smA_State
 	
 		if ( state.isForegrounded() )
 		{
-			bhU_Debug.ASSERT(false);
+			smU_Debug.ASSERT(false);
 			return;
 		}
 		
@@ -105,7 +105,7 @@ public abstract class smA_StateContainer extends smA_State
 	{
 		if ( !this.isForegrounded() )
 		{
-			bhU_Debug.ASSERT(false);
+			smU_Debug.ASSERT(false);
 			return;
 		}
 		
@@ -113,7 +113,7 @@ public abstract class smA_StateContainer extends smA_State
 	
 		if ( !state.isForegrounded() )
 		{
-			bhU_Debug.ASSERT(false);
+			smU_Debug.ASSERT(false);
 			return;
 		}
 		
@@ -126,7 +126,7 @@ public abstract class smA_StateContainer extends smA_State
 	{
 		if ( !this.isForegrounded() )
 		{
-			bhU_Debug.ASSERT(false);
+			smU_Debug.ASSERT(false);
 			return;
 		}
 		
@@ -149,8 +149,8 @@ public abstract class smA_StateContainer extends smA_State
 	@Override
 	void didEnter_internal(smA_StateConstructor constructor)
 	{
-		bhU_Debug.ASSERT(m_children == null);
-		bhU_Debug.ASSERT(m_childrenForegrounded == null);
+		smU_Debug.ASSERT(m_children == null);
+		smU_Debug.ASSERT(m_childrenForegrounded == null);
 		
 		super.didEnter_internal(constructor);
 		

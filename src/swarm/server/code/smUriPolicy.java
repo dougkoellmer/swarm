@@ -37,7 +37,7 @@ public class smUriPolicy implements UriPolicy
 	};
 	
 	private final smE_NetworkPrivilege m_networkPrivilege;
-	private bhBoolean m_foundB33hivePath = new smBoolean();
+	private smBoolean m_foundB33hivePath = new smBoolean();
 	
 	public smUriPolicy(smE_NetworkPrivilege networkPrivilege)
 	{
@@ -62,7 +62,7 @@ public class smUriPolicy implements UriPolicy
 		
 		String attribute = (String) attributeObject;
 		
-		bhUriData uriData = new smUriData();
+		smUriData uriData = new smUriData();
 		uriData.attribute = attribute;
 		uriData.authority = u.getUri().getAuthority();
 		uriData.fullUri = u.getUri().toString();
@@ -72,8 +72,8 @@ public class smUriPolicy implements UriPolicy
 		uriData.client = false;
 		//uriData.schemeSpecificPart = u.getUri().getSchemeSpecificPart();
 		
-		bhBoolean bool_out = m_foundB33hivePath.value == true ? null : m_foundB33hivePath;
-		String toReturn = bhU_UriPolicy.rewriteUri(m_networkPrivilege, uriData, bool_out);
+		smBoolean bool_out = m_foundB33hivePath.value == true ? null : m_foundB33hivePath;
+		String toReturn = smU_UriPolicy.rewriteUri(m_networkPrivilege, uriData, bool_out);
 		
 		return toReturn;
 	}

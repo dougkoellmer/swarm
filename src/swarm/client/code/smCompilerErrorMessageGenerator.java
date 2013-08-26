@@ -11,12 +11,12 @@ public class smCompilerErrorMessageGenerator
 {
 	private static final smCompilerErrorMessageGenerator s_instance = new smCompilerErrorMessageGenerator();
 	
-	private bhCompilerErrorMessageGenerator()
+	private smCompilerErrorMessageGenerator()
 	{
 		
 	}
 	
-	public static bhCompilerErrorMessageGenerator getInstance()
+	public static smCompilerErrorMessageGenerator getInstance()
 	{
 		return s_instance;
 	}
@@ -31,7 +31,7 @@ public class smCompilerErrorMessageGenerator
 			
 			for( int i = 0; i < messages.size(); i++ )
 			{
-				bhCompilerMessage error = messages.get(i);
+				smCompilerMessage error = messages.get(i);
 				html += "<li>";
 				html += error.getMessage();
 				html += "</li>";
@@ -46,7 +46,7 @@ public class smCompilerErrorMessageGenerator
 			{
 				case NO_ERROR:
 				{
-					bhU_Debug.ASSERT(false, "NO_ERROR returned but tried to generate compiler error message for it.");
+					smU_Debug.ASSERT(false, "NO_ERROR returned but tried to generate compiler error message for it.");
 					
 					return null;
 				}
@@ -68,7 +68,7 @@ public class smCompilerErrorMessageGenerator
 				
 				case COMPILATION_ERRORS:
 				{
-					bhU_Debug.ASSERT(false, "COMPILATION_ERRORS returned but with no messages.");
+					smU_Debug.ASSERT(false, "COMPILATION_ERRORS returned but with no messages.");
 					
 					return "Unknown compiler errors occured.";
 				}

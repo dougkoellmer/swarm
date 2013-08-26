@@ -23,7 +23,7 @@ class smToolTipSubManager_Tutorial implements smI_ToolTipSubManager
 	
 	private final HashMap<Element, smToolTipConfig> m_tipMap = new HashMap<Element, smToolTipConfig>();
 	
-	bhToolTipSubManager_Tutorial(smToolTipManager toolTipManager)
+	smToolTipSubManager_Tutorial(smToolTipManager toolTipManager)
 	{
 		m_toolTipManager = toolTipManager;
 	}

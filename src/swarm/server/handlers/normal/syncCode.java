@@ -48,7 +48,7 @@ public class syncCode implements smI_RequestHandler
 		}
 
 		//--- DRK > Have to do a further checking here to make sure user owns this cell.
-		bhUserSession session = sm_s.sessionMngr.getSession(request, response);
+		smUserSession session = sm_s.sessionMngr.getSession(request, response);
 		
 		//--- DRK > Used to have this check here...don't see why we shouldn't also
 		//---		force admins to own their own cells too.
@@ -102,13 +102,13 @@ public class syncCode implements smI_RequestHandler
 			}
 		}
 		
-		smServerCell persistedCell = bhU_CellCode.getCellForCompile(blobManager, mapping, response);
+		smServerCell persistedCell = smU_CellCode.getCellForCompile(blobManager, mapping, response);
 		
 		if( persistedCell == null )  return;
 		
 		smServerCode sourceCode = new smServerCode(request.getJson(), smE_CodeType.SOURCE);
 		
-		bhCompilerResult result = bhU_CellCode.compileCell(persistedCell, sourceCode, mapping);
+		smCompilerResult result = smU_CellCode.compileCell(persistedCell, sourceCode, mapping);
 		
 		//--- DRK > This write could obviously cause contention if user was saving from multiple clients,
 		//---		but if a user wants to do that for whatever reason, it's their own problem.
@@ -117,7 +117,7 @@ public class syncCode implements smI_RequestHandler
 		//---			  But if it does, valid contention cases could definitely happen.
 		if( isSandbox == false)
 		{
-			bhU_CellCode.saveBackCompiledCell(blobManager, mapping, persistedCell, response);
+			smU_CellCode.saveBackCompiledCell(blobManager, mapping, persistedCell, response);
 		}
 		
 		result.writeJson(response.getJson());
