@@ -4,59 +4,59 @@ package swarm.client.states.camera;
 import java.util.logging.Logger;
 
 import swarm.client.app.sm_c;
-import swarm.client.code.bhCompilerErrorMessageGenerator;
-import swarm.client.entities.bhCamera;
-import swarm.client.managers.bhCellCodeManager;
-import swarm.client.entities.bhBufferCell;
-import swarm.client.managers.bhCameraManager;
-import swarm.client.managers.bhCellAddressManager;
-import swarm.client.managers.bhCellBuffer;
-import swarm.client.managers.bhCellBufferManager;
-import swarm.client.managers.bhClientAccountManager;
-import swarm.client.managers.bhUserManager;
-import swarm.client.entities.bhA_ClientUser;
-import swarm.client.managers.bhF_BufferUpdateOption;
-import swarm.client.input.bhBrowserHistoryManager;
-import swarm.client.input.bhBrowserAddressManager;
+import swarm.client.code.smCompilerErrorMessageGenerator;
+import swarm.client.entities.smCamera;
+import swarm.client.managers.smCellCodeManager;
+import swarm.client.entities.smBufferCell;
+import swarm.client.managers.smCameraManager;
+import swarm.client.managers.smCellAddressManager;
+import swarm.client.managers.smCellBuffer;
+import swarm.client.managers.smCellBufferManager;
+import swarm.client.managers.smClientAccountManager;
+import swarm.client.managers.smUserManager;
+import swarm.client.entities.smA_ClientUser;
+import swarm.client.managers.smF_BufferUpdateOption;
+import swarm.client.input.smBrowserHistoryManager;
+import swarm.client.input.smBrowserAddressManager;
 import swarm.client.states.StateMachine_Base;
 import swarm.client.states.State_AsyncDialog;
 import swarm.client.states.State_GenericDialog;
 import swarm.client.states.StateMachine_Base.OnGridResize;
 import swarm.client.states.camera.State_GettingMapping.OnResponse.E_Type;
-import swarm.client.structs.bhCellCodeCache;
-import swarm.client.structs.bhI_LocalCodeRepository;
-import swarm.client.structs.bhLocalCodeRepositoryWrapper;
-import swarm.client.transaction.bhClientTransactionManager;
-import swarm.client.transaction.bhE_TransactionAction;
-import swarm.shared.app.bhS_App;
-import swarm.shared.code.bhCompilerResult;
-import swarm.shared.code.bhE_CompilationStatus;
-import swarm.shared.debugging.bhU_Debug;
-import swarm.shared.entities.bhA_Grid;
-import swarm.shared.entities.bhE_CodeType;
-import swarm.shared.json.bhI_JsonObject;
-import swarm.shared.statemachine.bhA_Action;
+import swarm.client.structs.smCellCodeCache;
+import swarm.client.structs.smI_LocalCodeRepository;
+import swarm.client.structs.smLocalCodeRepositoryWrapper;
+import swarm.client.transaction.smClientTransactionManager;
+import swarm.client.transaction.smE_TransactionAction;
+import swarm.shared.app.smS_App;
+import swarm.shared.code.smCompilerResult;
+import swarm.shared.code.smE_CompilationStatus;
+import swarm.shared.debugging.smU_Debug;
+import swarm.shared.entities.smA_Grid;
+import swarm.shared.entities.smE_CodeType;
+import swarm.shared.json.smI_JsonObject;
+import swarm.shared.statemachine.smA_Action;
 
-import swarm.shared.statemachine.bhA_ActionArgs;
-import swarm.shared.statemachine.bhA_EventAction;
-import swarm.shared.statemachine.bhA_State;
-import swarm.shared.statemachine.bhA_StateMachine;
-import swarm.shared.statemachine.bhI_StateEventListener;
-import swarm.shared.statemachine.bhA_StateConstructor;
-import swarm.shared.statemachine.bhStateEvent;
-import swarm.shared.structs.bhCellAddress;
-import swarm.shared.structs.bhCellAddressMapping;
-import swarm.shared.structs.bhE_CellAddressParseError;
-import swarm.shared.structs.bhGridCoordinate;
-import swarm.shared.structs.bhPoint;
-import swarm.shared.structs.bhTolerance;
-import swarm.shared.structs.bhVector;
+import swarm.shared.statemachine.smA_ActionArgs;
+import swarm.shared.statemachine.smA_EventAction;
+import swarm.shared.statemachine.smA_State;
+import swarm.shared.statemachine.smA_StateMachine;
+import swarm.shared.statemachine.smI_StateEventListener;
+import swarm.shared.statemachine.smA_StateConstructor;
+import swarm.shared.statemachine.smStateEvent;
+import swarm.shared.structs.smCellAddress;
+import swarm.shared.structs.smCellAddressMapping;
+import swarm.shared.structs.smE_CellAddressParseError;
+import swarm.shared.structs.smGridCoordinate;
+import swarm.shared.structs.smPoint;
+import swarm.shared.structs.smTolerance;
+import swarm.shared.structs.smVector;
 
 /**
  * ...
  * @author
  */
-public class StateMachine_Camera extends bhA_StateMachine implements bhI_StateEventListener
+public class StateMachine_Camera extends smA_StateMachine implements smI_StateEventListener
 {
 	public static final double IGNORED_COMPONENT = Double.NaN;
 	
@@ -67,18 +67,18 @@ public class StateMachine_Camera extends bhA_StateMachine implements bhI_StateEv
 	 */
 	static class CameraManager extends bhCameraManager
 	{
-		CameraManager(bhCamera camera, double minSnapTime, double maxSnapTime)
+		CameraManager(smCamera camera, double minSnapTime, double maxSnapTime)
 		{
 			super(camera, minSnapTime, maxSnapTime);
 		}
 		
 		@Override
-		protected void setCameraPosition(bhPoint point, boolean enforceZConstraints)
+		protected void setCameraPosition(smPoint point, boolean enforceZConstraints)
 		{
 			super.setCameraPosition(point, enforceZConstraints);
 		}
 		
-		void internal_setTargetPosition(bhPoint point, boolean instant)
+		void internal_setTargetPosition(smPoint point, boolean instant)
 		{
 			super.setTargetPosition(point, instant);
 		}
@@ -92,20 +92,20 @@ public class StateMachine_Camera extends bhA_StateMachine implements bhI_StateEv
 	
 	//TODO: Minor issue here is I think this has to be called before SetCameraViewSize by the UI.
 	//		Could make Action API for this machine more robust by allowing any order of calls.
-	public static class SetInitialPosition extends bhA_CameraAction
+	public static class SetInitialPosition extends smA_CameraAction
 	{
-		public static class Args extends bhA_ActionArgs
+		public static class Args extends smA_ActionArgs
 		{
 			private bhPoint m_point;
 			
-			public void setPoint(bhPoint point)
+			public void setPoint(smPoint point)
 			{
 				m_point = point;
 			}
 		}
 		
 		@Override
-		public void perform(bhA_ActionArgs args)
+		public void perform(smA_ActionArgs args)
 		{
 			StateMachine_Camera machine = this.getState();
 			
@@ -116,22 +116,22 @@ public class StateMachine_Camera extends bhA_StateMachine implements bhI_StateEv
 		}
 		
 		@Override
-		public boolean isPerformable(bhA_ActionArgs args)
+		public boolean isPerformable(smA_ActionArgs args)
 		{
 			StateMachine_Camera machine = this.getState();
 			return machine.getUpdateCount() == 0;
 		}
 		
 		@Override
-		public Class<? extends bhA_State> getStateAssociation()
+		public Class<? extends smA_State> getStateAssociation()
 		{
 			return StateMachine_Camera.class;
 		}
 	}
 	
-	public static class SetCameraViewSize extends bhA_Action
+	public static class SetCameraViewSize extends smA_Action
 	{
-		public static class Args extends bhA_ActionArgs
+		public static class Args extends smA_ActionArgs
 		{
 			private final double[] m_dimensions = new double[2];
 			
@@ -143,7 +143,7 @@ public class StateMachine_Camera extends bhA_StateMachine implements bhI_StateEv
 		}
 		
 		@Override
-		public void perform(bhA_ActionArgs args)
+		public void perform(smA_ActionArgs args)
 		{
 			Args args_cast = (Args) args;
 			StateMachine_Camera machine = this.getState();
@@ -163,7 +163,7 @@ public class StateMachine_Camera extends bhA_StateMachine implements bhI_StateEv
 		}
 
 		@Override
-		public Class<? extends bhA_State> getStateAssociation()
+		public Class<? extends smA_State> getStateAssociation()
 		{
 			return StateMachine_Camera.class;
 		}
@@ -175,9 +175,9 @@ public class StateMachine_Camera extends bhA_StateMachine implements bhI_StateEv
 		}
 	}
 	
-	public static class SetCameraTarget extends bhA_CameraAction
+	public static class SetCameraTarget extends smA_CameraAction
 	{
-		public static class Args extends bhA_ActionArgs
+		public static class Args extends smA_ActionArgs
 		{
 			private bhPoint m_point;
 			private boolean m_instant;
@@ -188,24 +188,24 @@ public class StateMachine_Camera extends bhA_StateMachine implements bhI_StateEv
 				m_instant = false;
 			}
 			
-			public Args(bhPoint point)
+			public Args(smPoint point)
 			{
 				m_point = point;
 				m_instant = false;
 			}
 			
-			public void initialize(bhPoint point, boolean instant)
+			public void initialize(smPoint point, boolean instant)
 			{
 				m_point = point;
 				m_instant = instant;
 			}
 			
-			public void setPoint(bhPoint point)
+			public void setPoint(smPoint point)
 			{
 				m_point = point;
 			}
 			
-			public bhPoint getPoint()
+			public smPoint getPoint()
 			{
 				return m_point;
 			}
@@ -217,7 +217,7 @@ public class StateMachine_Camera extends bhA_StateMachine implements bhI_StateEv
 		}
 		
 		@Override
-		public void perform(bhA_ActionArgs args)
+		public void perform(smA_ActionArgs args)
 		{
 			StateMachine_Camera machine = this.getState();
 			
@@ -246,7 +246,7 @@ public class StateMachine_Camera extends bhA_StateMachine implements bhI_StateEv
 		}
 		
 		@Override
-		public Class<? extends bhA_State> getStateAssociation()
+		public Class<? extends smA_State> getStateAssociation()
 		{
 			return StateMachine_Camera.class;
 		}
@@ -258,9 +258,9 @@ public class StateMachine_Camera extends bhA_StateMachine implements bhI_StateEv
 		}
 	}
 	
-	public static class SnapToCoordinate extends bhA_CameraAction
+	public static class SnapToCoordinate extends smA_CameraAction
 	{
-		public static class Args extends bhA_ActionArgs
+		public static class Args extends smA_ActionArgs
 		{
 			private bhGridCoordinate m_coordinate;
 			private boolean m_onlyCausedRefresh = false;
@@ -270,12 +270,12 @@ public class StateMachine_Camera extends bhA_StateMachine implements bhI_StateEv
 				m_coordinate = null;
 			}
 			
-			public Args(bhGridCoordinate coord)
+			public Args(smGridCoordinate coord)
 			{
 				m_coordinate = coord;
 			}
 			
-			public void setCoordinate(bhGridCoordinate coordinate)
+			public void setCoordinate(smGridCoordinate coordinate)
 			{
 				m_coordinate = coordinate;
 			}
@@ -287,11 +287,11 @@ public class StateMachine_Camera extends bhA_StateMachine implements bhI_StateEv
 		}
 		
 		@Override
-		public void perform(bhA_ActionArgs args)
+		public void perform(smA_ActionArgs args)
 		{
 			bhGridCoordinate coordinate = ((Args) args).m_coordinate;
 			StateMachine_Camera machine = this.getState();
-			bhA_State currentState = machine.getCurrentState();
+			smA_State currentState = machine.getCurrentState();
 			
 			if( currentState instanceof State_ViewingCell )
 			{
@@ -309,11 +309,11 @@ public class StateMachine_Camera extends bhA_StateMachine implements bhI_StateEv
 		}
 		
 		@Override
-		public boolean isPerformable(bhA_ActionArgs args)
+		public boolean isPerformable(smA_ActionArgs args)
 		{
 			bhGridCoordinate coordinate = ((Args) args).m_coordinate;
 			
-			bhA_Grid grid = sm_c.gridMngr.getGrid();
+			smA_Grid grid = sm_c.gridMngr.getGrid();
 			
 			if( !grid.isInBounds(coordinate) )
 			{
@@ -326,7 +326,7 @@ public class StateMachine_Camera extends bhA_StateMachine implements bhI_StateEv
 			}
 			
 			StateMachine_Camera machine = this.getState();
-			bhA_State currentState = machine.getCurrentState();
+			smA_State currentState = machine.getCurrentState();
 			
 			if( currentState instanceof State_CameraSnapping )
 			{
@@ -339,17 +339,17 @@ public class StateMachine_Camera extends bhA_StateMachine implements bhI_StateEv
 		}
 		
 		@Override
-		public Class<? extends bhA_State> getStateAssociation()
+		public Class<? extends smA_State> getStateAssociation()
 		{
 			return StateMachine_Camera.class;
 		}
 	}
 	
-	public static class SnapToAddress extends bhA_Action
+	public static class SnapToAddress extends smA_Action
 	{
-		public static class Args extends bhA_ActionArgs
+		public static class Args extends smA_ActionArgs
 		{
-			private bhCellAddress m_address;
+			private smCellAddress m_address;
 			private boolean m_onlyCausedRefresh = false;
 			
 			public Args()
@@ -357,12 +357,12 @@ public class StateMachine_Camera extends bhA_StateMachine implements bhI_StateEv
 				m_address = null;
 			}
 			
-			public Args(bhCellAddress address)
+			public Args(smCellAddress address)
 			{
 				m_address = address;
 			}
 			
-			public void setAddress(bhCellAddress address)
+			public void setAddress(smCellAddress address)
 			{
 				m_address = address;
 			}
@@ -374,15 +374,15 @@ public class StateMachine_Camera extends bhA_StateMachine implements bhI_StateEv
 		}
 		
 		@Override
-		public void perform(bhA_ActionArgs args)
+		public void perform(smA_ActionArgs args)
 		{
-			bhCellAddress address = ((Args) args).m_address;
+			smCellAddress address = ((Args) args).m_address;
 			StateMachine_Camera machine = this.getState();
-			bhA_State currentState = machine.getCurrentState();
+			smA_State currentState = machine.getCurrentState();
 			
 			if( currentState instanceof State_ViewingCell )
 			{
-				bhCellAddress viewingAddress = ((State_ViewingCell)currentState).getCell().getCellAddress();
+				smCellAddress viewingAddress = ((State_ViewingCell)currentState).getCell().getCellAddress();
 				if( viewingAddress != null )
 				{
 					if( viewingAddress.isEqualTo(address) )
@@ -400,11 +400,11 @@ public class StateMachine_Camera extends bhA_StateMachine implements bhI_StateEv
 		}
 		
 		@Override
-		public boolean isPerformable(bhA_ActionArgs args)
+		public boolean isPerformable(smA_ActionArgs args)
 		{
-			bhCellAddress address = ((Args) args).m_address;
+			smCellAddress address = ((Args) args).m_address;
 			
-			if( address.getParseError() != bhE_CellAddressParseError.NO_ERROR )
+			if( address.getParseError() != smE_CellAddressParseError.NO_ERROR )
 			{
 				return false;
 			}
@@ -415,11 +415,11 @@ public class StateMachine_Camera extends bhA_StateMachine implements bhI_StateEv
 			}
 			
 			StateMachine_Camera machine = this.getState();
-			bhA_State currentState = machine.getCurrentState();
+			smA_State currentState = machine.getCurrentState();
 			
 			if( currentState instanceof State_CameraSnapping )
 			{
-				bhCellAddress snapTargetAddress = ((State_CameraSnapping)currentState).getTargetAddress();
+				smCellAddress snapTargetAddress = ((State_CameraSnapping)currentState).getTargetAddress();
 				if( snapTargetAddress == null )
 				{
 					return true;
@@ -436,38 +436,38 @@ public class StateMachine_Camera extends bhA_StateMachine implements bhI_StateEv
 		}
 		
 		@Override
-		public Class<? extends bhA_State> getStateAssociation()
+		public Class<? extends smA_State> getStateAssociation()
 		{
 			return StateMachine_Camera.class;
 		}
 	}
 	
-	public static class OnAddressResponse extends bhA_EventAction
+	public static class OnAddressResponse extends smA_EventAction
 	{
 		public static enum E_Type
 		{
 			ON_FOUND, ON_NOT_FOUND, ON_RESPONSE_ERROR
 		}
 		
-		public static class Args extends bhA_ActionArgs
+		public static class Args extends smA_ActionArgs
 		{
-			private final bhCellAddress m_address;
-			private final bhCellAddressMapping m_mapping;
+			private final smCellAddress m_address;
+			private final smCellAddressMapping m_mapping;
 			private final E_Type m_responseType;
 			
-			Args(E_Type responseType, bhCellAddress address, bhCellAddressMapping mapping )
+			Args(E_Type responseType, smCellAddress address, smCellAddressMapping mapping )
 			{
 				m_responseType = responseType;
 				m_address = address;
 				m_mapping = mapping;
 			}
 			
-			public bhCellAddress getAddress()
+			public smCellAddress getAddress()
 			{
 				return m_address;
 			}
 			
-			public bhCellAddressMapping getMapping()
+			public smCellAddressMapping getMapping()
 			{
 				return m_mapping;
 			}
@@ -479,10 +479,10 @@ public class StateMachine_Camera extends bhA_StateMachine implements bhI_StateEv
 		}
 		
 		@Override
-		public boolean isPerformable(bhA_ActionArgs args)
+		public boolean isPerformable(smA_ActionArgs args)
 		{
 			StateMachine_Camera machine = this.getState();
-			bhA_State currentState = machine.getCurrentState();
+			smA_State currentState = machine.getCurrentState();
 			
 			return currentState instanceof State_CameraSnapping || currentState instanceof State_ViewingCell;
 		}
@@ -494,7 +494,7 @@ public class StateMachine_Camera extends bhA_StateMachine implements bhI_StateEv
 		}
 		
 		@Override
-		public Class<? extends bhA_State> getStateAssociation()
+		public Class<? extends smA_State> getStateAssociation()
 		{
 			return StateMachine_Camera.class;
 		}
@@ -502,57 +502,57 @@ public class StateMachine_Camera extends bhA_StateMachine implements bhI_StateEv
 	
 	static final class PendingSnap
 	{
-		PendingSnap(bhGridCoordinate coordinate, bhCellAddress address)
+		PendingSnap(smGridCoordinate coordinate, smCellAddress address)
 		{
 			m_coordinate = coordinate;
 			m_address = address;
 		}
 		
-		private final bhGridCoordinate m_coordinate;
-		private final bhCellAddress m_address;
+		private final smGridCoordinate m_coordinate;
+		private final smCellAddress m_address;
 	}
 	
 	private PendingSnap m_pendingSnap = null;
 	
 	private final CameraManager m_cameraManager;
-	private final bhCamera m_camera;
+	private final smCamera m_camera;
 	
 	private static final Logger s_logger = Logger.getLogger(StateMachine_Camera.class.getName());
 
-	private final bhLocalCodeRepositoryWrapper m_codeRepo = new bhLocalCodeRepositoryWrapper();
+	private final smLocalCodeRepositoryWrapper m_codeRepo = new smLocalCodeRepositoryWrapper();
 	
-	private final bhCellAddressManagerListener m_addressManagerListener = new bhCellAddressManagerListener(this);
+	private final smCellAddressManagerListener m_addressManagerListener = new smCellAddressManagerListener(this);
 	
 	public StateMachine_Camera(double minSnapTime, double maxSnapTime)
 	{
-		m_camera = new bhCamera();
+		m_camera = new smCamera();
 		m_cameraManager = new CameraManager(m_camera, minSnapTime, maxSnapTime);
 		
 		//TODO(DRK): Not the biggest fan of setting these this way...
 		sm_c.camera = m_camera;
 		sm_c.cameraMngr = m_cameraManager;
 		
-		bhA_Action.register(new SetCameraViewSize());
-		bhA_Action.register(new SnapToAddress());
-		bhA_Action.register(new SnapToCoordinate());
-		bhA_Action.register(new OnAddressResponse());
-		bhA_Action.register(new SetCameraTarget());
-		bhA_Action.register(new SetInitialPosition());
+		smA_Action.register(new SetCameraViewSize());
+		smA_Action.register(new SnapToAddress());
+		smA_Action.register(new SnapToCoordinate());
+		smA_Action.register(new OnAddressResponse());
+		smA_Action.register(new SetCameraTarget());
+		smA_Action.register(new SetInitialPosition());
 		
-		bhA_ClientUser user = sm_c.userMngr.getUser();
+		smA_ClientUser user = sm_c.userMngr.getUser();
 		m_codeRepo.addSource(user);
 		m_codeRepo.addSource(sm_c.codeCache);
 	}
 	
-	public bhCamera getCamera()
+	public smCamera getCamera()
 	{
 		return m_camera;
 	}
 	
-	private void snapToCellAddress(bhCellAddress address)
+	private void snapToCellAddress(smCellAddress address)
 	{
-		bhCellAddressManager addressManager = sm_c.addressMngr;
-		bhA_State currentState = this.getCurrentState();
+		smCellAddressManager addressManager = sm_c.addressMngr;
+		smA_State currentState = this.getCurrentState();
 		
 		if( currentState instanceof State_GettingMapping )
 		{
@@ -572,13 +572,13 @@ public class StateMachine_Camera extends bhA_StateMachine implements bhI_StateEv
 			machine_pushState(this, State_GettingMapping.class, constructor);
 		}
 		
-		addressManager.getCellAddressMapping(address, bhE_TransactionAction.MAKE_REQUEST);
+		addressManager.getCellAddressMapping(address, smE_TransactionAction.MAKE_REQUEST);
 	}
 	
 	/**
 	 * Address can be null, I think..
 	 */
-	void snapToCoordinate(bhCellAddress address_nullable, bhGridCoordinate coord)
+	void snapToCoordinate(smCellAddress address_nullable, smGridCoordinate coord)
 	{
 		if( !this.isForegrounded() )
 		{
@@ -587,7 +587,7 @@ public class StateMachine_Camera extends bhA_StateMachine implements bhI_StateEv
 			return;
 		}
 		
-		bhA_State currentState = this.getCurrentState();
+		smA_State currentState = this.getCurrentState();
 		if( currentState instanceof State_CameraSnapping )
 		{
 			((State_CameraSnapping)currentState).updateGridCoordinate(coord, address_nullable);
@@ -614,27 +614,27 @@ public class StateMachine_Camera extends bhA_StateMachine implements bhI_StateEv
 		}
 	}
 	
-	public bhI_LocalCodeRepository getCodeRepository()
+	public smI_LocalCodeRepository getCodeRepository()
 	{
 		return m_codeRepo;
 	}
 	
 	@Override
-	protected void didEnter(bhA_StateConstructor constructor)
+	protected void didEnter(smA_StateConstructor constructor)
 	{
 		//--- DRK > Not enforcing z constraints here because UI probably hasn't told us camera view size yet.
 		
-		bhA_ClientUser user = sm_c.userMngr.getUser();
+		smA_ClientUser user = sm_c.userMngr.getUser();
 		m_cameraManager.setCameraPosition(user.getLastPosition(), false);
 
-		bhCellCodeManager.getInstance().start(new bhCellCodeManager.I_SyncOrPreviewDelegate()
+		smCellCodeManager.getInstance().start(new smCellCodeManager.I_SyncOrPreviewDelegate()
 		{
 			@Override
-			public void onCompilationFinished(bhCompilerResult result)
+			public void onCompilationFinished(smCompilerResult result)
 			{
 				String title = null, body = null;
 				
-				if( result.getStatus() == bhE_CompilationStatus.NO_ERROR )
+				if( result.getStatus() == smE_CompilationStatus.NO_ERROR )
 				{
 					if( result.getMessages() != null )
 					{
@@ -658,7 +658,7 @@ public class StateMachine_Camera extends bhA_StateMachine implements bhI_StateEv
 				
 				if( title != null )
 				{
-					StateMachine_Base baseController = bhA_State.getEnteredInstance(StateMachine_Base.class);
+					StateMachine_Base baseController = smA_State.getEnteredInstance(StateMachine_Base.class);
 					
 					State_GenericDialog.Constructor constructor = new State_GenericDialog.Constructor(title, body);
 					baseController.queueAsyncDialog(State_AsyncDialog.class, constructor);
@@ -670,7 +670,7 @@ public class StateMachine_Camera extends bhA_StateMachine implements bhI_StateEv
 	}
 	
 	@Override
-	protected void didForeground(Class<? extends bhA_State> revealingState, Object[] argsFromRevealingState)
+	protected void didForeground(Class<? extends smA_State> revealingState, Object[] argsFromRevealingState)
 	{
 		if( getCurrentState() == null )
 		{
@@ -711,25 +711,25 @@ public class StateMachine_Camera extends bhA_StateMachine implements bhI_StateEv
 		if( this.getCurrentState() instanceof State_CameraSnapping )
 		{
 			State_CameraSnapping snappingState = ((State_CameraSnapping)this.getCurrentState());
-			bhI_LocalCodeRepository compiledStaticHtmlSource = snappingState.getCompiledStaticHtmlSource();
+			smI_LocalCodeRepository compiledStaticHtmlSource = snappingState.getCompiledStaticHtmlSource();
 			
 			int options = bhF_BufferUpdateOption.CREATE_VISUALIZATIONS;
 			
-			bhCellBufferManager.getInstance().update(sm_c.gridMngr.getGrid(), sm_c.camera, compiledStaticHtmlSource, options);
+			smCellBufferManager.getInstance().update(sm_c.gridMngr.getGrid(), sm_c.camera, compiledStaticHtmlSource, options);
 			
 			//--- DRK > As soon as target cell comes into sight, we start trying to populate
 			//---		it with compiled_dynamic and source html from the snapping state's html source(s).
-			bhCellBuffer buffer = bhCellBufferManager.getInstance().getDisplayBuffer();
+			smCellBuffer buffer = smCellBufferManager.getInstance().getDisplayBuffer();
 			if( buffer.getSubCellCount() == 1 )
 			{
 				if( buffer.isInBoundsAbsolute(snappingState.getTargetCoordinate()) )
 				{
-					bhBufferCell cell = buffer.getCellAtAbsoluteCoord(snappingState.getTargetCoordinate());
-					bhI_LocalCodeRepository targetCellHtmlSource = snappingState.getHtmlSourceForTargetCell();
+					smBufferCell cell = buffer.getCellAtAbsoluteCoord(snappingState.getTargetCoordinate());
+					smI_LocalCodeRepository targetCellHtmlSource = snappingState.getHtmlSourceForTargetCell();
 
-					bhCellCodeManager populator = bhCellCodeManager.getInstance();
-					populator.populateCell(cell, targetCellHtmlSource, 1, false, false, bhE_CodeType.COMPILED);
-					populator.populateCell(cell, targetCellHtmlSource, 1, false, false, bhE_CodeType.SOURCE);
+					smCellCodeManager populator = smCellCodeManager.getInstance();
+					populator.populateCell(cell, targetCellHtmlSource, 1, false, false, smE_CodeType.COMPILED);
+					populator.populateCell(cell, targetCellHtmlSource, 1, false, false, smE_CodeType.SOURCE);
 					
 					//--- DRK > NOTE: Don't need to flush populator because we're not telling it to communicate with server.
 				}
@@ -738,7 +738,7 @@ public class StateMachine_Camera extends bhA_StateMachine implements bhI_StateEv
 		else
 		{
 			int options = bhF_BufferUpdateOption.ALL;
-			bhCellBufferManager.getInstance().update(sm_c.gridMngr.getGrid(), sm_c.camera, m_codeRepo, options);
+			smCellBufferManager.getInstance().update(sm_c.gridMngr.getGrid(), sm_c.camera, m_codeRepo, options);
 		}
 	}
 	
@@ -746,16 +746,16 @@ public class StateMachine_Camera extends bhA_StateMachine implements bhI_StateEv
 	{
 		sm_c.addressMngr.stop();
 		
-		bhCellCodeManager.getInstance().stop();
+		smCellCodeManager.getInstance().stop();
 	}
 	
-	public bhCameraManager getCameraManager()
+	public smCameraManager getCameraManager()
 	{
 		return m_cameraManager;
 	}
 
 	@Override
-	public void onStateEvent(bhStateEvent event)
+	public void onStateEvent(smStateEvent event)
 	{
 		switch(event.getType())
 		{

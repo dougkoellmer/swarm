@@ -1,33 +1,33 @@
 package swarm.client.states.camera;
 
-import swarm.client.input.bhBrowserHistoryManager;
-import swarm.client.managers.bhCellAddressManager;
-import swarm.client.managers.bhCellCodeManager;
-import swarm.client.managers.bhUserManager;
+import swarm.client.input.smBrowserHistoryManager;
+import swarm.client.managers.smCellAddressManager;
+import swarm.client.managers.smCellCodeManager;
+import swarm.client.managers.smUserManager;
 import swarm.client.app.sm_c;
-import swarm.client.entities.bhBufferCell;
-import swarm.client.entities.bhA_ClientUser;
-import swarm.client.entities.bhE_CellNuke;
-import swarm.client.entities.bhE_CodeStatus;
+import swarm.client.entities.smBufferCell;
+import swarm.client.entities.smA_ClientUser;
+import swarm.client.entities.smE_CellNuke;
+import swarm.client.entities.smE_CodeStatus;
 import swarm.client.states.camera.StateMachine_Camera.CameraManager;
 import swarm.client.states.code.StateMachine_EditingCode;
-import swarm.client.structs.bhI_LocalCodeRepository;
-import swarm.client.transaction.bhClientTransactionManager;
-import swarm.client.transaction.bhE_TransactionAction;
-import swarm.shared.app.bhS_App;
-import swarm.shared.debugging.bhU_Debug;
-import swarm.shared.entities.bhE_CodeType;
-import swarm.shared.statemachine.bhA_Action;
+import swarm.client.structs.smI_LocalCodeRepository;
+import swarm.client.transaction.smClientTransactionManager;
+import swarm.client.transaction.smE_TransactionAction;
+import swarm.shared.app.smS_App;
+import swarm.shared.debugging.smU_Debug;
+import swarm.shared.entities.smE_CodeType;
+import swarm.shared.statemachine.smA_Action;
 
-import swarm.shared.statemachine.bhA_ActionArgs;
-import swarm.shared.statemachine.bhA_State;
-import swarm.shared.statemachine.bhI_StateEventListener;
-import swarm.shared.statemachine.bhA_StateConstructor;
-import swarm.shared.statemachine.bhStateEvent;
-import swarm.shared.structs.bhCellAddress;
-import swarm.shared.structs.bhCellAddressMapping;
-import swarm.shared.structs.bhGridCoordinate;
-import swarm.shared.structs.bhPoint;
+import swarm.shared.statemachine.smA_ActionArgs;
+import swarm.shared.statemachine.smA_State;
+import swarm.shared.statemachine.smI_StateEventListener;
+import swarm.shared.statemachine.smA_StateConstructor;
+import swarm.shared.statemachine.smStateEvent;
+import swarm.shared.structs.smCellAddress;
+import swarm.shared.structs.smCellAddressMapping;
+import swarm.shared.structs.smGridCoordinate;
+import swarm.shared.structs.smPoint;
 
 
 
@@ -35,22 +35,22 @@ import swarm.shared.structs.bhPoint;
  * ...
  * @author 
  */
-public class State_ViewingCell extends bhA_State implements bhI_StateEventListener
+public class State_ViewingCell extends smA_State implements smI_StateEventListener
 {
-	static class Constructor extends bhA_StateConstructor
+	static class Constructor extends smA_StateConstructor
 	{
-		private final bhBufferCell m_cell;
+		private final smBufferCell m_cell;
 		
-		public Constructor(bhBufferCell cell)
+		public Constructor(smBufferCell cell)
 		{
 			m_cell = cell;
 		}
 	}
 	
-	public static class Refresh extends bhA_CameraAction 
+	public static class Refresh extends smA_CameraAction 
 	{
 		@Override
-		public void perform(bhA_ActionArgs args)
+		public void perform(smA_ActionArgs args)
 		{
 			State_ViewingCell state = (State_ViewingCell) this.getState();
 			
@@ -58,12 +58,12 @@ public class State_ViewingCell extends bhA_State implements bhI_StateEventListen
 		}
 		
 		@Override
-		public boolean isPerformable(bhA_ActionArgs args)
+		public boolean isPerformable(smA_ActionArgs args)
 		{
 			State_ViewingCell state = (State_ViewingCell) this.getState();
-			bhBufferCell cell = state.getCell();
+			smBufferCell cell = state.getCell();
 			
-			if( cell.getStatus(bhE_CodeType.COMPILED) == bhE_CodeStatus.WAITING_ON_CODE )
+			if( cell.getStatus(smE_CodeType.COMPILED) == smE_CodeStatus.WAITING_ON_CODE )
 			{
 				return false;
 			}
@@ -74,37 +74,37 @@ public class State_ViewingCell extends bhA_State implements bhI_StateEventListen
 		}
 		
 		@Override
-		public Class<? extends bhA_State> getStateAssociation()
+		public Class<? extends smA_State> getStateAssociation()
 		{
 			return State_ViewingCell.class;
 		}
 	}
 	
-	private bhBufferCell m_cell = null;
+	private smBufferCell m_cell = null;
 	
 	private boolean m_hasRequestedSourceCode = false;
 	
 	public State_ViewingCell()
 	{
-		bhA_Action.register(new Refresh());
+		smA_Action.register(new Refresh());
 	}
 	
 	void refreshCell()
 	{
-		bhBufferCell cell = this.getCell();
+		smBufferCell cell = this.getCell();
 		bhGridCoordinate coord = cell.getCoordinate();
 		
 		//--- DRK > Even though "everything" is nuked from cell here, a user's cell will be immediately
 		//---		repopulated from the user data itself, so no server request will go out needlessly.
-		bhCellCodeManager codeManager = bhCellCodeManager.getInstance();
-		codeManager.nukeFromOrbit(coord, bhE_CellNuke.EVERYTHING);
+		smCellCodeManager codeManager = smCellCodeManager.getInstance();
+		codeManager.nukeFromOrbit(coord, smE_CellNuke.EVERYTHING);
 		
-		bhI_LocalCodeRepository localCodeRepo = ((StateMachine_Camera)this.getParent()).getCodeRepository();
+		smI_LocalCodeRepository localCodeRepo = ((StateMachine_Camera)this.getParent()).getCodeRepository();
 		
 		//--- DRK > NOTE: Directly manipulating m_hasRequestedSourceHtml is a little hacky, but whatever.
-		if( bhA_State.isForegrounded(StateMachine_EditingCode.class) )
+		if( smA_State.isForegrounded(StateMachine_EditingCode.class) )
 		{
-			codeManager.populateCell(cell, localCodeRepo, 1, false, true, bhE_CodeType.SOURCE);
+			codeManager.populateCell(cell, localCodeRepo, 1, false, true, smE_CodeType.SOURCE);
 			
 			this.m_hasRequestedSourceCode = true;
 		}
@@ -116,25 +116,25 @@ public class State_ViewingCell extends bhA_State implements bhI_StateEventListen
 		if( cell.getCellAddress() == null )
 		{
 			//--- DRK > Try to get address ourselves...very well could turn up null.
-			bhCellAddressMapping mapping = new bhCellAddressMapping(cell.getCoordinate());
-			bhCellAddressManager addyManager = sm_c.addressMngr;
-			addyManager.getCellAddress(mapping, bhE_TransactionAction.QUEUE_REQUEST);
+			smCellAddressMapping mapping = new smCellAddressMapping(cell.getCoordinate());
+			smCellAddressManager addyManager = sm_c.addressMngr;
+			addyManager.getCellAddress(mapping, smE_TransactionAction.QUEUE_REQUEST);
 		}
 		
-		codeManager.populateCell(cell, localCodeRepo, 1, false, true, bhE_CodeType.SPLASH);
-		codeManager.populateCell(cell, localCodeRepo, 1, false, true, bhE_CodeType.COMPILED);
+		codeManager.populateCell(cell, localCodeRepo, 1, false, true, smE_CodeType.SPLASH);
+		codeManager.populateCell(cell, localCodeRepo, 1, false, true, smE_CodeType.COMPILED);
 		
 		bhClientTransactionManager txnMngr = sm_c.txnMngr;
 		txnMngr.flushRequestQueue();
 	}
 
-	public bhBufferCell getCell()
+	public smBufferCell getCell()
 	{
 		return m_cell;
 	}
 	
 	@Override
-	protected void didEnter(bhA_StateConstructor constructor)
+	protected void didEnter(smA_StateConstructor constructor)
 	{
 		Constructor thisConstructor = (Constructor)constructor;
 		
@@ -154,8 +154,8 @@ public class State_ViewingCell extends bhA_State implements bhI_StateEventListen
 		//---		My programmer senses are tingling on this one, telling me it might be a
 		//---		hacky solution, at least as far as readability.
 		bhUserManager userMngr = sm_c.userMngr;
-		bhA_ClientUser user = userMngr.getUser();
-		user.tryPopulatingCell(m_cell.getCoordinate(), bhE_CodeType.COMPILED, m_cell);
+		smA_ClientUser user = userMngr.getUser();
+		user.tryPopulatingCell(m_cell.getCoordinate(), smE_CodeType.COMPILED, m_cell);
 		
 		m_cell = null;
 	}
@@ -165,11 +165,11 @@ public class State_ViewingCell extends bhA_State implements bhI_StateEventListen
 		//--- DRK > As an optimization, we only retrieve the source html if we're in the html state.
 		if( !m_hasRequestedSourceCode )
 		{
-			if( bhA_State.isForegrounded(StateMachine_EditingCode.class) )
+			if( smA_State.isForegrounded(StateMachine_EditingCode.class) )
 			{
-				bhI_LocalCodeRepository localHtmlSource = ((StateMachine_Camera)this.getParent()).getCodeRepository();
-				bhCellCodeManager populator = bhCellCodeManager.getInstance();
-				populator.populateCell(m_cell, localHtmlSource, 1, false, true, bhE_CodeType.SOURCE);
+				smI_LocalCodeRepository localHtmlSource = ((StateMachine_Camera)this.getParent()).getCodeRepository();
+				smCellCodeManager populator = smCellCodeManager.getInstance();
+				populator.populateCell(m_cell, localHtmlSource, 1, false, true, smE_CodeType.SOURCE);
 				
 				populator.flush();
 				
@@ -179,7 +179,7 @@ public class State_ViewingCell extends bhA_State implements bhI_StateEventListen
 	}
 	
 	@Override
-	public void onStateEvent(bhStateEvent event)
+	public void onStateEvent(smStateEvent event)
 	{
 		switch(event.getType())
 		{
@@ -187,7 +187,7 @@ public class State_ViewingCell extends bhA_State implements bhI_StateEventListen
 			{
 				if( event.getState() instanceof StateMachine_EditingCode )
 				{
-					if( m_cell.getStatus(bhE_CodeType.SOURCE) == bhE_CodeStatus.NEEDS_CODE )
+					if( m_cell.getStatus(smE_CodeType.SOURCE) == smE_CodeStatus.NEEDS_CODE )
 					{
 						bhU_Debug.ASSERT(!m_hasRequestedSourceCode);
 						

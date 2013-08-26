@@ -5,63 +5,63 @@ import java.util.logging.Logger;
 
 import javax.servlet.ServletContext;
 
-import swarm.server.account.bhE_Role;
-import swarm.server.account.bhUserSession;
-import swarm.server.blobxn.bhBlobTransaction_DeactivateUserCells;
-import swarm.server.data.blob.bhBlobException;
-import swarm.server.data.blob.bhBlobManagerFactory;
-import swarm.server.data.blob.bhE_BlobCacheLevel;
-import swarm.server.data.blob.bhE_BlobTransactionType;
-import swarm.server.data.blob.bhI_BlobManager;
-import swarm.server.entities.bhServerGrid;
-import swarm.server.entities.bhServerUser;
-import swarm.server.session.bhSessionManager;
-import swarm.server.structs.bhServerCellAddress;
-import swarm.server.structs.bhServerCodePrivileges;
-import swarm.server.transaction.bhI_RequestHandler;
-import swarm.server.transaction.bhServerTransactionManager;
-import swarm.server.transaction.bhTransactionContext;
+import swarm.server.account.smE_Role;
+import swarm.server.account.smUserSession;
+import swarm.server.blobxn.smBlobTransaction_DeactivateUserCells;
+import swarm.server.data.blob.smBlobException;
+import swarm.server.data.blob.smBlobManagerFactory;
+import swarm.server.data.blob.smE_BlobCacheLevel;
+import swarm.server.data.blob.smE_BlobTransactionType;
+import swarm.server.data.blob.smI_BlobManager;
+import swarm.server.entities.smServerGrid;
+import swarm.server.entities.smServerUser;
+import swarm.server.session.smSessionManager;
+import swarm.server.structs.smServerCellAddress;
+import swarm.server.structs.smServerCodePrivileges;
+import swarm.server.transaction.smI_RequestHandler;
+import swarm.server.transaction.smServerTransactionManager;
+import swarm.server.transaction.smTransactionContext;
 import swarm.shared.app.sm;
-import swarm.shared.entities.bhA_User;
-import swarm.shared.entities.bhE_CodeType;
-import swarm.shared.json.bhE_JsonKey;
-import swarm.shared.json.bhJsonHelper;
-import swarm.shared.structs.bhCode;
-import swarm.shared.structs.bhE_NetworkPrivilege;
-import swarm.shared.structs.bhGridCoordinate;
-import swarm.shared.transaction.bhE_RequestPath;
-import swarm.shared.transaction.bhE_ResponseError;
-import swarm.shared.transaction.bhTransactionRequest;
-import swarm.shared.transaction.bhTransactionResponse;
+import swarm.shared.entities.smA_User;
+import swarm.shared.entities.smE_CodeType;
+import swarm.shared.json.smE_JsonKey;
+import swarm.shared.json.smJsonHelper;
+import swarm.shared.structs.smCode;
+import swarm.shared.structs.smE_NetworkPrivilege;
+import swarm.shared.structs.smGridCoordinate;
+import swarm.shared.transaction.smE_RequestPath;
+import swarm.shared.transaction.smE_ResponseError;
+import swarm.shared.transaction.smTransactionRequest;
+import swarm.shared.transaction.smTransactionResponse;
 
-public class deactivateUserCells implements bhI_RequestHandler
+public class deactivateUserCells implements smI_RequestHandler
 {
 	private static final Logger s_logger = Logger.getLogger(deactivateUserCells.class.getName());
 	
 	@Override
-	public void handleRequest(bhTransactionContext context, bhTransactionRequest request, bhTransactionResponse response)
+	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
 	{
-		Integer accountId = sm.jsonFactory.getHelper().getInt(request.getJson(), bhE_JsonKey.accountId);
+		Integer accountId = sm.jsonFactory.getHelper().getInt(request.getJson(), smE_JsonKey.accountId);
 		
 		if( accountId == null )
 		{
-			response.setError(bhE_ResponseError.BAD_INPUT);
+			response.setError(smE_ResponseError.BAD_INPUT);
 			
 			return;
 		}
 		
-		bhUserSession dummySession = new bhUserSession(accountId, "", bhE_Role.USER);
+		bhUserSession dummySession = new smUserSession(accountId, "", smE_Role.USER);
 		
-		bhBlobTransaction_DeactivateUserCells deactivateCells = new bhBlobTransaction_DeactivateUserCells(dummySession);
+		bhBlobTransaction_DeactivateUserCells deactivateCells = new smBlobTransaction_DeactivateUserCells(dummySession);
 		
 		try
 		{
-			deactivateCells.perform(bhE_BlobTransactionType.MULTI_BLOB_TYPE, 1);
+			deactivateCells.perform(smE_BlobTransactionType.MULTI_BLOB_TYPE, 1);
 		}
-		catch(bhBlobException e)
+		catch(smBlobException e)
 		{
 			s_logger.log(Level.SEVERE, "Could not deactivate user cells.", e);
-			response.setError(bhE_ResponseError.SERVICE_EXCEPTION);
+			response.setError(smE_ResponseError.SERVICE_EXCEPTION);
 			
 			return;
 		}

@@ -1,40 +1,40 @@
 package swarm.server.handlers.normal;
 
 import swarm.server.account.sm_s;
-import swarm.server.data.blob.bhBlobException;
-import swarm.server.data.blob.bhBlobManagerFactory;
-import swarm.server.data.blob.bhE_BlobCacheLevel;
-import swarm.server.data.blob.bhI_BlobManager;
-import swarm.server.structs.bhServerCellAddress;
-import swarm.server.structs.bhServerCellAddressMapping;
-import swarm.server.transaction.bhI_RequestHandler;
-import swarm.server.transaction.bhTransactionContext;
-import swarm.shared.structs.bhE_CellAddressParseError;
-import swarm.shared.structs.bhE_GetCellAddressMappingError;
-import swarm.shared.structs.bhGetCellAddressMappingResult;
-import swarm.shared.transaction.bhE_ResponseError;
-import swarm.shared.transaction.bhTransactionRequest;
-import swarm.shared.transaction.bhTransactionResponse;
+import swarm.server.data.blob.smBlobException;
+import swarm.server.data.blob.smBlobManagerFactory;
+import swarm.server.data.blob.smE_BlobCacheLevel;
+import swarm.server.data.blob.smI_BlobManager;
+import swarm.server.structs.smServerCellAddress;
+import swarm.server.structs.smServerCellAddressMapping;
+import swarm.server.transaction.smI_RequestHandler;
+import swarm.server.transaction.smTransactionContext;
+import swarm.shared.structs.smE_CellAddressParseError;
+import swarm.shared.structs.smE_GetCellAddressMappingError;
+import swarm.shared.structs.smGetCellAddressMappingResult;
+import swarm.shared.transaction.smE_ResponseError;
+import swarm.shared.transaction.smTransactionRequest;
+import swarm.shared.transaction.smTransactionResponse;
 
-public class getCellAddressMapping implements bhI_RequestHandler
+public class getCellAddressMapping implements smI_RequestHandler
 {
 	@Override
-	public void handleRequest(bhTransactionContext context, bhTransactionRequest request, bhTransactionResponse response)
+	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
 	{
-		bhServerCellAddress address = new bhServerCellAddress();
+		smServerCellAddress address = new smServerCellAddress();
 		address.readJson(request.getJson());
-		bhE_CellAddressParseError parseError = address.getParseError();
-		bhGetCellAddressMappingResult result = new bhGetCellAddressMappingResult();
+		smE_CellAddressParseError parseError = address.getParseError();
+		bhGetCellAddressMappingResult result = new smGetCellAddressMappingResult();
 		
-		if( parseError == bhE_CellAddressParseError.NO_ERROR )
+		if( parseError == smE_CellAddressParseError.NO_ERROR )
 		{
-			bhI_BlobManager blobManager = sm_s.blobMngrFactory.create(bhE_BlobCacheLevel.values());
+			smI_BlobManager blobManager = sm_s.blobMngrFactory.create(smE_BlobCacheLevel.values());
 			
-			bhServerCellAddressMapping addressMapping = null;
+			smServerCellAddressMapping addressMapping = null;
 			
 			try
 			{
-				addressMapping = blobManager.getBlob(address, bhServerCellAddressMapping.class);
+				addressMapping = blobManager.getBlob(address, smServerCellAddressMapping.class);
 						
 				if( addressMapping != null )
 				{
@@ -42,19 +42,19 @@ public class getCellAddressMapping implements bhI_RequestHandler
 				}
 				else
 				{
-					result.setError(bhE_GetCellAddressMappingError.NOT_FOUND);
+					result.setError(smE_GetCellAddressMappingError.NOT_FOUND);
 				}
 			}
-			catch(bhBlobException e)
+			catch(smBlobException e)
 			{
-				response.setError(bhE_ResponseError.SERVICE_EXCEPTION);
+				response.setError(smE_ResponseError.SERVICE_EXCEPTION);
 				
 				return;
 			}
 		}
 		else
 		{
-			result.setError(bhE_GetCellAddressMappingError.ADDRESS_PARSE_ERROR);
+			result.setError(smE_GetCellAddressMappingError.ADDRESS_PARSE_ERROR);
 		}
 		
 		result.writeJson(response.getJson());

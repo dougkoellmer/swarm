@@ -1,22 +1,22 @@
 package swarm.server.account;
 
-import swarm.server.app.bhA_ServerApp;
-import swarm.server.app.bhI_RequestRedirector;
-import swarm.server.data.blob.bhBlobManagerFactory;
-import swarm.server.session.bhSessionManager;
-import swarm.server.telemetry.bhTelemetryDatabase;
-import swarm.server.transaction.bhInlineTransactionManager;
-import swarm.server.transaction.bhServerTransactionManager;
+import swarm.server.app.smA_ServerApp;
+import swarm.server.app.smI_RequestRedirector;
+import swarm.server.data.blob.smBlobManagerFactory;
+import swarm.server.session.smSessionManager;
+import swarm.server.telemetry.smTelemetryDatabase;
+import swarm.server.transaction.smInlineTransactionManager;
+import swarm.server.transaction.smServerTransactionManager;
 import swarm.shared.app.sm;
 
 public class sm_s extends sm
 {
-	public static bhServerTransactionManager txnMngr;
+	public static smServerTransactionManager txnMngr;
 	public static bhInlineTransactionManager inlineTxnMngr;
 	public static bhBlobManagerFactory blobMngrFactory;
-	public static bhSessionManager sessionMngr;
-	public static bhServerAccountManager accountMngr;
+	public static smSessionManager sessionMngr;
+	public static smServerAccountManager accountMngr;
 	public static bhTelemetryDatabase telemetryDb;
-	public static bhA_ServerApp app;
-	public static bhI_RequestRedirector requestRedirector;
+	public static smA_ServerApp app;
+	public static smI_RequestRedirector requestRedirector;
 }

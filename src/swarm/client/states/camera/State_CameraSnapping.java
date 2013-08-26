@@ -3,78 +3,78 @@ package swarm.client.states.camera;
 import java.util.logging.Logger;
 
 import swarm.client.app.sm_c;
-import swarm.client.entities.bhCamera;
-import swarm.client.managers.bhCellBuffer;
-import swarm.client.entities.bhBufferCell;
-import swarm.client.managers.bhCellBufferManager;
-import swarm.client.entities.bhA_ClientUser;
-import swarm.client.entities.bhE_CellNuke;
-import swarm.client.input.bhBrowserHistoryManager;
-import swarm.client.managers.bhCellAddressManager;
-import swarm.client.managers.bhCellCodeManager;
-import swarm.client.managers.bhClientAccountManager;
-import swarm.client.managers.bhF_BufferUpdateOption;
-import swarm.client.managers.bhUserManager;
+import swarm.client.entities.smCamera;
+import swarm.client.managers.smCellBuffer;
+import swarm.client.entities.smBufferCell;
+import swarm.client.managers.smCellBufferManager;
+import swarm.client.entities.smA_ClientUser;
+import swarm.client.entities.smE_CellNuke;
+import swarm.client.input.smBrowserHistoryManager;
+import swarm.client.managers.smCellAddressManager;
+import swarm.client.managers.smCellCodeManager;
+import swarm.client.managers.smClientAccountManager;
+import swarm.client.managers.smF_BufferUpdateOption;
+import swarm.client.managers.smUserManager;
 import swarm.client.states.StateMachine_Base;
 import swarm.client.states.StateMachine_Base.OnGridResize;
 import swarm.client.states.camera.StateMachine_Camera.CameraManager;
 import swarm.client.states.camera.StateMachine_Camera.SetCameraViewSize;
 import swarm.client.states.code.StateMachine_EditingCode;
-import swarm.client.structs.bhCellCodeCache;
-import swarm.client.structs.bhI_LocalCodeRepository;
-import swarm.client.structs.bhLocalCodeRepositoryWrapper;
-import swarm.client.transaction.bhE_TransactionAction;
-import swarm.shared.app.bhS_App;
-import swarm.shared.debugging.bhU_Debug;
-import swarm.shared.entities.bhA_Grid;
-import swarm.shared.entities.bhE_CodeType;
-import swarm.shared.statemachine.bhA_Action;
+import swarm.client.structs.smCellCodeCache;
+import swarm.client.structs.smI_LocalCodeRepository;
+import swarm.client.structs.smLocalCodeRepositoryWrapper;
+import swarm.client.transaction.smE_TransactionAction;
+import swarm.shared.app.smS_App;
+import swarm.shared.debugging.smU_Debug;
+import swarm.shared.entities.smA_Grid;
+import swarm.shared.entities.smE_CodeType;
+import swarm.shared.statemachine.smA_Action;
 
-import swarm.shared.statemachine.bhA_State;
-import swarm.shared.statemachine.bhI_StateEventListener;
-import swarm.shared.statemachine.bhA_StateConstructor;
-import swarm.shared.statemachine.bhStateEvent;
-import swarm.shared.structs.bhCellAddress;
-import swarm.shared.structs.bhCellAddressMapping;
-import swarm.shared.structs.bhGridCoordinate;
-import swarm.shared.structs.bhPoint;
+import swarm.shared.statemachine.smA_State;
+import swarm.shared.statemachine.smI_StateEventListener;
+import swarm.shared.statemachine.smA_StateConstructor;
+import swarm.shared.statemachine.smStateEvent;
+import swarm.shared.structs.smCellAddress;
+import swarm.shared.structs.smCellAddressMapping;
+import swarm.shared.structs.smGridCoordinate;
+import swarm.shared.structs.smPoint;
 
 
-public class State_CameraSnapping extends bhA_State implements bhI_StateEventListener
+public class State_CameraSnapping extends smA_State implements smI_StateEventListener
 {
 	private static final Logger s_logger = Logger.getLogger(State_CameraSnapping.class.getName());
 	
-	public static class Constructor extends bhA_StateConstructor
+	public static class Constructor extends smA_StateConstructor
 	{
-		public Constructor(bhGridCoordinate targetCoordinate)
+		public Constructor(smGridCoordinate targetCoordinate)
 		{
 			m_targetCoordinate = targetCoordinate;
 			m_targetAddress = null;
 		}
 		
-		public Constructor(bhGridCoordinate targetCoordinate, bhCellAddress targetAddress)
+		public Constructor(smGridCoordinate targetCoordinate, smCellAddress targetAddress)
 		{
 			m_targetCoordinate = targetCoordinate;
 			m_targetAddress = targetAddress;
 		}
 		
-		private final bhGridCoordinate m_targetCoordinate;
-		private final bhCellAddress m_targetAddress;
+		private final smGridCoordinate m_targetCoordinate;
+		private final smCellAddress m_targetAddress;
 	}
 	
-	private bhCellAddress m_targetAddress = null;
+	private smCellAddress m_targetAddress = null;
 	
-	private final bhGridCoordinate m_targetGridCoordinate = new bhGridCoordinate();
-	private final bhPoint m_utilPoint = new bhPoint();
+	private final smGridCoordinate m_targetGridCoordinate = new smGridCoordinate();
+	private final smPoint m_utilPoint = new smPoint();
 	
-	private final bhCamera m_snapCamera = new bhCamera();
-	private final bhCellBufferManager m_snapBufferManager = new bhCellBufferManager();
+	private final smCamera m_snapCamera = new smCamera();
+	private final smCellBufferManager m_snapBufferManager = new smCellBufferManager();
 	
 	//--- DRK > This is exposed externally so the main cell buffer manager can extract cell code that m_internalCodeRepo has.
-	private final bhLocalCodeRepositoryWrapper m_externalCompiledStaticCodeRepo = new bhLocalCodeRepositoryWrapper();
+	private final smLocalCodeRepositoryWrapper m_externalCompiledStaticCodeRepo = new smLocalCodeRepositoryWrapper();
 	
 	//--- DRK > This is used internally to help populate m_snapBufferManager without having to hit the server.
-	private final bhLocalCodeRepositoryWrapper m_internalCodeRepo = new bhLocalCodeRepositoryWrapper();
+	private final smLocalCodeRepositoryWrapper m_internalCodeRepo = new smLocalCodeRepositoryWrapper();
 	
 	private boolean m_countTowardsHistory = true;
 	
@@ -90,20 +90,20 @@ public class State_CameraSnapping extends bhA_State implements bhI_StateEventLis
 		m_cellHudHeight = cellHudHeight;
 		
 		bhUserManager userManager = sm_c.userMngr;
-		bhA_ClientUser user = userManager.getUser();
+		smA_ClientUser user = userManager.getUser();
 		
 		m_externalCompiledStaticCodeRepo.addSource(user);
 		m_externalCompiledStaticCodeRepo.addSource(m_snapBufferManager);
 		m_externalCompiledStaticCodeRepo.addSource(sm_c.codeCache);
 		
 		m_internalCodeRepo.addSource(user);
-		m_internalCodeRepo.addSource(bhCellBufferManager.getInstance());
+		m_internalCodeRepo.addSource(smCellBufferManager.getInstance());
 		m_internalCodeRepo.addSource(sm_c.codeCache);
 	}
 
-	void updateGridCoordinate(bhGridCoordinate targetCoordinate, bhCellAddress targetAddress_nullable)
+	void updateGridCoordinate(smGridCoordinate targetCoordinate, smCellAddress targetAddress_nullable)
 	{
-		bhA_Grid grid = sm_c.gridMngr.getGrid();
+		smA_Grid grid = sm_c.gridMngr.getGrid();
 		
 		m_targetAddress = targetAddress_nullable;
 		
@@ -128,8 +128,8 @@ public class State_CameraSnapping extends bhA_State implements bhI_StateEventLis
 		//--- This "nuke" used to get rid of everything, but that sort of broke the UI experience,
 		//--- and most of the time resulted in too much network traffic, so now only errors are cleared.
 		//--- User can still get guaranteed fresh version from server using refresh button.
-		bhE_CellNuke nukeType = bhE_CellNuke.ERRORS_ONLY;
-		bhCellCodeManager.getInstance().nukeFromOrbit(targetCoordinate, nukeType);
+		smE_CellNuke nukeType = smE_CellNuke.ERRORS_ONLY;
+		smCellCodeManager.getInstance().nukeFromOrbit(targetCoordinate, nukeType);
 		
 		//--- DRK > Not flushing populator here because requestCodeForTargetCell() will do it for us.
 		this.updateSnapBufferManager(false);
@@ -140,9 +140,9 @@ public class State_CameraSnapping extends bhA_State implements bhI_StateEventLis
 		if( m_targetAddress == null )
 		{
 			//--- DRK > Try to get address ourselves...could turn up null.
-			bhCellAddressMapping mapping = new bhCellAddressMapping(m_targetGridCoordinate);
-			bhCellAddressManager addyManager = sm_c.addressMngr;
-			addyManager.getCellAddress(mapping, bhE_TransactionAction.QUEUE_REQUEST);
+			smCellAddressMapping mapping = new smCellAddressMapping(m_targetGridCoordinate);
+			smCellAddressManager addyManager = sm_c.addressMngr;
+			addyManager.getCellAddress(mapping, smE_TransactionAction.QUEUE_REQUEST);
 		}
 		
 		requestCodeForTargetCell();
@@ -163,7 +163,7 @@ public class State_CameraSnapping extends bhA_State implements bhI_StateEventLis
 
 	private void requestCodeForTargetCell()
 	{
-		bhCellCodeManager populator = bhCellCodeManager.getInstance();
+		smCellCodeManager populator = smCellCodeManager.getInstance();
 		
 		if( m_hasRequestedSourceCode && m_hasRequestedCompiledCode )
 		{
@@ -172,20 +172,20 @@ public class State_CameraSnapping extends bhA_State implements bhI_StateEventLis
 			return;
 		}
 		
-		bhCellBuffer displayBuffer = m_snapBufferManager.getDisplayBuffer();
+		smCellBuffer displayBuffer = m_snapBufferManager.getDisplayBuffer();
 		
 		//--- DRK > Not entering here should be an impossible case, but avoid a null pointer exception just to be sure.
 		if( displayBuffer.isInBoundsAbsolute(m_targetGridCoordinate) )
 		{
-			bhBufferCell cell = displayBuffer.getCellAtAbsoluteCoord(m_targetGridCoordinate);
-			bhI_LocalCodeRepository localCodeRepo = m_internalCodeRepo;
+			smBufferCell cell = displayBuffer.getCellAtAbsoluteCoord(m_targetGridCoordinate);
+			smI_LocalCodeRepository localCodeRepo = m_internalCodeRepo;
 
 			if( !m_hasRequestedSourceCode )
 			{
 				//--- DRK > As an optimization, we only retrieve the source html if we're in the html state.
-				if( bhA_State.isForegrounded(StateMachine_EditingCode.class) )
+				if( smA_State.isForegrounded(StateMachine_EditingCode.class) )
 				{
-					populator.populateCell(cell, localCodeRepo, 1, false, true, bhE_CodeType.SOURCE);
+					populator.populateCell(cell, localCodeRepo, 1, false, true, smE_CodeType.SOURCE);
 					
 					m_hasRequestedSourceCode = true;
 				}
@@ -193,7 +193,7 @@ public class State_CameraSnapping extends bhA_State implements bhI_StateEventLis
 			
 			if( !m_hasRequestedCompiledCode )
 			{
-				populator.populateCell(cell, localCodeRepo, 1, false, true, bhE_CodeType.COMPILED);
+				populator.populateCell(cell, localCodeRepo, 1, false, true, smE_CodeType.COMPILED);
 
 				//--- DRK > NOTE that COMPILED_STATIC html will be retrieved implicitly because we update the buffer manager
 				//---		itself before we get into this method...it will be in the same batch too, automatically...cool.
@@ -214,8 +214,8 @@ public class State_CameraSnapping extends bhA_State implements bhI_StateEventLis
 	
 	private void updateSnapBufferManager(boolean flushPopulator)
 	{
-		bhA_Grid grid = sm_c.gridMngr.getGrid();
-		bhI_LocalCodeRepository htmlSource = m_internalCodeRepo;
+		smA_Grid grid = sm_c.gridMngr.getGrid();
+		smI_LocalCodeRepository htmlSource = m_internalCodeRepo;
 		
 		int options = bhF_BufferUpdateOption.COMMUNICATE_WITH_SERVER;
 		if( flushPopulator )
@@ -226,34 +226,34 @@ public class State_CameraSnapping extends bhA_State implements bhI_StateEventLis
 		m_snapBufferManager.update(grid, m_snapCamera, htmlSource, options);
 	}
 	
-	bhI_LocalCodeRepository getCompiledStaticHtmlSource()
+	smI_LocalCodeRepository getCompiledStaticHtmlSource()
 	{
 		return m_externalCompiledStaticCodeRepo;
 	}
 	
-	bhI_LocalCodeRepository getHtmlSourceForTargetCell()
+	smI_LocalCodeRepository getHtmlSourceForTargetCell()
 	{
 		return m_snapBufferManager;
 	}
 	
-	public bhGridCoordinate getTargetCoordinate()
+	public smGridCoordinate getTargetCoordinate()
 	{
 		return m_targetGridCoordinate;
 	}
 	
-	bhCellAddress getTargetAddress()
+	smCellAddress getTargetAddress()
 	{
 		return m_targetAddress;
 	}
 	
 	@Override
-	protected void didEnter(bhA_StateConstructor constructor)
+	protected void didEnter(smA_StateConstructor constructor)
 	{
 		StateMachine_Camera machine = getParent();
 		
 		Constructor castConstructor = (Constructor) constructor;
 		
-		bhCellBufferManager.registerInstance(m_snapBufferManager);
+		smCellBufferManager.registerInstance(m_snapBufferManager);
 		
 		m_targetGridCoordinate.set(-1, -1);
 		
@@ -270,7 +270,7 @@ public class State_CameraSnapping extends bhA_State implements bhI_StateEventLis
 	}
 	
 	@Override
-	protected void didForeground(Class<? extends bhA_State> revealingState, Object[] argsFromRevealingState)
+	protected void didForeground(Class<? extends smA_State> revealingState, Object[] argsFromRevealingState)
 	{
 		
 	}
@@ -281,7 +281,7 @@ public class State_CameraSnapping extends bhA_State implements bhI_StateEventLis
 		StateMachine_Camera machine = ((StateMachine_Camera) getParent());
 		if ( machine.getCameraManager().isCameraAtRest() )
 		{
-			bhBufferCell testCell = bhCellBufferManager.getInstance().getDisplayBuffer().getCellAtAbsoluteCoord(m_targetGridCoordinate);
+			smBufferCell testCell = smCellBufferManager.getInstance().getDisplayBuffer().getCellAtAbsoluteCoord(m_targetGridCoordinate);
 			
 			State_ViewingCell.Constructor constructor = new State_ViewingCell.Constructor(testCell);
 			
@@ -299,7 +299,7 @@ public class State_CameraSnapping extends bhA_State implements bhI_StateEventLis
 	}
 	
 	@Override
-	protected void willBackground(Class<? extends bhA_State> blockingState)
+	protected void willBackground(Class<? extends smA_State> blockingState)
 	{
 		
 	}
@@ -317,11 +317,11 @@ public class State_CameraSnapping extends bhA_State implements bhI_StateEventLis
 		//---		in a pool, so not a huge deal as far as thrashing memory or anything.
 		m_snapBufferManager.drain();
 		
-		bhCellBufferManager.unregisterInstance(m_snapBufferManager);
+		smCellBufferManager.unregisterInstance(m_snapBufferManager);
 	}
 
 	@Override
-	public void onStateEvent(bhStateEvent event)
+	public void onStateEvent(smStateEvent event)
 	{
 		switch(event.getType())
 		{

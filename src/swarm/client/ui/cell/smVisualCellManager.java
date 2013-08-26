@@ -1,0 +1,431 @@
+package swarm.client.ui.cell;
+
+import java.util.ArrayList;
+import java.util.logging.Logger;
+
+import swarm.client.app.smS_Client;
+import swarm.client.app.sm_c;
+import swarm.client.entities.smCamera;
+import swarm.client.entities.smBufferCell;
+import swarm.client.managers.smCellBuffer;
+import swarm.client.managers.smCellBufferManager;
+import swarm.client.entities.smI_BufferCellListener;
+import swarm.client.states.StateMachine_Base;
+import swarm.client.states.camera.StateMachine_Camera;
+import swarm.client.states.camera.State_ViewingCell;
+import swarm.client.structs.smCellPool;
+import swarm.client.structs.smI_CellPoolDelegate;
+import swarm.client.ui.smI_UIElement;
+import swarm.client.ui.smU_UI;
+import swarm.client.ui.cell.smAlertManager.I_Delegate;
+import swarm.client.ui.dialog.smDialog;
+import swarm.shared.app.smS_App;
+import swarm.shared.debugging.smU_Debug;
+import swarm.shared.entities.smA_Grid;
+import swarm.shared.entities.smU_Grid;
+import swarm.shared.memory.smObjectPool;
+import swarm.shared.reflection.smI_Class;
+import swarm.shared.statemachine.smA_Action;
+import swarm.shared.statemachine.smA_State;
+import swarm.shared.statemachine.smStateEvent;
+import swarm.shared.structs.smCellAddress;
+import swarm.shared.structs.smGridCoordinate;
+import swarm.shared.structs.smPoint;
+import com.google.gwt.dom.client.Style.Display;
+import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+import com.google.gwt.user.client.ui.Panel;
+
+/**
+ * ...
+ * @author 
+ */
+public class smVisualCellManager implements smI_UIElement, smI_CellPoolDelegate
+{
+	private static final double NO_SCALING = .99999;
+	private static final Logger s_logger = Logger.getLogger(smVisualCellManager.class.getName());
+	
+	private final smI_Class<smVisualCell> m_visualCellClass = new smI_Class<smVisualCell>()
+	{
+		@Override
+		public smVisualCell newInstance()
+		{
+			return new smVisualCell();
+		}
+	};
+	
+	private Panel m_container = null;
+	
+	private final smPoint m_utilPoint1 = new smPoint();
+	private final smPoint m_utilPoint2 = new smPoint();
+	private final smGridCoordinate m_utilCoord = new smGridCoordinate();
+	
+	private final smPoint m_lastBasePoint = new smPoint();
+	
+	private final smObjectPool<smVisualCell> m_pool = new smObjectPool<smVisualCell>(m_visualCellClass);
+	
+	private final ArrayList<smVisualCell> m_queuedRemovals = new ArrayList<smVisualCell>();
+	
+	private boolean m_needsUpdateDueToResizingOfCameraOrGrid = false;
+	
+	private StateMachine_Camera m_cameraController = null;
+	
+	private double m_lastScaling = 0;
+	
+	private final smDialog m_alertDialog;
+	
+	public smVisualCellManager(Panel container) 
+	{
+		m_container = container;
+		
+		smCellPool.getInstance().setDelegate(this);
+
+		m_alertDialog = new smDialog(256, 164, new smDialog.I_Delegate()
+		{
+			@Override
+			public void onOkPressed()
+			{
+				smBufferCell bufferCell = getCurrentBufferCell();
+				bhVisualCell visualCell = (smVisualCell) bufferCell.getVisualization();
+				visualCell.getBlocker().setContent(null);
+				
+				bhAlertManager.getInstance().onHandled();
+			}
+		});
+		
+		bhAlertManager.getInstance().setDelegate(new smAlertManager.I_Delegate()
+		{
+			@Override
+			public void showAlert(String message)
+			{
+				smBufferCell bufferCell = getCurrentBufferCell();
+				
+				if( bufferCell != null )
+				{
+					smCellAddress address = bufferCell.getCellAddress();
+					String title = "Cell says...";
+					
+					if( message.length() > smS_Client.MAX_ALERT_CHARACTERS )
+					{
+						message = message.substring(0, smS_Client.MAX_ALERT_CHARACTERS);
+						message += "...";
+					}
+					
+					SafeHtml safeHtml = SafeHtmlUtils.fromString(message);
+					m_alertDialog.setTitle(title);
+					m_alertDialog.setBodySafeHtml(safeHtml);
+					bhVisualCell visualCell = (smVisualCell) bufferCell.getVisualization();
+					visualCell.getBlocker().setContent(m_alertDialog);
+				}
+				else
+				{
+					bhU_Debug.ASSERT(false, "Expected current cell to be set.");
+				}
+			}
+		});
+	}
+	
+	private void processRemovals()
+	{
+		for( int i = m_queuedRemovals.size()-1; i >= 0; i-- )
+		{
+			bhVisualCell ithCell = m_queuedRemovals.get(i);
+			
+			if( ithCell.getParent() != null )
+			{
+				bhU_Debug.ASSERT(ithCell.getParent() == m_container, "processRemovals1");
+				
+				ithCell.removeFromParent();
+			}
+			ithCell.onDestroy();
+			m_pool.deallocate(ithCell);
+		}
+		
+		m_queuedRemovals.clear();
+	}
+	
+	public smI_BufferCellListener createVisualization(int width, int height, int padding, int subCellDim)
+	{
+		bhVisualCell newVisualCell = m_pool.allocate();
+		
+		//s_logger.severe("Creating: " + newVisualCell.getId() + " at " + smCellBufferManager.getInstance().getUpdateCount());
+		
+		if( newVisualCell.getParent() != null )
+		{
+			bhU_Debug.ASSERT(false, "createVisualization1");
+		}
+		
+		newVisualCell.onCreate(width, height, padding, subCellDim);
+		
+		return newVisualCell;
+	}
+	
+	public void destroyVisualization(smI_BufferCellListener visualization)
+	{
+		bhVisualCell visualCell = (smVisualCell) visualization;
+		
+		//s_logger.severe("Destroying: " + visualCell.getId() + " at " + smCellBufferManager.getInstance().getUpdateCount());
+		
+		if( visualCell.getParent() != m_container )
+		{
+			//--- DRK > Fringe case can hit this assert, so it's removed...
+			//---		You flick the camera so it comes to rest right at the edge of a new cell, creating the visualization.
+			//---		Then inside the same update loop, you do a mouse press which, probably due to numerical error, 
+			//---		takes the new cell out of view. Currently, in the state machine implementation, that mouse press
+			//---		forces a refresh of the cell buffer in the same update loop, right after the refresh that caused the 
+			//---		visualization to get created. Because this manager lazily adds/removes cells, the cell didn't have a
+			//---		chance to get a parent.
+			//bhU_Debug.ASSERT(false, "destroyVisualization1....bad parent: " + visualCell.getParent());
+		}
+		
+		m_queuedRemovals.add(visualCell);
+	}
+	
+	private boolean updateCellTransforms(double timeStep)
+	{
+		if( m_cameraController == null )
+		{
+			bhU_Debug.ASSERT(false);
+			
+			return false;
+		}
+		
+		if( m_cameraController.getCameraManager().isCameraAtRest() )
+		{
+			if( !m_needsUpdateDueToResizingOfCameraOrGrid )
+			{
+				return false;
+			}
+		}
+
+		smCellBufferManager cellManager = smCellBufferManager.getInstance();
+		smCellBuffer cellBuffer = cellManager.getDisplayBuffer();
+		
+		smA_Grid grid = sm_c.gridMngr.getGrid(); // TODO: Get grid from somewhere else.
+		
+		int bufferSize = cellBuffer.getCellCount();
+		int bufferWidth = cellBuffer.getWidth();
+		int bufferHeight = cellBuffer.getHeight();
+		
+		bhCamera camera = sm_c.camera;
+		
+		double distanceRatio = camera.calcDistanceRatio();
+		
+		int subCellCount = cellBuffer.getSubCellCount();
+		
+		bhPoint basePoint = m_utilPoint1;
+		cellBuffer.getCoordinate().calcPoint(basePoint, grid.getCellWidth(), grid.getCellHeight(), grid.getCellPadding(), 1);
+		camera.calcScreenPoint(basePoint, m_utilPoint2);
+		basePoint = m_utilPoint2;
+		basePoint.round();
+		
+		//s_logger.severe("" + basePoint + " " + camera.getPosition() + " " + camera.getViewWidth() + " " + camera.getViewHeight());
+		
+		m_lastBasePoint.copy(basePoint);
+		
+		double scaling = bhU_Grid.calcCellScaling(distanceRatio, subCellCount, grid.getCellPadding(), grid.getCellWidth());
+		/*double factor = 1e5; // = 1 * 10^5 = 100000.
+		scaling = Math.round(scaling * factor) / factor;*/
+		
+		double cellWidthPlusPadding = -1;
+		double cellHeightPlusPadding = -1;
+		if( subCellCount == 1 )
+		{
+			cellWidthPlusPadding = (grid.getCellWidth() + grid.getCellPadding()) * scaling;
+			cellHeightPlusPadding = (grid.getCellHeight() + grid.getCellPadding()) * scaling;
+		}
+		else
+		{
+			//--- DRK > We have to fudge the scaling here so that thick artifact lines don't appear between the meta-cell images at some zoom levels.
+			//---		Basically just rounding things to the nearest pixel so that the browser renderer doesn't just decide on its own how it should look at sub-pixels.
+			cellWidthPlusPadding = (grid.getCellWidth()) * scaling;
+			cellWidthPlusPadding = Math.round(cellWidthPlusPadding);
+			scaling = cellWidthPlusPadding / grid.getCellWidth();
+			
+			cellHeightPlusPadding = grid.getCellHeight() * scaling;
+		}
+	
+		String scaleProperty = scaling < NO_SCALING ? bhU_UI.createScaleTransform(scaling) : null;
+		
+		
+		
+		//--- DRK > NOTE: ALL DOM-manipulation related to cells should occur within this block.
+		//---		This is why removal of visual cells is queued until this point.  This might be an
+		//---		extraneous optimization in some browsers if they themselves have intelligent DOM-change batching,
+		//---		but we must assume that most browsers are retarded.
+		//--	NOTE: Well, not ALL manipulation is in here, there are a few odds and ends done outside this...but most should be here.
+		m_container.getElement().getStyle().setDisplay(Display.NONE);
+		{
+			processRemovals();
+			
+			//--- DRK > Serious malfunction here if hit.
+			//--- NOTE: Now cell buffer can have null cells (i.e. if they aren't owned).
+			//---		So this assert is now invalid...keeping for historical reference.
+			//bhU_Debug.ASSERT(cellBuffer.getCellCount() == m_pool.getAllocCount(), "bhVisualCellManager::update1");
+			
+			for ( int i = 0; i < bufferSize; i++ )
+			{
+				smBufferCell ithBufferCell = cellBuffer.getCellAtIndex(i);
+				
+				if( ithBufferCell == null )  continue;
+				
+				int ix = i % bufferWidth;
+				int iy = i / bufferWidth;
+				
+				double offsetX = (ix * (cellWidthPlusPadding));
+				double offsetY = (iy * (cellHeightPlusPadding));
+				
+				bhVisualCell ithVisualCell = (smVisualCell) ithBufferCell.getVisualization();
+				
+				ithVisualCell.validate();
+				
+				double translateX = basePoint.getX() + offsetX;
+				double translateY = basePoint.getY() + offsetY;
+				String translateProperty = bhU_UI.createTranslateTransform(translateX, translateY);
+				String transform = scaleProperty != null ? translateProperty + " " + scaleProperty : translateProperty;
+				bhU_UI.setTransform(ithVisualCell.getElement(), transform);
+				
+				ithVisualCell.update(timeStep);
+				
+				if( ithVisualCell.getParent() == null )
+				{
+					m_container.add(ithVisualCell);
+				}
+			}
+		}
+		m_container.getElement().getStyle().setDisplay(Display.BLOCK);
+		
+		m_lastScaling = scaling;
+		
+		m_needsUpdateDueToResizingOfCameraOrGrid = false;
+		
+		return true;
+	}
+	
+	private void updateCellsIndividually(double timeStep)
+	{
+		smCellBufferManager cellManager = smCellBufferManager.getInstance();
+		smCellBuffer cellBuffer = cellManager.getDisplayBuffer();
+		int bufferSize = cellBuffer.getCellCount();
+		
+		for ( int i = 0; i < bufferSize; i++ )
+		{
+			smBufferCell ithBufferCell = cellBuffer.getCellAtIndex(i);
+			
+			if( ithBufferCell == null ) continue;
+			
+			bhVisualCell ithVisualCell = (smVisualCell) ithBufferCell.getVisualization();
+			ithVisualCell.update(timeStep);
+		}
+	}
+	
+	public double getLastScaling()
+	{
+		return m_lastScaling;
+	}
+	
+	public smPoint getLastBasePoint()
+	{
+		return m_lastBasePoint;
+	}
+	
+	@Override
+	public void onStateEvent(smStateEvent event)
+	{
+		switch(event.getType())
+		{
+			case DID_UPDATE:
+			{
+				if( event.getState().getParent() instanceof StateMachine_Camera )
+				{
+					if( !this.updateCellTransforms(event.getState().getLastTimeStep()) )
+					{
+						this.updateCellsIndividually(event.getState().getLastTimeStep());
+					}
+				}
+				
+				break;
+			}
+			
+			case DID_ENTER:
+			{
+				if( event.getState() instanceof StateMachine_Camera )
+				{
+					m_cameraController = (StateMachine_Camera) event.getState();
+				}
+				
+				break;
+			}
+			
+			case DID_EXIT:
+			{
+				if( event.getState() instanceof StateMachine_Camera )
+				{
+					m_cameraController = null;
+				}
+				else if( event.getState() instanceof State_ViewingCell )
+				{
+					clearAlerts();
+				}
+				
+				break;
+			}
+			
+			case DID_PERFORM_ACTION:
+			{
+				if( event.getAction() == StateMachine_Camera.SetCameraViewSize.class ||
+					event.getAction() == StateMachine_Base.OnGridResize.class )
+				{
+					m_needsUpdateDueToResizingOfCameraOrGrid = true;
+					
+					//--- DRK > In a strict sense this is a waste of an update since in just a few milliseconds
+					//---		we'll be doing another one anyway. If we don't do it here though, there's some 
+					//---		ghosting of the cell visualizations with certain rapid resizes of the UI console.
+					//---		Also, if the camera is still and the grid resizes, visual cells won't appear until
+					//---		we move.
+					this.updateCellTransforms(0);
+				}
+				else if( event.getAction() == State_ViewingCell.Refresh.class )
+				{
+					//--- DRK > Used to clear alerts here, but moved it to the actual refresh button handler.
+					//--- 		Probably safe here, but refresh might instantly update the cell's code, before
+					//---		we get a chance to remove the alerts...might be order-dependent strangeness there.
+					//clearAlerts();
+				}
+				
+				break;
+			}
+		}
+	}
+	
+	private smBufferCell getCurrentBufferCell()
+	{
+		State_ViewingCell state = smA_State.getEnteredInstance(State_ViewingCell.class);
+		if( state != null )
+		{
+			return state.getCell();
+		}
+		
+		return null;
+	}
+	
+	public void clearAlerts()
+	{
+		bhAlertManager.getInstance().clear();
+		
+		smBufferCell bufferCell = getCurrentBufferCell();
+		
+		if( bufferCell != null )
+		{
+			bhVisualCell cell = (smVisualCell) bufferCell.getVisualization();
+			cell.getBlocker().setContent(null);
+		}
+		else
+		{
+			//--- DRK > Below assert trips badly when exiting view state...state is already
+			//---		exited when we get to here.
+			//bhU_Debug.ASSERT(false, "Expected current cell to be set.");
+		}
+	}
+}

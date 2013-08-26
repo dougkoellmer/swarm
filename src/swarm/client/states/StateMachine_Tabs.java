@@ -5,22 +5,22 @@ import java.util.List;
 
 import swarm.client.states.account.StateMachine_Account;
 import swarm.client.states.code.StateMachine_EditingCode;
-import swarm.shared.statemachine.bhA_Action;
+import swarm.shared.statemachine.smA_Action;
 
-import swarm.shared.statemachine.bhA_ActionArgs;
-import swarm.shared.statemachine.bhA_State;
-import swarm.shared.statemachine.bhA_StateMachine;
-import swarm.shared.statemachine.bhA_StateConstructor;
+import swarm.shared.statemachine.smA_ActionArgs;
+import swarm.shared.statemachine.smA_State;
+import swarm.shared.statemachine.smA_StateMachine;
+import swarm.shared.statemachine.smA_StateConstructor;
 
 /**
  * ...
  * @author 
  */
-public class StateMachine_Tabs extends bhA_StateMachine
+public class StateMachine_Tabs extends smA_StateMachine
 {	
-	public static class SelectTab extends bhA_Action 
+	public static class SelectTab extends smA_Action 
 	{
-		public static class Args extends bhA_ActionArgs
+		public static class Args extends smA_ActionArgs
 		{
 			private int m_index;
 			
@@ -31,7 +31,7 @@ public class StateMachine_Tabs extends bhA_StateMachine
 		}
 		
 		@Override
-		public void perform(bhA_ActionArgs args)
+		public void perform(smA_ActionArgs args)
 		{
 			int tabIndex = ((Args) args).m_index;
 			StateMachine_Tabs tabController = (StateMachine_Tabs) this.getState();
@@ -39,7 +39,7 @@ public class StateMachine_Tabs extends bhA_StateMachine
 		}
 		
 		@Override
-		public boolean isPerformable(bhA_ActionArgs args)
+		public boolean isPerformable(smA_ActionArgs args)
 		{
 			int tabIndex = ((Args) args).m_index;
 			StateMachine_Tabs tabController = (StateMachine_Tabs) this.getState();
@@ -55,30 +55,30 @@ public class StateMachine_Tabs extends bhA_StateMachine
 		}
 		
 		@Override
-		public Class<? extends bhA_State> getStateAssociation()
+		public Class<? extends smA_State> getStateAssociation()
 		{
 			return StateMachine_Tabs.class;
 		}
 	}
 	
-	private final List<Class<? extends bhA_State>> m_tabStates;
+	private final List<Class<? extends smA_State>> m_tabStates;
 	
 	private int m_tabIndex = -1;
 	
-	public StateMachine_Tabs(List<Class<? extends bhA_State>> tabStates) 
+	public StateMachine_Tabs(List<Class<? extends smA_State>> tabStates) 
 	{
-		bhA_Action.register(new SelectTab());
+		smA_Action.register(new SelectTab());
 		
 		m_tabStates = tabStates;
 	}
 	
 	@Override
-	protected void didEnter(bhA_StateConstructor constructor)
+	protected void didEnter(smA_StateConstructor constructor)
 	{
 		
 	}
 	
-	public int calcTabIndex(Class<? extends bhA_State> tabState)
+	public int calcTabIndex(Class<? extends smA_State> tabState)
 	{
 		for( int i = 0; i < m_tabStates.size(); i++ )
 		{
@@ -111,7 +111,7 @@ public class StateMachine_Tabs extends bhA_StateMachine
 	}
 	
 	@Override
-	protected void didForeground(Class<? extends bhA_State> revealingState, Object[] argsFromRevealingState)
+	protected void didForeground(Class<? extends smA_State> revealingState, Object[] argsFromRevealingState)
 	{
 		if( this.m_tabIndex == -1 )
 		{

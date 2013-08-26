@@ -4,37 +4,37 @@ import java.util.logging.Logger;
 
 
 import swarm.server.account.sm_s;
-import swarm.server.data.blob.bhBlobException;
-import swarm.server.data.blob.bhBlobManagerFactory;
-import swarm.server.data.blob.bhE_BlobCacheLevel;
-import swarm.server.data.blob.bhE_BlobTransactionType;
-import swarm.server.data.blob.bhI_BlobManager;
-import swarm.server.entities.bhE_GridType;
-import swarm.server.entities.bhServerGrid;
-import swarm.server.transaction.bhI_RequestHandler;
-import swarm.server.transaction.bhTransactionContext;
-import swarm.shared.transaction.bhE_ResponseError;
-import swarm.shared.transaction.bhTransactionRequest;
-import swarm.shared.transaction.bhTransactionResponse;
+import swarm.server.data.blob.smBlobException;
+import swarm.server.data.blob.smBlobManagerFactory;
+import swarm.server.data.blob.smE_BlobCacheLevel;
+import swarm.server.data.blob.smE_BlobTransactionType;
+import swarm.server.data.blob.smI_BlobManager;
+import swarm.server.entities.smE_GridType;
+import swarm.server.entities.smServerGrid;
+import swarm.server.transaction.smI_RequestHandler;
+import swarm.server.transaction.smTransactionContext;
+import swarm.shared.transaction.smE_ResponseError;
+import swarm.shared.transaction.smTransactionRequest;
+import swarm.shared.transaction.smTransactionResponse;
 
-public class getGridData implements bhI_RequestHandler
+public class getGridData implements smI_RequestHandler
 {
 	private static final Logger s_logger = Logger.getLogger(getGridData.class.getName());
 	
 	@Override
-	public void handleRequest(bhTransactionContext context, bhTransactionRequest request, bhTransactionResponse response)
+	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
 	{
-		bhI_BlobManager blobManager = sm_s.blobMngrFactory.create(bhE_BlobCacheLevel.values());
+		smI_BlobManager blobManager = sm_s.blobMngrFactory.create(smE_BlobCacheLevel.values());
 		
-		bhServerGrid grid = null;
+		smServerGrid grid = null;
 		
 		try
 		{
-			grid = blobManager.getBlob(bhE_GridType.ACTIVE, bhServerGrid.class);
+			grid = blobManager.getBlob(smE_GridType.ACTIVE, smServerGrid.class);
 		}
 		catch( bhBlobException e)
 		{
-			response.setError(bhE_ResponseError.SERVICE_EXCEPTION);
+			response.setError(smE_ResponseError.SERVICE_EXCEPTION);
 			
 			s_logger.severe("Could not retrieve grid data due to exception: " + e);
 			
@@ -44,7 +44,7 @@ public class getGridData implements bhI_RequestHandler
 		//--- DRK > Should really never be null by this point for practical cases.
 		if( grid == null )
 		{
-			grid = new bhServerGrid();
+			grid = new smServerGrid();
 			
 			s_logger.severe("Grid came up null when it probably should have been initialized.");
 		}

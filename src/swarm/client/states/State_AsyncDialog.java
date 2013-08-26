@@ -1,22 +1,22 @@
 package swarm.client.states;
 
-import swarm.shared.statemachine.bhA_Action;
-import swarm.shared.statemachine.bhA_ActionArgs;
-import swarm.shared.statemachine.bhA_State;
+import swarm.shared.statemachine.smA_Action;
+import swarm.shared.statemachine.smA_ActionArgs;
+import swarm.shared.statemachine.smA_State;
 
 public class State_AsyncDialog extends State_GenericDialog
 {
 	public static class Ok extends State_GenericDialog.Ok
 	{
 		@Override
-		public void perform(bhA_ActionArgs args)
+		public void perform(smA_ActionArgs args)
 		{
-			StateMachine_Base baseController = bhA_State.getForegroundedInstance(StateMachine_Base.class);
+			StateMachine_Base baseController = smA_State.getForegroundedInstance(StateMachine_Base.class);
 			baseController.dequeueAsyncDialog();
 		}
 		
 		@Override
-		public Class<? extends bhA_State> getStateAssociation()
+		public Class<? extends smA_State> getStateAssociation()
 		{
 			return State_AsyncDialog.class;
 		}
@@ -24,6 +24,6 @@ public class State_AsyncDialog extends State_GenericDialog
 	
 	public State_AsyncDialog()
 	{
-		bhA_Action.register(new State_AsyncDialog.Ok());
+		smA_Action.register(new State_AsyncDialog.Ok());
 	}
 }

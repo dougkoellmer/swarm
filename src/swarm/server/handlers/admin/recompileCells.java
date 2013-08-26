@@ -8,60 +8,60 @@ import java.util.logging.Logger;
 import javax.servlet.ServletContext;
 
 
-import swarm.server.account.bhE_Role;
-import swarm.server.account.bhUserSession;
+import swarm.server.account.smE_Role;
+import swarm.server.account.smUserSession;
 import swarm.server.account.sm_s;
-import swarm.server.data.blob.bhBlobException;
-import swarm.server.data.blob.bhBlobManagerFactory;
-import swarm.server.data.blob.bhE_BlobCacheLevel;
-import swarm.server.data.blob.bhE_BlobTransactionType;
-import swarm.server.data.blob.bhI_Blob;
-import swarm.server.data.blob.bhI_BlobKey;
-import swarm.server.data.blob.bhI_BlobManager;
-import swarm.server.entities.bhE_GridType;
-import swarm.server.entities.bhServerCell;
-import swarm.server.entities.bhServerGrid;
-import swarm.server.entities.bhServerUser;
-import swarm.server.handlers.bhU_CellCode;
-import swarm.server.session.bhSessionManager;
-import swarm.server.structs.bhServerCellAddress;
-import swarm.server.structs.bhServerCellAddressMapping;
-import swarm.server.structs.bhServerCode;
-import swarm.server.structs.bhServerCodePrivileges;
-import swarm.server.transaction.bhI_RequestHandler;
-import swarm.server.transaction.bhServerTransactionManager;
-import swarm.server.transaction.bhTransactionContext;
-import swarm.shared.code.bhA_CodeCompiler;
-import swarm.shared.code.bhCompilerResult;
-import swarm.shared.code.bhE_CompilationStatus;
-import swarm.shared.entities.bhA_User;
-import swarm.shared.entities.bhE_CodeType;
-import swarm.shared.structs.bhCode;
-import swarm.shared.structs.bhE_NetworkPrivilege;
-import swarm.shared.structs.bhGridCoordinate;
-import swarm.shared.transaction.bhE_RequestPath;
-import swarm.shared.transaction.bhE_ResponseError;
-import swarm.shared.transaction.bhTransactionRequest;
-import swarm.shared.transaction.bhTransactionResponse;
+import swarm.server.data.blob.smBlobException;
+import swarm.server.data.blob.smBlobManagerFactory;
+import swarm.server.data.blob.smE_BlobCacheLevel;
+import swarm.server.data.blob.smE_BlobTransactionType;
+import swarm.server.data.blob.smI_Blob;
+import swarm.server.data.blob.smI_BlobKey;
+import swarm.server.data.blob.smI_BlobManager;
+import swarm.server.entities.smE_GridType;
+import swarm.server.entities.smServerCell;
+import swarm.server.entities.smServerGrid;
+import swarm.server.entities.smServerUser;
+import swarm.server.handlers.smU_CellCode;
+import swarm.server.session.smSessionManager;
+import swarm.server.structs.smServerCellAddress;
+import swarm.server.structs.smServerCellAddressMapping;
+import swarm.server.structs.smServerCode;
+import swarm.server.structs.smServerCodePrivileges;
+import swarm.server.transaction.smI_RequestHandler;
+import swarm.server.transaction.smServerTransactionManager;
+import swarm.server.transaction.smTransactionContext;
+import swarm.shared.code.smA_CodeCompiler;
+import swarm.shared.code.smCompilerResult;
+import swarm.shared.code.smE_CompilationStatus;
+import swarm.shared.entities.smA_User;
+import swarm.shared.entities.smE_CodeType;
+import swarm.shared.structs.smCode;
+import swarm.shared.structs.smE_NetworkPrivilege;
+import swarm.shared.structs.smGridCoordinate;
+import swarm.shared.transaction.smE_RequestPath;
+import swarm.shared.transaction.smE_ResponseError;
+import swarm.shared.transaction.smTransactionRequest;
+import swarm.shared.transaction.smTransactionResponse;
 
-public class recompileCells implements bhI_RequestHandler
+public class recompileCells implements smI_RequestHandler
 {
 	private static final Logger s_logger = Logger.getLogger(recompileCells.class.getName());
 	
 	@Override
-	public void handleRequest(bhTransactionContext context, bhTransactionRequest request, bhTransactionResponse response)
+	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
 	{
-		bhI_BlobManager blobManager = sm_s.blobMngrFactory.create(bhE_BlobCacheLevel.PERSISTENT);
+		smI_BlobManager blobManager = sm_s.blobMngrFactory.create(smE_BlobCacheLevel.PERSISTENT);
 		
-		bhServerGrid grid = null;
+		smServerGrid grid = null;
 		
 		try
 		{
-			grid = blobManager.getBlob(bhE_GridType.ACTIVE, bhServerGrid.class);
+			grid = blobManager.getBlob(smE_GridType.ACTIVE, smServerGrid.class);
 		}
 		catch( bhBlobException e)
 		{
-			response.setError(bhE_ResponseError.SERVICE_EXCEPTION);
+			response.setError(smE_ResponseError.SERVICE_EXCEPTION);
 			
 			s_logger.severe("Could not retrieve grid data due to exception: " + e);
 			
@@ -70,14 +70,14 @@ public class recompileCells implements bhI_RequestHandler
 		
 		if( grid == null )
 		{
-			response.setError(bhE_ResponseError.BAD_STATE);
+			response.setError(smE_ResponseError.BAD_STATE);
 			
 			s_logger.severe("Grid came up null when it probably should have been initialized.");
 			
 			return;
 		}
 		
-		bhServerCellAddressMapping mapping = new bhServerCellAddressMapping(bhE_GridType.ACTIVE);
+		smServerCellAddressMapping mapping = new smServerCellAddressMapping(smE_GridType.ACTIVE);
 		
 		for( int i = 0; i < grid.getHeight(); i++ )
 		{
@@ -86,7 +86,7 @@ public class recompileCells implements bhI_RequestHandler
 				mapping.getCoordinate().set(j,  i);
 				if( grid.isTaken(mapping.getCoordinate()) )
 				{
-					bhServerCell cell = bhU_CellCode.getCellForCompile(blobManager, mapping, response);
+					smServerCell cell = bhU_CellCode.getCellForCompile(blobManager, mapping, response);
 					
 					if( cell == null )
 					{
@@ -104,9 +104,9 @@ public class recompileCells implements bhI_RequestHandler
 		}
 	}
 	
-	private boolean recompile(bhI_BlobManager blobManager, bhServerCell persistedCell, bhServerCellAddressMapping mapping, bhTransactionResponse response)
+	private boolean recompile(smI_BlobManager blobManager, smServerCell persistedCell, smServerCellAddressMapping mapping, smTransactionResponse response)
 	{
-		bhCode sourceCode = persistedCell.getCode(bhE_CodeType.SOURCE);
+		bhCode sourceCode = persistedCell.getCode(smE_CodeType.SOURCE);
 		
 		if( sourceCode == null )
 		{
@@ -115,11 +115,11 @@ public class recompileCells implements bhI_RequestHandler
 		
 		bhCompilerResult result = bhU_CellCode.compileCell(persistedCell, sourceCode, mapping);
 		
-		if( result.getStatus() != bhE_CompilationStatus.NO_ERROR )
+		if( result.getStatus() != smE_CompilationStatus.NO_ERROR )
 		{
-			bhCode emptySplashCode = new bhCode("", bhE_CodeType.SPLASH, bhE_CodeType.COMPILED);
-			persistedCell.setCode(bhE_CodeType.SPLASH, emptySplashCode);
-			persistedCell.setCode(bhE_CodeType.COMPILED, null);
+			bhCode emptySplashCode = new smCode("", smE_CodeType.SPLASH, smE_CodeType.COMPILED);
+			persistedCell.setCode(smE_CodeType.SPLASH, emptySplashCode);
+			persistedCell.setCode(smE_CodeType.COMPILED, null);
 			
 			s_logger.severe("Source code now has an error in it...presumably it did not before.");
 		}

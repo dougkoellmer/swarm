@@ -1,16 +1,16 @@
 package swarm.client.states.account;
 
 import swarm.client.app.sm_c;
-import swarm.client.managers.bhClientAccountManager;
-import swarm.client.managers.bhClientAccountManager.E_ResponseType;
+import swarm.client.managers.smClientAccountManager;
+import swarm.client.managers.smClientAccountManager.E_ResponseType;
 import swarm.client.states.StateMachine_Base;
 import swarm.client.states.State_AsyncDialog;
 import swarm.client.states.State_GenericDialog;
 import swarm.client.states.code.State_EditingCodeBlocker;
-import swarm.shared.debugging.bhU_Debug;
-import swarm.shared.statemachine.bhA_State;
-import swarm.shared.statemachine.bhA_StateMachine;
-import swarm.shared.statemachine.bhA_StateConstructor;
+import swarm.shared.debugging.smU_Debug;
+import swarm.shared.statemachine.smA_State;
+import swarm.shared.statemachine.smA_StateMachine;
+import swarm.shared.statemachine.smA_StateConstructor;
 
 
 
@@ -18,7 +18,7 @@ import swarm.shared.statemachine.bhA_StateConstructor;
  * ...
  * @author 
  */
-public class StateMachine_Account extends bhA_StateMachine
+public class StateMachine_Account extends smA_StateMachine
 {
 	private static class AccountManagerDelegate implements bhClientAccountManager.I_Delegate
 	{
@@ -48,7 +48,7 @@ public class StateMachine_Account extends bhA_StateMachine
 		
 		private void onAccountManagerDelegation()
 		{
-			StateMachine_Account accountMachine = bhA_State.getForegroundedInstance(StateMachine_Account.class);
+			StateMachine_Account accountMachine = smA_State.getForegroundedInstance(StateMachine_Account.class);
 
 			if( accountMachine != null )
 			{
@@ -64,12 +64,12 @@ public class StateMachine_Account extends bhA_StateMachine
 	private final AccountManagerDelegate m_accountManagerDelegate = new AccountManagerDelegate();
 	
 	@Override
-	protected void didEnter(bhA_StateConstructor constructor)
+	protected void didEnter(smA_StateConstructor constructor)
 	{
 	}
 	
 	@Override
-	protected void didForeground(Class<? extends bhA_State> revealingState, Object[] args)
+	protected void didForeground(Class<? extends smA_State> revealingState, Object[] args)
 	{
 		bhClientAccountManager accountManager = sm_c.accountMngr;
 		
@@ -113,7 +113,7 @@ public class StateMachine_Account extends bhA_StateMachine
 			machine_popState(this);
 		}
 		
-		bhA_State currentState = this.getCurrentState();
+		smA_State currentState = this.getCurrentState();
 		
 		if( accountManager.isSignedIn() )
 		{
@@ -134,7 +134,7 @@ public class StateMachine_Account extends bhA_StateMachine
 	}
 	
 	@Override 
-	protected void willBackground(Class<? extends bhA_State> blockingState)
+	protected void willBackground(Class<? extends smA_State> blockingState)
 	{
 		bhClientAccountManager accountManager = sm_c.accountMngr;
 		

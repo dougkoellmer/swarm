@@ -1,12 +1,12 @@
 package swarm.shared.app;
 
-import swarm.shared.code.bhA_CodeCompiler;
-import swarm.shared.json.bhA_JsonFactory;
-import swarm.shared.transaction.bhRequestPathManager;
+import swarm.shared.code.smA_CodeCompiler;
+import swarm.shared.json.smA_JsonFactory;
+import swarm.shared.transaction.smRequestPathManager;
 
 public class sm 
 {
 	public static bhRequestPathManager requestPathMngr;
-	public static bhA_JsonFactory jsonFactory;
-	public static bhA_CodeCompiler codeCompiler;
+	public static smA_JsonFactory jsonFactory;
+	public static smA_CodeCompiler codeCompiler;
 }

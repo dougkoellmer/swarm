@@ -10,35 +10,35 @@ import java.util.logging.Logger;
 
 import swarm.shared.app.sm;
 import swarm.server.account.sm_s;
-import swarm.server.data.blob.bhBlobException;
-import swarm.server.data.blob.bhBlobManagerFactory;
-import swarm.server.data.blob.bhE_BlobCacheLevel;
-import swarm.server.data.blob.bhI_Blob;
-import swarm.server.data.blob.bhI_BlobKey;
-import swarm.server.data.blob.bhI_BlobManager;
-import swarm.server.entities.bhE_GridType;
-import swarm.server.entities.bhServerCell;
-import swarm.server.structs.bhServerCellAddressMapping;
-import swarm.server.structs.bhServerGridCoordinate;
-import swarm.server.transaction.bhI_DeferredRequestHandler;
-import swarm.server.transaction.bhI_RequestHandler;
-import swarm.server.transaction.bhServerTransactionManager;
-import swarm.server.transaction.bhTransactionBatch;
-import swarm.server.transaction.bhTransactionContext;
-import swarm.shared.utils.bhU_BitTricks;
-import swarm.shared.entities.bhA_Cell;
-import swarm.shared.entities.bhE_CodeSafetyLevel;
-import swarm.shared.entities.bhE_CodeType;
-import swarm.shared.json.bhE_JsonKey;
-import swarm.shared.json.bhJsonHelper;
-import swarm.shared.structs.bhCode;
-import swarm.shared.structs.bhCodePrivileges;
-import swarm.shared.transaction.bhE_RequestPath;
-import swarm.shared.transaction.bhE_ResponseError;
-import swarm.shared.transaction.bhTransactionRequest;
-import swarm.shared.transaction.bhTransactionResponse;
+import swarm.server.data.blob.smBlobException;
+import swarm.server.data.blob.smBlobManagerFactory;
+import swarm.server.data.blob.smE_BlobCacheLevel;
+import swarm.server.data.blob.smI_Blob;
+import swarm.server.data.blob.smI_BlobKey;
+import swarm.server.data.blob.smI_BlobManager;
+import swarm.server.entities.smE_GridType;
+import swarm.server.entities.smServerCell;
+import swarm.server.structs.smServerCellAddressMapping;
+import swarm.server.structs.smServerGridCoordinate;
+import swarm.server.transaction.smI_DeferredRequestHandler;
+import swarm.server.transaction.smI_RequestHandler;
+import swarm.server.transaction.smServerTransactionManager;
+import swarm.server.transaction.smTransactionBatch;
+import swarm.server.transaction.smTransactionContext;
+import swarm.shared.utils.smU_BitTricks;
+import swarm.shared.entities.smA_Cell;
+import swarm.shared.entities.smE_CodeSafetyLevel;
+import swarm.shared.entities.smE_CodeType;
+import swarm.shared.json.smE_JsonKey;
+import swarm.shared.json.smJsonHelper;
+import swarm.shared.structs.smCode;
+import swarm.shared.structs.smCodePrivileges;
+import swarm.shared.transaction.smE_RequestPath;
+import swarm.shared.transaction.smE_ResponseError;
+import swarm.shared.transaction.smTransactionRequest;
+import swarm.shared.transaction.smTransactionResponse;
 
-public class getCode implements bhI_RequestHandler, bhI_DeferredRequestHandler
+public class getCode implements smI_RequestHandler, smI_DeferredRequestHandler
 {
 	private static final Logger s_logger = Logger.getLogger(getCode.class.getName());
 	
@@ -53,65 +53,65 @@ public class getCode implements bhI_RequestHandler, bhI_DeferredRequestHandler
 		//"<img src='http://indianahumanities.net/wp-content/uploads/2011/08/cat2.jpg' />"
 	};
 	
-	private HashMap<bhI_BlobKey, Class<? extends bhI_Blob>> getBlobCoordSet(bhTransactionContext context, boolean forceCreate)
+	private HashMap<smI_BlobKey, Class<? extends smI_Blob>> getBlobCoordSet(smTransactionContext context, boolean forceCreate)
 	{
-		HashMap<bhI_BlobKey, Class<? extends bhI_Blob>> set = (HashMap<bhI_BlobKey, Class<? extends bhI_Blob>>) context.getUserData(bhE_RequestPath.getCode);
+		HashMap<smI_BlobKey, Class<? extends smI_Blob>> set = (HashMap<smI_BlobKey, Class<? extends smI_Blob>>) context.getUserData(smE_RequestPath.getCode);
 		
 		if( set == null && forceCreate)
 		{
-			set = new HashMap<bhI_BlobKey, Class<? extends bhI_Blob>>();
-			context.setUserData(bhE_RequestPath.getCode, set);
+			set = new HashMap<smI_BlobKey, Class<? extends smI_Blob>>();
+			context.setUserData(smE_RequestPath.getCode, set);
 		}
 		
 		return set;
 	}
 	
 	@Override
-	public void handleRequest(bhTransactionContext context, bhTransactionRequest request, bhTransactionResponse response)
+	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
 	{
 		//bhU_Servlet.simulateException(true);
 		
-		bhServerCellAddressMapping mapping = new bhServerCellAddressMapping(bhE_GridType.ACTIVE);
+		smServerCellAddressMapping mapping = new smServerCellAddressMapping(smE_GridType.ACTIVE);
 		mapping.readJson(request.getJson());
 		
-		if( context.getRequestCount(bhE_RequestPath.getCode) > 1 )
+		if( context.getRequestCount(smE_RequestPath.getCode) > 1 )
 		{
-			HashMap<bhI_BlobKey, Class<? extends bhI_Blob>> blobCoordSet = this.getBlobCoordSet(context, true);
+			HashMap<smI_BlobKey, Class<? extends smI_Blob>> blobCoordSet = this.getBlobCoordSet(context, true);
 			
-			blobCoordSet.put(mapping, bhServerCell.class);
+			blobCoordSet.put(mapping, smServerCell.class);
 			
-			response.setError(bhE_ResponseError.DEFERRED);
+			response.setError(smE_ResponseError.DEFERRED);
 			
 			return;
 		}
 		
-		bhI_BlobManager blobManager = sm_s.blobMngrFactory.create(bhE_BlobCacheLevel.values());
+		smI_BlobManager blobManager = sm_s.blobMngrFactory.create(smE_BlobCacheLevel.values());
 		
-		bhServerCell persistedCell = null;
+		smServerCell persistedCell = null;
 		
 		try
 		{
-			persistedCell = blobManager.getBlob(mapping, bhServerCell.class);
+			persistedCell = blobManager.getBlob(mapping, smServerCell.class);
 		}
-		catch(bhBlobException e)
+		catch(smBlobException e)
 		{
-			response.setError(bhE_ResponseError.SERVICE_EXCEPTION);
+			response.setError(smE_ResponseError.SERVICE_EXCEPTION);
 			
 			return;
 		}
 
-		bhE_CodeType eCodeType = sm.jsonFactory.getHelper().getEnum(request.getJson(), bhE_JsonKey.codeType, bhE_CodeType.values());
+		smE_CodeType eCodeType = sm.jsonFactory.getHelper().getEnum(request.getJson(), smE_JsonKey.codeType, smE_CodeType.values());
 		
 		writeResponse(eCodeType, persistedCell, response);
 	}
 	
-	private bhCode writeResponse(bhE_CodeType eCodeType, bhServerCell persistedCell, bhTransactionResponse response)
+	private bhCode writeResponse(smE_CodeType eCodeType, smServerCell persistedCell, smTransactionResponse response)
 	{
 		bhCode responseCode = null;
 		
 		if( persistedCell == null )
 		{
-			//responseCode = new bhCode("", bhE_CodeType.values());
+			//responseCode = new smCode("", smE_CodeType.values());
 		}
 		else
 		{
@@ -123,7 +123,7 @@ public class getCode implements bhI_RequestHandler, bhI_DeferredRequestHandler
 				
 				if( responseCode /*still*/== null )
 				{
-					responseCode = new bhCode("", bhE_CodeType.values());
+					responseCode = new smCode("", smE_CodeType.values());
 				}
 			}
 		}
@@ -132,11 +132,11 @@ public class getCode implements bhI_RequestHandler, bhI_DeferredRequestHandler
 		//---		Just piggy-backing here cause it will be needed anyway for source.
 		//---		If this turns out to be null, no privileges information is sent down.
 		bhCodePrivileges privileges = null;
-		if( responseCode!= null && (responseCode.isStandInFor(bhE_CodeType.SOURCE) || responseCode.getSafetyLevel() == bhE_CodeSafetyLevel.REQUIRES_DYNAMIC_SANDBOX) )
+		if( responseCode!= null && (responseCode.isStandInFor(smE_CodeType.SOURCE) || responseCode.getSafetyLevel() == smE_CodeSafetyLevel.REQUIRES_DYNAMIC_SANDBOX) )
 		{
 			if( persistedCell == null )
 			{
-				privileges = new bhCodePrivileges();
+				privileges = new smCodePrivileges();
 			}
 			else
 			{
@@ -147,56 +147,56 @@ public class getCode implements bhI_RequestHandler, bhI_DeferredRequestHandler
 		//--- DRK > Create the response cell and send'er back to client.
 		//---		We create a new cell here so that we can set code only for the desired type,
 		//---		and don't send down all the other code types that the persisted cell might have.
-		bhA_Cell responseCell = new bhA_Cell(privileges){};
+		smA_Cell responseCell = new smA_Cell(privileges){};
 		responseCell.setCode(eCodeType, responseCode);
 		responseCell.writeJson(response.getJson());
-		response.setError(bhE_ResponseError.NO_ERROR);
+		response.setError(smE_ResponseError.NO_ERROR);
 		
 		return responseCode;
 	}
 
 	@Override
-	public void handleDeferredRequests(bhTransactionContext context, bhTransactionBatch batch)
+	public void handleDeferredRequests(smTransactionContext context, smTransactionBatch batch)
 	{
-		HashMap<bhI_BlobKey, Class<? extends bhI_Blob>> query = this.getBlobCoordSet(context, false);
+		HashMap<smI_BlobKey, Class<? extends smI_Blob>> query = this.getBlobCoordSet(context, false);
 		
 		if( query == null )
 		{
 			return;
 		}
 
-		bhI_BlobManager blobManager = sm_s.blobMngrFactory.create(bhE_BlobCacheLevel.values());
+		smI_BlobManager blobManager = sm_s.blobMngrFactory.create(smE_BlobCacheLevel.values());
 		
-		Map<bhI_BlobKey, bhI_Blob> result = null;
-		bhE_ResponseError error = bhE_ResponseError.NO_ERROR;
+		Map<smI_BlobKey, smI_Blob> result = null;
+		smE_ResponseError error = smE_ResponseError.NO_ERROR;
 		
 		try
 		{
 			result = blobManager.getBlobs(query);
 		}
-		catch(bhBlobException e)
+		catch(smBlobException e)
 		{
 			result = null;
-			error = bhE_ResponseError.SERVICE_EXCEPTION;
+			error = smE_ResponseError.SERVICE_EXCEPTION;
 		}
 		
-		HashMap<bhServerCellAddressMapping, Integer> allTypesAlreadyReturned = new HashMap<bhServerCellAddressMapping, Integer>();
+		HashMap<smServerCellAddressMapping, Integer> allTypesAlreadyReturned = new HashMap<smServerCellAddressMapping, Integer>();
 		
 		for( int i = 0; i < batch.getCount(); i++ )
 		{
 			bhTransactionRequest request = batch.getRequest(i);
 			bhTransactionResponse response = batch.getResponse(i);
 			
-			if( request.getPath() != bhE_RequestPath.getCode )  continue;
+			if( request.getPath() != smE_RequestPath.getCode )  continue;
 			
-			if( error != bhE_ResponseError.NO_ERROR )
+			if( error != smE_ResponseError.NO_ERROR )
 			{
 				response.setError(error);
 
 				continue;
 			}
 			
-			bhE_CodeType eCodeType = sm.jsonFactory.getHelper().getEnum(request.getJson(), bhE_JsonKey.codeType, bhE_CodeType.values());
+			smE_CodeType eCodeType = sm.jsonFactory.getHelper().getEnum(request.getJson(), smE_JsonKey.codeType, smE_CodeType.values());
 
 			if( result == null )
 			{
@@ -205,10 +205,10 @@ public class getCode implements bhI_RequestHandler, bhI_DeferredRequestHandler
 				continue;
 			}
 			
-			bhServerCellAddressMapping mapping = new bhServerCellAddressMapping(bhE_GridType.ACTIVE);
+			smServerCellAddressMapping mapping = new smServerCellAddressMapping(smE_GridType.ACTIVE);
 			mapping.readJson(request.getJson());
 			
-			bhServerCell persistedCell = (bhServerCell) result.get(mapping);
+			smServerCell persistedCell = (smServerCell) result.get(mapping);
 			
 			if( persistedCell == null )
 			{
@@ -224,7 +224,7 @@ public class getCode implements bhI_RequestHandler, bhI_DeferredRequestHandler
 				int typeBit = bhU_BitTricks.calcOrdinalBit(eCodeType.ordinal());
 				if( (typesAlreadyReturnedForCoord & typeBit) != 0 )
 				{
-					response.setError(bhE_ResponseError.REDUNDANT);
+					response.setError(smE_ResponseError.REDUNDANT);
 					
 					continue;
 				}

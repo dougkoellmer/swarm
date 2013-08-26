@@ -1,18 +1,18 @@
 package swarm.client.states.account;
 
 
-import swarm.shared.statemachine.bhA_State;
-import swarm.shared.statemachine.bhA_StateConstructor;
+import swarm.shared.statemachine.smA_State;
+import swarm.shared.statemachine.smA_StateConstructor;
 
 
 /**
  * ...
  * @author 
  */
-public class State_AccountStatusPending extends bhA_State
+public class State_AccountStatusPending extends smA_State
 {
 	@Override
-	protected void didEnter(bhA_StateConstructor constructor)
+	protected void didEnter(smA_StateConstructor constructor)
 	{
 	}
 }

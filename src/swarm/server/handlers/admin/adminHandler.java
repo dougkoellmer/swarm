@@ -1,28 +1,28 @@
 package swarm.server.handlers.admin;
 
-import swarm.server.account.bhE_Role;
+import swarm.server.account.smE_Role;
 import swarm.server.account.sm_s;
-import swarm.server.session.bhSessionManager;
-import swarm.server.transaction.bhI_RequestHandler;
-import swarm.server.transaction.bhTransactionContext;
-import swarm.shared.transaction.bhE_HttpMethod;
-import swarm.shared.transaction.bhI_RequestPath;
-import swarm.shared.transaction.bhTransactionRequest;
-import swarm.shared.transaction.bhTransactionResponse;
+import swarm.server.session.smSessionManager;
+import swarm.server.transaction.smI_RequestHandler;
+import swarm.server.transaction.smTransactionContext;
+import swarm.shared.transaction.smE_HttpMethod;
+import swarm.shared.transaction.smI_RequestPath;
+import swarm.shared.transaction.smTransactionRequest;
+import swarm.shared.transaction.smTransactionResponse;
 
-public class adminHandler implements bhI_RequestHandler
+public class adminHandler implements smI_RequestHandler
 {
-	private final bhI_RequestHandler m_inner;
+	private final smI_RequestHandler m_inner;
 	
-	public adminHandler(bhI_RequestHandler inner)
+	public adminHandler(smI_RequestHandler inner)
 	{
 		m_inner = inner;
 	}
 	
 	@Override
-	public void handleRequest(bhTransactionContext context, bhTransactionRequest request, bhTransactionResponse response)
+	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
 	{
-		if( !sm_s.sessionMngr.isAuthorized(request, response, bhE_Role.ADMIN) )
+		if( !sm_s.sessionMngr.isAuthorized(request, response, smE_Role.ADMIN) )
 		{
 			return;
 		}

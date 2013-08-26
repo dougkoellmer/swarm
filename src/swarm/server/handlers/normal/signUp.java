@@ -6,21 +6,21 @@ import net.tanesha.recaptcha.ReCaptcha;
 import net.tanesha.recaptcha.ReCaptchaFactory;
 import net.tanesha.recaptcha.ReCaptchaResponse;
 
-import swarm.server.account.bhServerAccountManager;
-import swarm.server.account.bhUserSession;
+import swarm.server.account.smServerAccountManager;
+import swarm.server.account.smUserSession;
 import swarm.server.account.sm_s;
-import swarm.server.session.bhSessionManager;
-import swarm.server.transaction.bhI_RequestHandler;
-import swarm.server.transaction.bhTransactionContext;
-import swarm.shared.account.bhE_SignUpCredentialType;
-import swarm.shared.account.bhE_SignUpValidationError;
-import swarm.shared.account.bhSignUpCredentials;
-import swarm.shared.account.bhSignUpValidationResult;
-import swarm.shared.account.bhSignUpValidator;
-import swarm.shared.transaction.bhTransactionRequest;
-import swarm.shared.transaction.bhTransactionResponse;
+import swarm.server.session.smSessionManager;
+import swarm.server.transaction.smI_RequestHandler;
+import swarm.server.transaction.smTransactionContext;
+import swarm.shared.account.smE_SignUpCredentialType;
+import swarm.shared.account.smE_SignUpValidationError;
+import swarm.shared.account.smSignUpCredentials;
+import swarm.shared.account.smSignUpValidationResult;
+import swarm.shared.account.smSignUpValidator;
+import swarm.shared.transaction.smTransactionRequest;
+import swarm.shared.transaction.smTransactionResponse;
 
-public class signUp implements bhI_RequestHandler
+public class signUp implements smI_RequestHandler
 {
 	private final String m_publicRecaptchaKey;
 	private final String m_privateRecaptchaKey;
@@ -31,10 +31,10 @@ public class signUp implements bhI_RequestHandler
 		m_privateRecaptchaKey = privateRecaptchaKey;
 	}
 	
-	private boolean isCaptchaValid(bhSignUpCredentials creds, bhSignUpValidationResult result_out, String remoteAddress)
+	private boolean isCaptchaValid(smSignUpCredentials creds, smSignUpValidationResult result_out, String remoteAddress)
 	{
 		String captchaChallenge = creds.getCaptchaChallenge();
-		String captchaResponse = creds.get(bhE_SignUpCredentialType.CAPTCHA_RESPONSE);
+		String captchaResponse = creds.get(smE_SignUpCredentialType.CAPTCHA_RESPONSE);
 		
 		ReCaptcha captcha = ReCaptchaFactory.newReCaptcha(m_publicRecaptchaKey, m_privateRecaptchaKey, false);
         ReCaptchaResponse recaptchaResponse = captcha.checkAnswer(remoteAddress, captchaChallenge, captchaResponse);
@@ -42,7 +42,7 @@ public class signUp implements bhI_RequestHandler
         if ( !recaptchaResponse.isValid())
         {
         	result_out.setNoErrors(); // just make sure all errors are filled in for json writing...kinda hacky.
-        	result_out.setError(bhE_SignUpCredentialType.CAPTCHA_RESPONSE, bhE_SignUpValidationError.CAPTCHA_INCORRECT);
+        	result_out.setError(smE_SignUpCredentialType.CAPTCHA_RESPONSE, smE_SignUpValidationError.CAPTCHA_INCORRECT);
         	
         	return false;
         }
@@ -51,11 +51,11 @@ public class signUp implements bhI_RequestHandler
 	}
 	
 	@Override
-	public void handleRequest(bhTransactionContext context, bhTransactionRequest request, bhTransactionResponse response)
+	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
 	{
-		bhServerAccountManager accountManager = sm_s.accountMngr;
-		bhSignUpCredentials creds = new bhSignUpCredentials(request.getJson());
-		bhSignUpValidationResult result = new bhSignUpValidationResult();
+		smServerAccountManager accountManager = sm_s.accountMngr;
+		smSignUpCredentials creds = new smSignUpCredentials(request.getJson());
+		smSignUpValidationResult result = new smSignUpValidationResult();
 		String remoteAddress = ((HttpServletRequest) request.getNativeRequest()).getRemoteAddr();
 		
 		if( isCaptchaValid(creds, result, remoteAddress))

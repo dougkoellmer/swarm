@@ -1,19 +1,19 @@
 package swarm.client.states;
 
-import swarm.shared.statemachine.bhA_Action;
-import swarm.shared.statemachine.bhA_ActionArgs;
-import swarm.shared.statemachine.bhA_StateConstructor;
+import swarm.shared.statemachine.smA_Action;
+import swarm.shared.statemachine.smA_ActionArgs;
+import swarm.shared.statemachine.smA_StateConstructor;
 
-import swarm.shared.statemachine.bhA_State;
+import swarm.shared.statemachine.smA_State;
 
 
 /**
  * ...
  * @author 
  */
-public class State_GenericDialog extends bhA_State
+public class State_GenericDialog extends smA_State
 {
-	public static final class Constructor extends bhA_StateConstructor
+	public static final class Constructor extends smA_StateConstructor
 	{
 		private final String m_title;
 		private final String m_body;
@@ -26,16 +26,16 @@ public class State_GenericDialog extends bhA_State
 	}
 	
 	
-	public static class Ok extends bhA_Action
+	public static class Ok extends smA_Action
 	{
 		@Override
-		public void perform(bhA_ActionArgs args)
+		public void perform(smA_ActionArgs args)
 		{
-			machine_popState(bhA_State.getForegroundedInstance(StateMachine_Base.class));
+			machine_popState(smA_State.getForegroundedInstance(StateMachine_Base.class));
 		}
 
 		@Override
-		public Class<? extends bhA_State> getStateAssociation()
+		public Class<? extends smA_State> getStateAssociation()
 		{
 			return State_GenericDialog.class;
 		}
@@ -43,7 +43,7 @@ public class State_GenericDialog extends bhA_State
 	
 	public State_GenericDialog()
 	{
-		bhA_Action.register(new State_GenericDialog.Ok());
+		smA_Action.register(new State_GenericDialog.Ok());
 	}
 	
 	
@@ -61,7 +61,7 @@ public class State_GenericDialog extends bhA_State
 	}
 	
 	@Override
-	protected void didEnter(bhA_StateConstructor constructor)
+	protected void didEnter(smA_StateConstructor constructor)
 	{
 		Constructor cons = (Constructor) constructor;
 		

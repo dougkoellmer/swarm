@@ -1,62 +1,62 @@
 package swarm.client.states.code;
 
-import swarm.client.managers.bhCellCodeManager;
-import swarm.client.managers.bhClientAccountManager;
-import swarm.client.managers.bhUserManager;
+import swarm.client.managers.smCellCodeManager;
+import swarm.client.managers.smClientAccountManager;
+import swarm.client.managers.smUserManager;
 import swarm.client.app.sm_c;
-import swarm.client.code.bhCompilerErrorMessageGenerator;
-import swarm.client.entities.bhBufferCell;
-import swarm.client.entities.bhA_ClientUser;
-import swarm.client.entities.bhE_CodeStatus;
+import swarm.client.code.smCompilerErrorMessageGenerator;
+import swarm.client.entities.smBufferCell;
+import swarm.client.entities.smA_ClientUser;
+import swarm.client.entities.smE_CodeStatus;
 import swarm.client.states.StateMachine_Base;
 import swarm.client.states.State_AsyncDialog;
 import swarm.client.states.State_GenericDialog;
 import swarm.client.states.camera.State_ViewingCell;
 import swarm.client.states.code.State_EditingCodeBlocker.Reason;
-import swarm.shared.code.bhA_CodeCompiler;
-import swarm.shared.code.bhCompilerResult;
-import swarm.shared.code.bhE_CompilationStatus;
-import swarm.shared.debugging.bhU_Debug;
-import swarm.shared.entities.bhE_CodeType;
-import swarm.shared.statemachine.bhA_Action;
-import swarm.shared.statemachine.bhA_ActionArgs;
-import swarm.shared.statemachine.bhA_StateConstructor;
+import swarm.shared.code.smA_CodeCompiler;
+import swarm.shared.code.smCompilerResult;
+import swarm.shared.code.smE_CompilationStatus;
+import swarm.shared.debugging.smU_Debug;
+import swarm.shared.entities.smE_CodeType;
+import swarm.shared.statemachine.smA_Action;
+import swarm.shared.statemachine.smA_ActionArgs;
+import swarm.shared.statemachine.smA_StateConstructor;
 
-import swarm.shared.statemachine.bhA_State;
-import swarm.shared.structs.bhCode;
-import swarm.shared.structs.bhGridCoordinate;
+import swarm.shared.statemachine.smA_State;
+import swarm.shared.structs.smCode;
+import swarm.shared.structs.smGridCoordinate;
 
 
 /**
  * ...
  * @author 
  */
-public class State_EditingCode extends bhA_State
+public class State_EditingCode extends smA_State
 {
-	public static class Save extends bhA_Action
+	public static class Save extends smA_Action
 	{
 		@Override
-		public void perform(bhA_ActionArgs args)
+		public void perform(smA_ActionArgs args)
 		{
 			performCommitOrPreview(this);
 		}
 		
 		@Override
-		public boolean isPerformable(bhA_ActionArgs args)
+		public boolean isPerformable(smA_ActionArgs args)
 		{
 			return isCommitOrPreviewPerformable(false);
 		}
 		
 		@Override
-		public Class<? extends bhA_State> getStateAssociation()
+		public Class<? extends smA_State> getStateAssociation()
 		{
 			return State_EditingCode.class;
 		}
 	}
 	
-	public static class CodeChanged extends bhA_Action 
+	public static class CodeChanged extends smA_Action 
 	{
-		public static class Args extends bhA_ActionArgs
+		public static class Args extends smA_ActionArgs
 		{
 			private String m_changedCode = null;
 			
@@ -67,22 +67,22 @@ public class State_EditingCode extends bhA_State
 		}
 		
 		@Override
-		public void perform(bhA_ActionArgs args)
+		public void perform(smA_ActionArgs args)
 		{
 			String code = ((Args) args).m_changedCode;
 			
-			State_ViewingCell viewingState = (State_ViewingCell) bhA_State.getForegroundedInstance(State_ViewingCell.class);
-			bhBufferCell viewedCell = viewingState.getCell();
+			State_ViewingCell viewingState = (State_ViewingCell) smA_State.getForegroundedInstance(State_ViewingCell.class);
+			smBufferCell viewedCell = viewingState.getCell();
 			
-			bhA_ClientUser user = sm_c.userMngr.getUser();
+			smA_ClientUser user = sm_c.userMngr.getUser();
 			
 			user.onSourceCodeChanged(viewedCell.getCoordinate(), code);
 		}
 		
 		@Override
-		public boolean isPerformable(bhA_ActionArgs args)
+		public boolean isPerformable(smA_ActionArgs args)
 		{
-			State_ViewingCell state = (State_ViewingCell) bhA_State.getForegroundedInstance(State_ViewingCell.class);
+			State_ViewingCell state = (State_ViewingCell) smA_State.getForegroundedInstance(State_ViewingCell.class);
 			
 			if( state == null )
 			{
@@ -90,7 +90,7 @@ public class State_EditingCode extends bhA_State
 			}
 
 			//--- DRK > Just to make extra sure.
-			bhA_ClientUser user = sm_c.userMngr.getUser();
+			smA_ClientUser user = sm_c.userMngr.getUser();
 			if( !user.isEditable(state.getCell().getCoordinate()))
 			{
 				return false;
@@ -100,55 +100,55 @@ public class State_EditingCode extends bhA_State
 		}
 		
 		@Override
-		public Class<? extends bhA_State> getStateAssociation()
+		public Class<? extends smA_State> getStateAssociation()
 		{
 			return State_EditingCode.class;
 		}
 	}
 	
-	public static class Preview extends bhA_Action 
+	public static class Preview extends smA_Action 
 	{
 		@Override
-		public void perform(bhA_ActionArgs args)
+		public void perform(smA_ActionArgs args)
 		{
 			performCommitOrPreview(this);
 		}
 		
 		@Override
-		public boolean isPerformable(bhA_ActionArgs args)
+		public boolean isPerformable(smA_ActionArgs args)
 		{
 			return isCommitOrPreviewPerformable(true);
 		}
 		
 		@Override
-		public Class<? extends bhA_State> getStateAssociation()
+		public Class<? extends smA_State> getStateAssociation()
 		{
 			return State_EditingCode.class;
 		}
 	}
 	
 	
-	private static void performCommitOrPreview(bhA_Action thisArg)
+	private static void performCommitOrPreview(smA_Action thisArg)
 	{
-		State_ViewingCell viewingState = bhA_State.getForegroundedInstance(State_ViewingCell.class);
-		bhBufferCell viewedCell = viewingState.getCell();
+		State_ViewingCell viewingState = smA_State.getForegroundedInstance(State_ViewingCell.class);
+		smBufferCell viewedCell = viewingState.getCell();
 		bhGridCoordinate coord = viewedCell.getCoordinate();
 		
-		bhA_ClientUser user = sm_c.userMngr.getUser();
-		bhCode sourceCode = user.getCode(coord, bhE_CodeType.SOURCE);
+		smA_ClientUser user = sm_c.userMngr.getUser();
+		bhCode sourceCode = user.getCode(coord, smE_CodeType.SOURCE);
 		
 		bhCompilerResult compilerResult = sm_c.codeCompiler.compile(sourceCode, viewedCell.getCodePrivileges(), /*namespace=*/null);
 		
-		if( compilerResult.getStatus() == bhE_CompilationStatus.NO_ERROR )
+		if( compilerResult.getStatus() == smE_CompilationStatus.NO_ERROR )
 		{
 			if( thisArg instanceof Save )
 			{
-				bhCellCodeManager.getInstance().syncCell(viewedCell, sourceCode);
+				smCellCodeManager.getInstance().syncCell(viewedCell, sourceCode);
 				//((StateMachine_EditingCode) thisArg.getState().getParent()).setBlockerReason(State_EditingCodeBlocker.Reason.SYNCING);
 			}
 			else if( thisArg instanceof Preview )
 			{
-				bhCellCodeManager.getInstance().previewCell(viewedCell, sourceCode);
+				smCellCodeManager.getInstance().previewCell(viewedCell, sourceCode);
 				//((StateMachine_EditingCode) thisArg.getState().getParent()).setBlockerReason(State_EditingCodeBlocker.Reason.PREVIEWING);
 			}
 			else
@@ -161,7 +161,7 @@ public class State_EditingCode extends bhA_State
 			String title = "Compiler Error";
 			String body = bhCompilerErrorMessageGenerator.getInstance().generate(compilerResult);
 			
-			StateMachine_Base baseController = bhA_State.getEnteredInstance(StateMachine_Base.class);
+			StateMachine_Base baseController = smA_State.getEnteredInstance(StateMachine_Base.class);
 			
 			State_GenericDialog.Constructor constructor = new State_GenericDialog.Constructor(title, body);
 			
@@ -171,14 +171,14 @@ public class State_EditingCode extends bhA_State
 	
 	private static boolean isCommitOrPreviewPerformable(boolean isPreview)
 	{
-		State_ViewingCell state = (State_ViewingCell) bhA_State.getForegroundedInstance(State_ViewingCell.class);
+		State_ViewingCell state = (State_ViewingCell) smA_State.getForegroundedInstance(State_ViewingCell.class);
 		
 		if( state == null )
 		{
 			return false;
 		}
 		
-		bhA_ClientUser user = sm_c.userMngr.getUser();
+		smA_ClientUser user = sm_c.userMngr.getUser();
 		if( !user.isCellOwner(state.getCell().getCoordinate()) )
 		{
 			return false;
@@ -217,19 +217,19 @@ public class State_EditingCode extends bhA_State
 	
 	public State_EditingCode()
 	{
-		bhA_Action.register(new Save());
-		bhA_Action.register(new CodeChanged());
-		bhA_Action.register(new Preview());
+		smA_Action.register(new Save());
+		smA_Action.register(new CodeChanged());
+		smA_Action.register(new Preview());
 	}
 	
 	@Override
-	protected void didEnter(bhA_StateConstructor constructor)
+	protected void didEnter(smA_StateConstructor constructor)
 	{
 		m_mostRecentBlockerReason = null;
 	}
 	
 	@Override
-	protected void didForeground(Class<? extends bhA_State> revealingState, Object[] argsFromRevealingState)
+	protected void didForeground(Class<? extends smA_State> revealingState, Object[] argsFromRevealingState)
 	{
 		if( revealingState == State_EditingCodeBlocker.class )
 		{
@@ -239,10 +239,10 @@ public class State_EditingCode extends bhA_State
 		}
 	}
 	
-	public bhCode getCode()
+	public smCode getCode()
 	{
 		bhCode code = ((StateMachine_EditingCode)getParent()).getCode();
-		return code != null ? code : new bhCode("", bhE_CodeType.SOURCE);
+		return code != null ? code : new smCode("", smE_CodeType.SOURCE);
 	}
 	
 	public State_EditingCodeBlocker.Reason getMostRecentBlockerReason()

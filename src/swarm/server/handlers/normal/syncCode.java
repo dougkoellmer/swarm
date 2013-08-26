@@ -4,45 +4,45 @@ import java.util.ConcurrentModificationException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import swarm.server.account.bhE_Role;
-import swarm.server.account.bhUserSession;
+import swarm.server.account.smE_Role;
+import swarm.server.account.smUserSession;
 import swarm.server.account.sm_s;
-import swarm.server.data.blob.bhBlobException;
-import swarm.server.data.blob.bhBlobManagerFactory;
-import swarm.server.data.blob.bhE_BlobCacheLevel;
-import swarm.server.data.blob.bhI_BlobManager;
-import swarm.server.entities.bhE_GridType;
-import swarm.server.entities.bhServerCell;
-import swarm.server.entities.bhServerUser;
-import swarm.server.handlers.bhU_CellCode;
-import swarm.server.session.bhSessionManager;
-import swarm.server.structs.bhServerCellAddressMapping;
-import swarm.server.structs.bhServerCode;
-import swarm.server.structs.bhServerGridCoordinate;
-import swarm.server.transaction.bhI_RequestHandler;
-import swarm.server.transaction.bhTransactionContext;
-import swarm.shared.app.bhS_App;
-import swarm.shared.code.bhA_CodeCompiler;
-import swarm.shared.code.bhCompilerResult;
-import swarm.shared.code.bhE_CompilationStatus;
-import swarm.shared.entities.bhE_CodeType;
-import swarm.shared.entities.bhE_EditingPermission;
-import swarm.shared.transaction.bhE_ResponseError;
-import swarm.shared.transaction.bhTransactionRequest;
-import swarm.shared.transaction.bhTransactionResponse;
+import swarm.server.data.blob.smBlobException;
+import swarm.server.data.blob.smBlobManagerFactory;
+import swarm.server.data.blob.smE_BlobCacheLevel;
+import swarm.server.data.blob.smI_BlobManager;
+import swarm.server.entities.smE_GridType;
+import swarm.server.entities.smServerCell;
+import swarm.server.entities.smServerUser;
+import swarm.server.handlers.smU_CellCode;
+import swarm.server.session.smSessionManager;
+import swarm.server.structs.smServerCellAddressMapping;
+import swarm.server.structs.smServerCode;
+import swarm.server.structs.smServerGridCoordinate;
+import swarm.server.transaction.smI_RequestHandler;
+import swarm.server.transaction.smTransactionContext;
+import swarm.shared.app.smS_App;
+import swarm.shared.code.smA_CodeCompiler;
+import swarm.shared.code.smCompilerResult;
+import swarm.shared.code.smE_CompilationStatus;
+import swarm.shared.entities.smE_CodeType;
+import swarm.shared.entities.smE_EditingPermission;
+import swarm.shared.transaction.smE_ResponseError;
+import swarm.shared.transaction.smTransactionRequest;
+import swarm.shared.transaction.smTransactionResponse;
 
-public class syncCode implements bhI_RequestHandler
+public class syncCode implements smI_RequestHandler
 {
 	private static final Logger s_logger = Logger.getLogger(syncCode.class.getName());
 	
-	protected boolean isSandBox(bhServerCellAddressMapping mapping)
+	protected boolean isSandBox(smServerCellAddressMapping mapping)
 	{
 		return false;
 	}
 	
-	private boolean isAuthorized(bhI_BlobManager blobManager, bhServerCellAddressMapping mapping, bhTransactionRequest request, bhTransactionResponse response)
+	private boolean isAuthorized(smI_BlobManager blobManager, smServerCellAddressMapping mapping, smTransactionRequest request, smTransactionResponse response)
 	{
-		if( !sm_s.sessionMngr.isAuthorized(request, response, bhE_Role.USER) )
+		if( !sm_s.sessionMngr.isAuthorized(request, response, smE_Role.USER) )
 		{
 			return false;
 		}
@@ -52,28 +52,28 @@ public class syncCode implements bhI_RequestHandler
 		
 		//--- DRK > Used to have this check here...don't see why we shouldn't also
 		//---		force admins to own their own cells too.
-		//if( session.getRole().ordinal() == bhE_Role.USER.ordinal() )
+		//if( session.getRole().ordinal() == smE_Role.USER.ordinal() )
 		{
-			bhServerUser user = null;
+			smServerUser user = null;
 			
 			try
 			{
-				user = blobManager.getBlob(session, bhServerUser.class);
+				user = blobManager.getBlob(session, smServerUser.class);
 			}
-			catch(bhBlobException e)
+			catch(smBlobException e)
 			{
-				response.setError(bhE_ResponseError.SERVICE_EXCEPTION);
+				response.setError(smE_ResponseError.SERVICE_EXCEPTION);
 				
 				return false;
 			}
 			
 			//TODO: When flag system is in place, will have to check if this cell's been flagged or not, and check if user has editing permissions for that.
 			boolean isCellOwner = user.isCellOwner(mapping.getCoordinate());
-			boolean isAllPowerful = user.getEditingPermission() == bhE_EditingPermission.ALL_CELLS;
+			boolean isAllPowerful = user.getEditingPermission() == smE_EditingPermission.ALL_CELLS;
 			
 			if( user == null || user != null && !isCellOwner && !isAllPowerful )
 			{
-				response.setError(bhE_ResponseError.NOT_AUTHORIZED);
+				response.setError(smE_ResponseError.NOT_AUTHORIZED);
 				
 				return false;
 			}
@@ -83,12 +83,12 @@ public class syncCode implements bhI_RequestHandler
 	}
 	
 	@Override
-	public void handleRequest(bhTransactionContext context, bhTransactionRequest request, bhTransactionResponse response)
+	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
 	{
-		bhServerCellAddressMapping mapping = new bhServerCellAddressMapping(bhE_GridType.ACTIVE);
+		smServerCellAddressMapping mapping = new smServerCellAddressMapping(smE_GridType.ACTIVE);
 		mapping.readJson(request.getJson());
 		boolean isSandbox = isSandBox(mapping);
-		bhI_BlobManager blobManager = sm_s.blobMngrFactory.create(bhE_BlobCacheLevel.PERSISTENT);
+		smI_BlobManager blobManager = sm_s.blobMngrFactory.create(smE_BlobCacheLevel.PERSISTENT);
 		
 		if( !isSandbox )
 		{
@@ -102,11 +102,11 @@ public class syncCode implements bhI_RequestHandler
 			}
 		}
 		
-		bhServerCell persistedCell = bhU_CellCode.getCellForCompile(blobManager, mapping, response);
+		smServerCell persistedCell = bhU_CellCode.getCellForCompile(blobManager, mapping, response);
 		
 		if( persistedCell == null )  return;
 		
-		bhServerCode sourceCode = new bhServerCode(request.getJson(), bhE_CodeType.SOURCE);
+		smServerCode sourceCode = new smServerCode(request.getJson(), smE_CodeType.SOURCE);
 		
 		bhCompilerResult result = bhU_CellCode.compileCell(persistedCell, sourceCode, mapping);
 		

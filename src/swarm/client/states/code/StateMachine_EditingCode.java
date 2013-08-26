@@ -1,44 +1,44 @@
 package swarm.client.states.code;
 
-import swarm.client.managers.bhCellCodeManager;
-import swarm.client.managers.bhUserManager;
+import swarm.client.managers.smCellCodeManager;
+import swarm.client.managers.smUserManager;
 import swarm.client.app.sm_c;
-import swarm.client.entities.bhBufferCell;
-import swarm.client.entities.bhA_ClientUser;
-import swarm.client.entities.bhE_CodeStatus;
+import swarm.client.entities.smBufferCell;
+import swarm.client.entities.smA_ClientUser;
+import swarm.client.entities.smE_CodeStatus;
 import swarm.client.states.StateMachine_Base;
 import swarm.client.states.camera.StateMachine_Camera;
 import swarm.client.states.camera.State_CameraSnapping;
 import swarm.client.states.camera.State_ViewingCell;
 import swarm.client.states.camera.State_ViewingCell.Refresh;
 import swarm.client.states.code.State_EditingCodeBlocker.Reason;
-import swarm.client.transaction.bhClientTransactionManager;
-import swarm.client.ui.tabs.code.bhCodeMirrorWrapper;
-import swarm.shared.debugging.bhU_Debug;
-import swarm.shared.entities.bhE_CodeType;
-import swarm.shared.statemachine.bhA_Action;
+import swarm.client.transaction.smClientTransactionManager;
+import swarm.client.ui.tabs.code.smCodeMirrorWrapper;
+import swarm.shared.debugging.smU_Debug;
+import swarm.shared.entities.smE_CodeType;
+import swarm.shared.statemachine.smA_Action;
 
-import swarm.shared.statemachine.bhA_State;
-import swarm.shared.statemachine.bhA_StateMachine;
-import swarm.shared.statemachine.bhI_StateEventListener;
-import swarm.shared.statemachine.bhA_StateConstructor;
-import swarm.shared.statemachine.bhStateEvent;
-import swarm.shared.structs.bhCode;
-import swarm.shared.structs.bhGridCoordinate;
+import swarm.shared.statemachine.smA_State;
+import swarm.shared.statemachine.smA_StateMachine;
+import swarm.shared.statemachine.smI_StateEventListener;
+import swarm.shared.statemachine.smA_StateConstructor;
+import swarm.shared.statemachine.smStateEvent;
+import swarm.shared.structs.smCode;
+import swarm.shared.structs.smGridCoordinate;
 
 
 /**
  * ...
  * @author 
  */
-public class StateMachine_EditingCode extends bhA_StateMachine implements bhI_StateEventListener
+public class StateMachine_EditingCode extends smA_StateMachine implements smI_StateEventListener
 {
 	private boolean m_waitingOnHtmlForViewedCell = false;
 	
 	bhCode m_code = null;
 	
 	@Override
-	protected void didEnter(bhA_StateConstructor constructor)
+	protected void didEnter(smA_StateConstructor constructor)
 	{
 		m_waitingOnHtmlForViewedCell = false;
 		m_code = null;
@@ -50,10 +50,10 @@ public class StateMachine_EditingCode extends bhA_StateMachine implements bhI_St
 	}
 	
 	@Override
-	protected void didForeground(Class<? extends bhA_State> revealingState, Object[] argsFromRevealingState)
+	protected void didForeground(Class<? extends smA_State> revealingState, Object[] argsFromRevealingState)
 	{
 		//--- DRK > Camera controller can be null during start up...should be the only time.
-		bhA_StateMachine cameraController = bhA_State.getEnteredInstance(StateMachine_Camera.class);
+		smA_StateMachine cameraController = smA_State.getEnteredInstance(StateMachine_Camera.class);
 		if( cameraController != null )
 		{
 			pushOrPopBlocker(cameraController.getCurrentState());
@@ -65,7 +65,7 @@ public class StateMachine_EditingCode extends bhA_StateMachine implements bhI_St
 	}
 	
 	@Override 
-	protected void willBackground(Class<? extends bhA_State> blockingState)
+	protected void willBackground(Class<? extends smA_State> blockingState)
 	{
 		if( blockingState == null )
 		{
@@ -107,7 +107,7 @@ public class StateMachine_EditingCode extends bhA_StateMachine implements bhI_St
 		}
 	}
 	
-	private void pushOrPopBlocker(bhA_State cameraState)
+	private void pushOrPopBlocker(smA_State cameraState)
 	{
 		if( !this.isForegrounded() )  return;
 		
@@ -124,28 +124,28 @@ public class StateMachine_EditingCode extends bhA_StateMachine implements bhI_St
 				m_waitingOnHtmlForViewedCell = false;
 				
 				State_ViewingCell viewingState = (State_ViewingCell) cameraState;
-				bhBufferCell viewedCell = viewingState.getCell();
+				smBufferCell viewedCell = viewingState.getCell();
 				bhGridCoordinate coord = viewedCell.getCoordinate();
-				bhA_ClientUser user = sm_c.userMngr.getUser();
+				smA_ClientUser user = sm_c.userMngr.getUser();
 				
 				if( user.isCellOwner(coord) )
 				{
 					//--- DRK > This gets source which has possibly been edited but not saved.
 					//---		We access this instead of the cell's direct html source because
 					//---		user might have edited, then navigated away, then came back to continue editing.
-					m_code = user.getCode(coord, bhE_CodeType.SOURCE);
+					m_code = user.getCode(coord, smE_CodeType.SOURCE);
 				}
 				else
 				{
-					m_code = viewedCell.getCode(bhE_CodeType.SOURCE);
+					m_code = viewedCell.getCode(smE_CodeType.SOURCE);
 				}
 				
 				if( m_code == null )
 				{
 					bhClientTransactionManager manager = sm_c.txnMngr;
-					bhCellCodeManager populator = bhCellCodeManager.getInstance();
+					smCellCodeManager populator = smCellCodeManager.getInstance();
 					
-					if( viewedCell.getStatus(bhE_CodeType.SOURCE) != bhE_CodeStatus.HAS_CODE )
+					if( viewedCell.getStatus(smE_CodeType.SOURCE) != smE_CodeStatus.HAS_CODE )
 					{
 						//--- DRK > I had this bhU_Debug.ASSERT here, but NEEDS_HTML is valid if this state is backgrounded.
 						//---		Technically as of this writing, the policy is to never get source html unless this
@@ -153,9 +153,9 @@ public class StateMachine_EditingCode extends bhA_StateMachine implements bhI_St
 						//---		I'm NOT early outing for now so that if at any point in the future I decide that source html
 						//---		CAN be retrieved whilly nilly, everything will act appropriately without modification.
 						//---		As it is, the stuff below shouldn't be performance intensive anyway.
-						//bhU_Debug.ASSERT(viewedCell.getStatus(bhE_HtmlType.SOURCE) != bhE_HtmlStatus.NEEDS_HTML);
+						//bhU_Debug.ASSERT(viewedCell.getStatus(smE_HtmlType.SOURCE) != smE_HtmlStatus.NEEDS_HTML);
 						
-						if( viewedCell.getStatus(bhE_CodeType.SOURCE) == bhE_CodeStatus.GET_ERROR )
+						if( viewedCell.getStatus(smE_CodeType.SOURCE) == smE_CodeStatus.GET_ERROR )
 						{
 							this.setBlockerReason(State_EditingCodeBlocker.Reason.ERROR);
 							
@@ -203,7 +203,7 @@ public class StateMachine_EditingCode extends bhA_StateMachine implements bhI_St
 	}
 	
 	@Override
-	public void onStateEvent(bhStateEvent event)
+	public void onStateEvent(smStateEvent event)
 	{
 		if( !this.isForegrounded() )  return;
 		
@@ -228,7 +228,7 @@ public class StateMachine_EditingCode extends bhA_StateMachine implements bhI_St
 				if( event.getState() instanceof State_ViewingCell )
 				{
 					State_ViewingCell viewingState = (State_ViewingCell) event.getState();
-					bhBufferCell viewedCell = viewingState.getCell();
+					smBufferCell viewedCell = viewingState.getCell();
 					bhGridCoordinate coord = viewedCell.getCoordinate();
 					
 					/*if( this.getCurrentState() instanceof State_EditingCodeBlocker )
@@ -257,11 +257,11 @@ public class StateMachine_EditingCode extends bhA_StateMachine implements bhI_St
 
 					if( m_waitingOnHtmlForViewedCell )
 					{
-						if( viewedCell.getStatus(bhE_CodeType.SOURCE) == bhE_CodeStatus.HAS_CODE )
+						if( viewedCell.getStatus(smE_CodeType.SOURCE) == smE_CodeStatus.HAS_CODE )
 						{
 							m_waitingOnHtmlForViewedCell = false;
 							
-							bhCode code = viewedCell.getCode(bhE_CodeType.SOURCE);
+							bhCode code = viewedCell.getCode(smE_CodeType.SOURCE);
 							
 							if( code == null )
 							{
@@ -273,7 +273,7 @@ public class StateMachine_EditingCode extends bhA_StateMachine implements bhI_St
 								this.setBlockerReason(null);
 							}
 						}
-						else if( viewedCell.getStatus(bhE_CodeType.SOURCE) == bhE_CodeStatus.GET_ERROR )
+						else if( viewedCell.getStatus(smE_CodeType.SOURCE) == smE_CodeStatus.GET_ERROR )
 						{
 							this.setBlockerReason(State_EditingCodeBlocker.Reason.ERROR);
 						}
@@ -297,15 +297,15 @@ public class StateMachine_EditingCode extends bhA_StateMachine implements bhI_St
 			{
 				if( event.getAction() == State_ViewingCell.Refresh.class )
 				{
-					State_ViewingCell viewingState = bhA_State.getEnteredInstance(State_ViewingCell.class);
+					State_ViewingCell viewingState = smA_State.getEnteredInstance(State_ViewingCell.class);
 					pushOrPopBlocker(viewingState);
 				}
 				else if( event.getAction() == StateMachine_Base.OnUserCleared.class )
 				{
 					if( event.getAction() == StateMachine_Base.OnUserCleared.class  )
 					{
-						State_ViewingCell viewingState = bhA_State.getEnteredInstance(State_ViewingCell.class);
-						State_EditingCode editingState = bhA_State.getEnteredInstance(State_EditingCode.class);
+						State_ViewingCell viewingState = smA_State.getEnteredInstance(State_ViewingCell.class);
+						State_EditingCode editingState = smA_State.getEnteredInstance(State_EditingCode.class);
 						
 						if( viewingState != null && editingState != null )
 						{
@@ -316,8 +316,8 @@ public class StateMachine_EditingCode extends bhA_StateMachine implements bhI_St
 				else if( event.getAction() == StateMachine_Base.OnUserPopulated.class || 
 						 event.getAction() == StateMachine_Base.OnUserCleared.class  )
 				{
-					State_ViewingCell viewingState = bhA_State.getEnteredInstance(State_ViewingCell.class);
-					State_EditingCode editingState = bhA_State.getEnteredInstance(State_EditingCode.class);
+					State_ViewingCell viewingState = smA_State.getEnteredInstance(State_ViewingCell.class);
+					State_EditingCode editingState = smA_State.getEnteredInstance(State_EditingCode.class);
 					
 					if( viewingState != null && editingState != null )
 					{

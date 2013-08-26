@@ -2,14 +2,14 @@ package swarm.client.states.account;
 
 
 import swarm.client.app.sm_c;
-import swarm.client.managers.bhClientAccountManager;
-import swarm.shared.account.bhSignInCredentials;
-import swarm.shared.account.bhSignInValidator;
-import swarm.shared.debugging.bhU_Debug;
-import swarm.shared.statemachine.bhA_Action;
-import swarm.shared.statemachine.bhA_ActionArgs;
-import swarm.shared.statemachine.bhA_State;
-import swarm.shared.statemachine.bhA_StateConstructor;
+import swarm.client.managers.smClientAccountManager;
+import swarm.shared.account.smSignInCredentials;
+import swarm.shared.account.smSignInValidator;
+import swarm.shared.debugging.smU_Debug;
+import swarm.shared.statemachine.smA_Action;
+import swarm.shared.statemachine.smA_ActionArgs;
+import swarm.shared.statemachine.smA_State;
+import swarm.shared.statemachine.smA_StateConstructor;
 
 
 
@@ -17,12 +17,12 @@ import swarm.shared.statemachine.bhA_StateConstructor;
  * ...
  * @author 
  */
-public class State_ManageAccount extends bhA_State
+public class State_ManageAccount extends smA_State
 {
-	public static class SignOut extends bhA_Action
+	public static class SignOut extends smA_Action
 	{
 		@Override
-		public void perform(bhA_ActionArgs args)
+		public void perform(smA_ActionArgs args)
 		{
 			bhClientAccountManager accountManager = sm_c.accountMngr;
 			accountManager.signOut();
@@ -31,13 +31,13 @@ public class State_ManageAccount extends bhA_State
 		}
 
 		@Override
-		public Class<? extends bhA_State> getStateAssociation()
+		public Class<? extends smA_State> getStateAssociation()
 		{
 			return State_ManageAccount.class;
 		}
 		
 		@Override
-		public boolean isPerformable(bhA_ActionArgs args)
+		public boolean isPerformable(smA_ActionArgs args)
 		{
 			bhClientAccountManager accountManager = sm_c.accountMngr;
 			return accountManager.isSignedIn();
@@ -46,11 +46,11 @@ public class State_ManageAccount extends bhA_State
 	
 	public State_ManageAccount()
 	{
-		bhA_Action.register(new SignOut());
+		smA_Action.register(new SignOut());
 	}
 	
 	@Override
-	protected void didEnter(bhA_StateConstructor constructor)
+	protected void didEnter(smA_StateConstructor constructor)
 	{
 	}
 }

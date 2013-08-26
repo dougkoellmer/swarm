@@ -2,18 +2,18 @@ package swarm.client.states;
 
 import swarm.client.app.sm_c;
 import swarm.client.states.camera.StateMachine_Camera;
-import swarm.client.transaction.bhE_ResponseErrorControl;
-import swarm.client.transaction.bhE_ResponseSuccessControl;
-import swarm.client.transaction.bhI_TransactionResponseHandler;
-import swarm.client.transaction.bhClientTransactionManager;
+import swarm.client.transaction.smE_ResponseErrorControl;
+import swarm.client.transaction.smE_ResponseSuccessControl;
+import swarm.client.transaction.smI_TransactionResponseHandler;
+import swarm.client.transaction.smClientTransactionManager;
 
-import swarm.shared.statemachine.bhA_Action;
-import swarm.shared.statemachine.bhA_ActionArgs;
-import swarm.shared.statemachine.bhA_State;
-import swarm.shared.statemachine.bhA_StateContainer;
-import swarm.shared.statemachine.bhA_StateConstructor;
-import swarm.shared.transaction.bhTransactionRequest;
-import swarm.shared.transaction.bhTransactionResponse;
+import swarm.shared.statemachine.smA_Action;
+import swarm.shared.statemachine.smA_ActionArgs;
+import swarm.shared.statemachine.smA_State;
+import swarm.shared.statemachine.smA_StateContainer;
+import swarm.shared.statemachine.smA_StateConstructor;
+import swarm.shared.transaction.smTransactionRequest;
+import swarm.shared.transaction.smTransactionResponse;
 
 
 
@@ -21,45 +21,45 @@ import swarm.shared.transaction.bhTransactionResponse;
  * ...
  * @author 
  */
-public class StateContainer_Base extends bhA_StateContainer implements bhI_TransactionResponseHandler
+public class StateContainer_Base extends smA_StateContainer implements smI_TransactionResponseHandler
 {
-	public static class HideSupplementState extends bhA_Action
+	public static class HideSupplementState extends smA_Action
 	{
 		@Override
-		public void perform(bhA_ActionArgs args)
+		public void perform(smA_ActionArgs args)
 		{
 			container_backgroundState(this.getState(), StateMachine_Tabs.class);
 		}
 		
 		@Override
-		public boolean isPerformable(bhA_ActionArgs args)
+		public boolean isPerformable(smA_ActionArgs args)
 		{
-			return bhA_State.isForegrounded(StateMachine_Tabs.class);
+			return smA_State.isForegrounded(StateMachine_Tabs.class);
 		}
 		
 		@Override
-		public Class<? extends bhA_State> getStateAssociation()
+		public Class<? extends smA_State> getStateAssociation()
 		{
 			return StateContainer_Base.class;
 		}
 	}
 	
-	public static class ShowSupplementState extends bhA_Action 
+	public static class ShowSupplementState extends smA_Action 
 	{
 		@Override
-		public void perform(bhA_ActionArgs args)
+		public void perform(smA_ActionArgs args)
 		{
 			container_foregroundState(this.getState(), StateMachine_Tabs.class);
 		}
 		
 		@Override
-		public boolean isPerformable(bhA_ActionArgs args)
+		public boolean isPerformable(smA_ActionArgs args)
 		{
-			return !bhA_State.isForegrounded(StateMachine_Tabs.class);
+			return !smA_State.isForegrounded(StateMachine_Tabs.class);
 		}
 		
 		@Override
-		public Class<? extends bhA_State> getStateAssociation()
+		public Class<? extends smA_State> getStateAssociation()
 		{
 			return StateContainer_Base.class;
 		}
@@ -67,26 +67,26 @@ public class StateContainer_Base extends bhA_StateContainer implements bhI_Trans
 	
 	public StateContainer_Base()
 	{
-		bhA_Action.register(new HideSupplementState());
-		bhA_Action.register(new ShowSupplementState());
+		smA_Action.register(new HideSupplementState());
+		smA_Action.register(new ShowSupplementState());
 	}
 	
 	@Override
-	protected void didEnter(bhA_StateConstructor constructor)
+	protected void didEnter(smA_StateConstructor constructor)
 	{
-		final bhClientTransactionManager transactionManager = sm_c.txnMngr;
+		final smClientTransactionManager transactionManager = sm_c.txnMngr;
 		transactionManager.addHandler(this);
 	}
 	
 	@Override
 	protected void willExit()
 	{
-		final bhClientTransactionManager transactionManager = sm_c.txnMngr;
+		final smClientTransactionManager transactionManager = sm_c.txnMngr;
 		transactionManager.removeHandler(this);
 	}
 	
 	@Override
-	protected void didForeground(Class<? extends bhA_State> revealingState, Object[] argsFromRevealingState)
+	protected void didForeground(Class<? extends smA_State> revealingState, Object[] argsFromRevealingState)
 	{
 		if ( revealingState == null )
 		{
@@ -110,14 +110,14 @@ public class StateContainer_Base extends bhA_StateContainer implements bhI_Trans
 	}
 
 	@Override
-	public bhE_ResponseSuccessControl onResponseSuccess(bhTransactionRequest request, bhTransactionResponse response)
+	public smE_ResponseSuccessControl onResponseSuccess(smTransactionRequest request, smTransactionResponse response)
 	{
-		return bhE_ResponseSuccessControl.CONTINUE;
+		return smE_ResponseSuccessControl.CONTINUE;
 	}
 
 	@Override
-	public bhE_ResponseErrorControl onResponseError(bhTransactionRequest request, bhTransactionResponse response)
+	public smE_ResponseErrorControl onResponseError(smTransactionRequest request, smTransactionResponse response)
 	{
-		return bhE_ResponseErrorControl.CONTINUE;
+		return smE_ResponseErrorControl.CONTINUE;
 	}
 }

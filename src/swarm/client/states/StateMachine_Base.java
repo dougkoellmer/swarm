@@ -3,47 +3,47 @@ package swarm.client.states;
 import java.util.ArrayList;
 
 import swarm.client.app.sm_c;
-import swarm.client.entities.bhBufferCell;
-import swarm.client.entities.bhA_ClientUser;
-import swarm.client.managers.bhCellAddressManager;
-import swarm.client.managers.bhCellBufferManager;
-import swarm.client.managers.bhClientAccountManager;
-import swarm.client.managers.bhGridManager;
-import swarm.client.managers.bhUserManager;
-import swarm.client.managers.bhClientAccountManager.E_ResponseType;
+import swarm.client.entities.smBufferCell;
+import swarm.client.entities.smA_ClientUser;
+import swarm.client.managers.smCellAddressManager;
+import swarm.client.managers.smCellBufferManager;
+import swarm.client.managers.smClientAccountManager;
+import swarm.client.managers.smGridManager;
+import swarm.client.managers.smUserManager;
+import swarm.client.managers.smClientAccountManager.E_ResponseType;
 import swarm.client.states.account.StateMachine_Account;
 import swarm.client.states.camera.State_ViewingCell;
-import swarm.client.transaction.bhE_ResponseErrorControl;
-import swarm.client.transaction.bhE_ResponseSuccessControl;
-import swarm.client.transaction.bhI_ResponseBatchListener;
-import swarm.client.transaction.bhI_TransactionResponseHandler;
-import swarm.client.transaction.bhClientTransactionManager;
-import swarm.shared.account.bhSignUpCredentials;
-import swarm.shared.code.bhCompilerMessage;
-import swarm.shared.debugging.bhU_Debug;
-import swarm.shared.entities.bhE_CodeType;
-import swarm.shared.statemachine.bhA_Action;
+import swarm.client.transaction.smE_ResponseErrorControl;
+import swarm.client.transaction.smE_ResponseSuccessControl;
+import swarm.client.transaction.smI_ResponseBatchListener;
+import swarm.client.transaction.smI_TransactionResponseHandler;
+import swarm.client.transaction.smClientTransactionManager;
+import swarm.shared.account.smSignUpCredentials;
+import swarm.shared.code.smCompilerMessage;
+import swarm.shared.debugging.smU_Debug;
+import swarm.shared.entities.smE_CodeType;
+import swarm.shared.statemachine.smA_Action;
 
-import swarm.shared.statemachine.bhA_ActionArgs;
-import swarm.shared.statemachine.bhA_EventAction;
-import swarm.shared.statemachine.bhA_State;
-import swarm.shared.statemachine.bhA_StateMachine;
-import swarm.shared.statemachine.bhA_StateConstructor;
-import swarm.shared.structs.bhCellAddressMapping;
-import swarm.shared.transaction.bhE_RequestPath;
-import swarm.shared.transaction.bhE_ResponseError;
-import swarm.shared.transaction.bhE_TelemetryRequestPath;
-import swarm.shared.transaction.bhTransactionRequest;
-import swarm.shared.transaction.bhTransactionResponse;
+import swarm.shared.statemachine.smA_ActionArgs;
+import swarm.shared.statemachine.smA_EventAction;
+import swarm.shared.statemachine.smA_State;
+import swarm.shared.statemachine.smA_StateMachine;
+import swarm.shared.statemachine.smA_StateConstructor;
+import swarm.shared.structs.smCellAddressMapping;
+import swarm.shared.transaction.smE_RequestPath;
+import swarm.shared.transaction.smE_ResponseError;
+import swarm.shared.transaction.smE_TelemetryRequestPath;
+import swarm.shared.transaction.smTransactionRequest;
+import swarm.shared.transaction.smTransactionResponse;
 
 
 /**
  * ...
  * @author 
  */
-public class StateMachine_Base extends bhA_StateMachine implements bhI_TransactionResponseHandler
+public class StateMachine_Base extends smA_StateMachine implements smI_TransactionResponseHandler
 {
-	/*public static class PushDialog extends bhA_Action
+	/*public static class PushDialog extends smA_Action
 	{
 		@Override
 		public void perform(Object[] args)
@@ -52,64 +52,64 @@ public class StateMachine_Base extends bhA_StateMachine implements bhI_Transacti
 		}
 
 		@Override
-		public Class<? extends bhA_State> getStateAssociation()
+		public Class<? extends smA_State> getStateAssociation()
 		{
 			return StateMachine_Base.class;
 		}
 	}*/
 	
-	public static class OnAccountManagerResponse extends bhA_EventAction
+	public static class OnAccountManagerResponse extends smA_EventAction
 	{
-		public static class Args extends bhA_ActionArgs
+		public static class Args extends smA_ActionArgs
 		{
-			private final bhClientAccountManager.E_ResponseType m_type;
+			private final smClientAccountManager.E_ResponseType m_type;
 			
-			public Args(bhClientAccountManager.E_ResponseType type)
+			public Args(smClientAccountManager.E_ResponseType type)
 			{
 				m_type = type;
 			}
 			
-			public bhClientAccountManager.E_ResponseType getType()
+			public smClientAccountManager.E_ResponseType getType()
 			{
 				return m_type;
 			}
 		}
 		
 		@Override
-		public Class<? extends bhA_State> getStateAssociation()
+		public Class<? extends smA_State> getStateAssociation()
 		{
 			return StateMachine_Base.class;
 		}
 	}
 	
-	public static class OnUserPopulated extends bhA_EventAction
+	public static class OnUserPopulated extends smA_EventAction
 	{
 		@Override
-		public Class<? extends bhA_State> getStateAssociation()
+		public Class<? extends smA_State> getStateAssociation()
 		{
 			return StateMachine_Base.class;
 		}
 	}
 	
-	public static class OnUserCleared extends bhA_EventAction
+	public static class OnUserCleared extends smA_EventAction
 	{
 		@Override
-		public Class<? extends bhA_State> getStateAssociation()
+		public Class<? extends smA_State> getStateAssociation()
 		{
 			return StateMachine_Base.class;
 		}
 	}
 	
-	public static class OnGridResize extends bhA_EventAction
+	public static class OnGridResize extends smA_EventAction
 	{
 		@Override
-		public Class<? extends bhA_State> getStateAssociation()
+		public Class<? extends smA_State> getStateAssociation()
 		{
 			return StateMachine_Base.class;
 		}
 	}
 	
-	private static class BatchListener implements bhI_ResponseBatchListener
+	private static class BatchListener implements smI_ResponseBatchListener
 	{
 		private final StateMachine_Base m_baseController;
 		
@@ -149,9 +149,9 @@ public class StateMachine_Base extends bhA_StateMachine implements bhI_Transacti
 		public void onAccountTransactionResponse(E_ResponseType type)
 		{
 			OnAccountManagerResponse.Args args= new OnAccountManagerResponse.Args(type);
-			bhA_Action.perform(OnAccountManagerResponse.class, args);
+			smA_Action.perform(OnAccountManagerResponse.class, args);
 			
-			StateMachine_Base baseMachine = bhA_State.getForegroundedInstance(StateMachine_Base.class);
+			StateMachine_Base baseMachine = smA_State.getForegroundedInstance(StateMachine_Base.class);
 			
 			if( type == E_ResponseType.PASSWORD_CHANGE_SUCCESS )
 			{
@@ -191,7 +191,7 @@ public class StateMachine_Base extends bhA_StateMachine implements bhI_Transacti
 		@Override
 		public void onAuthenticationError()
 		{
-			StateMachine_Base baseController = bhA_State.getEnteredInstance(StateMachine_Base.class);
+			StateMachine_Base baseController = smA_State.getEnteredInstance(StateMachine_Base.class);
 			
 			State_GenericDialog.Constructor constructor = new State_GenericDialog.Constructor
 			(
@@ -210,7 +210,7 @@ public class StateMachine_Base extends bhA_StateMachine implements bhI_Transacti
 	private boolean m_hasShownVersionMismatchDialog = false;
 	private boolean m_hasShownGeneralTransactionErrorDialog = false;
 	
-	private final bhI_ResponseBatchListener m_batchListener = new BatchListener(this);
+	private final smI_ResponseBatchListener m_batchListener = new BatchListener(this);
 	
 	void dequeueAsyncDialog()
 	{
@@ -254,28 +254,28 @@ public class StateMachine_Base extends bhA_StateMachine implements bhI_Transacti
 	
 	public StateMachine_Base()
 	{
-		//bhA_Action.register(new PushDialog());
-		bhA_Action.register(new OnGridResize());
-		bhA_Action.register(new OnAccountManagerResponse());
+		//smA_Action.register(new PushDialog());
+		smA_Action.register(new OnGridResize());
+		smA_Action.register(new OnAccountManagerResponse());
 		
-		bhA_Action.register(new OnUserPopulated());
-		bhA_Action.register(new OnUserCleared());
+		smA_Action.register(new OnUserPopulated());
+		smA_Action.register(new OnUserCleared());
 	}
 	
 	@Override
-	protected void didEnter(bhA_StateConstructor constructor)
+	protected void didEnter(smA_StateConstructor constructor)
 	{
-		final bhClientAccountManager accountManager = sm_c.accountMngr;
-		final bhUserManager userManager = sm_c.userMngr;
-		final bhGridManager gridManager = sm_c.gridMngr;
-		final bhClientTransactionManager transactionManager = sm_c.txnMngr;
+		final smClientAccountManager accountManager = sm_c.accountMngr;
+		final smUserManager userManager = sm_c.userMngr;
+		final smGridManager gridManager = sm_c.gridMngr;
+		final smClientTransactionManager transactionManager = sm_c.txnMngr;
 		
 		transactionManager.addHandler(this);
 		transactionManager.addBatchListener(m_batchListener);
 		
 		accountManager.start();
 		
-		userManager.start(new bhUserManager.I_Listener()
+		userManager.start(new smUserManager.I_Listener()
 		{
 			@Override
 			public void onUserPopulated()
@@ -302,7 +302,7 @@ public class StateMachine_Base extends bhA_StateMachine implements bhI_Transacti
 			}
 		});
 		
-		gridManager.start(new bhGridManager.I_Listener()
+		gridManager.start(new smGridManager.I_Listener()
 		{
 			@Override
 			public void onGridResize()
@@ -317,10 +317,10 @@ public class StateMachine_Base extends bhA_StateMachine implements bhI_Transacti
 	@Override
 	protected void willExit()
 	{
-		final bhClientAccountManager accountManager = sm_c.accountMngr;
-		final bhUserManager userManager = sm_c.userMngr;
-		final bhGridManager gridManager = sm_c.gridMngr;
-		final bhClientTransactionManager transactionManager = sm_c.txnMngr;
+		final smClientAccountManager accountManager = sm_c.accountMngr;
+		final smUserManager userManager = sm_c.userMngr;
+		final smGridManager gridManager = sm_c.gridMngr;
+		final smClientTransactionManager transactionManager = sm_c.txnMngr;
 		
 		accountManager.removeDelegate(m_accountManagerDelegate);
 		
@@ -336,7 +336,7 @@ public class StateMachine_Base extends bhA_StateMachine implements bhI_Transacti
 	}
 	
 	@Override
-	protected void didForeground(Class<? extends bhA_State> revealingState, Object[] argsFromRevealingState)
+	protected void didForeground(Class<? extends smA_State> revealingState, Object[] argsFromRevealingState)
 	{
 		if( this.getCurrentState() == null )
 		{
@@ -350,17 +350,17 @@ public class StateMachine_Base extends bhA_StateMachine implements bhI_Transacti
 	}
 
 	@Override
-	public bhE_ResponseSuccessControl onResponseSuccess(bhTransactionRequest request, bhTransactionResponse response)
+	public smE_ResponseSuccessControl onResponseSuccess(smTransactionRequest request, smTransactionResponse response)
 	{
-		return bhE_ResponseSuccessControl.CONTINUE;
+		return smE_ResponseSuccessControl.CONTINUE;
 	}
 
 	@Override
-	public bhE_ResponseErrorControl onResponseError(bhTransactionRequest request, bhTransactionResponse response)
+	public smE_ResponseErrorControl onResponseError(smTransactionRequest request, smTransactionResponse response)
 	{
-		if( request.getPath() instanceof bhE_TelemetryRequestPath )
+		if( request.getPath() instanceof smE_TelemetryRequestPath )
 		{
-			return bhE_ResponseErrorControl.BREAK;
+			return smE_ResponseErrorControl.BREAK;
 		}
 		
 		switch( response.getError() )
@@ -380,7 +380,7 @@ public class StateMachine_Base extends bhA_StateMachine implements bhI_Transacti
 					m_hasShownVersionMismatchDialog = true;
 				}
 				
-				return bhE_ResponseErrorControl.BREAK;
+				return smE_ResponseErrorControl.BREAK;
 			}
 			
 			case NOT_AUTHORIZED:
@@ -393,12 +393,12 @@ public class StateMachine_Base extends bhA_StateMachine implements bhI_Transacti
 				
 				queueAsyncDialog(State_AsyncDialog.class, constructor);
 				
-				return bhE_ResponseErrorControl.BREAK;
+				return smE_ResponseErrorControl.BREAK;
 			}
 			
 			case REDUNDANT:
 			{
-				return bhE_ResponseErrorControl.BREAK;
+				return smE_ResponseErrorControl.BREAK;
 			}
 			
 			default:
@@ -416,7 +416,7 @@ public class StateMachine_Base extends bhA_StateMachine implements bhI_Transacti
 					m_hasShownGeneralTransactionErrorDialog = true;
 				}
 				
-				return bhE_ResponseErrorControl.BREAK;
+				return smE_ResponseErrorControl.BREAK;
 			}
 		}
 	}

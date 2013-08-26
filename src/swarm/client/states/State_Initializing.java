@@ -1,75 +1,75 @@
 package swarm.client.states;
 
-import swarm.client.app.bhPlatformInfo;
+import swarm.client.app.smPlatformInfo;
 import swarm.client.app.sm_c;
-import swarm.client.entities.bhA_ClientUser;
-import swarm.client.managers.bhClientAccountManager;
-import swarm.client.managers.bhGridManager;
-import swarm.client.managers.bhUserManager;
-import swarm.client.transaction.bhE_RequestSynchronicity;
-import swarm.client.transaction.bhE_TransactionAction;
-import swarm.client.transaction.bhE_ResponseErrorControl;
-import swarm.client.transaction.bhE_ResponseSuccessControl;
-import swarm.client.transaction.bhI_TransactionResponseHandler;
-import swarm.client.transaction.bhClientTransactionManager;
-import swarm.client.transaction.bhInlineRequestDispatcher;
+import swarm.client.entities.smA_ClientUser;
+import swarm.client.managers.smClientAccountManager;
+import swarm.client.managers.smGridManager;
+import swarm.client.managers.smUserManager;
+import swarm.client.transaction.smE_RequestSynchronicity;
+import swarm.client.transaction.smE_TransactionAction;
+import swarm.client.transaction.smE_ResponseErrorControl;
+import swarm.client.transaction.smE_ResponseSuccessControl;
+import swarm.client.transaction.smI_TransactionResponseHandler;
+import swarm.client.transaction.smClientTransactionManager;
+import swarm.client.transaction.smInlineRequestDispatcher;
 
-import swarm.server.account.bhAccountDatabase.E_PasswordType;
-import swarm.shared.debugging.bhU_Debug;
-import swarm.shared.reflection.bhI_Callback;
-import swarm.shared.statemachine.bhA_State;
-import swarm.shared.statemachine.bhA_StateConstructor;
-import swarm.shared.transaction.bhE_RequestPath;
-import swarm.shared.transaction.bhTransactionRequest;
-import swarm.shared.transaction.bhTransactionResponse;
+import swarm.server.account.smAccountDatabase.E_PasswordType;
+import swarm.shared.debugging.smU_Debug;
+import swarm.shared.reflection.smI_Callback;
+import swarm.shared.statemachine.smA_State;
+import swarm.shared.statemachine.smA_StateConstructor;
+import swarm.shared.transaction.smE_RequestPath;
+import swarm.shared.transaction.smTransactionRequest;
+import swarm.shared.transaction.smTransactionResponse;
 
 
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.user.client.Window;
 
-public class State_Initializing extends bhA_State implements bhI_TransactionResponseHandler
+public class State_Initializing extends smA_State implements smI_TransactionResponseHandler
 {
 	private int m_successCount = 0;
 	
 	private int m_requiredSuccessCount = 0;
 	
 	@Override
-	public bhE_ResponseSuccessControl onResponseSuccess(bhTransactionRequest request, bhTransactionResponse response)
+	public smE_ResponseSuccessControl onResponseSuccess(smTransactionRequest request, smTransactionResponse response)
 	{
-		bhE_ResponseSuccessControl control = bhE_ResponseSuccessControl.CONTINUE;
+		smE_ResponseSuccessControl control = smE_ResponseSuccessControl.CONTINUE;
 		
-		if ( request.getPath() == bhE_RequestPath.getUserData )
+		if ( request.getPath() == smE_RequestPath.getUserData )
 		{
 			m_successCount++;
 		}
-		else if ( request.getPath() == bhE_RequestPath.getGridData )
+		else if ( request.getPath() == smE_RequestPath.getGridData )
 		{
 			m_successCount++;
 		}
-		else if ( request.getPath() == bhE_RequestPath.getStartingPosition )
+		else if ( request.getPath() == smE_RequestPath.getStartingPosition )
 		{
 			m_successCount++;
 		}
 		
-		return bhE_ResponseSuccessControl.CONTINUE;
+		return smE_ResponseSuccessControl.CONTINUE;
 	}
 	
 	@Override
-	public bhE_ResponseErrorControl onResponseError(bhTransactionRequest request, bhTransactionResponse response)
+	public smE_ResponseErrorControl onResponseError(smTransactionRequest request, smTransactionResponse response)
 	{
-		return bhE_ResponseErrorControl.CONTINUE; // bubble all errors up to base controller for error dialog.
+		return smE_ResponseErrorControl.CONTINUE; // bubble all errors up to base controller for error dialog.
 	}
 	
 	@Override
-	protected void didEnter(bhA_StateConstructor constructor)
+	protected void didEnter(smA_StateConstructor constructor)
 	{
-		final bhClientAccountManager accountManager = sm_c.accountMngr;
-		final bhUserManager userManager = sm_c.userMngr;
-		final bhGridManager gridManager = sm_c.gridMngr;
-		final bhClientTransactionManager transactionManager = sm_c.txnMngr;
+		final smClientAccountManager accountManager = sm_c.accountMngr;
+		final smUserManager userManager = sm_c.userMngr;
+		final smGridManager gridManager = sm_c.gridMngr;
+		final smClientTransactionManager transactionManager = sm_c.txnMngr;
 		
 		//--- DRK > Do an initial transaction to see if user is signed in...this is synchronous.
-		accountManager.init(new bhI_Callback()
+		accountManager.init(new smI_Callback()
 		{
 			@Override
 			public void invoke()
@@ -79,12 +79,12 @@ public class State_Initializing extends bhA_State implements bhI_TransactionResp
 				
 				transactionManager.addHandler(State_Initializing.this);
 				
-				gridManager.getGridData(bhE_TransactionAction.QUEUE_REQUEST);
-				userManager.getPosition(bhE_TransactionAction.QUEUE_REQUEST);
+				gridManager.getGridData(smE_TransactionAction.QUEUE_REQUEST);
+				userManager.getPosition(smE_TransactionAction.QUEUE_REQUEST);
 				
 				if( accountManager.isSignedIn() )
 				{
-					userManager.populateUser(bhE_TransactionAction.QUEUE_REQUEST);
+					userManager.populateUser(smE_TransactionAction.QUEUE_REQUEST);
 					
 					//m_requiredSuccessCount++;
 				}
@@ -95,7 +95,7 @@ public class State_Initializing extends bhA_State implements bhI_TransactionResp
 	}
 	
 	@Override
-	protected void didForeground(Class<? extends bhA_State> revealingState, Object[] argsFromRevealingState)
+	protected void didForeground(Class<? extends smA_State> revealingState, Object[] argsFromRevealingState)
 	{
 		if( revealingState != null )
 		{			
@@ -111,7 +111,7 @@ public class State_Initializing extends bhA_State implements bhI_TransactionResp
 		{
 			machine_setState(getParent(), StateContainer_Base.class);
 			
-			StateMachine_Base baseController = bhA_State.getEnteredInstance(StateMachine_Base.class);
+			StateMachine_Base baseController = smA_State.getEnteredInstance(StateMachine_Base.class);
 			
 			bhClientAccountManager accountManager = sm_c.accountMngr;
 			bhClientAccountManager.E_PasswordChangeTokenState resetTokenState = accountManager.getPasswordChangeTokenState();
@@ -153,7 +153,7 @@ public class State_Initializing extends bhA_State implements bhI_TransactionResp
 	}
 	
 	@Override
-	protected void willBackground(Class<? extends bhA_State> blockingState)
+	protected void willBackground(Class<? extends smA_State> blockingState)
 	{
 		
 	}
@@ -161,7 +161,7 @@ public class State_Initializing extends bhA_State implements bhI_TransactionResp
 	@Override
 	protected void willExit()
 	{
-		final bhClientTransactionManager transactionManager = sm_c.txnMngr;
+		final smClientTransactionManager transactionManager = sm_c.txnMngr;
 		transactionManager.removeHandler(this);
 		
 		m_successCount = 0;

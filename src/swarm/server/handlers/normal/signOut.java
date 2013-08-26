@@ -1,19 +1,19 @@
 package swarm.server.handlers.normal;
 
-import swarm.server.account.bhE_Role;
+import swarm.server.account.smE_Role;
 import swarm.server.account.sm_s;
-import swarm.server.session.bhSessionManager;
-import swarm.server.transaction.bhI_RequestHandler;
-import swarm.server.transaction.bhTransactionContext;
-import swarm.shared.transaction.bhTransactionRequest;
-import swarm.shared.transaction.bhTransactionResponse;
+import swarm.server.session.smSessionManager;
+import swarm.server.transaction.smI_RequestHandler;
+import swarm.server.transaction.smTransactionContext;
+import swarm.shared.transaction.smTransactionRequest;
+import swarm.shared.transaction.smTransactionResponse;
 
-public class signOut implements bhI_RequestHandler
+public class signOut implements smI_RequestHandler
 {
 	@Override
-	public void handleRequest(bhTransactionContext context, bhTransactionRequest request, bhTransactionResponse response)
+	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
 	{
-		if( !sm_s.sessionMngr.isAuthorized(request, response, bhE_Role.USER) )
+		if( !sm_s.sessionMngr.isAuthorized(request, response, smE_Role.USER) )
 		{
 			return;
 		}
