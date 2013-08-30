@@ -1,9 +1,10 @@
 package swarm.shared.structs;
 
 import swarm.shared.utils.smU_BitTricks;
-import swarm.shared.app.sm;
+import swarm.shared.app.smSharedAppContext;
 import swarm.shared.debugging.smU_Debug;
 import swarm.shared.json.smA_JsonEncodable;
+import swarm.shared.json.smA_JsonFactory;
 import swarm.shared.json.smE_JsonKey;
 import swarm.shared.json.smI_JsonArray;
 import swarm.shared.json.smI_JsonObject;
@@ -242,31 +243,31 @@ public class smBitArray extends smA_JsonEncodable
 	}
 
 	@Override
-	public void writeJson(smI_JsonObject json)
+	public void writeJson(smA_JsonFactory factory, smI_JsonObject json_out)
 	{
 		if( m_blocks != null )
 		{
-			smI_JsonArray blocksAsJson = sm.jsonFactory.createJsonArray();
+			smI_JsonArray blocksAsJson = factory.createJsonArray();
 			for( int i = 0; i < m_blocks.length; i++ )
 			{
 				blocksAsJson.addInt(m_blocks[i]);
 			}
 			
-			sm.jsonFactory.getHelper().putJsonArray(json, smE_JsonKey.bitArray, blocksAsJson);
-			sm.jsonFactory.getHelper().putInt(json, smE_JsonKey.bitArrayLength, m_bitCount);
+			factory.getHelper().putJsonArray(json_out, smE_JsonKey.bitArray, blocksAsJson);
+			factory.getHelper().putInt(json_out, smE_JsonKey.bitArrayLength, m_bitCount);
 		}		
 	}
 
 	@Override
-	public void readJson(smI_JsonObject json)
+	public void readJson(smA_JsonFactory factory, smI_JsonObject json)
 	{
-		Integer bitCount = sm.jsonFactory.getHelper().getInt(json, smE_JsonKey.bitArrayLength);
+		Integer bitCount = factory.getHelper().getInt(json, smE_JsonKey.bitArrayLength);
 		
 		if( bitCount == null )  return;
 		
 		this.init(bitCount);
 		
-		smI_JsonArray blocksAsJson = sm.jsonFactory.getHelper().getJsonArray(json, smE_JsonKey.bitArray);
+		smI_JsonArray blocksAsJson = factory.getHelper().getJsonArray(json, smE_JsonKey.bitArray);
 		for( int i = 0; i < blocksAsJson.getSize(); i++ )
 		{
 			m_blocks[i] = blocksAsJson.getInt(i);

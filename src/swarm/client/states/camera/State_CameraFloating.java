@@ -1,6 +1,5 @@
 package swarm.client.states.camera;
 
-import swarm.client.states.camera.StateMachine_Camera.CameraManager;
 import swarm.shared.statemachine.smA_Action;
 import swarm.shared.statemachine.smA_State;
 import swarm.shared.statemachine.smA_StateConstructor;

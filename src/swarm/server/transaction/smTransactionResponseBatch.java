@@ -2,7 +2,7 @@ package swarm.server.transaction;
 
 import java.util.ArrayList;
 
-import swarm.shared.app.sm;
+import swarm.shared.app.smSharedAppContext;
 import swarm.shared.json.smA_JsonFactory;
 import swarm.shared.json.smE_JsonKey;
 import swarm.shared.json.smI_JsonArray;
@@ -15,10 +15,13 @@ import swarm.shared.transaction.smTransactionResponse;
 class smTransactionResponseBatch extends smTransactionResponse
 {
 	private final ArrayList<smTransactionResponse> m_responses = new ArrayList<smTransactionResponse>();
+	private final smA_JsonFactory m_jsonFactory;
 	
-	smTransactionResponseBatch()
+	smTransactionResponseBatch(smA_JsonFactory jsonFactory)
 	{
 		super();
+		
+		m_jsonFactory = jsonFactory;
 	}
 	
 	public void addResponse(smTransactionResponse response)
@@ -27,19 +30,19 @@ class smTransactionResponseBatch extends smTransactionResponse
 	}
 	
 	@Override
-	public void writeJson(smI_JsonObject json)
+	public void writeJson(smA_JsonFactory factory, smI_JsonObject json_out)
 	{
-		super.writeJson(json);
+		super.writeJson(factory, json_out);
 		
-		final smI_JsonArray responsesJson = sm.jsonFactory.createJsonArray();
+		final smI_JsonArray responsesJson = m_jsonFactory.createJsonArray();
 		
 		for ( int i = 0; i < m_responses.size(); i++ )
 		{
 			smTransactionResponse ithResponse = m_responses.get(i);
 			
-			responsesJson.addObject(ithResponse.writeJson());
+			responsesJson.addObject(ithResponse.writeJson(null));
 		}
 		
-		sm.jsonFactory.getHelper().putJsonArray(json, smE_JsonKey.responseList, responsesJson);
+		m_jsonFactory.getHelper().putJsonArray(json_out, smE_JsonKey.responseList, responsesJson);
 	}
 }

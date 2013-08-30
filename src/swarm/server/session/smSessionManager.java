@@ -29,7 +29,7 @@ import swarm.server.data.blob.smI_BlobKey;
 import swarm.server.data.blob.smI_BlobManager;
 import swarm.server.data.blob.smU_Serialization;
 import swarm.server.transaction.smI_TransactionScopeListener;
-import swarm.shared.app.sm;
+import swarm.shared.app.smSharedAppContext;
 import swarm.shared.debugging.smU_Debug;
 import swarm.shared.json.smA_JsonFactory;
 import swarm.shared.json.smI_JsonObject;
@@ -59,7 +59,7 @@ public class smSessionManager implements smI_TransactionScopeListener
 	{
 		HttpServletResponse nativeResponse = ((HttpServletResponse) response.getNativeResponse());
 		smSessionCookieValue cookieValue = new smSessionCookieValue(userSession.getAccountId(), type);
-		String cookieValueJson = cookieValue.writeJson().writeString();
+		String cookieValueJson = cookieValue.writeJson(null).writeString();
 		
 		try
 		{
@@ -117,7 +117,7 @@ public class smSessionManager implements smI_TransactionScopeListener
 			//--- DRK > Just being safe here in case someone is spamming invalid cookie data.
 			try
 			{
-				smA_JsonFactory jsonFactory = sm.jsonFactory;
+				smA_JsonFactory jsonFactory = smSharedAppContext.jsonFactory;
 				smI_JsonObject json = jsonFactory.createJsonObject(cookieValueJson);
 				cookieValue = new smSessionCookieValue(json, type);
 			}

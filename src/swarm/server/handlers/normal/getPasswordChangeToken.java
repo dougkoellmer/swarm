@@ -18,7 +18,7 @@ import swarm.server.structs.smServerCellAddressMapping;
 import swarm.server.telemetry.smTelemetryDatabase;
 import swarm.server.transaction.smI_RequestHandler;
 import swarm.server.transaction.smTransactionContext;
-import swarm.shared.app.sm;
+import swarm.shared.app.smSharedAppContext;
 import swarm.shared.app.smS_App;
 import swarm.shared.json.smE_JsonKey;
 import swarm.shared.json.smJsonHelper;
@@ -48,7 +48,7 @@ public class getPasswordChangeToken implements smI_RequestHandler
 			
 			if( sm_s.accountMngr.isPasswordChangeTokenValid(passwordChangeToken) )
 			{
-				sm.jsonFactory.getHelper().putString(response.getJson(), smE_JsonKey.passwordChangeToken, passwordChangeToken);
+				factory.getHelper().putString(response.getJson(), smE_JsonKey.passwordChangeToken, passwordChangeToken);
 			}
 			else
 			{

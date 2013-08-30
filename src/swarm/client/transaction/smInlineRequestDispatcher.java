@@ -3,7 +3,7 @@ package swarm.client.transaction;
 import java.util.ArrayList;
 
 import swarm.client.js.smU_Native;
-import swarm.shared.app.sm;
+import swarm.shared.app.smSharedAppContext;
 import swarm.shared.debugging.smU_Debug;
 import swarm.shared.json.smA_JsonFactory;
 import swarm.shared.json.smI_JsonArray;
@@ -63,8 +63,8 @@ public class smInlineRequestDispatcher implements smI_SyncRequestDispatcher
 			
 			try
 			{
-				request.readJson(requestJson);
-				response.readJson(responseJson);
+				request.readJson(null, requestJson);
+				response.readJson(null, responseJson);
 				
 				m_inlineTransactions.add(new InlineTransaction(request, response));
 			}
@@ -133,11 +133,11 @@ public class smInlineRequestDispatcher implements smI_SyncRequestDispatcher
 				
 				if( transaction != null )
 				{
-					responseBatch = responseBatch == null ? sm.jsonFactory.createJsonArray() : responseBatch;
+					responseBatch = responseBatch == null ? smSharedAppContext.jsonFactory.createJsonArray() : responseBatch;
 					inlineRequestBatch = inlineRequestBatch == null ? new smTransactionRequestBatch() : inlineRequestBatch;
 					
 					inlineRequestBatch.addRequest(transaction.m_request);
-					responseBatch.addObject(transaction.m_response.writeJson());
+					responseBatch.addObject(transaction.m_response.writeJson(null));
 					
 					ithRequest.cancel();
 					

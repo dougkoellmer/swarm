@@ -1,7 +1,7 @@
 package swarm.client.states.account;
 
 
-import swarm.client.app.sm_c;
+import swarm.client.app.smAppContext;
 import swarm.client.managers.smClientAccountManager;
 import swarm.shared.account.smSignInCredentials;
 import swarm.shared.account.smSignInValidator;
@@ -24,7 +24,7 @@ public class State_ManageAccount extends smA_State
 		@Override
 		public void perform(smA_ActionArgs args)
 		{
-			smClientAccountManager accountManager = sm_c.accountMngr;
+			smClientAccountManager accountManager = smAppContext.accountMngr;
 			accountManager.signOut();
 			
 			machine_pushState(this.getState().getParent(), State_AccountStatusPending.class);			
@@ -39,7 +39,7 @@ public class State_ManageAccount extends smA_State
 		@Override
 		public boolean isPerformable(smA_ActionArgs args)
 		{
-			smClientAccountManager accountManager = sm_c.accountMngr;
+			smClientAccountManager accountManager = smAppContext.accountMngr;
 			return accountManager.isSignedIn();
 		}
 	}

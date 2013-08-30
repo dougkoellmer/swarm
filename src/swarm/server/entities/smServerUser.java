@@ -14,7 +14,7 @@ import swarm.server.structs.smDate;
 import swarm.server.structs.smServerCellAddressMapping;
 import swarm.server.structs.smServerGridCoordinate;
 import swarm.server.structs.smServerPoint;
-import swarm.shared.app.sm;
+import swarm.shared.app.smSharedAppContext;
 import swarm.shared.entities.smA_User;
 import swarm.shared.entities.smE_EditingPermission;
 import swarm.shared.json.smA_JsonFactory;
@@ -100,11 +100,11 @@ public class smServerUser extends smA_User implements smI_Blob
 	}
 	
 	@Override
-	public void readJson(smI_JsonObject json)
+	public void readJson(smA_JsonFactory factory, smI_JsonObject json)
 	{
 		m_ownedCells.clear();
 		
-		super.readJson(json);
+		super.readJson(factory, json);
 	}
 
 	@Override
@@ -118,7 +118,7 @@ public class smServerUser extends smA_User implements smI_Blob
 	{
 		for( int i = 0; i < m_ownedCells.size(); i++ )
 		{
-			if( coordinate.isEqualTo(m_ownedCells.get(i)) )
+			if( coordinate.isEqualTo(null, m_ownedCells.get(i)) )
 			{
 				return true;
 			}
@@ -146,9 +146,9 @@ public class smServerUser extends smA_User implements smI_Blob
 	}
 	
 	@Override
-	public void writeJson(smI_JsonObject json)
+	public void writeJson(smA_JsonFactory factory, smI_JsonObject json_out)
 	{
-		smA_JsonFactory jsonFactory = sm.jsonFactory;
+		smA_JsonFactory jsonFactory = factory;
 		smI_JsonArray ownedCoordinates = jsonFactory.createJsonArray();
 		for( int i = 0; i < m_ownedCells.size(); i++ )
 		{
@@ -159,10 +159,10 @@ public class smServerUser extends smA_User implements smI_Blob
 				continue;
 			}
 			
-			smI_JsonObject coordJson = m_ownedCells.get(i).getCoordinate().writeJson();
+			smI_JsonObject coordJson = m_ownedCells.get(i).getCoordinate().writeJson(null);
 			ownedCoordinates.addObject(coordJson);
 		}
 		
-		sm.jsonFactory.getHelper().putJsonArray(json, smE_JsonKey.ownedCoordinates, ownedCoordinates);
+		factory.getHelper().putJsonArray(json_out, smE_JsonKey.ownedCoordinates, ownedCoordinates);
 	}
 }

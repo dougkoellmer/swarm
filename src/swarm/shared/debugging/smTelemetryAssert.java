@@ -1,9 +1,10 @@
 package swarm.shared.debugging;
 
-import swarm.shared.app.sm;
+import swarm.shared.app.smSharedAppContext;
 import swarm.shared.json.smA_JsonEncodable;
+import swarm.shared.json.smA_JsonFactory;
 import swarm.shared.json.smE_JsonKey;
-import swarm.shared.json.smI_JsonEncodable;
+import swarm.shared.json.smI_ReadsJson;
 import swarm.shared.json.smI_JsonObject;
 import swarm.shared.json.smJsonHelper;
 
@@ -20,20 +21,20 @@ public class smTelemetryAssert extends smA_JsonEncodable
 	
 	public smTelemetryAssert(smI_JsonObject json)
 	{
-		this.readJson(json);
+		this.readJson(null, json);
 	}
 	
 	@Override
-	public void writeJson(smI_JsonObject json)
+	public void writeJson(smA_JsonFactory factory, smI_JsonObject json_out)
 	{
-		sm.jsonFactory.getHelper().putString(json, smE_JsonKey.assertMessage, m_message);
-		sm.jsonFactory.getHelper().putString(json, smE_JsonKey.platform, m_platform);
+		factory.getHelper().putString(json_out, smE_JsonKey.assertMessage, m_message);
+		factory.getHelper().putString(json_out, smE_JsonKey.platform, m_platform);
 	}
 
 	@Override
-	public void readJson(smI_JsonObject json)
+	public void readJson(smA_JsonFactory factory, smI_JsonObject json)
 	{
-		m_message = sm.jsonFactory.getHelper().getString(json, smE_JsonKey.assertMessage);
-		m_platform = sm.jsonFactory.getHelper().getString(json, smE_JsonKey.platform);
+		m_message = factory.getHelper().getString(json, smE_JsonKey.assertMessage);
+		m_platform = factory.getHelper().getString(json, smE_JsonKey.platform);
 	}
 }

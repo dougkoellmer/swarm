@@ -1,10 +1,11 @@
 package swarm.shared.structs;
 
 
-import swarm.shared.app.sm;
+import swarm.shared.app.smSharedAppContext;
 import swarm.shared.debugging.smU_Debug;
 import swarm.shared.entities.smE_CharacterQuota;
 import swarm.shared.json.smA_JsonEncodable;
+import swarm.shared.json.smA_JsonFactory;
 import swarm.shared.json.smE_JsonKey;
 import swarm.shared.json.smI_JsonObject;
 import swarm.shared.json.smJsonHelper;
@@ -55,25 +56,25 @@ public class smCodePrivileges extends smA_JsonEncodable
 		return m_characterQuota;
 	}
 	
-	public static boolean isReadable(smI_JsonObject json)
+	public static boolean isReadable(smA_JsonFactory factory, smI_JsonObject json)
 	{
-		return sm.jsonFactory.getHelper().containsAnyKeys(json, smE_JsonKey.networkPrivilege, smE_JsonKey.characterQuota);
+		return factory.getHelper().containsAnyKeys(json, smE_JsonKey.networkPrivilege, smE_JsonKey.characterQuota);
 	}
 
 	@Override
-	public void writeJson(smI_JsonObject json)
+	public void writeJson(smA_JsonFactory factory, smI_JsonObject json_out)
 	{
-		sm.jsonFactory.getHelper().putEnum(json, smE_JsonKey.networkPrivilege, m_network);
-		sm.jsonFactory.getHelper().putEnum(json, smE_JsonKey.characterQuota, m_characterQuota);
+		factory.getHelper().putEnum(json_out, smE_JsonKey.networkPrivilege, m_network);
+		factory.getHelper().putEnum(json_out, smE_JsonKey.characterQuota, m_characterQuota);
 	}
 
 	@Override
-	public void readJson(smI_JsonObject json)
+	public void readJson(smA_JsonFactory factory, smI_JsonObject json)
 	{
-		smE_NetworkPrivilege network = sm.jsonFactory.getHelper().getEnum(json, smE_JsonKey.networkPrivilege, smE_NetworkPrivilege.values());
+		smE_NetworkPrivilege network = factory.getHelper().getEnum(json, smE_JsonKey.networkPrivilege, smE_NetworkPrivilege.values());
 		m_network = network != null ? network : smE_NetworkPrivilege.IMAGES;
 		
-		smE_CharacterQuota quota = sm.jsonFactory.getHelper().getEnum(json, smE_JsonKey.characterQuota, smE_CharacterQuota.values());
+		smE_CharacterQuota quota = factory.getHelper().getEnum(json, smE_JsonKey.characterQuota, smE_CharacterQuota.values());
 		m_characterQuota = quota == null ? smE_CharacterQuota.FREE : quota;
 	}
 }

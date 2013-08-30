@@ -12,7 +12,7 @@ import swarm.shared.app.smS_App;
 import swarm.shared.debugging.smU_Debug;
 import swarm.shared.json.smA_JsonFactory;
 import swarm.shared.json.smI_JsonArray;
-import swarm.shared.json.smI_JsonEncodable;
+import swarm.shared.json.smI_ReadsJson;
 import swarm.shared.json.smI_JsonObject;
 import swarm.shared.json.smJsonQuery;
 import swarm.shared.json.smJsonHelper;
@@ -152,10 +152,10 @@ public class smClientTransactionManager
 		return m_isInsideBatch;
 	}
 	
-	public void queueRequest(smE_RequestPath path, smI_JsonEncodable jsonEncodable)
+	public void queueRequest(smE_RequestPath path, smI_ReadsJson jsonEncodable)
 	{
 		smTransactionRequest request = new smTransactionRequest(path);
-		jsonEncodable.writeJson(request.getJson());
+		jsonEncodable.writeJson(null, request.getJson());
 		queueRequest(request);
 	}
 	
@@ -200,10 +200,10 @@ public class smClientTransactionManager
 		makeRequest(request);
 	}
 	
-	public void makeRequest(smI_RequestPath path, smI_JsonEncodable jsonEncodable)
+	public void makeRequest(smI_RequestPath path, smI_ReadsJson jsonEncodable)
 	{
 		smTransactionRequest request = new smTransactionRequest(path);
-		jsonEncodable.writeJson(request.getJson());
+		jsonEncodable.writeJson(null, request.getJson());
 		makeRequest(request);
 	}
 	
@@ -219,10 +219,10 @@ public class smClientTransactionManager
 		performAction(action, request);
 	}
 	
-	public void performAction(smE_TransactionAction action, smE_RequestPath requestPath, smI_JsonEncodable jsonEncodable)
+	public void performAction(smE_TransactionAction action, smE_RequestPath requestPath, smI_ReadsJson jsonEncodable)
 	{
 		smTransactionRequest request = new smTransactionRequest(requestPath);
-		jsonEncodable.writeJson(request.getJson());
+		jsonEncodable.writeJson(null, request.getJson());
 		performAction(action, request);
 	}
 	
@@ -286,7 +286,7 @@ public class smClientTransactionManager
 			{
 				smI_JsonObject responseJson = (smI_JsonObject) responseObject;
 				smTransactionResponse response = new smTransactionResponse();
-				response.readJson(responseJson);
+				response.readJson(null, responseJson);
 				
 				return response;
 			}
@@ -445,7 +445,7 @@ public class smClientTransactionManager
 			
 			m_reusedResponse.reset();
 			
-			m_reusedResponse.readJson(jsonObject);
+			m_reusedResponse.readJson(null, jsonObject);
 			
 			if( m_reusedResponse.getError() == smE_ResponseError.NO_ERROR )
 			{

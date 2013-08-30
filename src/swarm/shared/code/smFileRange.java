@@ -1,7 +1,8 @@
 package swarm.shared.code;
 
-import swarm.shared.app.sm;
+import swarm.shared.app.smSharedAppContext;
 import swarm.shared.json.smA_JsonEncodable;
+import swarm.shared.json.smA_JsonFactory;
 import swarm.shared.json.smE_JsonKey;
 import swarm.shared.json.smI_JsonArray;
 import swarm.shared.json.smI_JsonObject;
@@ -42,16 +43,16 @@ public class smFileRange extends smA_JsonEncodable
 	}
 	
 	@Override
-	public void writeJson(smI_JsonObject json)
+	public void writeJson(smA_JsonFactory factory, smI_JsonObject json_out)
 	{
-		sm.jsonFactory.getHelper().putJavaVarArgs(json, smE_JsonKey.fileRange, (Object[])m_range);
+		factory.getHelper().putJavaVarArgs(factory, json_out, smE_JsonKey.fileRange, (Object[])m_range);
 	}
 
 	@Override
-	public void readJson(smI_JsonObject json)
+	public void readJson(smA_JsonFactory factory, smI_JsonObject json)
 	{
 		m_range = new Integer[4];
-		smI_JsonArray range = sm.jsonFactory.getHelper().getJsonArray(json, smE_JsonKey.fileRange);
+		smI_JsonArray range = factory.getHelper().getJsonArray(json, smE_JsonKey.fileRange);
 		
 		for( int i = 0; i < range.getSize(); i++ )
 		{

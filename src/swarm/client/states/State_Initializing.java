@@ -1,7 +1,7 @@
 package swarm.client.states;
 
+import swarm.client.app.smAppContext;
 import swarm.client.app.smPlatformInfo;
-import swarm.client.app.sm_c;
 import swarm.client.entities.smA_ClientUser;
 import swarm.client.managers.smClientAccountManager;
 import swarm.client.managers.smGridManager;
@@ -33,6 +33,13 @@ public class State_Initializing extends smA_State implements smI_TransactionResp
 	
 	private int m_requiredSuccessCount = 0;
 	
+	private final smAppContext m_context;
+	
+	public State_Initializing(smAppContext context)
+	{
+		m_context = context;
+	}
+	
 	@Override
 	public smE_ResponseSuccessControl onResponseSuccess(smTransactionRequest request, smTransactionResponse response)
 	{
@@ -63,10 +70,10 @@ public class State_Initializing extends smA_State implements smI_TransactionResp
 	@Override
 	protected void didEnter(smA_StateConstructor constructor)
 	{
-		final smClientAccountManager accountManager = sm_c.accountMngr;
-		final smUserManager userManager = sm_c.userMngr;
-		final smGridManager gridManager = sm_c.gridMngr;
-		final smClientTransactionManager transactionManager = sm_c.txnMngr;
+		final smClientAccountManager accountManager = m_context.accountMngr;
+		final smUserManager userManager = m_context.userMngr;
+		final smGridManager gridManager = m_context.gridMngr;
+		final smClientTransactionManager transactionManager = m_context.txnMngr;
 		
 		//--- DRK > Do an initial transaction to see if user is signed in...this is synchronous.
 		accountManager.init(new smI_Callback()
@@ -113,7 +120,7 @@ public class State_Initializing extends smA_State implements smI_TransactionResp
 			
 			StateMachine_Base baseController = smA_State.getEnteredInstance(StateMachine_Base.class);
 			
-			smClientAccountManager accountManager = sm_c.accountMngr;
+			smClientAccountManager accountManager = m_context.accountMngr;
 			smClientAccountManager.E_PasswordChangeTokenState resetTokenState = accountManager.getPasswordChangeTokenState();
 			
 			if( resetTokenState == smClientAccountManager.E_PasswordChangeTokenState.INVALID )
@@ -161,7 +168,7 @@ public class State_Initializing extends smA_State implements smI_TransactionResp
 	@Override
 	protected void willExit()
 	{
-		final smClientTransactionManager transactionManager = sm_c.txnMngr;
+		final smClientTransactionManager transactionManager = m_context.txnMngr;
 		transactionManager.removeHandler(this);
 		
 		m_successCount = 0;

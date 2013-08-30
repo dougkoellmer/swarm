@@ -1,7 +1,8 @@
 package swarm.shared.transaction;
 
 import swarm.shared.json.smE_JsonKey;
-import swarm.shared.app.sm;
+import swarm.shared.app.smSharedAppContext;
+import swarm.shared.json.smA_JsonFactory;
 import swarm.shared.json.smI_JsonObject;
 import swarm.shared.json.smJsonHelper;
 
@@ -64,24 +65,24 @@ public class smTransactionResponse extends smA_TransactionObject
 	}
 	
 	@Override
-	public void writeJson(smI_JsonObject json)
+	public void writeJson(smA_JsonFactory factory, smI_JsonObject json_out)
 	{
 		if( m_error == smE_ResponseError.NO_ERROR )
 		{
-			super.writeJson(json);
+			super.writeJson(factory, json);
 		}
 		
-		sm.jsonFactory.getHelper().putEnum(json, smE_JsonKey.responseError, m_error);
+		factory.getHelper().putEnum(json, smE_JsonKey.responseError, m_error);
 	}
 	
 	@Override
-	public void readJson(smI_JsonObject json)
+	public void readJson(smA_JsonFactory factory, smI_JsonObject json)
 	{
-		m_error = sm.jsonFactory.getHelper().getEnum(json, smE_JsonKey.responseError, smE_ResponseError.values());
+		m_error = factory.getHelper().getEnum(json, smE_JsonKey.responseError, smE_ResponseError.values());
 		
 		if( m_error == smE_ResponseError.NO_ERROR )
 		{
-			super.readJson(json);
+			super.readJson(factory, json);
 		}
 	}
 }

@@ -2,7 +2,7 @@ package swarm.client.states.camera;
 
 import java.util.logging.Logger;
 
-import swarm.client.app.sm_c;
+import swarm.client.app.smAppContext;
 import swarm.client.entities.smCamera;
 import swarm.client.managers.smCellBuffer;
 import swarm.client.entities.smBufferCell;
@@ -10,6 +10,7 @@ import swarm.client.managers.smCellBufferManager;
 import swarm.client.entities.smA_ClientUser;
 import swarm.client.entities.smE_CellNuke;
 import swarm.client.input.smBrowserHistoryManager;
+import swarm.client.managers.smCameraManager;
 import swarm.client.managers.smCellAddressManager;
 import swarm.client.managers.smCellCodeManager;
 import swarm.client.managers.smClientAccountManager;
@@ -17,8 +18,6 @@ import swarm.client.managers.smF_BufferUpdateOption;
 import swarm.client.managers.smUserManager;
 import swarm.client.states.StateMachine_Base;
 import swarm.client.states.StateMachine_Base.OnGridResize;
-import swarm.client.states.camera.StateMachine_Camera.CameraManager;
-import swarm.client.states.camera.StateMachine_Camera.SetCameraViewSize;
 import swarm.client.states.code.StateMachine_EditingCode;
 import swarm.client.structs.smCellCodeCache;
 import swarm.client.structs.smI_LocalCodeRepository;
@@ -38,7 +37,6 @@ import swarm.shared.structs.smCellAddress;
 import swarm.shared.structs.smCellAddressMapping;
 import swarm.shared.structs.smGridCoordinate;
 import swarm.shared.structs.smPoint;
-
 
 public class State_CameraSnapping extends smA_State implements smI_StateEventListener
 {
@@ -76,8 +74,6 @@ public class State_CameraSnapping extends smA_State implements smI_StateEventLis
 	//--- DRK > This is used internally to help populate m_snapBufferManager without having to hit the server.
 	private final smLocalCodeRepositoryWrapper m_internalCodeRepo = new smLocalCodeRepositoryWrapper();
 	
-	private boolean m_countTowardsHistory = true;
-	
 	private boolean m_hasRequestedSourceCode = false;
 	private boolean m_hasRequestedCompiledCode = false;
 	
@@ -89,34 +85,27 @@ public class State_CameraSnapping extends smA_State implements smI_StateEventLis
 	{
 		m_cellHudHeight = cellHudHeight;
 		
-		smUserManager userManager = sm_c.userMngr;
+		smUserManager userManager = smAppContext.userMngr;
 		smA_ClientUser user = userManager.getUser();
 		
 		m_externalCompiledStaticCodeRepo.addSource(user);
 		m_externalCompiledStaticCodeRepo.addSource(m_snapBufferManager);
-		m_externalCompiledStaticCodeRepo.addSource(sm_c.codeCache);
+		m_externalCompiledStaticCodeRepo.addSource(smAppContext.codeCache);
 		
 		m_internalCodeRepo.addSource(user);
 		m_internalCodeRepo.addSource(smCellBufferManager.getInstance());
-		m_internalCodeRepo.addSource(sm_c.codeCache);
+		m_internalCodeRepo.addSource(smAppContext.codeCache);
 	}
 
 	void updateGridCoordinate(smGridCoordinate targetCoordinate, smCellAddress targetAddress_nullable)
 	{
-		smA_Grid grid = sm_c.gridMngr.getGrid();
+		smA_Grid grid = smAppContext.gridMngr.getGrid();
 		
 		m_targetAddress = targetAddress_nullable;
 		
 		if( m_targetGridCoordinate.isEqualTo(targetCoordinate) )
 		{
 			return;
-		}
-		
-		//--- DRK > This case implies we changed snap target mid-flight, which cancels out the fact
-		//---		that the user might have initially pressed forward or back to initiate this snap state.
-		if( !this.isEntering() )
-		{
-			m_countTowardsHistory = true;
 		}
 		
 		m_targetGridCoordinate.copy(targetCoordinate);
@@ -141,7 +130,7 @@ public class State_CameraSnapping extends smA_State implements smI_StateEventLis
 		{
 			//--- DRK > Try to get address ourselves...could turn up null.
 			smCellAddressMapping mapping = new smCellAddressMapping(m_targetGridCoordinate);
-			smCellAddressManager addyManager = sm_c.addressMngr;
+			smCellAddressManager addyManager = smAppContext.addressMngr;
 			addyManager.getCellAddress(mapping, smE_TransactionAction.QUEUE_REQUEST);
 		}
 		
@@ -149,13 +138,13 @@ public class State_CameraSnapping extends smA_State implements smI_StateEventLis
 		
 		m_snapProgressBase = this.getOverallSnapProgress();
 		
-		CameraManager manager = (CameraManager) ((StateMachine_Camera) getParent()).getCameraManager();
-		manager.internal_setTargetPosition(m_utilPoint, false);
+		smCameraManager manager = ((StateMachine_Camera) getParent()).getCameraManager();
+		manager.setTargetPosition(m_utilPoint, false);
 	}
 	
 	public double getOverallSnapProgress()
 	{
-		CameraManager manager = (CameraManager) ((StateMachine_Camera) getParent()).getCameraManager();
+		smCameraManager manager = ((StateMachine_Camera) getParent()).getCameraManager();
 		
 		//s_logger.severe("snap prog base: " + m_snapProgressBase + "   snap prog: " + manager.getSnapProgress());
 		return m_snapProgressBase + (1-m_snapProgressBase)*manager.getSnapProgress();
@@ -214,7 +203,7 @@ public class State_CameraSnapping extends smA_State implements smI_StateEventLis
 	
 	private void updateSnapBufferManager(boolean flushPopulator)
 	{
-		smA_Grid grid = sm_c.gridMngr.getGrid();
+		smA_Grid grid = smAppContext.gridMngr.getGrid();
 		smI_LocalCodeRepository htmlSource = m_internalCodeRepo;
 		
 		int options = smF_BufferUpdateOption.COMMUNICATE_WITH_SERVER;
@@ -257,7 +246,7 @@ public class State_CameraSnapping extends smA_State implements smI_StateEventLis
 		
 		m_targetGridCoordinate.set(-1, -1);
 		
-		smCamera camera = sm_c.camera;
+		smCamera camera = smAppContext.cameraMngr.getCamera();
 		
 		m_snapCamera.setViewRect(camera.getViewWidth(), camera.getViewHeight());
 		
@@ -337,9 +326,9 @@ public class State_CameraSnapping extends smA_State implements smI_StateEventLis
 			
 			case DID_PERFORM_ACTION:
 			{
-				if( event.getAction() == StateMachine_Camera.SetCameraViewSize.class )
+				if( event.getAction() == Action_Camera_SetCameraViewSize.class )
 				{
-					smCamera camera = sm_c.camera;
+					smCamera camera = smAppContext.cameraMngr.getCamera();
 					m_snapCamera.setViewRect(camera.getViewWidth(), camera.getViewHeight());
 					
 					this.updateSnapBufferManager(true);
@@ -348,11 +337,11 @@ public class State_CameraSnapping extends smA_State implements smI_StateEventLis
 				{
 					this.updateSnapBufferManager(true);
 				}
-				else if( event.getAction() == StateMachine_Camera.OnAddressResponse.class )
+				else if( event.getAction() == Event_Camera_OnAddressResponse.class )
 				{
-					StateMachine_Camera.OnAddressResponse.Args args = event.getActionArgs();
+					Event_Camera_OnAddressResponse.Args args = event.getActionArgs();
 					
-					if( args.getType() == StateMachine_Camera.OnAddressResponse.E_Type.ON_FOUND )
+					if( args.getType() == Event_Camera_OnAddressResponse.E_Type.ON_FOUND )
 					{
 						m_targetAddress = args.getAddress();
 					}

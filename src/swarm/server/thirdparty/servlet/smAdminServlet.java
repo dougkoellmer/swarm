@@ -19,7 +19,7 @@ import swarm.server.account.sm_s;
 import swarm.server.app.smA_ServerJsonFactory;
 import swarm.server.session.smSessionManager;
 import swarm.server.transaction.smServerTransactionManager;
-import swarm.shared.app.sm;
+import swarm.shared.app.smSharedAppContext;
 import swarm.shared.app.smS_App;
 import swarm.shared.json.smA_JsonFactory;
 import swarm.shared.json.smI_JsonObject;
@@ -69,7 +69,7 @@ public class smAdminServlet extends smA_BaseServlet
 			if( !isGet )
 			{
 				requestJsonString = nativeRequest.getParameter("json");
-				requestJson = requestJsonString == null ? null : sm.jsonFactory.createJsonObject(requestJsonString);
+				requestJson = requestJsonString == null ? null : smSharedAppContext.jsonFactory.createJsonObject(requestJsonString);
 			}
 			
 			PrintWriter writer = nativeResponse.getWriter();
@@ -81,7 +81,7 @@ public class smAdminServlet extends smA_BaseServlet
 			
 			if( !isGet )
 			{
-				smI_JsonObject responseJson = sm.jsonFactory.createJsonObject();
+				smI_JsonObject responseJson = smSharedAppContext.jsonFactory.createJsonObject();
 				
 				sm_s.txnMngr.handleRequestFromClient(nativeRequest, nativeResponse, this.getServletContext(), requestJson, responseJson, true);
 				

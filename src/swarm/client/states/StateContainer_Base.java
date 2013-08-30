@@ -1,6 +1,6 @@
 package swarm.client.states;
 
-import swarm.client.app.sm_c;
+import swarm.client.app.smAppContext;
 import swarm.client.states.camera.StateMachine_Camera;
 import swarm.client.transaction.smE_ResponseErrorControl;
 import swarm.client.transaction.smE_ResponseSuccessControl;
@@ -15,13 +15,11 @@ import swarm.shared.statemachine.smA_StateConstructor;
 import swarm.shared.transaction.smTransactionRequest;
 import swarm.shared.transaction.smTransactionResponse;
 
-
-
 /**
  * ...
  * @author 
  */
-public class StateContainer_Base extends smA_StateContainer implements smI_TransactionResponseHandler
+public class StateContainer_Base extends smA_StateContainer
 {
 	public static class HideSupplementState extends smA_Action
 	{
@@ -74,15 +72,11 @@ public class StateContainer_Base extends smA_StateContainer implements smI_Trans
 	@Override
 	protected void didEnter(smA_StateConstructor constructor)
 	{
-		final smClientTransactionManager transactionManager = sm_c.txnMngr;
-		transactionManager.addHandler(this);
 	}
 	
 	@Override
 	protected void willExit()
 	{
-		final smClientTransactionManager transactionManager = sm_c.txnMngr;
-		transactionManager.removeHandler(this);
 	}
 	
 	@Override
@@ -107,17 +101,5 @@ public class StateContainer_Base extends smA_StateContainer implements smI_Trans
 	@Override
 	protected void update(double timeStep)
 	{
-	}
-
-	@Override
-	public smE_ResponseSuccessControl onResponseSuccess(smTransactionRequest request, smTransactionResponse response)
-	{
-		return smE_ResponseSuccessControl.CONTINUE;
-	}
-
-	@Override
-	public smE_ResponseErrorControl onResponseError(smTransactionRequest request, smTransactionResponse response)
-	{
-		return smE_ResponseErrorControl.CONTINUE;
 	}
 }

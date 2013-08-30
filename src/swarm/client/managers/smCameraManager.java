@@ -2,7 +2,7 @@ package swarm.client.managers;
 
 import java.util.logging.Logger;
 
-import swarm.client.app.sm_c;
+import swarm.client.app.smAppContext;
 import swarm.client.entities.smCamera;
 import swarm.shared.app.smS_App;
 import swarm.shared.debugging.smU_Debug;
@@ -31,12 +31,14 @@ public class smCameraManager
 	private int m_cameraAtRestFrameCount = 1;
 	
 	private final smCamera m_camera;
+	private final smGridManager m_gridMngr;
 	
 	private double m_minSnapTime = 0;
 	private double m_snapTimeRange = 0;
 	
-	public smCameraManager(smCamera camera, double minSnapTime, double maxSnapTime)
+	public smCameraManager(smGridManager gridMngr, smCamera camera, double minSnapTime, double maxSnapTime)
 	{
+		m_gridMngr = gridMngr;
 		m_minSnapTime = minSnapTime;
 		m_snapTimeRange = maxSnapTime - minSnapTime;
 		
@@ -101,9 +103,9 @@ public class smCameraManager
 		m_camera.update();
 	}
 	
-	protected void setTargetPosition(smPoint point, boolean instant)
+	public void setTargetPosition(smPoint point, boolean instant)
 	{
-		smA_Grid grid = sm_c.gridMngr.getGrid();
+		smA_Grid grid = m_gridMngr.getGrid();
 		
 		smPoint oldTargetPosition = m_utilPoint;
 		oldTargetPosition.copy(m_targetPosition);
@@ -206,7 +208,7 @@ public class smCameraManager
 	}
 	
 	//--- DRK > NOTE: Must make sure to manually update the cell buffer manager if necessary after this call.
-	protected void setCameraPosition(smPoint point, boolean enforceZConstraints)
+	public void setCameraPosition(smPoint point, boolean enforceZConstraints)
 	{
 		m_targetPosition.copy(point);
 		

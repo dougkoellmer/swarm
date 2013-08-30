@@ -26,7 +26,7 @@ import swarm.server.structs.smServerCode;
 import swarm.server.structs.smServerGridCoordinate;
 import swarm.server.transaction.smServerTransactionManager;
 import swarm.server.transaction.smTransactionContext;
-import swarm.shared.app.sm;
+import swarm.shared.app.smSharedAppContext;
 import swarm.shared.app.smS_App;
 import swarm.shared.code.smA_CodeCompiler;
 import swarm.shared.code.smCompilerResult;
@@ -113,11 +113,11 @@ public final class smU_CellCode
 		return persistedCell;
 	}
 	
-	public static smCompilerResult compileCell(smServerCell cell, smCode sourceCode, smCellAddressMapping mapping)
+	public static smCompilerResult compileCell(smA_CodeCompiler compiler, smServerCell cell, smCode sourceCode, smCellAddressMapping mapping)
 	{
 		cell.setCode(smE_CodeType.SOURCE, sourceCode); // DRK > may be redundant.
 		
-		smCompilerResult result = sm.codeCompiler.compile(sourceCode, cell.getCodePrivileges(), mapping.writeString());
+		smCompilerResult result = compiler.compile(sourceCode, cell.getCodePrivileges(), mapping.writeString());
 		
 		if( result.getStatus() == smE_CompilationStatus.NO_ERROR )
 		{

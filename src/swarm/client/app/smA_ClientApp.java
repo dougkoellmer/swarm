@@ -10,7 +10,9 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.RootPanel;
 
 import swarm.client.code.smClientCodeCompiler;
+import swarm.client.entities.smCamera;
 import swarm.client.input.smClickManager;
+import swarm.client.managers.smCameraManager;
 import swarm.client.managers.smCellAddressManager;
 import swarm.client.managers.smClientAccountManager;
 import swarm.client.managers.smGridManager;
@@ -40,15 +42,15 @@ import swarm.client.thirdparty.transaction.smGwtRequestDispatcher;
 import swarm.client.time.smU_Time;
 import swarm.client.transaction.smClientTransactionManager;
 import swarm.client.transaction.smInlineRequestDispatcher;
-import swarm.client.ui.smE_ZIndex;
-import swarm.client.ui.smS_UI;
-import swarm.client.ui.smViewConfig;
-import swarm.client.ui.smViewController;
-import swarm.client.ui.tabs.code.smCellSandbox;
-import swarm.client.ui.tooltip.smE_ToolTipType;
-import swarm.client.ui.tooltip.smToolTipManager;
+import swarm.client.view.smE_ZIndex;
+import swarm.client.view.smS_UI;
+import swarm.client.view.smViewConfig;
+import swarm.client.view.smViewController;
+import swarm.client.view.tabs.code.smCellSandbox;
+import swarm.client.view.tooltip.smE_ToolTipType;
+import swarm.client.view.tooltip.smToolTipManager;
 import swarm.shared.smE_AppEnvironment;
-import swarm.shared.app.sm;
+import swarm.shared.app.smSharedAppContext;
 import swarm.shared.app.smA_App;
 import swarm.shared.app.smS_App;
 import swarm.shared.debugging.smI_AssertionDelegate;
@@ -69,6 +71,7 @@ public class smA_ClientApp extends smA_App implements smI_TimeSource
 	
 	protected final smClientAppConfig m_appConfig;
 	protected final smViewConfig m_viewConfig;
+	protected final smAppContext m_module;
 	
 	protected smA_ClientApp(smClientAppConfig appConfig, smViewConfig viewConfig)
 	{
@@ -76,8 +79,7 @@ public class smA_ClientApp extends smA_App implements smI_TimeSource
 		
 		m_appConfig = appConfig;
 		m_viewConfig = viewConfig;
-		
-		sm_c.app = this;
+		m_module = new smAppContext();
 	}
 	
 	protected void startUp(smE_StartUpStage stage)
@@ -160,9 +162,9 @@ public class smA_ClientApp extends smA_App implements smI_TimeSource
 				
 				s_logger.severe("ASSERTION FAILED: " + message);
 				
-				String platform = sm_c.platformInfo.getRawPlatform();
+				String platform = m_module.platformInfo.getRawPlatform();
 				smTelemetryAssert telemetryAssert = new smTelemetryAssert(message, platform);
-				sm_c.txnMngr.makeRequest(smE_TelemetryRequestPath.logAssert, telemetryAssert);
+				m_module.txnMngr.makeRequest(smE_TelemetryRequestPath.logAssert, telemetryAssert);
 
 				//assert(false);
 			}
@@ -171,7 +173,7 @@ public class smA_ClientApp extends smA_App implements smI_TimeSource
 	
 	protected void stage_browserSupportCheck()
 	{
-		sm_c.cellSandbox = new smCellSandbox(new smCellSandbox.I_StartUpCallback()
+		m_module.cellSandbox = new smCellSandbox(new smCellSandbox.I_StartUpCallback()
 		{
 			public void onStartUpComplete(boolean success)
 			{
@@ -211,35 +213,37 @@ public class smA_ClientApp extends smA_App implements smI_TimeSource
 	
 	protected void stage_startAppManagers()
 	{
-		sm_c.platformInfo = new smPlatformInfo();
-		sm.jsonFactory = new smGwtJsonFactory(m_appConfig.verboseTransactions);
-		sm.codeCompiler = new smClientCodeCompiler();
-		sm_c.addressMngr = new smCellAddressManager(m_appConfig.addressCacheSize, m_appConfig.addressCacheExpiration_seconds, this);
-		sm_c.accountMngr = new smClientAccountManager();
-		sm_c.codeCache = new smCellCodeCache(m_appConfig.codeCacheSize, m_appConfig.codeCacheExpiration_seconds, this);
-		sm_c.userMngr = new smUserManager(sm_c.accountMngr, sm_c.codeCache, m_appConfig.user);
-		sm_c.gridMngr = new smGridManager(m_appConfig.grid);
-		sm.requestPathMngr = new smRequestPathManager(sm.jsonFactory, m_appConfig.verboseTransactions);
-		sm_c.txnMngr = new smClientTransactionManager(sm.requestPathMngr);
+		m_module.platformInfo = new smPlatformInfo();
+		m_module.jsonFactory = new smGwtJsonFactory(m_appConfig.verboseTransactions);
+		m_module.codeCompiler = new smClientCodeCompiler();
+		
+		m_module.codeCache = new smCellCodeCache(m_appConfig.codeCacheSize, m_appConfig.codeCacheExpiration_seconds, this);
+		m_module.userMngr = new smUserManager(m_module, m_appConfig.user);
+		m_module.requestPathMngr = new smRequestPathManager(m_module.jsonFactory, m_appConfig.verboseTransactions);
+		m_module.txnMngr = new smClientTransactionManager(m_module.requestPathMngr);
+		m_module.gridMngr = new smGridManager(m_module.txnMngr, m_appConfig.grid);
+		m_module.cameraMngr = new smCameraManager(m_module.gridMngr, new smCamera(), m_appConfig.minSnapTime, m_appConfig.maxSnapTime);
+		m_module.addressMngr = new smCellAddressManager(m_module, m_appConfig.addressCacheSize, m_appConfig.addressCacheExpiration_seconds, this);
+		m_module.accountMngr = new smClientAccountManager(m_module.txnMngr, m_module.jsonFactory);
 		
 		//--- DRK > Configure transaction stuff.
-		sm_c.requestPathMngr.register(smE_RequestPath.values());
-		sm_c.txnMngr.setSyncRequestDispatcher(new smInlineRequestDispatcher(m_appConfig.appId));
-		sm_c.txnMngr.setAsyncRequestDispatcher(new smGwtRequestDispatcher());
+		m_module.requestPathMngr.register(smE_RequestPath.values());
+		m_module.txnMngr.setSyncRequestDispatcher(new smInlineRequestDispatcher(m_appConfig.appId));
+		m_module.txnMngr.setAsyncRequestDispatcher(new smGwtRequestDispatcher());
 	}
 	
 	protected void stage_startViewManagers()
 	{
-		sm_c.recaptchaWrapper = new smRecaptchaWrapper();
-		sm_c.clickMngr = new smClickManager();
-		sm_c.toolTipMngr = new smToolTipManager(sm_c.platformInfo.getPlatform() != smE_Platform.IOS, smS_UI.TOOL_TIP_DELAY);
+		m_module.recaptchaWrapper = new smRecaptchaWrapper();
+		m_module.clickMngr = new smClickManager();
+		m_module.toolTipMngr = new smToolTipManager(m_module.platformInfo.getPlatform() != smE_Platform.IOS, smS_UI.TOOL_TIP_DELAY);
 		
 		//--- DRK > Set defaults for tool tips.
 		for( int i = smE_ZIndex.TOOL_TIP_1.ordinal(), j = 0; i <= smE_ZIndex.TOOL_TIP_5.ordinal(); i++, j++ )
 		{
-			sm_c.toolTipMngr.setDefaultZIndex(smE_ToolTipType.values()[j], i);
+			m_module.toolTipMngr.setDefaultZIndex(smE_ToolTipType.values()[j], i);
 		}
-		sm_c.toolTipMngr.setDefaultPadding(smS_UI.TOOl_TIP_PADDING);
+		m_module.toolTipMngr.setDefaultPadding(smS_UI.TOOl_TIP_PADDING);
 	}
 	
 	protected void stage_registerStateMachine()
@@ -253,7 +257,7 @@ public class smA_ClientApp extends smA_App implements smI_TimeSource
 			
 			smA_State.register(new StateContainer_Base());
 			{
-				smA_State.register(new StateMachine_Camera(m_appConfig.minSnapTime, m_appConfig.maxSnapTime));
+				smA_State.register(new StateMachine_Camera());
 				{
 					smA_State.register(new State_CameraFloating());
 					smA_State.register(new State_GettingMapping());
@@ -284,7 +288,7 @@ public class smA_ClientApp extends smA_App implements smI_TimeSource
 		smA_StateMachine.root_didEnter(StateMachine_Base.class, m_viewConfig.stateEventListener);
 		smA_StateMachine.root_didForeground(StateMachine_Base.class);
 		
-		sm_c.txnMngr.flushSyncResponses();
+		m_module.txnMngr.flushSyncResponses();
 	}
 
 	protected static void registerCodeEditingStates()
@@ -326,7 +330,7 @@ public class smA_ClientApp extends smA_App implements smI_TimeSource
 		smA_StateMachine.root_didUpdate(StateMachine_Base.class, currentTime - m_lastTime);
 		m_lastTime = currentTime;
 
-		sm_c.txnMngr.flushSyncResponses();
+		m_module.txnMngr.flushSyncResponses();
 	}
 
 	@Override

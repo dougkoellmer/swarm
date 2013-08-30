@@ -7,7 +7,7 @@ import swarm.shared.json.smI_JsonArray;
 import swarm.shared.json.smI_JsonObject;
 import swarm.shared.json.smJsonHelper;
 
-import swarm.shared.app.sm;
+import swarm.shared.app.smSharedAppContext;
 import swarm.shared.debugging.smU_Logging;
 
 public abstract class smA_Coordinate extends smA_JsonEncodable
@@ -193,20 +193,19 @@ public abstract class smA_Coordinate extends smA_JsonEncodable
 	}
 	
 	@Override
-	public void writeJson(smI_JsonObject json)
+	public void writeJson(smA_JsonFactory factory, smI_JsonObject json_out)
 	{
-		smA_JsonFactory jsonFactory = sm.jsonFactory;
-		smI_JsonArray components = jsonFactory.createJsonArray();
+		smI_JsonArray components = factory.createJsonArray();
 		components.addDouble(getX());
 		components.addDouble(getY());
 		components.addDouble(getZ());
-		sm.jsonFactory.getHelper().putJsonArray(json, smE_JsonKey.pointComponents, components);
+		factory.getHelper().putJsonArray(json_out, smE_JsonKey.pointComponents, components);
 	}
 	
 	@Override
-	public void readJson(smI_JsonObject json)
+	public void readJson(smA_JsonFactory factory, smI_JsonObject json)
 	{
-		smI_JsonArray components = sm.jsonFactory.getHelper().getJsonArray(json, smE_JsonKey.pointComponents);
+		smI_JsonArray components = factory.getHelper().getJsonArray(json, smE_JsonKey.pointComponents);
 		if( components != null )
 		{
 			for( int i = 0; i < 3 && i < components.getSize(); i++ )
@@ -216,9 +215,9 @@ public abstract class smA_Coordinate extends smA_JsonEncodable
 		}
 	}
 	
-	public static boolean isReadable(smI_JsonObject json)
+	public static boolean isReadable(smA_JsonFactory factory, smI_JsonObject json)
 	{
-		return sm.jsonFactory.getHelper().containsAllKeys(json, smE_JsonKey.pointComponents);
+		return factory.getHelper().containsAllKeys(json, smE_JsonKey.pointComponents);
 	}
 	
 	@Override

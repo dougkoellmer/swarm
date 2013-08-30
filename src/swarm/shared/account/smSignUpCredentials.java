@@ -1,6 +1,6 @@
 package swarm.shared.account;
 
-import swarm.shared.app.sm;
+import swarm.shared.app.smSharedAppContext;
 import swarm.shared.json.smA_JsonEncodable;
 import swarm.shared.json.smA_JsonFactory;
 import swarm.shared.json.smI_JsonArray;
@@ -59,31 +59,31 @@ public class smSignUpCredentials extends smA_AccountCredentials
 	}
 
 	@Override
-	public void writeJson(smI_JsonObject json)
+	public void writeJson(smA_JsonFactory factory, smI_JsonObject json_out)
 	{
-		super.writeJson(json);
+		super.writeJson(factory, json_out);
 		
 		smU_Account.cropPassword(m_credentials, smE_SignUpCredentialType.PASSWORD.ordinal());
 		
-		smI_JsonArray creds = sm.jsonFactory.createJsonArray();
+		smI_JsonArray creds = factory.createJsonArray();
 		
 		for( int i = 0; i < m_credentials.length; i++ )
 		{
 			creds.addString(m_credentials[i]);
 		}
 		
-		sm.jsonFactory.getHelper().putJsonArray(json, smE_JsonKey.signUpCredentials, creds);
-		sm.jsonFactory.getHelper().putString(json, smE_JsonKey.captchaChallenge, m_captchaChallenge);
+		factory.getHelper().putJsonArray(json_out, smE_JsonKey.signUpCredentials, creds);
+		factory.getHelper().putString(json_out, smE_JsonKey.captchaChallenge, m_captchaChallenge);
 	}
 
 	@Override
-	public void readJson(smI_JsonObject json)
+	public void readJson(smA_JsonFactory factory, smI_JsonObject json)
 	{
 		init();
 		
-		super.readJson(json);
+		super.readJson(factory, json);
 		
-		smI_JsonArray creds = sm.jsonFactory.getHelper().getJsonArray(json, smE_JsonKey.signUpCredentials);
+		smI_JsonArray creds = factory.getHelper().getJsonArray(json, smE_JsonKey.signUpCredentials);
 		
 		for( int i = 0; i < creds.getSize(); i++ )
 		{
@@ -92,7 +92,7 @@ public class smSignUpCredentials extends smA_AccountCredentials
 		
 		smU_Account.cropPassword(m_credentials, smE_SignUpCredentialType.PASSWORD.ordinal());
 		
-		m_captchaChallenge = sm.jsonFactory.getHelper().getString(json, smE_JsonKey.captchaChallenge);
+		m_captchaChallenge = factory.getHelper().getString(json, smE_JsonKey.captchaChallenge);
 		
 		this.toLowerCase();
 	}

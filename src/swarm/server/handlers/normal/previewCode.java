@@ -6,7 +6,7 @@ import swarm.server.session.smSessionManager;
 import swarm.server.structs.smServerGridCoordinate;
 import swarm.server.transaction.smI_RequestHandler;
 import swarm.server.transaction.smTransactionContext;
-import swarm.shared.app.sm;
+import swarm.shared.app.smSharedAppContext;
 import swarm.shared.code.smA_CodeCompiler;
 import swarm.shared.code.smCompilerResult;
 import swarm.shared.entities.smE_CodeSafetyLevel;
@@ -37,7 +37,7 @@ public class previewCode implements smI_RequestHandler
 		//---		it for now because I think the low risk of a DoS isn't worth the slower performance for well-meaning users.
 		
 		smServerGridCoordinate coordinate = new smServerGridCoordinate();
-		coordinate.readJson(request.getJson());
+		coordinate.readJson(null, request.getJson());
 		
 		//--- DRK > Obviously we're trusting the client here as to their privileges, which could easily be hacked, but it doesn't really matter.
 		//---		This handler should be completely self-contained, so there's no chance of the hacked code leaking into the database.
@@ -46,8 +46,8 @@ public class previewCode implements smI_RequestHandler
 		
 		smCode sourceCode = new smCode(request.getJson(), smE_CodeType.SOURCE);
 		
-		smCompilerResult result = sm.codeCompiler.compile(sourceCode, privileges, coordinate.writeString());
+		smCompilerResult result = smSharedAppContext.codeCompiler.compile(sourceCode, privileges, coordinate.writeString());
 		
-		result.writeJson(response.getJson());
+		result.writeJson(null, response.getJson());
 	}
 }

@@ -4,7 +4,7 @@ import java.util.List;
 
 
 import swarm.shared.utils.smU_TypeConversion;
-import swarm.shared.app.sm;
+import swarm.shared.app.smSharedAppContext;
 import swarm.shared.reflection.smI_Class;
 
 public class smJsonHelper
@@ -128,46 +128,44 @@ public class smJsonHelper
 		json.putJsonObject(keyString, value);
 	}
 	
-	public void putList(smI_JsonObject json, smI_JsonKeySource key, List<? extends Object> list)
+	public void putList(smA_JsonFactory factory, smI_JsonObject json, smI_JsonKeySource key, List<? extends Object> list)
 	{
-		smA_JsonFactory jsonFactory = sm.jsonFactory;
-		smI_JsonArray array = jsonFactory.createJsonArray();
+		smI_JsonArray array = factory.createJsonArray();
 		
 		for( int i = 0; i < list.size(); i++ )
 		{
-			addObjectToJsonArray(array, list.get(i));
+			addObjectToJsonArray(factory, array, list.get(i));
 		}
 		
 		putJsonArray(json, key, array);
 	}
 	
-	public void putJavaArray(smI_JsonObject json, smI_JsonKeySource key, Object[] values)
+	public void putJavaArray(smA_JsonFactory factory, smI_JsonObject json, smI_JsonKeySource key, Object[] values)
 	{
-		this.putJavaVarArgs(json, key, values);
+		this.putJavaVarArgs(factory, json, key, values);
 	}
 	
-	public void putJavaVarArgs(smI_JsonObject json, smI_JsonKeySource key, Object ... values)
+	public void putJavaVarArgs(smA_JsonFactory factory, smI_JsonObject json, smI_JsonKeySource key, Object ... values)
 	{
-		smA_JsonFactory jsonFactory = sm.jsonFactory;
-		smI_JsonArray array = jsonFactory.createJsonArray();
+		smI_JsonArray array = factory.createJsonArray();
 		
 		for( int i = 0; i < values.length; i++ )
 		{
-			addObjectToJsonArray(array, values[i]);
+			addObjectToJsonArray(factory, array, values[i]);
 		}
 		
 		putJsonArray(json, key, array);
 	}
 	
-	private void addObjectToJsonArray(smI_JsonArray array, Object object)
+	private void addObjectToJsonArray(smA_JsonFactory factory, smI_JsonArray array, Object object)
 	{
 		if( object instanceof String )
 		{
 			array.addString((String) object);
 		}
-		else if( object instanceof smI_JsonEncodable )
+		else if( object instanceof smI_WritesJson )
 		{
-			array.addObject(((smI_JsonEncodable)object).writeJson());
+			array.addObject(((smI_WritesJson)object).writeJson(factory));
 		}
 		else if( object instanceof Integer )
 		{

@@ -17,8 +17,9 @@ import swarm.server.entities.smServerUser;
 import swarm.server.session.smSessionManager;
 import swarm.server.transaction.smI_RequestHandler;
 import swarm.server.transaction.smTransactionContext;
-import swarm.shared.app.sm;
+import swarm.shared.app.smSharedAppContext;
 import swarm.shared.entities.smA_Grid;
+import swarm.shared.json.smA_JsonFactory;
 import swarm.shared.json.smE_JsonKey;
 import swarm.shared.json.smI_JsonObject;
 import swarm.shared.json.smJsonHelper;
@@ -85,15 +86,15 @@ public class getUserData implements smI_RequestHandler
 					smA_Grid dummyGrid = new smA_Grid(createUserTransaction.getGridWidth(), createUserTransaction.getGridHeight())
 					{
 						@Override
-						public void writeJson(smI_JsonObject json_out)
+						public void writeJson(smA_JsonFactory factory, smI_JsonObject json_out)
 						{
 							//--- DRK > Only sending down width and height so we don't overwrite other properties.
-							sm.jsonFactory.getHelper().putInt(json_out, smE_JsonKey.gridWidth, this.getWidth());
-							sm.jsonFactory.getHelper().putInt(json_out, smE_JsonKey.gridHeight, this.getHeight());
+							factory.getHelper().putInt(json_out, smE_JsonKey.gridWidth, this.getWidth());
+							factory.getHelper().putInt(json_out, smE_JsonKey.gridHeight, this.getHeight());
 						}
 					};
 					
-					dummyGrid.writeJson(response.getJson());
+					dummyGrid.writeJson(null, response.getJson());
 				}
 				
 				user = createUserTransaction.getUser();
@@ -119,7 +120,7 @@ public class getUserData implements smI_RequestHandler
 			return;
 		}
 
-		sm.jsonFactory.getHelper().putBoolean(response.getJson(), smE_JsonKey.createdUser, createdUser);
-		user.writeJson(response.getJson());
+		factory.getHelper().putBoolean(response.getJson(), smE_JsonKey.createdUser, createdUser);
+		user.writeJson(null, response.getJson());
 	}
 }

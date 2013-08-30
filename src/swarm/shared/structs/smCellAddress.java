@@ -2,18 +2,20 @@ package swarm.shared.structs;
 
 import java.util.ArrayList;
 
-import swarm.shared.app.sm;
+import swarm.shared.app.smSharedAppContext;
 import swarm.shared.app.smS_App;
 import swarm.shared.account.smE_SignUpValidationError;
 import swarm.shared.account.smI_SignUpCredentialValidator;
 import swarm.shared.account.smS_Account;
 import swarm.shared.json.smA_JsonEncodable;
+import swarm.shared.json.smA_JsonFactory;
 import swarm.shared.json.smE_JsonKey;
+import swarm.shared.json.smI_JsonComparable;
 import swarm.shared.json.smI_JsonObject;
 import swarm.shared.json.smJsonHelper;
 import swarm.shared.utils.smU_Regex;
 
-public class smCellAddress extends smA_JsonEncodable
+public class smCellAddress extends smA_JsonEncodable implements smI_JsonComparable
 {
 	public static enum E_Part
 	{
@@ -42,7 +44,7 @@ public class smCellAddress extends smA_JsonEncodable
 	{
 		init(null);
 		
-		this.readJson(json);
+		this.readJson(null, json);
 	}
 	
 	public smCellAddress(smCellAddress source)
@@ -181,21 +183,21 @@ public class smCellAddress extends smA_JsonEncodable
 	}
 
 	@Override
-	public void writeJson(smI_JsonObject json)
+	public void writeJson(smA_JsonFactory factory, smI_JsonObject json_out)
 	{
-		sm.jsonFactory.getHelper().putString(json, smE_JsonKey.rawCellAddress, getCasedRawAddress());
+		factory.getHelper().putString(json_out, smE_JsonKey.rawCellAddress, getCasedRawAddress());
 	}
 
 	@Override
-	public void readJson(smI_JsonObject json)
+	public void readJson(smA_JsonFactory factory, smI_JsonObject json)
 	{
-		this.init(sm.jsonFactory.getHelper().getString(json, smE_JsonKey.rawCellAddress));
+		this.init(factory.getHelper().getString(json, smE_JsonKey.rawCellAddress));
 	}
 	
 	@Override
-	public boolean isEqualTo(smI_JsonObject json)
+	public boolean isEqualTo(smA_JsonFactory factory, smI_JsonObject json)
 	{
-		String rawAddress = sm.jsonFactory.getHelper().getString(json, smE_JsonKey.rawCellAddress);
+		String rawAddress = factory.getHelper().getString(json, smE_JsonKey.rawCellAddress);
 		
 		if( rawAddress != null )
 		{

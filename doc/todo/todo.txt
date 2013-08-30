@@ -1,3 +1,11 @@
+- fix default nul argument for all writeJson calls
+
+- give request handlers default json factory, maybe other stuff, depending
+
+
+
+
+
 - decommission URI policy and API when leaving cell.
 
 - load testing

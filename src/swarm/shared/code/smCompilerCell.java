@@ -1,6 +1,7 @@
 package swarm.shared.code;
 
 import swarm.shared.entities.smA_Cell;
+import swarm.shared.json.smA_JsonFactory;
 import swarm.shared.json.smI_JsonObject;
 
 class smCompilerCell extends smA_Cell
@@ -11,9 +12,9 @@ class smCompilerCell extends smA_Cell
 	}
 	
 	@Override
-	public void readJson(smI_JsonObject json)
+	public void readJson(smA_JsonFactory factory, smI_JsonObject json)
 	{
-		super.readJson(json);
+		super.readJson(factory, json);
 		
 		
 	}

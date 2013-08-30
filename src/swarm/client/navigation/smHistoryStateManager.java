@@ -1,6 +1,7 @@
 package swarm.client.navigation;
 
 import swarm.client.input.smBrowserHistoryManager;
+import swarm.shared.json.smA_JsonFactory;
 import swarm.shared.json.smI_JsonObject;
 import swarm.shared.structs.smCellAddress;
 import swarm.shared.structs.smCellAddressMapping;
@@ -13,30 +14,32 @@ public class smHistoryStateManager
 		void onStateChange(String path, smHistoryState state);
 	}
 	
-	private final smBrowserHistoryManager m_historyManager = new smBrowserHistoryManager(new smBrowserHistoryManager.I_Listener()
-	{
-		@Override
-		public void onStateChange(String path, smI_JsonObject json)
-		{
-			smHistoryState state = null;
-			
-			if( json != null )
-			{
-				state = new smHistoryState();
-				state.readJson(json);
-			}
-			
-			m_listener.onStateChange(path, state);
-		}
-	});
+	private final smBrowserHistoryManager m_historyManager;
 	
 	private final I_Listener m_listener;
 	private final String m_defaultPageTitle;
 	
-	public smHistoryStateManager(String defaultPageTitle, I_Listener listener)
+	public smHistoryStateManager(smA_JsonFactory jsonFactory, String defaultPageTitle, I_Listener listener)
 	{
 		m_defaultPageTitle = defaultPageTitle;
 		m_listener = listener;
+		
+		m_historyManager = new smBrowserHistoryManager(jsonFactory, new smBrowserHistoryManager.I_Listener()
+		{
+			@Override
+			public void onStateChange(String path, smI_JsonObject json)
+			{
+				smHistoryState state = null;
+				
+				if( json != null )
+				{
+					state = new smHistoryState();
+					state.readJson(null, json);
+				}
+				
+				m_listener.onStateChange(path, state);
+			}
+		});
 	}
 	
 	public void setState(String path, smPoint point)
@@ -121,7 +124,7 @@ public class smHistoryStateManager
 		if( json != null )
 		{
 			smHistoryState state = new smHistoryState();
-			state.readJson(json);
+			state.readJson(null, json);
 			
 			return state;
 		}

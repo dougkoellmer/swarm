@@ -2,11 +2,11 @@ package swarm.client.transaction;
 
 import java.util.ArrayList;
 
-import swarm.shared.app.sm;
+import swarm.shared.app.smSharedAppContext;
 import swarm.shared.json.smA_JsonFactory;
 import swarm.shared.json.smE_JsonKey;
 import swarm.shared.json.smI_JsonArray;
-import swarm.shared.json.smI_JsonEncodable;
+import swarm.shared.json.smI_ReadsJson;
 import swarm.shared.json.smI_JsonObject;
 import swarm.shared.json.smJsonQuery;
 import swarm.shared.json.smJsonHelper;
@@ -127,11 +127,11 @@ public class smTransactionRequestBatch extends smTransactionRequest
 	}
 	
 	@Override
-	public void writeJson(smI_JsonObject json)
+	public void writeJson(smA_JsonFactory factory, smI_JsonObject json_out)
 	{
-		super.writeJson(json);
+		super.writeJson(factory, json);
 		
-		final smI_JsonArray requestList = sm.jsonFactory.createJsonArray();
+		final smI_JsonArray requestList = smSharedAppContext.jsonFactory.createJsonArray();
 		
 		for ( int i = 0; i < m_requestList.size(); i++ )
 		{
@@ -140,10 +140,10 @@ public class smTransactionRequestBatch extends smTransactionRequest
 			//--- DRK > Request can be cancelled by a synchronous request dispatcher.
 			if( !ithRequest.isCancelled() )
 			{
-				requestList.addObject(ithRequest.writeJson());
+				requestList.addObject(ithRequest.writeJson(null));
 			}
 		}
 		
-		sm.jsonFactory.getHelper().putJsonArray(json, smE_JsonKey.requestList, requestList);
+		factory.getHelper().putJsonArray(json, smE_JsonKey.requestList, requestList);
 	}
 }

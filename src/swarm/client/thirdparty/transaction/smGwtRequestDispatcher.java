@@ -8,7 +8,7 @@ import swarm.client.transaction.smClientTransactionManager;
 import swarm.client.transaction.smI_AsyncRequestDispatcher;
 import swarm.client.transaction.smI_ResponseCallbacks;
 import swarm.client.transaction.smTransactionRequestBatch;
-import swarm.shared.app.sm;
+import swarm.shared.app.smSharedAppContext;
 import swarm.shared.app.smS_App;
 import swarm.shared.debugging.smU_Debug;
 import swarm.shared.json.smA_JsonFactory;
@@ -55,7 +55,7 @@ public class smGwtRequestDispatcher implements smI_AsyncRequestDispatcher, Reque
 	{
 		String baseUrl = "/r.t";
 		String url = baseUrl;
-		String jsonString = request.writeJson().toString();
+		String jsonString = request.writeJson(null).toString();
 		
 		RequestBuilder.Method method = request.getMethod() == smE_HttpMethod.GET ? RequestBuilder.GET  : RequestBuilder.POST;
 		boolean isGet = method == RequestBuilder.GET;
@@ -118,8 +118,8 @@ public class smGwtRequestDispatcher implements smI_AsyncRequestDispatcher, Reque
 			return;
 		}
 		
-		smI_JsonObject responseJson = sm.jsonFactory.createJsonObject(nativeResponse.getText());
-		m_reusedResponse.readJson(responseJson);
+		smI_JsonObject responseJson = smSharedAppContext.jsonFactory.createJsonObject(nativeResponse.getText());
+		m_reusedResponse.readJson(null, responseJson);
 		
 		if( !(request instanceof smTransactionRequestBatch) )
 		{
@@ -136,7 +136,7 @@ public class smGwtRequestDispatcher implements smI_AsyncRequestDispatcher, Reque
 			
 			smTransactionRequestBatch batch = (smTransactionRequestBatch) request;
 
-			smI_JsonArray responseList = sm.jsonFactory.getHelper().getJsonArray(responseJson, smE_JsonKey.responseList);
+			smI_JsonArray responseList = factory.getHelper().getJsonArray(responseJson, smE_JsonKey.responseList);
 			
 			m_callbacks.onResponseReceived(batch, responseList);
 		}

@@ -1,11 +1,12 @@
 package swarm.shared.structs;
 
 import swarm.shared.utils.smU_BitTricks;
-import swarm.shared.app.sm;
+import swarm.shared.app.smSharedAppContext;
 import swarm.shared.debugging.smU_Debug;
 import swarm.shared.entities.smE_CodeSafetyLevel;
 import swarm.shared.entities.smE_CodeType;
 import swarm.shared.json.smA_JsonEncodable;
+import swarm.shared.json.smA_JsonFactory;
 import swarm.shared.json.smE_JsonKey;
 import swarm.shared.json.smI_JsonArray;
 import swarm.shared.json.smI_JsonObject;
@@ -99,22 +100,22 @@ public class smCode extends smA_JsonEncodable
 	}
 
 	@Override
-	public void writeJson(smI_JsonObject json)
+	public void writeJson(smA_JsonFactory factory, smI_JsonObject json_out)
 	{
-		sm.jsonFactory.getHelper().putString(json, smE_JsonKey.rawCode, m_rawCode);
-		sm.jsonFactory.getHelper().putInt(json, smE_JsonKey.standInFlags, m_standInFlags);
-		sm.jsonFactory.getHelper().putEnum(json, smE_JsonKey.codeSafetyLevel, m_safetyLevel);
+		factory.getHelper().putString(json_out, smE_JsonKey.rawCode, m_rawCode);
+		factory.getHelper().putInt(json_out, smE_JsonKey.standInFlags, m_standInFlags);
+		factory.getHelper().putEnum(json_out, smE_JsonKey.codeSafetyLevel, m_safetyLevel);
 	}
 
 	@Override
-	public void readJson(smI_JsonObject json)
+	public void readJson(smA_JsonFactory factory, smI_JsonObject json)
 	{
 		m_standInFlags = 0x0;
 		
-		m_rawCode = sm.jsonFactory.getHelper().getString(json, smE_JsonKey.rawCode);
+		m_rawCode = factory.getHelper().getString(json, smE_JsonKey.rawCode);
 		
-		m_standInFlags = sm.jsonFactory.getHelper().getInt(json, smE_JsonKey.standInFlags);
+		m_standInFlags = factory.getHelper().getInt(json, smE_JsonKey.standInFlags);
 		
-		m_safetyLevel = sm.jsonFactory.getHelper().getEnum(json, smE_JsonKey.codeSafetyLevel, smE_CodeSafetyLevel.values());
+		m_safetyLevel = factory.getHelper().getEnum(json, smE_JsonKey.codeSafetyLevel, smE_CodeSafetyLevel.values());
 	}
 }

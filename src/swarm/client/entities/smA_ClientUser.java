@@ -355,11 +355,11 @@ public class smA_ClientUser extends smA_User implements smI_LocalCodeRepository
 	}
 	
 	@Override
-	public void readJson(smI_JsonObject json)
+	public void readJson(smA_JsonFactory factory, smI_JsonObject json)
 	{
 		m_cells.clear();
 		
-		super.readJson(json);
+		super.readJson(factory, json);
 		
 		m_isPopulated = true;
 	}
@@ -400,7 +400,7 @@ public class smA_ClientUser extends smA_User implements smI_LocalCodeRepository
 	}
 	
 	@Override
-	public void writeJson(smI_JsonObject json)
+	public void writeJson(smA_JsonFactory factory, smI_JsonObject json_out)
 	{
 		throw new RuntimeException("Client user should never write json.");
 	}

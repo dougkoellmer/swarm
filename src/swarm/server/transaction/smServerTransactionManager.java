@@ -40,7 +40,7 @@ import swarm.shared.app.smA_App;
 import swarm.shared.app.smS_App;
 import swarm.shared.json.smA_JsonFactory;
 import swarm.shared.json.smE_JsonKey;
-import swarm.shared.json.smI_JsonEncodable;
+import swarm.shared.json.smI_ReadsJson;
 import swarm.shared.json.smI_JsonObject;
 import swarm.shared.json.smJsonQuery;
 import swarm.shared.json.smJsonHelper;
@@ -134,7 +134,7 @@ public class smServerTransactionManager
 			
 			//--- DRK > Create a wrapper around the native request and see if there's a server version mismatch.
 			smTransactionRequest wrappedRequest = new smTransactionRequest(nativeRequest);
-			wrappedRequest.readJson(requestJson);
+			wrappedRequest.readJson(null, requestJson);
 			Integer serverVersionAsFarAsClientKnows = wrappedRequest.getServerVersion();
 			boolean serverVersionMismatch = false;
 			
@@ -169,7 +169,7 @@ public class smServerTransactionManager
 	
 			if( isBatch )
 			{
-				final smTransactionResponseBatch responseBatch = new smTransactionResponseBatch();
+				final smTransactionResponseBatch responseBatch = new smTransactionResponseBatch(m_jsonFactory);
 				responseToReturn = responseBatch;
 				
 				smU_RequestBatch.I_JsonReadDelegate readDelegate = new smU_RequestBatch.I_JsonReadDelegate()
@@ -178,7 +178,7 @@ public class smServerTransactionManager
 					public void onRequestFound(smI_JsonObject requestJson)
 					{
 						smTransactionRequest batchedRequest = new smTransactionRequest(nativeRequest);
-						batchedRequest.readJson(requestJson);
+						batchedRequest.readJson(null, requestJson);
 						smTransactionResponse batchedResponse = new smTransactionResponse(nativeResponse);
 						
 						context.addTransaction(batchedRequest, batchedResponse);
@@ -282,7 +282,7 @@ public class smServerTransactionManager
 				s_logger.log(Level.SEVERE, "Response should not have been null.");
 			}
 			
-			responseToReturn.writeJson(responseJson_out);
+			responseToReturn.writeJson(null, responseJson_out);
 			
 			m_jsonFactory.endScope();
 			

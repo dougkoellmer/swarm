@@ -1,8 +1,9 @@
 package swarm.shared.entities;
 
 import swarm.server.structs.smServerCode;
-import swarm.shared.app.sm;
+import swarm.shared.app.smSharedAppContext;
 import swarm.shared.json.smA_JsonEncodable;
+import swarm.shared.json.smA_JsonFactory;
 import swarm.shared.json.smE_JsonKey;
 import swarm.shared.json.smI_JsonKeySource;
 import swarm.shared.json.smI_JsonObject;
@@ -150,33 +151,33 @@ public abstract class smA_Cell extends smA_JsonEncodable
 	}*/
 	
 	@Override
-	public void writeJson(smI_JsonObject json)
+	public void writeJson(smA_JsonFactory factory, smI_JsonObject json_out)
 	{
 		if( m_codePrivileges != null )
 		{
-			m_codePrivileges.writeJson(json);
+			m_codePrivileges.writeJson(null, json_out);
 		}
 		
 		for( int i = 0; i < smE_CodeType.values().length; i++ )
 		{
 			if( m_code[i] != null )
 			{
-				sm.jsonFactory.getHelper().putJsonObject(json, smE_CodeType.values()[i].getJsonKey(), m_code[i].writeJson());
+				factory.getHelper().putJsonObject(json_out, smE_CodeType.values()[i].getJsonKey(), m_code[i].writeJson(null));
 			}
 		}
 	}
 
 	@Override
-	public void readJson(smI_JsonObject json)
+	public void readJson(smA_JsonFactory factory, smI_JsonObject json)
 	{
-		if( smCodePrivileges.isReadable(json) )
+		if( smCodePrivileges.isReadable(factory, json) )
 		{
 			if( m_codePrivileges == null )
 			{
 				m_codePrivileges = new smCodePrivileges();
 			}
 			
-			m_codePrivileges.readJson(json);
+			m_codePrivileges.readJson(null, json);
 		}
 		else
 		{
@@ -187,7 +188,7 @@ public abstract class smA_Cell extends smA_JsonEncodable
 		{
 			smI_JsonKeySource key = smE_CodeType.values()[i].getJsonKey();
 			
-			smI_JsonObject jsonForCode = sm.jsonFactory.getHelper().getJsonObject(json, key);
+			smI_JsonObject jsonForCode = factory.getHelper().getJsonObject(json, key);
 
 			if( jsonForCode != null )
 			{

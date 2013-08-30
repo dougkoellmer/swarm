@@ -2,19 +2,19 @@ package swarm.shared.json;
 
 import java.util.ArrayList;
 
-import swarm.shared.app.sm;
+import swarm.shared.app.smSharedAppContext;
 
 public class smJsonQuery
 {
 	protected static class Condition
 	{
-		smI_JsonEncodable m_encodable;
+		smI_JsonComparable m_comparable;
 		smI_JsonKeySource m_keySource;
 		Object m_value;
 		
-		private Condition(smI_JsonEncodable encodable)
+		private Condition(smI_JsonComparable comparable)
 		{
-			set(encodable);
+			set(m_comparable);
 		}
 		
 		private Condition(smI_JsonKeySource key, Object mustEqual)
@@ -22,9 +22,9 @@ public class smJsonQuery
 			set(key, mustEqual);
 		}
 		
-		protected void set(smI_JsonEncodable encodable)
+		protected void set(smI_JsonComparable comparable)
 		{
-			m_encodable = encodable;
+			m_comparable = comparable;
 			
 			m_keySource = null;
 			m_value = null;
@@ -32,7 +32,7 @@ public class smJsonQuery
 		
 		protected void set(smI_JsonKeySource key, Object mustEqual)
 		{
-			m_encodable = null;
+			m_comparable = null;
 			
 			m_keySource = key; 
 			
@@ -44,18 +44,18 @@ public class smJsonQuery
 			m_value = mustEqual;
 		}
 		
-		private boolean evaluate(smI_JsonObject json)
+		private boolean evaluate(smA_JsonFactory factory, smI_JsonObject json)
 		{
-			if( m_encodable != null )
+			if( m_comparable != null )
 			{
-				if( m_encodable.isEqualTo(json) )
+				if( m_comparable.isEqualTo(factory, json) )
 				{
 					return true;
 				}
 			}
 			else
 			{
-				Object value = sm.jsonFactory.getHelper().getObject(json, m_keySource);
+				Object value = factory.getHelper().getObject(json, m_keySource);
 				
 				if( value == null && m_value == null )
 				{
@@ -78,7 +78,7 @@ public class smJsonQuery
 		
 	}
 	
-	public void addCondition(smI_JsonEncodable mustContain)
+	public void addCondition(smI_JsonComparable mustContain)
 	{
 		m_conditions.add(new Condition(mustContain));
 	}
@@ -88,11 +88,11 @@ public class smJsonQuery
 		m_conditions.add(new Condition(key, mustEqual));
 	}
 	
-	public boolean evaluate(smI_JsonObject json)
+	public boolean evaluate(smA_JsonFactory factory, smI_JsonObject json)
 	{
 		for( int i = 0; i < m_conditions.size(); i++ )
 		{
-			if( !m_conditions.get(i).evaluate(json) )
+			if( !m_conditions.get(i).evaluate(factory, json) )
 			{
 				return false;
 			}

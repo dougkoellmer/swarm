@@ -1,6 +1,6 @@
 package swarm.shared.account;
 
-import swarm.shared.app.sm;
+import swarm.shared.app.smSharedAppContext;
 import swarm.shared.json.smA_JsonEncodable;
 import swarm.shared.json.smA_JsonFactory;
 import swarm.shared.json.smE_JsonKey;
@@ -66,24 +66,24 @@ public class smSignInValidationResult extends smA_JsonEncodable
 	}
 
 	@Override
-	public void writeJson(smI_JsonObject json)
+	public void writeJson(smA_JsonFactory factory, smI_JsonObject json_out)
 	{
-		smI_JsonArray errors = sm.jsonFactory.createJsonArray();
+		smI_JsonArray errors = factory.createJsonArray();
 		
 		for( int i = 0; i < m_errors.length; i++ )
 		{
 			errors.addInt(m_errors[i].ordinal());
 		}
 		
-		sm.jsonFactory.getHelper().putJsonArray(json, smE_JsonKey.signInValidationErrors, errors);
+		factory.getHelper().putJsonArray(json_out, smE_JsonKey.signInValidationErrors, errors);
 	}
 
 	@Override
-	public void readJson(smI_JsonObject json)
+	public void readJson(smA_JsonFactory factory, smI_JsonObject json)
 	{
 		init();
 		
-		smI_JsonArray errors = sm.jsonFactory.getHelper().getJsonArray(json, smE_JsonKey.signInValidationErrors);
+		smI_JsonArray errors = factory.getHelper().getJsonArray(json, smE_JsonKey.signInValidationErrors);
 		
 		for( int i = 0; i < errors.getSize(); i++ )
 		{

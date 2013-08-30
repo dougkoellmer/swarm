@@ -11,7 +11,7 @@ import javax.servlet.jsp.JspWriter;
 import swarm.server.account.sm_s;
 import swarm.server.app.smA_ServerJsonFactory;
 import swarm.shared.app.smS_App;
-import swarm.shared.json.smI_JsonEncodable;
+import swarm.shared.json.smI_ReadsJson;
 import swarm.shared.transaction.smE_RequestPath;
 import swarm.shared.transaction.smTransactionRequest;
 import swarm.shared.transaction.smTransactionResponse;
@@ -82,8 +82,8 @@ public class smInlineTransactionManager
 	
 	private void writeInlineTransaction(smTransactionRequest request, smTransactionResponse response) throws IOException
 	{
-		String requestJson = request.writeJson().writeString();
-		String responseJson = response.writeJson().writeString();
+		String requestJson = request.writeJson(null).writeString();
+		String responseJson = response.writeJson(null).writeString();
 		
 		//TODO: Make this non application specific somehow, so the "sm" prefix is retreived from somewhere.
 		m_context.get().m_out.write(m_appId+"_rl.push(['"+requestJson+"', '"+responseJson+"']);");
@@ -101,7 +101,7 @@ public class smInlineTransactionManager
 		return makeInlineRequest(path, null);
 	}
 	
-	public smTransactionResponse makeInlineRequest(smE_RequestPath path, smI_JsonEncodable jsonEncodable) throws IOException
+	public smTransactionResponse makeInlineRequest(smE_RequestPath path, smI_ReadsJson jsonEncodable) throws IOException
 	{
 		smTransactionRequest request = new smTransactionRequest(m_context.get().m_nativeRequest);
 		smTransactionResponse response = new smTransactionResponse(m_context.get().m_nativeResponse);
@@ -110,7 +110,7 @@ public class smInlineTransactionManager
 		
 		if( jsonEncodable != null )
 		{
-			jsonEncodable.writeJson(request.getJson());
+			jsonEncodable.writeJson(null, request.getJson());
 		}
 		
 		makeInlineRequest(request, response);
@@ -118,7 +118,7 @@ public class smInlineTransactionManager
 		return response;
 	}
 	
-	public void makeInlineRequestWithResponse(smE_RequestPath path, smI_JsonEncodable requestJsonEncodable, smI_JsonEncodable responseJsonEncodable) throws IOException
+	public void makeInlineRequestWithResponse(smE_RequestPath path, smI_ReadsJson requestJsonEncodable, smI_ReadsJson responseJsonEncodable) throws IOException
 	{
 		smTransactionRequest request = new smTransactionRequest(m_context.get().m_nativeRequest);
 		smTransactionResponse response = new smTransactionResponse(m_context.get().m_nativeResponse);
@@ -126,15 +126,15 @@ public class smInlineTransactionManager
 		request.setPath(path);
 		if( requestJsonEncodable != null )
 		{
-			requestJsonEncodable.writeJson(request.getJson());
+			requestJsonEncodable.writeJson(null, request.getJson());
 		}
 		
-		responseJsonEncodable.writeJson(response.getJson());
+		responseJsonEncodable.writeJson(null, response.getJson());
 		
 		writeInlineTransaction(request, response);
 	}
 	
-	public void makeInlineRequestWithResponse(smE_RequestPath path, smI_JsonEncodable responseJsonEncodable) throws IOException
+	public void makeInlineRequestWithResponse(smE_RequestPath path, smI_ReadsJson responseJsonEncodable) throws IOException
 	{
 		makeInlineRequestWithResponse(path, null, responseJsonEncodable);
 	}

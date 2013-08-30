@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 
-import swarm.shared.app.sm;
+import swarm.shared.app.smSharedAppContext;
 import swarm.server.account.sm_s;
 import swarm.server.data.blob.smBlobException;
 import swarm.server.data.blob.smBlobManagerFactory;
@@ -29,6 +29,7 @@ import swarm.shared.utils.smU_BitTricks;
 import swarm.shared.entities.smA_Cell;
 import swarm.shared.entities.smE_CodeSafetyLevel;
 import swarm.shared.entities.smE_CodeType;
+import swarm.shared.json.smA_JsonFactory;
 import swarm.shared.json.smE_JsonKey;
 import swarm.shared.json.smJsonHelper;
 import swarm.shared.structs.smCode;
@@ -42,16 +43,12 @@ public class getCode implements smI_RequestHandler, smI_DeferredRequestHandler
 {
 	private static final Logger s_logger = Logger.getLogger(getCode.class.getName());
 	
-	private static final String htmls[] = 
+	private final smA_JsonFactory m_jsonFactory;
+	
+	public getCode(smA_JsonFactory jsonFactory)
 	{
-		//"<img src='http://www.krason.mat.univ.szczecin.pl/pk.jpg' />",
-		//"<script type='text/javascript'>document.write('Hello Cell');</script>"
-		//"<center>HEY</center>",
-		
-		"<table width='100%' height='100%'><tr><td>A</td><td>B</td></tr><tr><td>C</td><td>D</td></tr></table>",
-		//"<img src='http://i2.kym-cdn.com/entries/icons/original/000/007/263/photo_cat2.jpg' />",
-		//"<img src='http://indianahumanities.net/wp-content/uploads/2011/08/cat2.jpg' />"
-	};
+		m_jsonFactory = jsonFactory;
+	}
 	
 	private HashMap<smI_BlobKey, Class<? extends smI_Blob>> getBlobCoordSet(smTransactionContext context, boolean forceCreate)
 	{
@@ -72,7 +69,7 @@ public class getCode implements smI_RequestHandler, smI_DeferredRequestHandler
 		//smU_Servlet.simulateException(true);
 		
 		smServerCellAddressMapping mapping = new smServerCellAddressMapping(smE_GridType.ACTIVE);
-		mapping.readJson(request.getJson());
+		mapping.readJson(null, request.getJson());
 		
 		if( context.getRequestCount(smE_RequestPath.getCode) > 1 )
 		{
@@ -100,7 +97,7 @@ public class getCode implements smI_RequestHandler, smI_DeferredRequestHandler
 			return;
 		}
 
-		smE_CodeType eCodeType = sm.jsonFactory.getHelper().getEnum(request.getJson(), smE_JsonKey.codeType, smE_CodeType.values());
+		smE_CodeType eCodeType = m_jsonFactory.getHelper().getEnum(request.getJson(), smE_JsonKey.codeType, smE_CodeType.values());
 		
 		writeResponse(eCodeType, persistedCell, response);
 	}
@@ -149,7 +146,7 @@ public class getCode implements smI_RequestHandler, smI_DeferredRequestHandler
 		//---		and don't send down all the other code types that the persisted cell might have.
 		smA_Cell responseCell = new smA_Cell(privileges){};
 		responseCell.setCode(eCodeType, responseCode);
-		responseCell.writeJson(response.getJson());
+		responseCell.writeJson(null, response.getJson());
 		response.setError(smE_ResponseError.NO_ERROR);
 		
 		return responseCode;
@@ -196,7 +193,7 @@ public class getCode implements smI_RequestHandler, smI_DeferredRequestHandler
 				continue;
 			}
 			
-			smE_CodeType eCodeType = sm.jsonFactory.getHelper().getEnum(request.getJson(), smE_JsonKey.codeType, smE_CodeType.values());
+			smE_CodeType eCodeType = m_jsonFactory.getHelper().getEnum(request.getJson(), smE_JsonKey.codeType, smE_CodeType.values());
 
 			if( result == null )
 			{
@@ -206,7 +203,7 @@ public class getCode implements smI_RequestHandler, smI_DeferredRequestHandler
 			}
 			
 			smServerCellAddressMapping mapping = new smServerCellAddressMapping(smE_GridType.ACTIVE);
-			mapping.readJson(request.getJson());
+			mapping.readJson(null, request.getJson());
 			
 			smServerCell persistedCell = (smServerCell) result.get(mapping);
 			

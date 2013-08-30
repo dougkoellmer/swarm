@@ -1,7 +1,7 @@
 package swarm.client.structs;
 
 import swarm.client.entities.smBufferCell;
-import swarm.client.ui.cell.smVisualCell;
+import swarm.client.view.cell.smVisualCell;
 import swarm.shared.entities.smA_Grid;
 import swarm.shared.memory.smObjectPool;
 import swarm.shared.reflection.smI_Class;
@@ -11,9 +11,7 @@ import swarm.shared.reflection.smI_Class;
  * @author 
  */
 public class smCellPool
-{
-	private static final smCellPool s_instance = new smCellPool();
-	
+{	
 	private final smI_Class<smBufferCell> m_bufferCellClass = new smI_Class<smBufferCell>()
 	{
 		@Override
@@ -27,7 +25,7 @@ public class smCellPool
 	
 	private final smObjectPool<smBufferCell> m_pool = new smObjectPool<smBufferCell>(m_bufferCellClass);
 	
-	private smCellPool() 
+	public smCellPool() 
 	{
 	}
 	
@@ -39,11 +37,6 @@ public class smCellPool
 	public smI_CellPoolDelegate getDelegate()
 	{
 		return m_delegate;
-	}
-	
-	public static smCellPool getInstance()
-	{
-		return s_instance;
 	}
 	
 	public int getAllocCount()

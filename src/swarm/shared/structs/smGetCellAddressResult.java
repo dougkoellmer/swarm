@@ -1,7 +1,8 @@
 package swarm.shared.structs;
 
 import swarm.shared.json.smA_JsonEncodable;
-import swarm.shared.app.sm;
+import swarm.shared.app.smSharedAppContext;
+import swarm.shared.json.smA_JsonFactory;
 import swarm.shared.json.smE_JsonKey;
 import swarm.shared.json.smI_JsonObject;
 import swarm.shared.json.smJsonHelper;
@@ -47,26 +48,26 @@ public class smGetCellAddressResult extends smA_JsonEncodable
 	}
 	
 	@Override
-	public void writeJson(smI_JsonObject json)
+	public void writeJson(smA_JsonFactory factory, smI_JsonObject json_out)
 	{
 		if( m_address != null && m_error == smE_GetCellAddressError.NO_ERROR )
 		{
-			m_address.writeJson(json);
+			m_address.writeJson(null, json_out);
 		}
 		
-		sm.jsonFactory.getHelper().putEnum(json, smE_JsonKey.getCellAddressError, m_error);
+		factory.getHelper().putEnum(json_out, smE_JsonKey.getCellAddressError, m_error);
 	}
 
 	@Override
-	public void readJson(smI_JsonObject json)
+	public void readJson(smA_JsonFactory factory, smI_JsonObject json)
 	{
-		m_error = sm.jsonFactory.getHelper().getEnum(json, smE_JsonKey.getCellAddressError, smE_GetCellAddressError.values());
+		m_error = factory.getHelper().getEnum(json, smE_JsonKey.getCellAddressError, smE_GetCellAddressError.values());
 		
 		if( m_error == smE_GetCellAddressError.NO_ERROR )
 		{
 			m_address = new smCellAddress();
 			
-			m_address.readJson(json);
+			m_address.readJson(null, json);
 		}
 		else
 		{

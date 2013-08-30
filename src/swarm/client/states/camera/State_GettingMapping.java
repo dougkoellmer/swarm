@@ -1,15 +1,11 @@
 package swarm.client.states.camera;
 
 import swarm.client.entities.smBufferCell;
-import swarm.client.states.camera.StateMachine_Camera.CameraManager;
 import swarm.shared.statemachine.smA_Action;
-import swarm.shared.statemachine.smA_ActionArgs;
-import swarm.shared.statemachine.smA_EventAction;
 import swarm.shared.statemachine.smA_State;
 import swarm.shared.statemachine.smA_StateConstructor;
 import swarm.shared.statemachine.smStateEvent;
 import swarm.shared.structs.smCellAddress;
-import swarm.shared.structs.smCellAddressMapping;
 import swarm.shared.structs.smPoint;
 
 public class State_GettingMapping extends smA_State
@@ -24,60 +20,11 @@ public class State_GettingMapping extends smA_State
 		}
 	}
 	
-	public static class OnResponse extends smA_EventAction
-	{
-		public static enum E_Type
-		{
-			ON_FOUND, ON_NOT_FOUND, ON_RESPONSE_ERROR
-		}
-		
-		public static class Args extends smA_ActionArgs
-		{
-			private final smCellAddress m_address;
-			private final smCellAddressMapping m_mapping;
-			private final E_Type m_responseType;
-			
-			Args(E_Type responseType, smCellAddress address, smCellAddressMapping mapping )
-			{
-				m_responseType = responseType;
-				m_address = address;
-				m_mapping = mapping;
-			}
-
-			public smCellAddress getAddress()
-			{
-				return m_address;
-			}
-			
-			public smCellAddressMapping getMapping()
-			{
-				return m_mapping;
-			}
-			
-			public E_Type getType()
-			{
-				return m_responseType;
-			}
-		}
-		
-		@Override
-		public boolean isPerformableInBackground()
-		{
-			return true;
-		}
-		
-		@Override
-		public Class<? extends smA_State> getStateAssociation()
-		{
-			return State_GettingMapping.class;
-		}
-	}
-	
 	private smCellAddress m_address = null;
 	
 	public State_GettingMapping()
 	{
-		smA_Action.register(new OnResponse());
+		smA_Action.register(new Event_GettingMapping_OnResponse());
 	}
 	
 	smCellAddress getAddress()

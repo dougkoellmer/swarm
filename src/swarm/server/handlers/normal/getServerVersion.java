@@ -15,7 +15,7 @@ import swarm.server.structs.smServerCellAddressMapping;
 import swarm.server.telemetry.smTelemetryDatabase;
 import swarm.server.transaction.smI_RequestHandler;
 import swarm.server.transaction.smTransactionContext;
-import swarm.shared.app.sm;
+import swarm.shared.app.smSharedAppContext;
 import swarm.shared.app.smS_App;
 import swarm.shared.json.smE_JsonKey;
 import swarm.shared.json.smJsonHelper;
@@ -30,6 +30,6 @@ public class getServerVersion implements smI_RequestHandler
 	@Override
 	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
 	{
-		sm.jsonFactory.getHelper().putInt(response.getJson(), smE_JsonKey.serverVersion, smS_App.SERVER_VERSION);
+		m_jsonFactory.getHelper().putInt(response.getJson(), smE_JsonKey.serverVersion, smS_App.SERVER_VERSION);
 	}
 }

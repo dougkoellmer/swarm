@@ -22,7 +22,7 @@ public class getCellAddress implements smI_RequestHandler
 	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
 	{
 		smServerCellAddressMapping mapping = new smServerCellAddressMapping(smE_GridType.ACTIVE);
-		mapping.readJson(request.getJson());
+		mapping.readJson(null, request.getJson());
 		smGetCellAddressResult result = new smGetCellAddressResult();
 		
 		smI_BlobManager blobManager = sm_s.blobMngrFactory.create(smE_BlobCacheLevel.values());
@@ -48,6 +48,6 @@ public class getCellAddress implements smI_RequestHandler
 			return;
 		}
 		
-		result.writeJson(response.getJson());
+		result.writeJson(null, response.getJson());
 	}
 }

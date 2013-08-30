@@ -3,7 +3,7 @@ package swarm.shared.transaction;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
-import swarm.shared.app.sm;
+import swarm.shared.app.smSharedAppContext;
 import swarm.shared.json.smA_JsonFactory;
 import swarm.shared.json.smE_JsonKey;
 import swarm.shared.json.smI_JsonObject;

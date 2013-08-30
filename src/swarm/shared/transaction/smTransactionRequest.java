@@ -1,8 +1,9 @@
 package swarm.shared.transaction;
 
-import swarm.shared.app.sm;
+import swarm.shared.app.smSharedAppContext;
 import swarm.shared.app.smA_App;
 import swarm.shared.app.smS_App;
+import swarm.shared.json.smA_JsonFactory;
 import swarm.shared.json.smE_JsonKey;
 import swarm.shared.json.smI_JsonObject;
 import swarm.shared.json.smJsonHelper;
@@ -22,6 +23,20 @@ public class smTransactionRequest extends smA_TransactionObject
 	private boolean m_isCancelled = false;
 
 	protected Integer m_serverVersion = null;
+	
+	public smTransactionRequest(smI_RequestPath path) 
+	{
+		super(null);
+
+		initPath(path);
+	}
+	
+	public smTransactionRequest(smI_RequestPath path, smI_JsonObject jsonArgs) 
+	{
+		super(jsonArgs);
+
+		initPath(path);
+	}
 	
 	public smTransactionRequest(smI_RequestPath path, Object nativeRequest)
 	{
@@ -45,32 +60,9 @@ public class smTransactionRequest extends smA_TransactionObject
 		return m_dispatchTime;
 	}
 	
-	public smTransactionRequest(smI_RequestPath path) 
-	{
-		super(null);
-
-		initPath(path);
-	}
-	
-	public smTransactionRequest(smI_RequestPath path, smI_JsonObject jsonArgs) 
-	{
-		super(jsonArgs);
-
-		initPath(path);
-	}
-	
 	private void initPath(smI_RequestPath path)
 	{
 		m_path = path;
-		m_method = path.getDefaultMethod();
-	}
-	
-	public smTransactionRequest(Object nativeRequest, smI_RequestPath path) 
-	{
-		super(nativeRequest);
-		
-		m_path = path;
-
 		m_method = path.getDefaultMethod();
 	}
 	
@@ -139,26 +131,26 @@ public class smTransactionRequest extends smA_TransactionObject
 	}
 	
 	@Override
-	public void writeJson(smI_JsonObject json)
+	public void writeJson(smA_JsonFactory factory, smI_JsonObject json_out)
 	{
-		super.writeJson(json);
+		super.writeJson(factory, json);
 		
-		sm.requestPathMngr.putToJson(json, m_path);
+		smSharedAppContext.requestPathMngr.putToJson(json, m_path);
 		
 		if( m_serverVersion != null )
 		{
-			sm.jsonFactory.getHelper().putInt(json, smE_JsonKey.serverVersion, m_serverVersion);
+			factory.getHelper().putInt(json, smE_JsonKey.serverVersion, m_serverVersion);
 		}
 	}
 	
 	@Override
-	public void readJson(smI_JsonObject json)
+	public void readJson(smA_JsonFactory factory, smI_JsonObject json)
 	{
-		super.readJson(json);
+		super.readJson(factory, json);
 		
-		m_path = sm.requestPathMngr.getFromJson(json);
+		m_path = smSharedAppContext.requestPathMngr.getFromJson(json);
 		
-		Integer serverVersion = sm.jsonFactory.getHelper().getInt(json, smE_JsonKey.serverVersion);
+		Integer serverVersion = factory.getHelper().getInt(json, smE_JsonKey.serverVersion);
 		
 		m_serverVersion = serverVersion;
 	}

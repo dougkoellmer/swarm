@@ -49,6 +49,6 @@ public class getGridData implements smI_RequestHandler
 			s_logger.severe("Grid came up null when it probably should have been initialized.");
 		}
 		
-		grid.writeJson(response.getJson());
+		grid.writeJson(null, response.getJson());
 	}
 }

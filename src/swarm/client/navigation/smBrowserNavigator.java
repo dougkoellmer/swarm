@@ -2,20 +2,26 @@ package swarm.client.navigation;
 
 import java.util.logging.Logger;
 
-import swarm.client.app.sm_c;
+import swarm.client.app.smAppContext;
 import swarm.client.entities.smBufferCell;
 import swarm.client.entities.smCamera;
 import swarm.client.input.smBrowserHistoryManager;
 import swarm.client.input.smBrowserAddressManager;
 import swarm.client.managers.smCameraManager;
+import swarm.client.states.camera.Action_Camera_SetCameraTarget;
+import swarm.client.states.camera.Action_Camera_SetInitialPosition;
+import swarm.client.states.camera.Action_Camera_SnapToAddress;
+import swarm.client.states.camera.Action_Camera_SnapToCoordinate;
+import swarm.client.states.camera.Event_Camera_OnAddressResponse;
+import swarm.client.states.camera.Event_GettingMapping_OnResponse;
 import swarm.client.states.camera.StateMachine_Camera;
 import swarm.client.states.camera.State_CameraFloating;
 import swarm.client.states.camera.State_CameraSnapping;
-import swarm.client.states.camera.State_GettingMapping;
 import swarm.client.states.camera.State_ViewingCell;
-import swarm.client.ui.tooltip.smToolTipManager;
-import swarm.client.ui.widget.smMagnifier;
+import swarm.client.view.tooltip.smToolTipManager;
+import swarm.client.view.widget.smMagnifier;
 import swarm.shared.debugging.smU_Debug;
+import swarm.shared.json.smA_JsonFactory;
 import swarm.shared.json.smI_JsonObject;
 import swarm.shared.statemachine.smA_Action;
 import swarm.shared.statemachine.smA_State;
@@ -45,12 +51,12 @@ public class smBrowserNavigator implements smI_StateEventListener
 	private final smHistoryStateManager m_historyManager;
 	private final smBrowserAddressManager m_addressManager;
 
-	private StateMachine_Camera.OnAddressResponse.Args 			m_args_OnAddressResponse	= null;
-	private State_GettingMapping.OnResponse.Args	 			m_args_OnMappingResponse	= null;
-	private final StateMachine_Camera.SetCameraTarget.Args		m_args_SetCameraTarget		= new StateMachine_Camera.SetCameraTarget.Args();
-	private final StateMachine_Camera.SetInitialPosition.Args	m_args_SetInitialPosition 	= new StateMachine_Camera.SetInitialPosition.Args();
-	private final StateMachine_Camera.SnapToAddress.Args 		m_args_SnapToAddress		= new StateMachine_Camera.SnapToAddress.Args();
-	private final StateMachine_Camera.SnapToCoordinate.Args 	m_args_SnapToCoordinate		= new StateMachine_Camera.SnapToCoordinate.Args();
+	private Event_Camera_OnAddressResponse.Args 		m_args_OnAddressResponse	= null;
+	private Event_GettingMapping_OnResponse.Args	 	m_args_OnMappingResponse	= null;
+	private final Action_Camera_SetCameraTarget.Args	m_args_SetCameraTarget		= new Action_Camera_SetCameraTarget.Args();
+	private final Action_Camera_SetInitialPosition.Args	m_args_SetInitialPosition 	= new Action_Camera_SetInitialPosition.Args();
+	private final Action_Camera_SnapToAddress.Args 		m_args_SnapToAddress		= new Action_Camera_SnapToAddress.Args();
+	private final Action_Camera_SnapToCoordinate.Args 	m_args_SnapToCoordinate		= new Action_Camera_SnapToCoordinate.Args();
 
 	
 	private Class<? extends smA_Action> m_lastSnapAction = null;
@@ -64,8 +70,12 @@ public class smBrowserNavigator implements smI_StateEventListener
 	
 	private final double m_floatingHistoryUpdateRate;
 	
-	smBrowserNavigator(String defaultPageTitle, double floatingHistoryUpdateRate_seconds)
+	private final smCameraManager m_cameraMngr;
+	
+	public smBrowserNavigator(smCameraManager cameraMngr, smA_JsonFactory jsonFactory, String defaultPageTitle, double floatingHistoryUpdateRate_seconds)
 	{
+		m_cameraMngr = cameraMngr;
+		
 		m_floatingHistoryUpdateRate = floatingHistoryUpdateRate_seconds;
 		
 		m_args_SnapToCoordinate.setUserData(this.getClass());
@@ -87,18 +97,18 @@ public class smBrowserNavigator implements smI_StateEventListener
 				{
 					m_args_SnapToCoordinate.setCoordinate(state.getMapping().getCoordinate());
 					
-					if( !smA_Action.isPerformable(StateMachine_Camera.SnapToCoordinate.class, m_args_SnapToCoordinate) )
+					if( !smA_Action.isPerformable(Action_Camera_SnapToCoordinate.class, m_args_SnapToCoordinate) )
 					{
 						m_historyManager./*re*/pushState(path, state.getMapping());
 					}
 					else
 					{
-						smA_Action.perform(StateMachine_Camera.SnapToCoordinate.class, m_args_SnapToCoordinate);
+						smA_Action.perform(Action_Camera_SnapToCoordinate.class, m_args_SnapToCoordinate);
 					}
 				}
 				else if( state.getPoint() != null )
 				{
-					if( !smA_Action.isPerformable(StateMachine_Camera.SetCameraTarget.class) )
+					if( !smA_Action.isPerformable(Action_Camera_SetCameraTarget.class) )
 					{
 						m_historyManager./*re*/pushState(path, state.getPoint());
 					}
@@ -107,14 +117,14 @@ public class smBrowserNavigator implements smI_StateEventListener
 						//--- DRK > Always try to set camera's initial position first.  This can essentially only be done
 						//---		at app start up.  The rest of the time it will fail and we'll set camera target normally.
 						m_args_SetInitialPosition.setPoint(state.getPoint());
-						if( smA_Action.perform(StateMachine_Camera.SetInitialPosition.class, m_args_SetInitialPosition) )
+						if( smA_Action.perform(Action_Camera_SetInitialPosition.class, m_args_SetInitialPosition) )
 						{
 							//s_logger.info("SETTING INITIAL POINT: " + state.getPoint());
 						}
 						else
 						{
-							m_args_SetCameraTarget.setPoint(state.getPoint());
-							smA_Action.perform(StateMachine_Camera.SetCameraTarget.class, m_args_SetCameraTarget);
+							m_args_SetCameraTarget.init(state.getPoint(), false);
+							smA_Action.perform(Action_Camera_SetCameraTarget.class, m_args_SetCameraTarget);
 							
 							//s_logger.info("SETTING TARGET POINT: " + state.getPoint());
 						}
@@ -129,7 +139,7 @@ public class smBrowserNavigator implements smI_StateEventListener
 			}
 		};
 		
-		m_historyManager = new smHistoryStateManager(defaultPageTitle, m_historyStateListener);
+		m_historyManager = new smHistoryStateManager(jsonFactory, defaultPageTitle, m_historyStateListener);
 		
 		m_addressManager = new smBrowserAddressManager();
 	}
@@ -175,8 +185,8 @@ public class smBrowserNavigator implements smI_StateEventListener
 							m_stateAlreadyPushedForViewingExit = true;
 							
 							m_historyManager.setState(address, new smHistoryState()); // set empty state
-							m_args_SnapToAddress.setAddress(address);
-							event.getState().performAction(StateMachine_Camera.SnapToAddress.class, m_args_SnapToAddress);
+							m_args_SnapToAddress.init(address);
+							event.getState().performAction(Action_Camera_SnapToAddress.class, m_args_SnapToAddress);
 						}
 						else
 						{
@@ -184,7 +194,7 @@ public class smBrowserNavigator implements smI_StateEventListener
 							//---		This should get rid of things like url parameters, hash tags, etc.,
 							//---		if for some strange reason the user put them there.
 							m_pushHistoryStateForFloating = false;
-							m_historyManager.setState(FLOATING_STATE_PATH, sm_c.camera.getPosition());
+							m_historyManager.setState(FLOATING_STATE_PATH, m_cameraMngr.getCamera().getPosition());
 						}
 					}
 					
@@ -215,7 +225,7 @@ public class smBrowserNavigator implements smI_StateEventListener
 					}
 					else
 					{
-						if( m_lastSnapAction == StateMachine_Camera.SnapToCoordinate.class )
+						if( m_lastSnapAction == Action_Camera_SnapToCoordinate.class )
 						{
 							smU_Debug.ASSERT(m_args_OnMappingResponse == null, "sm_bro_nav_112387");
 							
@@ -225,7 +235,7 @@ public class smBrowserNavigator implements smI_StateEventListener
 							{
 								mapping = m_args_OnAddressResponse.getMapping();
 							
-								if( m_args_OnAddressResponse.getType() == StateMachine_Camera.OnAddressResponse.E_Type.ON_FOUND )
+								if( m_args_OnAddressResponse.getType() == Event_Camera_OnAddressResponse.E_Type.ON_FOUND )
 								{
 									smHistoryState state = new smHistoryState(m_args_OnAddressResponse.getMapping());
 									
@@ -262,13 +272,13 @@ public class smBrowserNavigator implements smI_StateEventListener
 								}
 							}
 						}
-						else if( m_lastSnapAction == StateMachine_Camera.SnapToAddress.class )
+						else if( m_lastSnapAction == Action_Camera_SnapToAddress.class )
 						{
 							smU_Debug.ASSERT(m_args_OnAddressResponse == null, "sm_bro_nav_112387");
 							
 							if( m_args_OnMappingResponse != null )
 							{
-								if( m_args_OnMappingResponse.getType() == State_GettingMapping.OnResponse.E_Type.ON_FOUND )
+								if( m_args_OnMappingResponse.getType() == Event_GettingMapping_OnResponse.E_Type.ON_FOUND )
 								{
 									if( m_historyManager.getCurrentState() == null )
 									{
@@ -322,7 +332,7 @@ public class smBrowserNavigator implements smI_StateEventListener
 					
 					if( m_historyManager.getCurrentState() == null )
 					{
-						m_historyManager.setState(FLOATING_STATE_PATH, sm_c.camera.getPosition());
+						m_historyManager.setState(FLOATING_STATE_PATH, m_cameraMngr.getCamera().getPosition());
 					}
 					else
 					{
@@ -349,7 +359,7 @@ public class smBrowserNavigator implements smI_StateEventListener
 						
 						if( m_lastSnapAction != null )
 						{
-							m_historyManager.pushState(FLOATING_STATE_PATH, sm_c.camera.getPosition());
+							m_historyManager.pushState(FLOATING_STATE_PATH, m_cameraMngr.getCamera().getPosition());
 							
 							m_stateAlreadyPushedForViewingExit = true;
 						}
@@ -365,9 +375,9 @@ public class smBrowserNavigator implements smI_StateEventListener
 				{
 					if( event.getState().isEntered() ) // just to make sure
 					{
-						if( sm_c.cameraMngr.didCameraJustComeToRest() )
+						if( m_cameraMngr.didCameraJustComeToRest() )
 						{
-							this.setPositionForFloatingState(event.getState(), sm_c.camera.getPosition(), true);
+							this.setPositionForFloatingState(event.getState(), m_cameraMngr.getCamera().getPosition(), true);
 						}
 					}
 				}
@@ -392,7 +402,7 @@ public class smBrowserNavigator implements smI_StateEventListener
 						smA_State state = smA_State.getEnteredInstance(StateMachine_Camera.class);
 						if( state != null && state.getUpdateCount() > 0 ) // dunno why it would be null, just being paranoid before a deploy
 						{
-							this.setPositionForFloatingState(event.getState(), sm_c.camera.getPosition(), true);
+							this.setPositionForFloatingState(event.getState(), m_cameraMngr.getCamera().getPosition(), true);
 						}
 						
 						m_receivedFloatingStateEntered = false;
@@ -404,9 +414,9 @@ public class smBrowserNavigator implements smI_StateEventListener
 
 			case DID_PERFORM_ACTION:
 			{
-				if( event.getAction() == StateMachine_Camera.OnAddressResponse.class )
+				if( event.getAction() == Event_Camera_OnAddressResponse.class )
 				{
-					StateMachine_Camera.OnAddressResponse.Args args = event.getActionArgs();
+					Event_Camera_OnAddressResponse.Args args = event.getActionArgs();
 					
 					if( smA_State.isEntered(State_CameraSnapping.class) )
 					{
@@ -416,7 +426,7 @@ public class smBrowserNavigator implements smI_StateEventListener
 					{
 						m_args_OnAddressResponse = null;
 						
-						if( args.getType() == StateMachine_Camera.OnAddressResponse.E_Type.ON_FOUND )
+						if( args.getType() == Event_Camera_OnAddressResponse.E_Type.ON_FOUND )
 						{
 							m_historyManager.setState(args.getAddress(), args.getMapping());
 						}
@@ -426,28 +436,28 @@ public class smBrowserNavigator implements smI_StateEventListener
 						smU_Debug.ASSERT(false, "sm_nav_1");
 					}
 				}
-				else if( event.getAction() == State_GettingMapping.OnResponse.class )
+				else if( event.getAction() == Event_GettingMapping_OnResponse.class )
 				{
-					State_GettingMapping.OnResponse.Args args = event.getActionArgs();
+					Event_GettingMapping_OnResponse.Args args = event.getActionArgs();
 
 					m_args_OnMappingResponse = args;
 					
-					if( args.getType() != State_GettingMapping.OnResponse.E_Type.ON_FOUND )
+					if( args.getType() != Event_GettingMapping_OnResponse.E_Type.ON_FOUND )
 					{
 						//--- DRK > This takes care of the case where a user navigates to a cell with a valid address format
 						//---		through the url bar, but the address can't be resolved, so we just wipe the url bar completely.
-						m_historyManager.setState(FLOATING_STATE_PATH, sm_c.camera.getPosition());
+						m_historyManager.setState(FLOATING_STATE_PATH, m_cameraMngr.getCamera().getPosition());
 					}
 				}
-				else if( event.getAction() == StateMachine_Camera.SnapToAddress.class ||
-						 event.getAction() == StateMachine_Camera.SnapToCoordinate.class )
+				else if( event.getAction() == Action_Camera_SnapToAddress.class ||
+						 event.getAction() == Action_Camera_SnapToCoordinate.class )
 				{
 					m_args_OnAddressResponse = null;
 					m_args_OnMappingResponse = null;
 					
-					if( event.getAction() == StateMachine_Camera.SnapToCoordinate.class )
+					if( event.getAction() == Action_Camera_SnapToCoordinate.class )
 					{
-						StateMachine_Camera.SnapToCoordinate.Args args = event.getActionArgs();
+						Action_Camera_SnapToCoordinate.Args args = event.getActionArgs();
 						
 						Object userData = event.getActionArgs().getUserData();
 						if( userData == this.getClass() ) // signifies that snap was because of browser navigation event.
@@ -464,9 +474,9 @@ public class smBrowserNavigator implements smI_StateEventListener
 							return;
 						}
 					}
-					else if( event.getAction() == StateMachine_Camera.SnapToAddress.class )
+					else if( event.getAction() == Action_Camera_SnapToAddress.class )
 					{
-						StateMachine_Camera.SnapToAddress.Args args = event.getActionArgs();
+						Action_Camera_SnapToAddress.Args args = event.getActionArgs();
 						
 						if( args.onlyCausedRefresh() )
 						{
@@ -478,7 +488,7 @@ public class smBrowserNavigator implements smI_StateEventListener
 					
 					m_lastSnapAction = event.getAction();
 				}
-				else if( event.getAction() == StateMachine_Camera.SetCameraTarget.class )
+				else if( event.getAction() == Action_Camera_SetCameraTarget.class )
 				{
 					State_CameraFloating floatingState = smA_State.getEnteredInstance(State_CameraFloating.class);
 					
@@ -486,7 +496,7 @@ public class smBrowserNavigator implements smI_StateEventListener
 					
 					if( floatingState != null )
 					{
-						StateMachine_Camera.SetCameraTarget.Args args = event.getActionArgs();
+						Action_Camera_SetCameraTarget.Args args = event.getActionArgs();
 						
 						if( args != null )
 						{

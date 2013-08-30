@@ -20,7 +20,7 @@ import swarm.server.structs.smServerCellAddress;
 import swarm.server.structs.smServerCellAddressMapping;
 import swarm.server.transaction.smI_RequestHandler;
 import swarm.server.transaction.smTransactionContext;
-import swarm.shared.app.sm;
+import swarm.shared.app.smSharedAppContext;
 import swarm.shared.json.smE_JsonKey;
 import swarm.shared.json.smJsonHelper;
 import swarm.shared.structs.smE_GetCellAddressError;

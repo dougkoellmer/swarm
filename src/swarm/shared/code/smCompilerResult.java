@@ -3,10 +3,11 @@ package swarm.shared.code;
 import java.util.ArrayList;
 import java.util.List;
 
-import swarm.shared.app.sm;
+import swarm.shared.app.smSharedAppContext;
 import swarm.shared.debugging.smU_Debug;
 import swarm.shared.entities.smE_CodeType;
 import swarm.shared.json.smA_JsonEncodable;
+import swarm.shared.json.smA_JsonFactory;
 import swarm.shared.json.smE_JsonKey;
 import swarm.shared.json.smI_JsonArray;
 import swarm.shared.json.smI_JsonObject;
@@ -114,16 +115,16 @@ public class smCompilerResult extends smA_JsonEncodable
 	}
 
 	@Override
-	public void writeJson(smI_JsonObject json)
+	public void writeJson(smA_JsonFactory factory, smI_JsonObject json_out)
 	{
 		if( m_codeCell != null )
 		{
-			m_codeCell.writeJson(json);
+			m_codeCell.writeJson(null, json_out);
 		}
 		
 		if( m_compilerMessages != null )
 		{
-			sm.jsonFactory.getHelper().putList(json, smE_JsonKey.compilationErrors, m_compilerMessages);
+			factory.getHelper().putList(factory, json_out, smE_JsonKey.compilationErrors, m_compilerMessages);
 		}
 		else
 		{
@@ -137,19 +138,19 @@ public class smCompilerResult extends smA_JsonEncodable
 			m_status = smE_CompilationStatus.COMPILER_EXCEPTION;
 		}
 		
-		sm.jsonFactory.getHelper().putEnum(json, smE_JsonKey.compilationStatusCode, m_status);
+		factory.getHelper().putEnum(json_out, smE_JsonKey.compilationStatusCode, m_status);
 	}
 
 	@Override
-	public void readJson(smI_JsonObject json)
+	public void readJson(smA_JsonFactory factory, smI_JsonObject json)
 	{
 		initCell();
 		
-		m_codeCell.readJson(json);
+		m_codeCell.readJson(null, json);
 		
-		m_status = sm.jsonFactory.getHelper().getEnum(json, smE_JsonKey.compilationStatusCode, smE_CompilationStatus.values());
+		m_status = factory.getHelper().getEnum(json, smE_JsonKey.compilationStatusCode, smE_CompilationStatus.values());
 		
-		smI_JsonArray compilerMessageJsonArray = sm.jsonFactory.getHelper().getJsonArray(json, smE_JsonKey.compilationErrors);
+		smI_JsonArray compilerMessageJsonArray = factory.getHelper().getJsonArray(json, smE_JsonKey.compilationErrors);
 		
 		if( compilerMessageJsonArray != null )
 		{

@@ -1,9 +1,10 @@
 package swarm.shared.entities;
 
 import swarm.server.structs.smServerBitArray;
-import swarm.shared.app.sm;
+import swarm.shared.app.smSharedAppContext;
 import swarm.shared.app.smS_App;
 import swarm.shared.json.smA_JsonEncodable;
+import swarm.shared.json.smA_JsonFactory;
 import swarm.shared.json.smE_JsonKey;
 import swarm.shared.json.smI_JsonObject;
 import swarm.shared.json.smJsonHelper;
@@ -112,13 +113,13 @@ public abstract class smA_Grid extends smA_JsonEncodable
 	}
 	
 	@Override
-	public void readJson(smI_JsonObject json)
+	public void readJson(smA_JsonFactory factory, smI_JsonObject json)
 	{
-		Integer width = sm.jsonFactory.getHelper().getInt(json, smE_JsonKey.gridWidth);
-		Integer height = sm.jsonFactory.getHelper().getInt(json, smE_JsonKey.gridHeight);
-		Integer cellWidth = sm.jsonFactory.getHelper().getInt(json, smE_JsonKey.gridCellWidth);
-		Integer cellHeight = sm.jsonFactory.getHelper().getInt(json, smE_JsonKey.gridCellHeight);
-		Integer cellPadding = sm.jsonFactory.getHelper().getInt(json, smE_JsonKey.gridCellPadding);	
+		Integer width = factory.getHelper().getInt(json, smE_JsonKey.gridWidth);
+		Integer height = factory.getHelper().getInt(json, smE_JsonKey.gridHeight);
+		Integer cellWidth = factory.getHelper().getInt(json, smE_JsonKey.gridCellWidth);
+		Integer cellHeight = factory.getHelper().getInt(json, smE_JsonKey.gridCellHeight);
+		Integer cellPadding = factory.getHelper().getInt(json, smE_JsonKey.gridCellPadding);	
 		
 		m_width = width != null ? width : m_width;
 		m_height = height != null ? height : m_height;
@@ -126,26 +127,26 @@ public abstract class smA_Grid extends smA_JsonEncodable
 		m_cellHeight = cellHeight != null ? cellHeight : m_cellHeight;
 		m_cellPadding = cellPadding != null ? cellPadding : m_cellPadding;
 		
-		if( sm.jsonFactory.getHelper().containsAnyKeys(json, smE_JsonKey.bitArray) )
+		if( factory.getHelper().containsAnyKeys(json, smE_JsonKey.bitArray) )
 		{
 			m_ownership = m_ownership != null ? m_ownership : createBitArray();
 			
-			m_ownership.readJson(json);
+			m_ownership.readJson(null, json);
 		}
 	}
 	
 	@Override
-	public void writeJson(smI_JsonObject json)
+	public void writeJson(smA_JsonFactory factory, smI_JsonObject json_out)
 	{
-		sm.jsonFactory.getHelper().putInt(json, smE_JsonKey.gridWidth, m_width);
-		sm.jsonFactory.getHelper().putInt(json, smE_JsonKey.gridHeight, m_height);
-		sm.jsonFactory.getHelper().putInt(json, smE_JsonKey.gridCellWidth, m_cellWidth);
-		sm.jsonFactory.getHelper().putInt(json, smE_JsonKey.gridCellHeight, m_cellHeight);
-		sm.jsonFactory.getHelper().putInt(json, smE_JsonKey.gridCellPadding, m_cellPadding);
+		factory.getHelper().putInt(json_out, smE_JsonKey.gridWidth, m_width);
+		factory.getHelper().putInt(json_out, smE_JsonKey.gridHeight, m_height);
+		factory.getHelper().putInt(json_out, smE_JsonKey.gridCellWidth, m_cellWidth);
+		factory.getHelper().putInt(json_out, smE_JsonKey.gridCellHeight, m_cellHeight);
+		factory.getHelper().putInt(json_out, smE_JsonKey.gridCellPadding, m_cellPadding);
 		
 		if( m_ownership != null )
 		{
-			m_ownership.writeJson(json);
+			m_ownership.writeJson(null, json_out);
 		}
 	}
 }

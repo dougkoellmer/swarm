@@ -21,7 +21,7 @@ import swarm.server.structs.smServerCodePrivileges;
 import swarm.server.transaction.smI_RequestHandler;
 import swarm.server.transaction.smServerTransactionManager;
 import swarm.server.transaction.smTransactionContext;
-import swarm.shared.app.sm;
+import swarm.shared.app.smSharedAppContext;
 import swarm.shared.entities.smA_User;
 import swarm.shared.entities.smE_CodeType;
 import swarm.shared.json.smE_JsonKey;
@@ -41,7 +41,7 @@ public class deactivateUserCells implements smI_RequestHandler
 	@Override
 	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
 	{
-		Integer accountId = sm.jsonFactory.getHelper().getInt(request.getJson(), smE_JsonKey.accountId);
+		Integer accountId = factory.getHelper().getInt(request.getJson(), smE_JsonKey.accountId);
 		
 		if( accountId == null )
 		{

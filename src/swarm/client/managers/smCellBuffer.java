@@ -29,10 +29,15 @@ public class smCellBuffer
 	private int m_width = 0;
 	private int m_height = 0;
 	
-	private int m_subCellCountDim = 1;
+	private int m_subCellDimension = 1;
 	
-	smCellBuffer()
+	private final smCellCodeManager m_codeMngr;
+	private final smCellPool m_cellPool;
+	
+	smCellBuffer(smCellCodeManager codeMngr, smCellPool cellPool)
 	{
+		m_codeMngr = codeMngr;
+		m_cellPool = cellPool;
 	}
 	
 	public smGridCoordinate getCoordinate()
@@ -48,12 +53,12 @@ public class smCellBuffer
 			return;
 		}
 		
-		m_subCellCountDim = size;
+		m_subCellDimension = size;
 	}
 	
 	public int getSubCellCount()
 	{
-		return m_subCellCountDim;
+		return m_subCellDimension;
 	}
 	
 	public int getWidth()
@@ -184,9 +189,6 @@ public class smCellBuffer
 		smGridCoordinate absCoord = s_utilCoord1;
 		smGridCoordinate relThisCoord = s_utilCoord2;
 		
-		smCellPool pool = smCellPool.getInstance();
-		smCellCodeManager populator = smCellCodeManager.getInstance();
-		
 		//--- DRK > Easy case is when we have a size change...then everything is recycled.
 		if ( otherSubCellCountDim != thisSubCellCountDim )
 		{
@@ -212,14 +214,14 @@ public class smCellBuffer
 				}
 				else
 				{
-					ithCell = smCellPool.getInstance().allocCell(grid, this.m_subCellCountDim, createVisualizations);
+					ithCell = m_cellPool.allocCell(grid, this.m_subCellDimension, createVisualizations);
 				}
 				
 				this.m_cells.set(i, ithCell);
 				
 				ithCell.getCoordinate().copy(absCoord);
 				
-				populator.populateCell(ithCell, localCodeSource, m_subCellCountDim, cellRecycled, communicateWithServer, smE_CodeType.SPLASH);
+				m_codeMngr.populateCell(ithCell, localCodeSource, m_subCellDimension, cellRecycled, communicateWithServer, smE_CodeType.SPLASH);
 			}
 		}
 		
@@ -344,7 +346,7 @@ public class smCellBuffer
 						}
 						else
 						{
-							otherCell = pool.allocCell(grid, this.m_subCellCountDim, createVisualizations);
+							otherCell = m_cellPool.allocCell(grid, this.m_subCellDimension, createVisualizations);
 						}
 						
 						this.setCell(m, n, otherCell);
@@ -353,7 +355,7 @@ public class smCellBuffer
 					smBufferCell imposedCell = getCellAtRelativeCoord(relThisCoord);
 					imposedCell.getCoordinate().copy(absCoord);
 					
-					populator.populateCell(otherCell, localCodeSource, m_subCellCountDim, cellRecycled, communicateWithServer, smE_CodeType.SPLASH);
+					m_codeMngr.populateCell(otherCell, localCodeSource, m_subCellDimension, cellRecycled, communicateWithServer, smE_CodeType.SPLASH);
 				}
 			}
 			
@@ -377,7 +379,7 @@ public class smCellBuffer
 		
 		if( flushPopulator )
 		{
-			populator.flush();
+			m_codeMngr.flush();
 		}
 		
 		//int debug_nonNullCount = 0;
@@ -395,7 +397,7 @@ public class smCellBuffer
 			//---		the pool, if no good solution to case (b) could be found.
 			if ( ithCell != null )
 			{
-				pool.deallocCell(ithCell);
+				m_cellPool.deallocCell(ithCell);
 				otherBuffer.m_cells.set(i, null);
 				
 				//debug_nonNullCount++;
@@ -415,16 +417,14 @@ public class smCellBuffer
 	}
 	
 	void drain()
-	{
-		smCellPool pool = smCellPool.getInstance();
-		
+	{		
 		for ( int i = 0; i < this.m_cells.size(); i++ )
 		{
 			smBufferCell ithCell = this.m_cells.get(i);
 			
 			if( ithCell != null )
 			{
-				pool.deallocCell(ithCell);
+				m_cellPool.deallocCell(ithCell);
 			}
 		}
 		

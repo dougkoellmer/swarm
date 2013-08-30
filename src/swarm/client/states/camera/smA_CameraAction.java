@@ -3,7 +3,7 @@ package swarm.client.states.camera;
 import swarm.shared.statemachine.smA_Action;
 import swarm.shared.statemachine.smA_State;
 
-public abstract class smA_CameraAction extends smA_Action
+abstract class smA_CameraAction extends smA_Action
 {
 	@Override
 	public void prePerform()

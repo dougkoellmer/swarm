@@ -3,6 +3,7 @@ package swarm.client.navigation;
 import swarm.client.states.camera.StateMachine_Camera;
 import swarm.client.states.camera.State_CameraFloating;
 import swarm.shared.json.smA_JsonEncodable;
+import swarm.shared.json.smA_JsonFactory;
 import swarm.shared.json.smE_JsonKey;
 import swarm.shared.json.smI_JsonObject;
 import swarm.shared.json.smJsonHelper;
@@ -47,23 +48,23 @@ class smHistoryState extends smA_JsonEncodable
 	}*/
 	
 	@Override
-	public void writeJson(smI_JsonObject json)
+	public void writeJson(smA_JsonFactory factory, smI_JsonObject json_out)
 	{
 		//smU_Json.putInt(json, smE_JsonKey.HISTORY_STATE_INDEX, m_index);
 		
 		if( m_mapping != null )
 		{
-			m_mapping.writeJson(json);
+			m_mapping.writeJson(factory, json_out);
 		}
 		
 		if( m_point != null )
 		{
-			m_point.writeJson(json);
+			m_point.writeJson(factory, json_out);
 		}
 	}
 
 	@Override
-	public void readJson(smI_JsonObject json)
+	public void readJson(smA_JsonFactory factory, smI_JsonObject json)
 	{
 		/*m_index = smU_Json.getInt(json, smE_JsonKey.HISTORY_STATE_INDEX);
 		
@@ -72,15 +73,15 @@ class smHistoryState extends smA_JsonEncodable
 			s_currentFreeIndex = m_index + 1;
 		}*/
 		
-		if( smCellAddressMapping.isReadable(json) )
+		if( smCellAddressMapping.isReadable(factory, json) )
 		{
 			m_mapping = new smCellAddressMapping();
-			m_mapping.readJson(json);
+			m_mapping.readJson(factory, json);
 		}
-		else if( smPoint.isReadable(json) )
+		else if( smPoint.isReadable(factory, json) )
 		{
 			m_point = new smPoint();
-			m_point.readJson(json);
+			m_point.readJson(factory, json);
 		}
 	}
 	

@@ -1,11 +1,12 @@
 package swarm.shared.structs; 
 
-import swarm.shared.app.sm;
+import swarm.shared.app.smSharedAppContext;
 import swarm.shared.app.smS_App;
 import swarm.shared.json.smA_JsonEncodable;
 import swarm.shared.json.smA_JsonFactory;
 import swarm.shared.json.smE_JsonKey;
 import swarm.shared.json.smI_JsonArray;
+import swarm.shared.json.smI_JsonComparable;
 import swarm.shared.json.smI_JsonObject;
 import swarm.shared.json.smJsonHelper;
 
@@ -14,7 +15,7 @@ import swarm.shared.json.smJsonHelper;
  * ...
  * @author 
  */
-public class smGridCoordinate extends smA_JsonEncodable
+public class smGridCoordinate extends smA_JsonEncodable implements smI_JsonComparable
 {
 	private static final int HASH_CODE_SEED = 40000;
 	private int m_m;
@@ -167,19 +168,18 @@ public class smGridCoordinate extends smA_JsonEncodable
 	}
 	
 	@Override
-	public void writeJson(smI_JsonObject json)
+	public void writeJson(smA_JsonFactory factory, smI_JsonObject json_out)
 	{
-		smA_JsonFactory jsonFactory = sm.jsonFactory;
-		smI_JsonArray components = jsonFactory.createJsonArray();
+		smI_JsonArray components = factory.createJsonArray();
 		components.addInt(getM());
 		components.addInt(getN());
-		sm.jsonFactory.getHelper().putJsonArray(json, smE_JsonKey.coordComponents, components);
+		factory.getHelper().putJsonArray(json_out, smE_JsonKey.coordComponents, components);
 	}
 	
 	@Override
-	public void readJson(smI_JsonObject json)
+	public void readJson(smA_JsonFactory factory, smI_JsonObject json)
 	{
-		smI_JsonArray components = sm.jsonFactory.getHelper().getJsonArray(json, smE_JsonKey.coordComponents);
+		smI_JsonArray components = factory.getHelper().getJsonArray(json, smE_JsonKey.coordComponents);
 		if( components != null )
 		{
 			for( int i = 0; i < 2 && i < components.getSize(); i++ )
@@ -190,9 +190,9 @@ public class smGridCoordinate extends smA_JsonEncodable
 	}
 	
 	@Override
-	public boolean isEqualTo(smI_JsonObject json)
+	public boolean isEqualTo(smA_JsonFactory factory, smI_JsonObject json)
 	{
-		smI_JsonArray components = sm.jsonFactory.getHelper().getJsonArray(json, smE_JsonKey.coordComponents);
+		smI_JsonArray components = factory.getHelper().getJsonArray(json, smE_JsonKey.coordComponents);
 		
 		if( components == null )  return false;
 		
@@ -209,9 +209,9 @@ public class smGridCoordinate extends smA_JsonEncodable
 		}
 	}
 	
-	public static boolean isReadable(smI_JsonObject json)
+	public static boolean isReadable(smA_JsonFactory factory, smI_JsonObject json)
 	{
-		return sm.jsonFactory.getHelper().containsAllKeys(json, smE_JsonKey.coordComponents);
+		return factory.getHelper().containsAllKeys(json, smE_JsonKey.coordComponents);
 	}
 	
 	@Override

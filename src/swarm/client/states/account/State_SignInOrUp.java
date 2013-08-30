@@ -1,7 +1,7 @@
 package swarm.client.states.account;
 
 
-import swarm.client.app.sm_c;
+import swarm.client.app.smAppContext;
 import swarm.client.managers.smClientAccountManager;
 import swarm.client.managers.smGridManager;
 import swarm.client.managers.smUserManager;
@@ -46,7 +46,7 @@ public class State_SignInOrUp extends smA_State
 		{
 			smSignInCredentials creds = ((SignIn.Args) args).m_creds;
 			
-			smClientAccountManager manager = sm_c.accountMngr;
+			smClientAccountManager manager = smAppContext.accountMngr;
 			manager.setNewDesiredPassword(creds);
 			
 			machine_pushState(this.getState().getParent(), State_AccountStatusPending.class);	
@@ -82,8 +82,8 @@ public class State_SignInOrUp extends smA_State
 		{
 			smSignInCredentials creds = ((Args) args).m_creds;
 
-			smUserManager userManager = sm_c.userMngr;
-			smClientAccountManager accountManager = sm_c.accountMngr;
+			smUserManager userManager = smAppContext.userMngr;
+			smClientAccountManager accountManager = smAppContext.accountMngr;
 			
 			accountManager.signIn(creds, smE_TransactionAction.QUEUE_REQUEST);
 			userManager.populateUser(smE_TransactionAction.QUEUE_REQUEST_AND_FLUSH);
@@ -139,8 +139,8 @@ public class State_SignInOrUp extends smA_State
 		{
 			smSignUpCredentials creds = ((Args) args).m_creds;
 
-			smUserManager userManager = sm_c.userMngr;
-			smClientAccountManager accountManager = sm_c.accountMngr;
+			smUserManager userManager = smAppContext.userMngr;
+			smClientAccountManager accountManager = smAppContext.accountMngr;
 			
 			accountManager.signUp(creds, smE_TransactionAction.QUEUE_REQUEST);
 			userManager.populateUser(smE_TransactionAction.QUEUE_REQUEST_AND_FLUSH);

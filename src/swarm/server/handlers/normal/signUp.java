@@ -68,6 +68,6 @@ public class signUp implements smI_RequestHandler
 			}
 		}
 		
-		result.writeJson(response.getJson());
+		result.writeJson(null, response.getJson());
 	}
 }

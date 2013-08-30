@@ -1,6 +1,6 @@
 package swarm.client.managers;
 
-import swarm.client.app.sm_c;
+import swarm.client.app.smAppContext;
 import swarm.client.states.StateMachine_Base;
 import swarm.client.structs.smAccountInfo;
 import swarm.client.transaction.smE_TransactionAction;
@@ -24,9 +24,11 @@ public class smGridManager implements smI_TransactionResponseHandler
 	
 	private I_Listener m_listener = null;
 	private final smA_Grid m_grid;
+	private final smClientTransactionManager m_txnMngr;
 	
-	public smGridManager(smA_Grid grid)
+	public smGridManager(smClientTransactionManager txnMngr, smA_Grid grid)
 	{
+		m_txnMngr = txnMngr;
 		m_grid = grid;
 	}
 	
@@ -39,19 +41,19 @@ public class smGridManager implements smI_TransactionResponseHandler
 	{
 		m_listener = listener;
 		
-		sm_c.txnMngr.addHandler(this);
+		m_txnMngr.addHandler(this);
 	}
 	
 	public void stop()
 	{
 		m_listener = null;
 		
-		sm_c.txnMngr.removeHandler(this);
+		m_txnMngr.removeHandler(this);
 	}
 	
 	public void getGridData(smE_TransactionAction action)
 	{
-		sm_c.txnMngr.performAction(action, smE_RequestPath.getGridData);
+		m_txnMngr.performAction(action, smE_RequestPath.getGridData);
 	}
 	
 	void updateGridFromJson(smI_JsonObject json)
@@ -59,7 +61,7 @@ public class smGridManager implements smI_TransactionResponseHandler
 		int oldWidth = m_grid.getWidth();
 		int oldHeight = m_grid.getHeight();
 		
-		m_grid.readJson(json);
+		m_grid.readJson(null, json);
 		
 		if( oldWidth != m_grid.getWidth() || oldHeight != m_grid.getHeight() )
 		{

@@ -7,9 +7,9 @@ import swarm.server.session.smSessionManager;
 import swarm.server.telemetry.smTelemetryDatabase;
 import swarm.server.transaction.smInlineTransactionManager;
 import swarm.server.transaction.smServerTransactionManager;
-import swarm.shared.app.sm;
+import swarm.shared.app.smSharedAppContext;
 
-public class sm_s extends sm
+public class sm_s extends smSharedAppContext
 {
 	public static smServerTransactionManager txnMngr;
 	public static smInlineTransactionManager inlineTxnMngr;

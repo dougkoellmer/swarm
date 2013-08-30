@@ -24,7 +24,7 @@ import swarm.server.transaction.smServerTransactionManager;
 import swarm.shared.account.smSignInCredentials;
 import swarm.shared.account.smSignInValidationResult;
 import swarm.shared.account.smSignInValidator;
-import swarm.shared.app.sm;
+import swarm.shared.app.smSharedAppContext;
 import swarm.shared.app.smS_App;
 import swarm.shared.json.smA_JsonFactory;
 import swarm.shared.json.smI_JsonObject;

@@ -1,7 +1,7 @@
 package swarm.client.app;
 
 import swarm.client.entities.smA_ClientUser;
-import swarm.client.ui.smViewController;
+import swarm.client.view.smViewController;
 import swarm.shared.app.smAppConfig;
 import swarm.shared.entities.smA_Grid;
 

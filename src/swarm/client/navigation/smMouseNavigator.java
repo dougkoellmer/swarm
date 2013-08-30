@@ -2,22 +2,25 @@ package swarm.client.navigation;
 
 import java.util.logging.Logger;
 
-import swarm.client.app.sm_c;
+import swarm.client.app.smAppContext;
 import swarm.client.entities.smCamera;
 import swarm.client.entities.smBufferCell;
 import swarm.client.input.smBrowserAddressManager;
 import swarm.client.input.smMouse;
 import swarm.client.input.smMouseEvent;
 import swarm.client.managers.smCameraManager;
+import swarm.client.managers.smGridManager;
 import swarm.client.states.StateContainer_Base;
+import swarm.client.states.camera.Action_Camera_SetCameraTarget;
+import swarm.client.states.camera.Action_Camera_SnapToCoordinate;
 import swarm.client.states.camera.StateMachine_Camera;
 import swarm.client.states.camera.State_CameraFloating;
 import swarm.client.states.camera.State_CameraSnapping;
 import swarm.client.states.camera.State_ViewingCell;
-import swarm.client.ui.smI_UIElement;
-import swarm.client.ui.smS_UI;
-import swarm.client.ui.smU_UI;
-import swarm.client.ui.cell.smVisualCell;
+import swarm.client.view.smI_UIElement;
+import swarm.client.view.smS_UI;
+import swarm.client.view.smU_UI;
+import swarm.client.view.cell.smVisualCell;
 import swarm.shared.utils.smU_Math;
 import swarm.shared.app.smS_App;
 import swarm.shared.debugging.smU_Debug;
@@ -66,7 +69,7 @@ public class smMouseNavigator implements smI_UIElement, smMouse.I_Listener
 	private final smVelocitySmoother m_flickSmoother = new smVelocitySmoother(smS_UI.FLICK_SMOOTHING_SAMPLE_COUNT);
 	
 	
-	private final StateMachine_Camera.SetCameraTarget.Args m_setTargetArgs = new StateMachine_Camera.SetCameraTarget.Args();
+	private final Action_Camera_SetCameraTarget.Args m_setTargetArgs = new Action_Camera_SetCameraTarget.Args();
 	
 	private final smGridCoordinate m_mouseGridCoord = new smGridCoordinate();
 	private boolean m_isMouseTouchingSnappableCell = false;
@@ -74,8 +77,14 @@ public class smMouseNavigator implements smI_UIElement, smMouse.I_Listener
 	private final smMouse m_mouse;
 	private boolean m_mouseWentDownOnViewedCell = false;
 	
-	smMouseNavigator(smMouse mouse)
+	private final smGridManager m_gridMngr;
+	private final smCameraManager m_cameraMngr;
+	
+	public smMouseNavigator(smGridManager gridMngr, smCameraManager cameraMngr, smMouse mouse)
 	{
+		m_gridMngr = gridMngr;
+		m_cameraMngr = cameraMngr;
+		
 		m_mouse = mouse;
 		
 		m_mouse.setListener(this);
@@ -137,7 +146,7 @@ public class smMouseNavigator implements smI_UIElement, smMouse.I_Listener
 				
 				m_flickSmoother.clear();
 				mousePointToWorld(m_grabPoint);
-				m_lastWorldPoint.copy(sm_c.camera.getPosition());
+				m_lastWorldPoint.copy(m_cameraMngr.getCamera().getPosition());
 				
 				m_mouseWentDownOnViewedCell = false;
 				
@@ -180,11 +189,11 @@ public class smMouseNavigator implements smI_UIElement, smMouse.I_Listener
 					{
 						m_utilVector.scaleByNumber(3);
 						m_utilVector.setZ(0.0);
-						m_utilPoint1.copy(sm_c.cameraMngr.getTargetPosition());
+						m_utilPoint1.copy(m_cameraMngr.getTargetPosition());
 						m_utilPoint1.translate(m_utilVector);
 						
-						m_setTargetArgs.initialize(m_utilPoint1, false);
-						m_cameraController.performAction(StateMachine_Camera.SetCameraTarget.class, m_setTargetArgs);
+						m_setTargetArgs.init(m_utilPoint1, false);
+						m_cameraController.performAction(Action_Camera_SetCameraTarget.class, m_setTargetArgs);
 					}
 				}
 				
@@ -206,7 +215,7 @@ public class smMouseNavigator implements smI_UIElement, smMouse.I_Listener
 					}
 				}
 				
-				smCamera camera = sm_c.camera;
+				smCamera camera = m_cameraMngr.getCamera();
 				smPoint cameraPosition = m_utilPoint1;
 				cameraPosition.copy(camera.getPosition());
 				
@@ -226,13 +235,13 @@ public class smMouseNavigator implements smI_UIElement, smMouse.I_Listener
 				
 				if ( m_cameraState instanceof State_CameraSnapping )
 				{
-					m_cameraController.performAction(StateMachine_Camera.SetCameraTarget.class);
+					m_cameraController.performAction(Action_Camera_SetCameraTarget.class);
 				}
 				else if ( m_cameraState instanceof State_ViewingCell )
 				{
 					if ( event.getScrollDelta() < 0 )
 					{
-						m_cameraController.performAction(StateMachine_Camera.SetCameraTarget.class);
+						m_cameraController.performAction(Action_Camera_SetCameraTarget.class);
 					}
 				}
 				
@@ -279,8 +288,8 @@ public class smMouseNavigator implements smI_UIElement, smMouse.I_Listener
 							cameraPosition.setY(StateMachine_CameraController.IGNORED_COMPONENT);
 						}*/
 						
-						m_setTargetArgs.initialize(cameraPosition, false);
-						m_cameraController.performAction(StateMachine_Camera.SetCameraTarget.class, m_setTargetArgs);
+						m_setTargetArgs.init(cameraPosition, false);
+						m_cameraController.performAction(Action_Camera_SetCameraTarget.class, m_setTargetArgs);
 					}
 					else
 					{
@@ -299,8 +308,8 @@ public class smMouseNavigator implements smI_UIElement, smMouse.I_Listener
 							cameraPosition.setY(StateMachine_CameraController.IGNORED_COMPONENT);
 						}*/
 						
-						m_setTargetArgs.initialize(cameraPosition, false);
-						m_cameraController.performAction(StateMachine_Camera.SetCameraTarget.class, m_setTargetArgs);
+						m_setTargetArgs.init(cameraPosition, false);
+						m_cameraController.performAction(Action_Camera_SetCameraTarget.class, m_setTargetArgs);
 					}
 				}
 				
@@ -316,7 +325,7 @@ public class smMouseNavigator implements smI_UIElement, smMouse.I_Listener
 	
 	private void screenToWorld(smPoint screenPoint, smPoint outPoint)
 	{
-		smCamera camera = sm_c.camera;
+		smCamera camera = m_cameraMngr.getCamera();
 		
 		outPoint.set(0, 0, 0);
 		camera.calcWorldPoint(screenPoint, outPoint);
@@ -324,7 +333,7 @@ public class smMouseNavigator implements smI_UIElement, smMouse.I_Listener
 	
 	private void updateMouseGridCoord()
 	{
-		smA_Grid grid = sm_c.gridMngr.getGrid();
+		smA_Grid grid = m_gridMngr.getGrid();
 		double gridWidth = grid.calcPixelWidth();
 		double gridHeight = grid.calcPixelHeight();
 		
@@ -388,13 +397,13 @@ public class smMouseNavigator implements smI_UIElement, smMouse.I_Listener
 		
 		if( !m_isMouseTouchingSnappableCell )  return;
 		
-		StateMachine_Camera.SnapToCoordinate.Args args = new StateMachine_Camera.SnapToCoordinate.Args(m_mouseGridCoord);
-		m_cameraController.performAction(StateMachine_Camera.SnapToCoordinate.class, args);
+		Action_Camera_SnapToCoordinate.Args args = new Action_Camera_SnapToCoordinate.Args(m_mouseGridCoord);
+		m_cameraController.performAction(Action_Camera_SnapToCoordinate.class, args);
 	}
 	
 	private void updateMouse()
 	{
-		smCamera camera = sm_c.camera;
+		smCamera camera = m_cameraMngr.getCamera();
 
 		updateMouseGridCoord(); // DRK > NOTE: This must be updated every frame, even with mouse still, mouse can still be moving in the world.
 		
@@ -428,8 +437,8 @@ public class smMouseNavigator implements smI_UIElement, smMouse.I_Listener
 				//TODO: m_mouse.isMoving is busted.
 				if( m_utilVector.calcLengthSquared() > 0)
 				{
-					m_setTargetArgs.initialize(m_utilPoint2, true);
-					smA_Action.perform(StateMachine_Camera.SetCameraTarget.class, m_setTargetArgs);
+					m_setTargetArgs.init(m_utilPoint2, true);
+					smA_Action.perform(Action_Camera_SetCameraTarget.class, m_setTargetArgs);
 				}
 				
 				m_utilPoint2.calcDifference(m_lastWorldPoint, m_utilVector);
@@ -467,13 +476,13 @@ public class smMouseNavigator implements smI_UIElement, smMouse.I_Listener
 			{
 				if ( m_cameraState instanceof State_CameraSnapping )
 				{
-					m_cameraController.performAction(StateMachine_Camera.SetCameraTarget.class);
+					m_cameraController.performAction(Action_Camera_SetCameraTarget.class);
 				}
 				else if ( m_cameraState instanceof State_ViewingCell )
 				{
 					if( !m_mouseWentDownOnViewedCell )
 					{
-						m_cameraController.performAction(StateMachine_Camera.SetCameraTarget.class);
+						m_cameraController.performAction(Action_Camera_SetCameraTarget.class);
 					}
 				}
 			}

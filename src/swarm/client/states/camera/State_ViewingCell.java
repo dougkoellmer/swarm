@@ -1,15 +1,13 @@
 package swarm.client.states.camera;
 
-import swarm.client.input.smBrowserHistoryManager;
 import swarm.client.managers.smCellAddressManager;
 import swarm.client.managers.smCellCodeManager;
 import swarm.client.managers.smUserManager;
-import swarm.client.app.sm_c;
+import swarm.client.app.smAppContext;
 import swarm.client.entities.smBufferCell;
 import swarm.client.entities.smA_ClientUser;
 import swarm.client.entities.smE_CellNuke;
 import swarm.client.entities.smE_CodeStatus;
-import swarm.client.states.camera.StateMachine_Camera.CameraManager;
 import swarm.client.states.code.StateMachine_EditingCode;
 import swarm.client.structs.smI_LocalCodeRepository;
 import swarm.client.transaction.smClientTransactionManager;
@@ -117,14 +115,14 @@ public class State_ViewingCell extends smA_State implements smI_StateEventListen
 		{
 			//--- DRK > Try to get address ourselves...very well could turn up null.
 			smCellAddressMapping mapping = new smCellAddressMapping(cell.getCoordinate());
-			smCellAddressManager addyManager = sm_c.addressMngr;
+			smCellAddressManager addyManager = smAppContext.addressMngr;
 			addyManager.getCellAddress(mapping, smE_TransactionAction.QUEUE_REQUEST);
 		}
 		
 		codeManager.populateCell(cell, localCodeRepo, 1, false, true, smE_CodeType.SPLASH);
 		codeManager.populateCell(cell, localCodeRepo, 1, false, true, smE_CodeType.COMPILED);
 		
-		smClientTransactionManager txnMngr = sm_c.txnMngr;
+		smClientTransactionManager txnMngr = smAppContext.txnMngr;
 		txnMngr.flushRequestQueue();
 	}
 
@@ -153,7 +151,7 @@ public class State_ViewingCell extends smA_State implements smI_StateEventListen
 		//--- DRK > This ensures that any "preview" operations performed get cleared out.
 		//---		My programmer senses are tingling on this one, telling me it might be a
 		//---		hacky solution, at least as far as readability.
-		smUserManager userMngr = sm_c.userMngr;
+		smUserManager userMngr = smAppContext.userMngr;
 		smA_ClientUser user = userMngr.getUser();
 		user.tryPopulatingCell(m_cell.getCoordinate(), smE_CodeType.COMPILED, m_cell);
 		

@@ -16,6 +16,11 @@ public class smLocalCodeRepositoryWrapper implements smI_LocalCodeRepository
 		m_sources.add(source);
 	}
 	
+	public void removeAllSources()
+	{
+		m_sources.clear();
+	}
+	
 	@Override
 	public boolean tryPopulatingCell(smGridCoordinate coordinate, smE_CodeType eType, smA_Cell cell_out)
 	{

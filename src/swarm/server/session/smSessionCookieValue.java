@@ -7,8 +7,9 @@ import swarm.server.account.smU_Hashing;
 import swarm.server.data.blob.smI_Blob;
 import swarm.server.data.blob.smI_BlobKey;
 import swarm.server.data.blob.smU_Blob;
-import swarm.shared.app.sm;
+import swarm.shared.app.smSharedAppContext;
 import swarm.shared.json.smA_JsonEncodable;
+import swarm.shared.json.smA_JsonFactory;
 import swarm.shared.json.smI_JsonKeySource;
 import swarm.shared.json.smI_JsonObject;
 import swarm.shared.json.smJsonHelper;
@@ -65,19 +66,19 @@ class smSessionCookieValue extends smA_JsonEncodable implements smI_BlobKey
 	}
 	
 	@Override
-	public void writeJson(smI_JsonObject json)
+	public void writeJson(smA_JsonFactory factory, smI_JsonObject json_out)
 	{
-		sm.jsonFactory.getHelper().putString(json, JsonKey.TOKEN, m_token);
-		sm.jsonFactory.getHelper().putInt(json, JsonKey.ACCOUNT_ID, m_accountId);
-		sm.jsonFactory.getHelper().putString(json, JsonKey.TOKEN_SALT, m_tokenSalt);
+		factory.getHelper().putString(json, JsonKey.TOKEN, m_token);
+		factory.getHelper().putInt(json, JsonKey.ACCOUNT_ID, m_accountId);
+		factory.getHelper().putString(json, JsonKey.TOKEN_SALT, m_tokenSalt);
 	}
 
 	@Override
-	public void readJson(smI_JsonObject json)
+	public void readJson(smA_JsonFactory factory, smI_JsonObject json)
 	{
-		m_token = sm.jsonFactory.getHelper().getString(json, JsonKey.TOKEN);
-		m_accountId = sm.jsonFactory.getHelper().getInt(json, JsonKey.ACCOUNT_ID);
-		m_tokenSalt = sm.jsonFactory.getHelper().getString(json, JsonKey.TOKEN_SALT);
+		m_token = factory.getHelper().getString(json, JsonKey.TOKEN);
+		m_accountId = factory.getHelper().getInt(json, JsonKey.ACCOUNT_ID);
+		m_tokenSalt = factory.getHelper().getString(json, JsonKey.TOKEN_SALT);
 		
 		m_hashedToken = smU_Hashing.hashWithSalt(m_token, m_tokenSalt);
 	}

@@ -1,7 +1,8 @@
 package swarm.shared.account;
 
-import swarm.shared.app.sm;
+import swarm.shared.app.smSharedAppContext;
 import swarm.shared.json.smA_JsonEncodable;
+import swarm.shared.json.smA_JsonFactory;
 import swarm.shared.json.smE_JsonKey;
 import swarm.shared.json.smI_JsonObject;
 import swarm.shared.json.smJsonHelper;
@@ -27,14 +28,14 @@ public abstract class smA_AccountCredentials extends smA_JsonEncodable
 	}
 	
 	@Override
-	public void readJson(smI_JsonObject json)
+	public void readJson(smA_JsonFactory factory, smI_JsonObject json)
 	{
-		m_rememberMe = sm.jsonFactory.getHelper().getBoolean(json, smE_JsonKey.rememberMe);
+		m_rememberMe = factory.getHelper().getBoolean(json, smE_JsonKey.rememberMe);
 	}
 	
 	@Override
-	public void writeJson(smI_JsonObject json)
+	public void writeJson(smA_JsonFactory factory, smI_JsonObject json_out)
 	{
-		sm.jsonFactory.getHelper().putBoolean(json, smE_JsonKey.rememberMe, m_rememberMe);
+		factory.getHelper().putBoolean(json_out, smE_JsonKey.rememberMe, m_rememberMe);
 	}
 }

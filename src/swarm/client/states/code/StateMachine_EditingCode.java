@@ -2,7 +2,7 @@ package swarm.client.states.code;
 
 import swarm.client.managers.smCellCodeManager;
 import swarm.client.managers.smUserManager;
-import swarm.client.app.sm_c;
+import swarm.client.app.smAppContext;
 import swarm.client.entities.smBufferCell;
 import swarm.client.entities.smA_ClientUser;
 import swarm.client.entities.smE_CodeStatus;
@@ -13,7 +13,7 @@ import swarm.client.states.camera.State_ViewingCell;
 import swarm.client.states.camera.State_ViewingCell.Refresh;
 import swarm.client.states.code.State_EditingCodeBlocker.Reason;
 import swarm.client.transaction.smClientTransactionManager;
-import swarm.client.ui.tabs.code.smCodeMirrorWrapper;
+import swarm.client.view.tabs.code.smCodeMirrorWrapper;
 import swarm.shared.debugging.smU_Debug;
 import swarm.shared.entities.smE_CodeType;
 import swarm.shared.statemachine.smA_Action;
@@ -126,7 +126,7 @@ public class StateMachine_EditingCode extends smA_StateMachine implements smI_St
 				State_ViewingCell viewingState = (State_ViewingCell) cameraState;
 				smBufferCell viewedCell = viewingState.getCell();
 				smGridCoordinate coord = viewedCell.getCoordinate();
-				smA_ClientUser user = sm_c.userMngr.getUser();
+				smA_ClientUser user = smAppContext.userMngr.getUser();
 				
 				if( user.isCellOwner(coord) )
 				{
@@ -142,7 +142,7 @@ public class StateMachine_EditingCode extends smA_StateMachine implements smI_St
 				
 				if( m_code == null )
 				{
-					smClientTransactionManager manager = sm_c.txnMngr;
+					smClientTransactionManager manager = smAppContext.txnMngr;
 					smCellCodeManager populator = smCellCodeManager.getInstance();
 					
 					if( viewedCell.getStatus(smE_CodeType.SOURCE) != smE_CodeStatus.HAS_CODE )

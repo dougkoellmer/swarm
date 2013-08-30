@@ -3,8 +3,10 @@ package swarm.client.input;
 import swarm.client.thirdparty.history.smHistoryJsWrapper;
 import swarm.client.thirdparty.json.smGwtJsonObject;
 import swarm.shared.json.smA_JsonFactory;
-import swarm.shared.json.smI_JsonEncodable;
+import swarm.shared.json.smI_ReadsJson;
 import swarm.shared.json.smI_JsonObject;
+import swarm.shared.json.smI_WritesJson;
+
 import com.google.gwt.core.client.JavaScriptObject;
 
 public class smBrowserHistoryManager
@@ -35,18 +37,24 @@ public class smBrowserHistoryManager
 	private boolean m_performingOperation = false;
 	
 	private final I_Listener m_listener;
+	private final smA_JsonFactory m_jsonFactory;
 	
-	public smBrowserHistoryManager(I_Listener listener)
+	public smBrowserHistoryManager(smA_JsonFactory jsonFactory, I_Listener listener)
 	{
+		m_jsonFactory = jsonFactory;
 		m_listener = listener;
 	}
 	
-	private static JavaScriptObject createJsObject(smI_JsonEncodable state)
+	private JavaScriptObject createJsObject(smI_WritesJson state)
 	{
-		return state != null ? ((smGwtJsonObject)state.writeJson()).getNative().getJavaScriptObject() : null;
+		if( state == null )  return null;
+		
+		smGwtJsonObject jsonObject = (smGwtJsonObject) m_jsonFactory.createJsonObject();
+		state.writeJson(m_jsonFactory, jsonObject);
+		return jsonObject.getNative().getJavaScriptObject();
 	}
 	
-	public void setState(String path, String title, smI_JsonEncodable state)
+	public void setState(String path, String title, smI_WritesJson state)
 	{
 		m_performingOperation = true;
 		{
@@ -55,7 +63,7 @@ public class smBrowserHistoryManager
 		m_performingOperation = false;
 	}
 	
-	public void pushState(String path, String title, smI_JsonEncodable state)
+	public void pushState(String path, String title, smI_WritesJson state)
 	{
 		m_performingOperation = true;
 		{

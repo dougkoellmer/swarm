@@ -1,6 +1,6 @@
 package swarm.client.states.account;
 
-import swarm.client.app.sm_c;
+import swarm.client.app.smAppContext;
 import swarm.client.managers.smClientAccountManager;
 import swarm.client.managers.smClientAccountManager.E_ResponseType;
 import swarm.client.states.StateMachine_Base;
@@ -35,7 +35,7 @@ public class StateMachine_Account extends smA_StateMachine
 		@Override
 		public void onAuthenticationError()
 		{
-			smClientAccountManager accountManager = sm_c.accountMngr;
+			smClientAccountManager accountManager = smAppContext.accountMngr;
 			
 			//--- DRK > Not entering this if block should be an extremely fringe, practically impossible case.
 			//---		It's still *technically* possible though, so we don't want to clear the spinner if we're still
@@ -71,7 +71,7 @@ public class StateMachine_Account extends smA_StateMachine
 	@Override
 	protected void didForeground(Class<? extends smA_State> revealingState, Object[] args)
 	{
-		smClientAccountManager accountManager = sm_c.accountMngr;
+		smClientAccountManager accountManager = smAppContext.accountMngr;
 		
 		accountManager.addDelegate(m_accountManagerDelegate);
 		
@@ -104,7 +104,7 @@ public class StateMachine_Account extends smA_StateMachine
 	{
 		smU_Debug.ASSERT(this.isForegrounded(), "popBlockerAndSetState1");
 		
-		smClientAccountManager accountManager = sm_c.accountMngr;
+		smClientAccountManager accountManager = smAppContext.accountMngr;
 		
 		machine_beginBatch(this);
 	
@@ -136,7 +136,7 @@ public class StateMachine_Account extends smA_StateMachine
 	@Override 
 	protected void willBackground(Class<? extends smA_State> blockingState)
 	{
-		smClientAccountManager accountManager = sm_c.accountMngr;
+		smClientAccountManager accountManager = smAppContext.accountMngr;
 		
 		accountManager.removeDelegate(m_accountManagerDelegate);
 		

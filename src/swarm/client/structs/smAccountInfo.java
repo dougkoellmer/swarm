@@ -3,7 +3,7 @@ package swarm.client.structs;
 import swarm.shared.account.smE_SignUpCredentialType;
 import swarm.shared.account.smSignUpCredentials;
 import swarm.shared.account.smU_Account;
-import swarm.shared.app.sm;
+import swarm.shared.app.smSharedAppContext;
 import swarm.shared.json.smA_JsonEncodable;
 import swarm.shared.json.smA_JsonFactory;
 import swarm.shared.json.smE_JsonKey;
@@ -54,22 +54,22 @@ public class smAccountInfo extends smA_JsonEncodable
 	}
 	
 	@Override
-	public void writeJson(smI_JsonObject json)
+	public void writeJson(smA_JsonFactory factory, smI_JsonObject json_out)
 	{
-		smI_JsonArray creds = sm.jsonFactory.createJsonArray();
+		smI_JsonArray creds = smSharedAppContext.jsonFactory.createJsonArray();
 		
 		for( int i = 0; i < m_type.length; i++ )
 		{
 			creds.addString(m_type[i]);
 		}
 		
-		sm.jsonFactory.getHelper().putJsonArray(json, smE_JsonKey.accountInfo, creds);
+		factory.getHelper().putJsonArray(json, smE_JsonKey.accountInfo, creds);
 	}
 
 	@Override
-	public void readJson(smI_JsonObject json)
+	public void readJson(smA_JsonFactory factory, smI_JsonObject json)
 	{
-		smI_JsonArray info = sm.jsonFactory.getHelper().getJsonArray(json, smE_JsonKey.accountInfo);
+		smI_JsonArray info = factory.getHelper().getJsonArray(json, smE_JsonKey.accountInfo);
 		
 		for( int i = 0; i < info.getSize(); i++ )
 		{

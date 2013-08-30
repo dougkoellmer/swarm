@@ -9,7 +9,7 @@ public class smMutableJsonQuery extends smJsonQuery
 		
 	}
 	
-	public void setCondition(int index, smI_JsonEncodable mustContain)
+	public void setCondition(int index, smI_JsonComparable mustContain)
 	{
 		Condition condition = m_conditions.get(index);
 		condition.set(mustContain);

@@ -28,7 +28,7 @@ import swarm.server.session.smSessionManager;
 import swarm.server.structs.smServerCellAddress;
 import swarm.server.structs.smServerCellAddressMapping;
 import swarm.shared.entities.smA_Grid;
-import swarm.shared.json.smI_JsonEncodable;
+import swarm.shared.json.smI_ReadsJson;
 import swarm.shared.structs.smCellAddress;
 import swarm.shared.structs.smCellAddressMapping;
 import swarm.shared.structs.smE_CellAddressParseError;
@@ -134,7 +134,7 @@ public class smU_InlineTransactions
 			{
 				if( blobBatchResult.containsKey(session))
 				{
-					transactionManager.makeInlineRequestWithResponse(smE_RequestPath.getUserData, (smI_JsonEncodable) blobBatchResult.get(session));
+					transactionManager.makeInlineRequestWithResponse(smE_RequestPath.getUserData, (smI_ReadsJson) blobBatchResult.get(session));
 					
 					makeUserRequest = false;
 				}
@@ -182,7 +182,7 @@ public class smU_InlineTransactions
 			{
 				smTransactionResponse response = transactionManager.makeInlineRequest(smE_RequestPath.getGridData);
 				grid = new smA_Grid(){};
-				grid.readJson(response.getJson());
+				grid.readJson(null, response.getJson());
 			}
 	
 			smPoint startingPosition = new smPoint();

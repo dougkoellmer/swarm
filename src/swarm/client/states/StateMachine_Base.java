@@ -2,7 +2,7 @@ package swarm.client.states;
 
 import java.util.ArrayList;
 
-import swarm.client.app.sm_c;
+import swarm.client.app.smAppContext;
 import swarm.client.entities.smBufferCell;
 import swarm.client.entities.smA_ClientUser;
 import swarm.client.managers.smCellAddressManager;
@@ -252,8 +252,12 @@ public class StateMachine_Base extends smA_StateMachine implements smI_Transacti
 		}
 	}
 	
-	public StateMachine_Base()
+	private final smAppContext m_appContext;
+	
+	public StateMachine_Base(smAppContext appContext)
 	{
+		m_appContext = appContext;
+		
 		//smA_Action.register(new PushDialog());
 		smA_Action.register(new OnGridResize());
 		smA_Action.register(new OnAccountManagerResponse());
@@ -265,10 +269,10 @@ public class StateMachine_Base extends smA_StateMachine implements smI_Transacti
 	@Override
 	protected void didEnter(smA_StateConstructor constructor)
 	{
-		final smClientAccountManager accountManager = sm_c.accountMngr;
-		final smUserManager userManager = sm_c.userMngr;
-		final smGridManager gridManager = sm_c.gridMngr;
-		final smClientTransactionManager transactionManager = sm_c.txnMngr;
+		final smClientAccountManager accountManager = m_appContext.accountMngr;
+		final smUserManager userManager = m_appContext.userMngr;
+		final smGridManager gridManager = m_appContext.gridMngr;
+		final smClientTransactionManager transactionManager = m_appContext.txnMngr;
 		
 		transactionManager.addHandler(this);
 		transactionManager.addBatchListener(m_batchListener);
@@ -317,10 +321,10 @@ public class StateMachine_Base extends smA_StateMachine implements smI_Transacti
 	@Override
 	protected void willExit()
 	{
-		final smClientAccountManager accountManager = sm_c.accountMngr;
-		final smUserManager userManager = sm_c.userMngr;
-		final smGridManager gridManager = sm_c.gridMngr;
-		final smClientTransactionManager transactionManager = sm_c.txnMngr;
+		final smClientAccountManager accountManager = m_appContext.accountMngr;
+		final smUserManager userManager = m_appContext.userMngr;
+		final smGridManager gridManager = m_appContext.gridMngr;
+		final smClientTransactionManager transactionManager = m_appContext.txnMngr;
 		
 		accountManager.removeDelegate(m_accountManagerDelegate);
 		
@@ -372,7 +376,7 @@ public class StateMachine_Base extends smA_StateMachine implements smI_Transacti
 					State_GenericDialog.Constructor constructor = new State_GenericDialog.Constructor
 					(
 						"Version Mismatch",
-						"There is a brand new version of b33hive available.  Please refresh your browser."
+						"There is a new version of b33hive available. Please refresh your browser."
 					);
 					
 					queueAsyncDialog(State_AsyncDialog.class, constructor);

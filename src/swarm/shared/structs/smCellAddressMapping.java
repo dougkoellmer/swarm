@@ -1,11 +1,13 @@
 package swarm.shared.structs;
 
 import swarm.shared.json.smA_JsonEncodable;
+import swarm.shared.json.smA_JsonFactory;
 import swarm.shared.json.smE_JsonKey;
+import swarm.shared.json.smI_JsonComparable;
 import swarm.shared.json.smI_JsonObject;
 import swarm.shared.json.smJsonHelper;
 
-public class smCellAddressMapping extends smA_JsonEncodable
+public class smCellAddressMapping extends smA_JsonEncodable implements smI_JsonComparable
 {
 	protected smGridCoordinate m_coordinate = null;
 	
@@ -32,9 +34,9 @@ public class smCellAddressMapping extends smA_JsonEncodable
 	}
 	
 	@Override
-	public boolean isEqualTo(smI_JsonObject json)
+	public boolean isEqualTo(smA_JsonFactory factory, smI_JsonObject json)
 	{
-		return m_coordinate.isEqualTo(json);
+		return m_coordinate.isEqualTo(null, json);
 	}
 	
 	public boolean isEqualTo(smCellAddressMapping otherMapping)
@@ -42,9 +44,9 @@ public class smCellAddressMapping extends smA_JsonEncodable
 		return this.m_coordinate.isEqualTo(otherMapping.m_coordinate);
 	}
 	
-	public static boolean isReadable(smI_JsonObject json)
+	public static boolean isReadable(smA_JsonFactory factory, smI_JsonObject json)
 	{
-		return smGridCoordinate.isReadable(json);
+		return smGridCoordinate.isReadable(factory, json);
 	}
 	
 	public String writeString()
@@ -53,15 +55,15 @@ public class smCellAddressMapping extends smA_JsonEncodable
 	}
 
 	@Override
-	public void writeJson(smI_JsonObject json)
+	public void writeJson(smA_JsonFactory factory, smI_JsonObject json_out)
 	{
-		m_coordinate.writeJson(json);
+		m_coordinate.writeJson(factory, json_out);
 	}
 
 	@Override
-	public void readJson(smI_JsonObject json)
+	public void readJson(smA_JsonFactory factory, smI_JsonObject json)
 	{
-		m_coordinate.readJson(json);
+		m_coordinate.readJson(null, json);
 	}
 	
 	@Override

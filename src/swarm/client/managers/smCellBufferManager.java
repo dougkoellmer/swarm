@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 import swarm.client.entities.smCamera;
 import swarm.client.entities.smBufferCell;
 import swarm.client.entities.smE_CodeStatus;
+import swarm.client.structs.smCellPool;
 import swarm.client.structs.smI_LocalCodeRepository;
 import swarm.shared.app.smS_App;
 import swarm.shared.utils.smU_BitTricks;
@@ -50,10 +51,8 @@ public class smCellBufferManager implements smI_LocalCodeRepository
 	
 	private static final Logger s_logger = Logger.getLogger(smCellBufferManager.class.getName());
 	
-	private static smCellBufferManager s_instance = null;
-	
-	private smCellBuffer m_displayBuffer = new smCellBuffer();
-	private smCellBuffer m_backBuffer = new smCellBuffer();
+	private smCellBuffer m_displayBuffer;
+	private smCellBuffer m_backBuffer;
 	
 	private final smGridCoordinate m_utilCoord1 = new smGridCoordinate();
 	private final smGridCoordinate m_utilCoord2 = new smGridCoordinate();
@@ -66,8 +65,12 @@ public class smCellBufferManager implements smI_LocalCodeRepository
 	
 	private static final Iterator s_iterator = new Iterator();
 	
-	public smCellBufferManager() 
+	public smCellBufferManager(smCellCodeManager codeMngr) 
 	{
+		smCellPool cellPool = new smCellPool();
+		
+		m_displayBuffer = new smCellBuffer(codeMngr, cellPool);
+		m_backBuffer = new smCellBuffer(codeMngr, cellPool);
 	}
 	
 	public int getUpdateCount()
@@ -77,9 +80,9 @@ public class smCellBufferManager implements smI_LocalCodeRepository
 	
 	private void swapBuffers()
 	{
-		smCellBuffer tempBuffer = m_displayBuffer;
+		smCellBuffer temp = m_displayBuffer;
 		m_displayBuffer = m_backBuffer;
-		m_backBuffer = tempBuffer;
+		m_backBuffer = temp;
 	}
 	
 	public smCellBuffer getDisplayBuffer()
@@ -87,18 +90,7 @@ public class smCellBufferManager implements smI_LocalCodeRepository
 		return m_displayBuffer;
 	}
 	
-	public static smCellBufferManager getInstance()
-	{
-		if( s_instance == null )
-		{
-			s_instance = new smCellBufferManager();
-			registerInstance(s_instance);
-		}
-		
-		return s_instance;
-	}
-	
-	public static void registerInstance(smCellBufferManager instance)
+	/*public static void registerInstance(smCellBufferManager instance)
 	{
 		s_registeredInstances.add(instance);
 	}
@@ -121,7 +113,7 @@ public class smCellBufferManager implements smI_LocalCodeRepository
 				return;
 			}
 		}
-	}
+	}*/
 	
 	public void drain()
 	{

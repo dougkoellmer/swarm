@@ -15,7 +15,7 @@ import org.json.JSONException;
 
 import swarm.server.account.sm_s;
 import swarm.server.transaction.smServerTransactionManager;
-import swarm.shared.app.sm;
+import swarm.shared.app.smSharedAppContext;
 import swarm.shared.app.smS_App;
 import swarm.shared.json.smA_JsonFactory;
 import swarm.shared.json.smI_JsonObject;
@@ -46,7 +46,7 @@ public class smTransactionServlet extends smA_BaseServlet
 		//smU_Servlet.simulateException(true);
 		
 		smI_JsonObject requestJson = smU_Servlet.getRequestJson(nativeRequest, isGet);
-		smI_JsonObject responseJson = sm.jsonFactory.createJsonObject();
+		smI_JsonObject responseJson = smSharedAppContext.jsonFactory.createJsonObject();
 		
 		sm_s.txnMngr.handleRequestFromClient(nativeRequest, nativeResponse, this.getServletContext(), requestJson, responseJson);
 		

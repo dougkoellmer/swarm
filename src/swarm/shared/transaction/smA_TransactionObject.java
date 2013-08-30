@@ -1,6 +1,6 @@
 package swarm.shared.transaction;
 
-import swarm.shared.app.sm;
+import swarm.shared.app.smSharedAppContext;
 import swarm.shared.json.smA_JsonEncodable;
 import swarm.shared.json.smA_JsonFactory;
 import swarm.shared.json.smE_JsonKey;
@@ -39,7 +39,7 @@ public abstract class smA_TransactionObject extends smA_JsonEncodable
 	{		
 		if ( m_jsonArgs == null )
 		{
-			smA_JsonFactory jsonFactory = sm.jsonFactory;
+			smA_JsonFactory jsonFactory = smSharedAppContext.jsonFactory;
 			m_jsonArgs = jsonFactory.createJsonObject();
 		}
 		
@@ -65,17 +65,17 @@ public abstract class smA_TransactionObject extends smA_JsonEncodable
 	}
 	
 	@Override
-	public void writeJson(smI_JsonObject json)
+	public void writeJson(smA_JsonFactory factory, smI_JsonObject json_out)
 	{
 		if( m_jsonArgs != null )
 		{
-			sm.jsonFactory.getHelper().putJsonObject(json, smE_JsonKey.requestArgs, m_jsonArgs);
+			factory.getHelper().putJsonObject(json, smE_JsonKey.requestArgs, m_jsonArgs);
 		}
 	}
 	
 	@Override
-	public void readJson(smI_JsonObject json)
+	public void readJson(smA_JsonFactory factory, smI_JsonObject json)
 	{
-		m_jsonArgs = sm.jsonFactory.getHelper().getJsonObject(json, smE_JsonKey.requestArgs);
+		m_jsonArgs = factory.getHelper().getJsonObject(json, smE_JsonKey.requestArgs);
 	}
 }
