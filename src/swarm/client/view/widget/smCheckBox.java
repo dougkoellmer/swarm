@@ -27,12 +27,7 @@ public class smCheckBox extends FlowPanel
 	private final Label m_label = new Label();
 	private final FlowPanel m_clickCatcher = new FlowPanel();
 	
-	public smCheckBox()
-	{
-		this(null);
-	}
-	
-	public smCheckBox(String text)
+	public smCheckBox(smClickManager clickMngr, String text)
 	{
 		this.getElement().getStyle().setCursor(Cursor.POINTER);
 		this.getElement().getStyle().setPosition(Position.RELATIVE);
@@ -50,7 +45,7 @@ public class smCheckBox extends FlowPanel
 			this.setText(text);
 		}
 		
-		smAppContext.clickMngr.addClickHandler(m_clickCatcher, new smI_ClickHandler()
+		clickMngr.addClickHandler(m_clickCatcher, new smI_ClickHandler()
 		{
 			@Override
 			public void onClick()

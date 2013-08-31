@@ -226,6 +226,12 @@ public class smServerJsonObject extends smA_JsonObject implements smI_JsonObject
 	{
 		return !m_object.isNull(key);
 	}
+	
+	@Override
+	public String toString()
+	{
+		return this.writeString();
+	}
 
 	@Override
 	public String writeString()

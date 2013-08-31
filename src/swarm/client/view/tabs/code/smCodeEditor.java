@@ -7,9 +7,9 @@ import swarm.client.entities.smA_ClientUser;
 import swarm.client.managers.smClientAccountManager;
 import swarm.client.managers.smUserManager;
 import swarm.client.states.StateMachine_Base;
+import swarm.client.states.account.Action_ManageAccount_SignOut;
 import swarm.client.states.account.StateMachine_Account;
 import swarm.client.states.account.State_AccountStatusPending;
-import swarm.client.states.account.State_ManageAccount;
 import swarm.client.states.camera.State_ViewingCell;
 import swarm.client.states.code.StateMachine_EditingCode;
 import swarm.client.states.code.State_EditingCode;
@@ -31,9 +31,11 @@ public class smCodeEditor extends FlowPanel implements smI_StateEventListener
 	private final smCodeMirrorWrapper m_codeMirror_writable;
 	private final smCodeMirrorWrapper m_codeMirror_readOnly;
 	private smCodeMirrorWrapper m_currentCodeMirror = null;
+	private final smUserManager m_userMngr;
 	
-	smCodeEditor(smI_CodeMirrorListener listener)
+	smCodeEditor(smUserManager userMngr, smI_CodeMirrorListener listener)
 	{
+		m_userMngr = userMngr;
 		m_codeMirror_writable = new smCodeMirrorWrapper(listener, false);
 		m_codeMirror_readOnly = new smCodeMirrorWrapper(null, true);
 
@@ -79,7 +81,7 @@ public class smCodeEditor extends FlowPanel implements smI_StateEventListener
 	
 	private void toggleActiveCodeMirrorInstance(State_ViewingCell viewingState )
 	{
-		smA_ClientUser user = smAppContext.userMngr.getUser();
+		smA_ClientUser user = m_userMngr.getUser();
 		
 		if( user.isCellOwner(viewingState.getCell().getCoordinate()) )
 		{
@@ -164,7 +166,7 @@ public class smCodeEditor extends FlowPanel implements smI_StateEventListener
 						toggleActiveCodeMirrorInstance(viewingState);
 					}
 				}
-				else if( event.getAction() == State_ManageAccount.SignOut.class )
+				else if( event.getAction() == Action_ManageAccount_SignOut.class )
 				{
 					setActiveCodeMirrorInstance(m_codeMirror_readOnly);
 				}

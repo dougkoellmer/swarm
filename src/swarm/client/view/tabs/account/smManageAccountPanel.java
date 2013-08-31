@@ -4,6 +4,7 @@ import swarm.client.app.smAppContext;
 import swarm.client.input.smClickManager;
 import swarm.client.input.smI_ClickHandler;
 import swarm.client.managers.smClientAccountManager;
+import swarm.client.states.account.Action_ManageAccount_SignOut;
 import swarm.client.states.account.State_ManageAccount;
 import swarm.client.structs.smAccountInfo;
 import swarm.client.view.smS_UI;
@@ -63,7 +64,7 @@ public class smManageAccountPanel extends FlowPanel implements smI_StateEventLis
 			@Override
 			public void onClick()
 			{
-				smA_Action.perform(State_ManageAccount.SignOut.class);
+				smA_Action.perform(Action_ManageAccount_SignOut.class);
 			}
 		});
 		

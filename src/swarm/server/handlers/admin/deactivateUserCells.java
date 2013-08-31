@@ -41,7 +41,7 @@ public class deactivateUserCells implements smI_RequestHandler
 	@Override
 	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
 	{
-		Integer accountId = factory.getHelper().getInt(request.getJson(), smE_JsonKey.accountId);
+		Integer accountId = factory.getHelper().getInt(request.getJsonArgs(), smE_JsonKey.accountId);
 		
 		if( accountId == null )
 		{

@@ -40,7 +40,9 @@ class smTransactionResponseBatch extends smTransactionResponse
 		{
 			smTransactionResponse ithResponse = m_responses.get(i);
 			
-			responsesJson.addObject(ithResponse.writeJson(null));
+			smI_JsonObject jsonObject = factory.createJsonObject();
+			ithResponse.writeJson(factory, jsonObject);
+			responsesJson.addObject(jsonObject);
 		}
 		
 		m_jsonFactory.getHelper().putJsonArray(json_out, smE_JsonKey.responseList, responsesJson);

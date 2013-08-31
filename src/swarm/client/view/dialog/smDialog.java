@@ -43,7 +43,7 @@ public class smDialog extends AbsolutePanel
 	
 	private final I_Delegate m_delegate;
 	
-	public smDialog(int width, int height, I_Delegate delegate)
+	public smDialog(smClickManager clickMngr, int width, int height, I_Delegate delegate)
 	{
 		m_delegate = delegate;
 		
@@ -64,7 +64,7 @@ public class smDialog extends AbsolutePanel
 		
 		m_header.addStyleName("sm_dialog_header");
 		
-		smAppContext.clickMngr.addClickHandler(m_okButton, new smI_ClickHandler()
+		clickMngr.addClickHandler(m_okButton, new smI_ClickHandler()
 		{
 			@Override
 			public void onClick()
@@ -109,7 +109,7 @@ public class smDialog extends AbsolutePanel
 	/*-{
 		setTimeout(function()
 		{
-			thisArg.@swarm.client.ui.dialog.smDialog::updateLayout()();
+			thisArg.@swarm.client.view.dialog.smDialog::updateLayout()();
 		}, 0);
 	}-*/;
 	

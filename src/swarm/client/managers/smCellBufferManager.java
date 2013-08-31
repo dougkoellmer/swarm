@@ -65,12 +65,19 @@ public class smCellBufferManager implements smI_LocalCodeRepository
 	
 	private static final Iterator s_iterator = new Iterator();
 	
+	private final smCellPool m_cellPool;
+	
 	public smCellBufferManager(smCellCodeManager codeMngr) 
 	{
-		smCellPool cellPool = new smCellPool();
+		m_cellPool = new smCellPool();
 		
-		m_displayBuffer = new smCellBuffer(codeMngr, cellPool);
-		m_backBuffer = new smCellBuffer(codeMngr, cellPool);
+		m_displayBuffer = new smCellBuffer(codeMngr, m_cellPool);
+		m_backBuffer = new smCellBuffer(codeMngr, m_cellPool);
+	}
+	
+	public smCellPool getCellPool()
+	{
+		return m_cellPool;
 	}
 	
 	public int getUpdateCount()

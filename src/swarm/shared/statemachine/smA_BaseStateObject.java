@@ -74,12 +74,12 @@ public class smA_BaseStateObject extends Object
 	
 	protected void machine_beginBatch(smA_State thisArg)
 	{
-		thisArg.m_root.beginBatch();
+		thisArg.m_context.beginBatch();
 	}
 	
 	protected void machine_endBatch(smA_State thisArg)
 	{
-		thisArg.m_root.endBatch();
+		thisArg.m_context.endBatch();
 	}
 	
 	protected void machine_setState(smA_State thisArg, Class<? extends smA_State> T, smA_StateConstructor constructor)

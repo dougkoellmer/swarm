@@ -32,27 +32,27 @@ import swarm.shared.structs.smGridCoordinate;
  */
 public class State_EditingCode extends smA_State
 {
-	static void performCommitOrPreview(smA_Action thisArg)
+	void performCommitOrPreview(smA_Action thisArg)
 	{
 		State_ViewingCell viewingState = smA_State.getForegroundedInstance(State_ViewingCell.class);
 		smBufferCell viewedCell = viewingState.getCell();
 		smGridCoordinate coord = viewedCell.getCoordinate();
 		
-		smA_ClientUser user = smAppContext.userMngr.getUser();
+		smA_ClientUser user = m_appContext.userMngr.getUser();
 		smCode sourceCode = user.getCode(coord, smE_CodeType.SOURCE);
 		
-		smCompilerResult compilerResult = smAppContext.codeCompiler.compile(sourceCode, viewedCell.getCodePrivileges(), /*namespace=*/null);
+		smCompilerResult compilerResult = m_appContext.codeCompiler.compile(sourceCode, viewedCell.getCodePrivileges(), /*namespace=*/null);
 		
 		if( compilerResult.getStatus() == smE_CompilationStatus.NO_ERROR )
 		{
 			if( thisArg instanceof Action_EditingCode_Save )
 			{
-				smCellCodeManager.getInstance().syncCell(viewedCell, sourceCode);
+				m_appContext.codeMngr.syncCell(viewedCell, sourceCode);
 				//((StateMachine_EditingCode) thisArg.getState().getParent()).setBlockerReason(State_EditingCodeBlocker.Reason.SYNCING);
 			}
 			else if( thisArg instanceof Action_EditingCode_Preview )
 			{
-				smCellCodeManager.getInstance().previewCell(viewedCell, sourceCode);
+				m_appContext.codeMngr.previewCell(viewedCell, sourceCode);
 				//((StateMachine_EditingCode) thisArg.getState().getParent()).setBlockerReason(State_EditingCodeBlocker.Reason.PREVIEWING);
 			}
 			else
@@ -73,7 +73,7 @@ public class State_EditingCode extends smA_State
 		}
 	}
 	
-	static boolean isCommitOrPreviewPerformable(boolean isPreview)
+	boolean isCommitOrPreviewPerformable(boolean isPreview)
 	{
 		State_ViewingCell state = (State_ViewingCell) smA_State.getForegroundedInstance(State_ViewingCell.class);
 		
@@ -82,7 +82,7 @@ public class State_EditingCode extends smA_State
 			return false;
 		}
 		
-		smA_ClientUser user = smAppContext.userMngr.getUser();
+		smA_ClientUser user = m_appContext.userMngr.getUser();
 		if( !user.isCellOwner(state.getCell().getCoordinate()) )
 		{
 			return false;
@@ -100,7 +100,7 @@ public class State_EditingCode extends smA_State
 		
 		//--- DRK > There are other mechanisms in place to prevent syncing/previewing from clashing with
 		//---		account management transactions, but the more the merrier I say.
-		smClientAccountManager.E_WaitReason waitReason = smAppContext.accountMngr.getWaitReason();
+		smClientAccountManager.E_WaitReason waitReason = m_appContext.accountMngr.getWaitReason();
 		switch(waitReason)
 		{
 			case SIGNING_IN:
@@ -119,10 +119,14 @@ public class State_EditingCode extends smA_State
 	
 	private State_EditingCodeBlocker.Reason m_mostRecentBlockerReason = null;
 	
-	public State_EditingCode()
+	private final smAppContext m_appContext;
+	
+	public State_EditingCode(smAppContext appContext)
 	{
+		m_appContext = appContext;
+		
 		smA_Action.register(new Action_EditingCode_Save());
-		smA_Action.register(new Action_EditingCode_Edit());
+		smA_Action.register(new Action_EditingCode_Edit(m_appContext.userMngr));
 		smA_Action.register(new Action_EditingCode_Preview());
 	}
 	

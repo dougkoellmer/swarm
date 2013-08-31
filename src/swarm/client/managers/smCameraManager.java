@@ -72,7 +72,7 @@ public class smCameraManager
 		return 0;
 	}
 	
-	protected void update(double timeStep)
+	public void update(double timeStep)
 	{
 		if ( m_xProgress == 0 )
 		{

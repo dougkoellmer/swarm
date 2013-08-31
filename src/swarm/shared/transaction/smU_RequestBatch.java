@@ -1,6 +1,7 @@
 package swarm.shared.transaction;
 
 import swarm.shared.app.smSharedAppContext;
+import swarm.shared.json.smA_JsonFactory;
 import swarm.shared.json.smE_JsonKey;
 import swarm.shared.json.smI_JsonArray;
 import swarm.shared.json.smI_JsonObject;
@@ -13,19 +14,19 @@ public class smU_RequestBatch
 		void onRequestFound(smI_JsonObject requestJson);
 	}
 	
-	public static boolean isBatch(smI_JsonObject json)
+	public static boolean isBatch(smA_JsonFactory jsonFactory, smI_JsonObject json)
 	{
-		return factory.getHelper().getJsonArray(json, smE_JsonKey.requestList) != null;
+		return jsonFactory.getHelper().getJsonArray(json, smE_JsonKey.requestList) != null;
 	}
 	
-	public static int getBatchSize(smI_JsonObject json)
+	public static int getBatchSize(smA_JsonFactory jsonFactory, smI_JsonObject json)
 	{
-		return factory.getHelper().getJsonArray(json, smE_JsonKey.requestList).getSize();
+		return jsonFactory.getHelper().getJsonArray(json, smE_JsonKey.requestList).getSize();
 	}
 	
-	public static void readRequestList(smI_JsonObject json, I_JsonReadDelegate delegate)
+	public static void readRequestList(smA_JsonFactory jsonFactory, smI_JsonObject json, I_JsonReadDelegate delegate)
 	{
-		smI_JsonArray requestList = factory.getHelper().getJsonArray(json, smE_JsonKey.requestList);
+		smI_JsonArray requestList = jsonFactory.getHelper().getJsonArray(json, smE_JsonKey.requestList);
 		
 		for( int i = 0; i < requestList.getSize(); i++ )
 		{

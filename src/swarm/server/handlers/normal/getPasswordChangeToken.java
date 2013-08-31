@@ -48,7 +48,7 @@ public class getPasswordChangeToken implements smI_RequestHandler
 			
 			if( sm_s.accountMngr.isPasswordChangeTokenValid(passwordChangeToken) )
 			{
-				factory.getHelper().putString(response.getJson(), smE_JsonKey.passwordChangeToken, passwordChangeToken);
+				factory.getHelper().putString(response.getJsonArgs(), smE_JsonKey.passwordChangeToken, passwordChangeToken);
 			}
 			else
 			{

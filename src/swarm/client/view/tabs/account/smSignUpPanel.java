@@ -9,6 +9,7 @@ import swarm.client.input.smI_ClickHandler;
 import swarm.client.js.smU_Native;
 import swarm.client.states.StateMachine_Base;
 import swarm.client.states.StateMachine_Tabs;
+import swarm.client.states.account.Action_SignInOrUp_SignUp;
 import swarm.client.states.account.State_AccountStatusPending;
 import swarm.client.states.account.State_SignInOrUp;
 import swarm.client.view.smInitialSyncScreen;
@@ -99,7 +100,7 @@ public class smSignUpPanel extends VerticalPanel implements smI_StateEventListen
 	
 	private int m_lastFocusedFieldIndex = -1;
 	
-	private final State_SignInOrUp.SignUp.Args m_args_SignUp = new State_SignInOrUp.SignUp.Args();
+	private final Action_SignInOrUp_SignUp.Args m_args_SignUp = new Action_SignInOrUp_SignUp.Args();
 	
 	smSignUpPanel()
 	{
@@ -333,7 +334,7 @@ public class smSignUpPanel extends VerticalPanel implements smI_StateEventListen
 			smSignUpCredentials creds = new smSignUpCredentials(rememberMe, args);
 			
 			m_args_SignUp.setCreds(creds);
-			smA_Action.perform(State_SignInOrUp.SignUp.class, m_args_SignUp);
+			smA_Action.perform(Action_SignInOrUp_SignUp.class, m_args_SignUp);
 			
 			m_lastFocusedFieldIndex = focusedFieldIndex;
 			

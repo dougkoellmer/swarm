@@ -42,6 +42,12 @@ public class smGwtRequestDispatcher implements smI_AsyncRequestDispatcher, Reque
 	
 	private smI_ResponseCallbacks m_callbacks = null;
 	private int m_maxGetUrlLength;
+	private final smA_JsonFactory m_jsonFactory;
+	
+	public smGwtRequestDispatcher(smA_JsonFactory jsonFactory)
+	{
+		m_jsonFactory = jsonFactory;
+	}
 	
 	@Override
 	public void initialize(smI_ResponseCallbacks callbacks, int maxGetUrlLength)
@@ -55,7 +61,9 @@ public class smGwtRequestDispatcher implements smI_AsyncRequestDispatcher, Reque
 	{
 		String baseUrl = "/r.t";
 		String url = baseUrl;
-		String jsonString = request.writeJson(null).toString();
+		smI_JsonObject requestJson = m_jsonFactory.createJsonObject();
+		request.writeJson(m_jsonFactory, requestJson);
+		String jsonString = requestJson.toString();
 		
 		RequestBuilder.Method method = request.getMethod() == smE_HttpMethod.GET ? RequestBuilder.GET  : RequestBuilder.POST;
 		boolean isGet = method == RequestBuilder.GET;
@@ -118,7 +126,7 @@ public class smGwtRequestDispatcher implements smI_AsyncRequestDispatcher, Reque
 			return;
 		}
 		
-		smI_JsonObject responseJson = smSharedAppContext.jsonFactory.createJsonObject(nativeResponse.getText());
+		smI_JsonObject responseJson = m_jsonFactory.createJsonObject(nativeResponse.getText());
 		m_reusedResponse.readJson(null, responseJson);
 		
 		if( !(request instanceof smTransactionRequestBatch) )
@@ -136,7 +144,7 @@ public class smGwtRequestDispatcher implements smI_AsyncRequestDispatcher, Reque
 			
 			smTransactionRequestBatch batch = (smTransactionRequestBatch) request;
 
-			smI_JsonArray responseList = factory.getHelper().getJsonArray(responseJson, smE_JsonKey.responseList);
+			smI_JsonArray responseList = m_jsonFactory.getHelper().getJsonArray(responseJson, smE_JsonKey.responseList);
 			
 			m_callbacks.onResponseReceived(batch, responseList);
 		}
@@ -189,7 +197,7 @@ public class smGwtRequestDispatcher implements smI_AsyncRequestDispatcher, Reque
 			{
 				smTransactionRequestBatch batch = ((smTransactionRequestBatch) request);
 				
-				smTransactionRequest foundRequest = batch.getRequest(path, jsonQuery);
+				smTransactionRequest foundRequest = batch.getRequest(path, m_jsonFactory, jsonQuery);
 				
 				if( foundRequest != null && foundRequest != exclusion_nullable )
 				{
@@ -202,7 +210,7 @@ public class smGwtRequestDispatcher implements smI_AsyncRequestDispatcher, Reque
 				{
 					if( jsonQuery != null )
 					{
-						if( jsonQuery.evaluate(request.getJson()) )
+						if( jsonQuery.evaluate(m_jsonFactory, request.getJsonArgs()) )
 						{
 							return request;
 						}

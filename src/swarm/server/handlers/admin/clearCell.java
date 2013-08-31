@@ -34,7 +34,7 @@ public class clearCell implements smI_RequestHandler
 	@Override
 	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
 	{		
-		smServerCellAddress address = new smServerCellAddress(request.getJson());
+		smServerCellAddress address = new smServerCellAddress(request.getJsonArgs());
 		
 		smBlobTransaction_ClearCell transaction = new smBlobTransaction_ClearCell(address);
 		

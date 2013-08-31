@@ -1,14 +1,15 @@
 package swarm.shared.statemachine;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.logging.Logger;
 
 import swarm.client.states.code.State_EditingCodeBlocker;
 import swarm.shared.debugging.smU_Debug;
 
-public class smStateTreeRoot
+public class smStateContext
 {
-	private static final Logger s_logger = Logger.getLogger(smStateTreeRoot.class.getName());
+	private static final Logger s_logger = Logger.getLogger(smStateContext.class.getName());
 	
 	private final smA_State m_rootState;
 	
@@ -20,14 +21,97 @@ public class smStateTreeRoot
 	
 	private int m_queueEvent_recursionDepth = 0;
 	
-	smStateTreeRoot(smA_State rootState)
+	private final HashMap<Class<? extends smA_State>, smA_State> m_stateRegistry = new HashMap<Class<? extends smA_State>, smA_State>();
+	
+	public smStateContext(smA_State rootState, smI_StateEventListener stateEventListener)
 	{
 		m_rootState = rootState;
+		
+		this.addListener(stateEventListener);
+		
+		register(m_rootState);
 	}
 	
 	public smA_State getRootState()
 	{
 		return m_rootState;
+	}
+	
+	public void didEnter()
+	{		
+		m_rootState.didEnter_internal(null);
+	}
+	
+	public void didForeground(Class<? extends smA_State> state_T)
+	{
+		m_rootState.didForeground_internal(null, null);
+	}
+	
+	public void didUpdate(Class<? extends smA_State> state_T, double timeStep)
+	{
+		m_rootState.update_internal(timeStep);
+	}
+	
+	public <T extends smA_State> T getEnteredInstance(Class<? extends smA_State> T)
+	{
+		smA_State registeredState = m_stateRegistry.get(T);
+		if ( registeredState != null )
+		{
+			if ( registeredState.isEntered() )
+			{
+				return (T) registeredState;
+			}
+		}
+		
+		return null;
+	}
+	
+	public boolean isForegrounded(Class<? extends smA_State> T)
+	{
+		return getForegroundedInstance(T) != null;
+	}
+	
+	public boolean isEntered(Class<? extends smA_State> T)
+	{
+		return getEnteredInstance(T) != null;
+	}
+	
+	public void register(smA_State state)
+	{
+		m_stateRegistry.put(state.getClass(), state);
+		state.m_context = this;
+	}
+	
+	public <T extends smA_State> T getForegroundedInstance(Class<? extends smA_State> T)
+	{
+		smA_State registeredState = m_stateRegistry.get(T);
+		if ( registeredState != null )
+		{
+			if ( registeredState.isForegrounded() )
+			{
+				return (T) registeredState;
+			}
+		}
+		
+		return null;
+	}
+	
+	protected smA_State getInstance(Class<? extends smA_State> T)
+	{
+		smA_State registeredState = m_stateRegistry.get(T);
+		if ( registeredState != null )
+		{
+			if ( registeredState.isEntered() )
+			{
+				smU_Debug.ASSERT(false, "Tried to reuse state instance.");
+			}
+			
+			return registeredState;
+		}
+
+		smU_Debug.ASSERT(false, "No state instance registered.");
+		
+		return null;
 	}
 	
 	void beginBatch()

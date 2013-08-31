@@ -33,7 +33,7 @@ public class smTransactionRequestBatch extends smTransactionRequest
 	
 	public smTransactionRequestBatch(Object nativeRequest)
 	{
-		super(nativeRequest, smE_ReservedRequestPath.batch);
+		super(smE_ReservedRequestPath.batch, nativeRequest);
 	}
 	
 	public int getSize()
@@ -56,7 +56,7 @@ public class smTransactionRequestBatch extends smTransactionRequest
 		}
 	}
 	
-	public smTransactionRequest getRequest(smI_RequestPath path, smJsonQuery jsonQuery)
+	public smTransactionRequest getRequest(smI_RequestPath path, smA_JsonFactory jsonFactory, smJsonQuery jsonQuery)
 	{
 		for( int i = m_requestList.size()-1; i >= 0; i-- )
 		{
@@ -70,7 +70,7 @@ public class smTransactionRequestBatch extends smTransactionRequest
 			{
 				if( jsonQuery != null )
 				{
-					if( jsonQuery.evaluate(ithRequest.getJson()) )
+					if( jsonQuery.evaluate(jsonFactory, ithRequest.getJsonArgs()) )
 					{
 						match = true;
 					}
@@ -129,9 +129,9 @@ public class smTransactionRequestBatch extends smTransactionRequest
 	@Override
 	public void writeJson(smA_JsonFactory factory, smI_JsonObject json_out)
 	{
-		super.writeJson(factory, json);
+		super.writeJson(factory, json_out);
 		
-		final smI_JsonArray requestList = smSharedAppContext.jsonFactory.createJsonArray();
+		final smI_JsonArray requestList = factory.createJsonArray();
 		
 		for ( int i = 0; i < m_requestList.size(); i++ )
 		{
@@ -140,10 +140,12 @@ public class smTransactionRequestBatch extends smTransactionRequest
 			//--- DRK > Request can be cancelled by a synchronous request dispatcher.
 			if( !ithRequest.isCancelled() )
 			{
-				requestList.addObject(ithRequest.writeJson(null));
+				smI_JsonObject requestJson = factory.createJsonObject();
+				ithRequest.writeJson(factory, requestJson);
+				requestList.addObject(requestJson);
 			}
 		}
 		
-		factory.getHelper().putJsonArray(json, smE_JsonKey.requestList, requestList);
+		factory.getHelper().putJsonArray(json_out, smE_JsonKey.requestList, requestList);
 	}
 }

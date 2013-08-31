@@ -1,7 +1,8 @@
 package swarm.client.states.camera;
 
 import swarm.client.app.smAppContext;
-import swarm.client.states.camera.StateMachine_Camera.Action_SnapToCoordinate.Args;
+import swarm.client.managers.smGridManager;
+
 import swarm.shared.entities.smA_Grid;
 import swarm.shared.statemachine.smA_ActionArgs;
 import swarm.shared.statemachine.smA_State;
@@ -35,6 +36,13 @@ public class Action_Camera_SnapToCoordinate extends smA_CameraAction
 		}
 	}
 	
+	private final smGridManager m_gridMngr;
+	
+	Action_Camera_SnapToCoordinate(smGridManager gridMngr)
+	{
+		m_gridMngr = gridMngr;
+	}
+	
 	@Override
 	public void perform(smA_ActionArgs args)
 	{
@@ -62,7 +70,7 @@ public class Action_Camera_SnapToCoordinate extends smA_CameraAction
 	{
 		smGridCoordinate coordinate = ((Args) args).m_coordinate;
 		
-		smA_Grid grid = smAppContext.gridMngr.getGrid();
+		smA_Grid grid = m_gridMngr.getGrid();
 		
 		if( !grid.isInBounds(coordinate) )
 		{

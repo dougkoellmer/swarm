@@ -54,7 +54,7 @@ public class signUp implements smI_RequestHandler
 	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
 	{
 		smServerAccountManager accountManager = sm_s.accountMngr;
-		smSignUpCredentials creds = new smSignUpCredentials(request.getJson());
+		smSignUpCredentials creds = new smSignUpCredentials(request.getJsonArgs());
 		smSignUpValidationResult result = new smSignUpValidationResult();
 		String remoteAddress = ((HttpServletRequest) request.getNativeRequest()).getRemoteAddr();
 		
@@ -68,6 +68,6 @@ public class signUp implements smI_RequestHandler
 			}
 		}
 		
-		result.writeJson(null, response.getJson());
+		result.writeJson(null, response.getJsonArgs());
 	}
 }

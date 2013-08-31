@@ -56,14 +56,14 @@ public class smAccountInfo extends smA_JsonEncodable
 	@Override
 	public void writeJson(smA_JsonFactory factory, smI_JsonObject json_out)
 	{
-		smI_JsonArray creds = smSharedAppContext.jsonFactory.createJsonArray();
+		smI_JsonArray creds = factory.createJsonArray();
 		
 		for( int i = 0; i < m_type.length; i++ )
 		{
 			creds.addString(m_type[i]);
 		}
 		
-		factory.getHelper().putJsonArray(json, smE_JsonKey.accountInfo, creds);
+		factory.getHelper().putJsonArray(json_out, smE_JsonKey.accountInfo, creds);
 	}
 
 	@Override

@@ -37,11 +37,11 @@ public class Action_Camera_SetCameraViewSize extends smA_Action
 		
 		if( machine.getCurrentState() instanceof State_CameraFloating )
 		{
-			machine.getCameraManager().setTargetPosition(machine.getCameraManager().getTargetPosition(), false); // refreshes Z-constraints if necessary.
+			m_cameraMngr.setTargetPosition(m_cameraMngr.getTargetPosition(), false); // refreshes Z-constraints if necessary.
 		}
 		else if( machine.getCurrentState() == null )
 		{
-			machine.getCameraManager().setCameraPosition(machine.getCameraManager().getTargetPosition(), true);
+			m_cameraMngr.setCameraPosition(m_cameraMngr.getTargetPosition(), true);
 		}
 	}
 

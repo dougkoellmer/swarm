@@ -9,13 +9,17 @@ public class Action_EditingCode_Save extends smA_Action
 	@Override
 	public void perform(smA_ActionArgs args)
 	{
-		State_EditingCode.performCommitOrPreview(this);
+		State_EditingCode state = this.getState();
+		
+		state.performCommitOrPreview(this);
 	}
 	
 	@Override
 	public boolean isPerformable(smA_ActionArgs args)
 	{
-		return State_EditingCode.isCommitOrPreviewPerformable(false);
+		State_EditingCode state = this.getState();
+		
+		return state.isCommitOrPreviewPerformable(false);
 	}
 	
 	@Override

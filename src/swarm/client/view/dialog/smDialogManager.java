@@ -1,5 +1,6 @@
 package swarm.client.view.dialog;
 
+import swarm.client.input.smClickManager;
 import swarm.client.states.State_AsyncDialog;
 import swarm.client.states.State_GenericDialog;
 import swarm.client.view.smE_ZIndex;
@@ -30,9 +31,12 @@ public class smDialogManager implements smI_UIElement
 	
 	private boolean m_initialized = false;
 	
-	public smDialogManager(Panel container)
+	private final smClickManager m_clickMngr;
+	
+	public smDialogManager(smClickManager clickMngr, Panel outerContainer)
 	{
-		m_outerContainer = container;
+		m_outerContainer = outerContainer;
+		m_clickMngr = clickMngr;
 	}
 	
 	private void init()
@@ -41,7 +45,7 @@ public class smDialogManager implements smI_UIElement
 		
 		m_focusPanel = new FocusPanel();
 		m_innerContainer = new AbsolutePanel();
-		m_dialog = new smDialog(512, 256, new smDialog.I_Delegate()
+		m_dialog = new smDialog(m_clickMngr, 512, 256, new smDialog.I_Delegate()
 		{
 			@Override
 			public void onOkPressed()

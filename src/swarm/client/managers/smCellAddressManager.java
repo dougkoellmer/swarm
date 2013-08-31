@@ -265,9 +265,9 @@ public class smCellAddressManager implements smI_TransactionResponseHandler
 		if( request.getPath() == smE_RequestPath.getCellAddress )
 		{
 			smCellAddressMapping mapping = new smCellAddressMapping();
-			mapping.readJson(null, request.getJson());
+			mapping.readJson(null, request.getJsonArgs());
 
-			m_reusedAddressResult.readJson(null, response.getJson());
+			m_reusedAddressResult.readJson(null, response.getJsonArgs());
 			
 			if( m_reusedAddressResult.getError() == smE_GetCellAddressError.NO_ERROR )
 			{
@@ -286,9 +286,9 @@ public class smCellAddressManager implements smI_TransactionResponseHandler
 		else if( request.getPath() == smE_RequestPath.getCellAddressMapping )
 		{
 			smCellAddress address = new smCellAddress();
-			address.readJson(null, request.getJson());
+			address.readJson(null, request.getJsonArgs());
 
-			m_reusedMappingResult.readJson(null, response.getJson());
+			m_reusedMappingResult.readJson(null, response.getJsonArgs());
 			
 			if( m_reusedMappingResult.getError() == smE_GetCellAddressMappingError.NO_ERROR )
 			{
@@ -316,7 +316,7 @@ public class smCellAddressManager implements smI_TransactionResponseHandler
 		if( request.getPath() == smE_RequestPath.getCellAddress )
 		{
 			smCellAddressMapping mapping = new smCellAddressMapping();
-			mapping.readJson(null, request.getJson());
+			mapping.readJson(null, request.getJsonArgs());
 			
 			if( response.getError() == smE_ResponseError.VERSION_MISMATCH )
 			{
@@ -338,7 +338,7 @@ public class smCellAddressManager implements smI_TransactionResponseHandler
 		else if( request.getPath() == smE_RequestPath.getCellAddressMapping )
 		{
 			smCellAddress address = new smCellAddress();
-			address.readJson(null, request.getJson());
+			address.readJson(null, request.getJsonArgs());
 			
 			if( response.getError() == smE_ResponseError.VERSION_MISMATCH )
 			{

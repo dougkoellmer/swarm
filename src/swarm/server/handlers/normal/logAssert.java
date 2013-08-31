@@ -32,7 +32,7 @@ public class logAssert implements smI_RequestHandler
 		int accountId = session != null ? session.getAccountId() : -1;
 		String ip = ((HttpServletRequest) request.getNativeRequest()).getRemoteAddr();
 		
-		smServerTelemetryAssert telemetryAssert = new smServerTelemetryAssert(request.getJson(), ip, accountId);
+		smServerTelemetryAssert telemetryAssert = new smServerTelemetryAssert(request.getJsonArgs(), ip, accountId);
 		
 		sm_s.telemetryDb.put(telemetryAssert);
 	}

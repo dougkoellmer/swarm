@@ -165,7 +165,10 @@ public class smJsonHelper
 		}
 		else if( object instanceof smI_WritesJson )
 		{
-			array.addObject(((smI_WritesJson)object).writeJson(factory));
+			smI_WritesJson writesJson = ((smI_WritesJson)object);
+			smI_JsonObject jsonObject = factory.createJsonObject();
+			writesJson.writeJson(factory, jsonObject);
+			array.addObject(jsonObject);
 		}
 		else if( object instanceof Integer )
 		{

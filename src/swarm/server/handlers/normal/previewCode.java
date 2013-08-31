@@ -37,17 +37,17 @@ public class previewCode implements smI_RequestHandler
 		//---		it for now because I think the low risk of a DoS isn't worth the slower performance for well-meaning users.
 		
 		smServerGridCoordinate coordinate = new smServerGridCoordinate();
-		coordinate.readJson(null, request.getJson());
+		coordinate.readJson(null, request.getJsonArgs());
 		
 		//--- DRK > Obviously we're trusting the client here as to their privileges, which could easily be hacked, but it doesn't really matter.
 		//---		This handler should be completely self-contained, so there's no chance of the hacked code leaking into the database.
 		//---		This is an optimization so that we don't have to hit the database, but in the future I might just hit the database for it.
-		smCodePrivileges privileges = new smCodePrivileges(request.getJson());
+		smCodePrivileges privileges = new smCodePrivileges(request.getJsonArgs());
 		
-		smCode sourceCode = new smCode(request.getJson(), smE_CodeType.SOURCE);
+		smCode sourceCode = new smCode(request.getJsonArgs(), smE_CodeType.SOURCE);
 		
 		smCompilerResult result = smSharedAppContext.codeCompiler.compile(sourceCode, privileges, coordinate.writeString());
 		
-		result.writeJson(null, response.getJson());
+		result.writeJson(null, response.getJsonArgs());
 	}
 }

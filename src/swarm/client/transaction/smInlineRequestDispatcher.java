@@ -7,6 +7,7 @@ import swarm.shared.app.smSharedAppContext;
 import swarm.shared.debugging.smU_Debug;
 import swarm.shared.json.smA_JsonFactory;
 import swarm.shared.json.smI_JsonArray;
+import swarm.shared.json.smI_JsonObject;
 import swarm.shared.transaction.smTransactionRequest;
 import swarm.shared.transaction.smTransactionResponse;
 import com.google.gwt.core.client.JsArray;
@@ -45,9 +46,12 @@ public class smInlineRequestDispatcher implements smI_SyncRequestDispatcher
 	
 	private final String m_appId;
 	
-	public smInlineRequestDispatcher(String appId)
+	private final smA_JsonFactory m_jsonFactory;
+	
+	public smInlineRequestDispatcher(smA_JsonFactory jsonFactory, String appId)
 	{
 		m_appId = appId;
+		m_jsonFactory = jsonFactory;
 		
 		JsArray batch = smU_Native.getGlobalArray(m_appId+"_rl");
 		
@@ -55,22 +59,25 @@ public class smInlineRequestDispatcher implements smI_SyncRequestDispatcher
 		{
 			JsArrayString entry = (JsArrayString) batch.get(i);
 			
-			String requestJson = entry.get(0);
-			String responseJson = entry.get(1);
-			
 			smTransactionRequest request = new smTransactionRequest();
 			smTransactionResponse response = new smTransactionResponse();
 			
+			String requestJsonString = entry.get(0);
+			String responseJsonString = entry.get(1);
+			
 			try
 			{
-				request.readJson(null, requestJson);
-				response.readJson(null, responseJson);
+				smI_JsonObject requestJson = m_jsonFactory.createJsonObject(requestJsonString);
+				smI_JsonObject responseJson = m_jsonFactory.createJsonObject(responseJsonString);
+				
+				request.readJson(m_jsonFactory, requestJson);
+				response.readJson(m_jsonFactory, responseJson);
 				
 				m_inlineTransactions.add(new InlineTransaction(request, response));
 			}
 			catch(Throwable e)
 			{
-				smU_Debug.ASSERT(false, "Couldn't read inline request (" + requestJson + ") or response(" + responseJson + ")");
+				smU_Debug.ASSERT(false, "Couldn't read inline request (" + requestJsonString + ") or response(" + responseJsonString + ")");
 			}
 		}
 		
@@ -133,11 +140,13 @@ public class smInlineRequestDispatcher implements smI_SyncRequestDispatcher
 				
 				if( transaction != null )
 				{
-					responseBatch = responseBatch == null ? smSharedAppContext.jsonFactory.createJsonArray() : responseBatch;
+					responseBatch = responseBatch == null ? m_jsonFactory.createJsonArray() : responseBatch;
 					inlineRequestBatch = inlineRequestBatch == null ? new smTransactionRequestBatch() : inlineRequestBatch;
 					
 					inlineRequestBatch.addRequest(transaction.m_request);
-					responseBatch.addObject(transaction.m_response.writeJson(null));
+					smI_JsonObject responseJson = m_jsonFactory.createJsonObject();
+					transaction.m_response.writeJson(m_jsonFactory, responseJson);
+					responseBatch.addObject(responseJson);
 					
 					ithRequest.cancel();
 					

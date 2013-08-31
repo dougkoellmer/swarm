@@ -162,7 +162,9 @@ public abstract class smA_Cell extends smA_JsonEncodable
 		{
 			if( m_code[i] != null )
 			{
-				factory.getHelper().putJsonObject(json_out, smE_CodeType.values()[i].getJsonKey(), m_code[i].writeJson(null));
+				smI_JsonObject codeJson = factory.createJsonObject();
+				m_code[i].writeJson(factory, codeJson);
+				factory.getHelper().putJsonObject(json_out, smE_CodeType.values()[i].getJsonKey(), codeJson);
 			}
 		}
 	}

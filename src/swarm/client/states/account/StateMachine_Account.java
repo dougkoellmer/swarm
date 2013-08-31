@@ -22,8 +22,11 @@ public class StateMachine_Account extends smA_StateMachine
 {
 	private static class AccountManagerDelegate implements smClientAccountManager.I_Delegate
 	{
-		AccountManagerDelegate()
+		private final smClientAccountManager m_accountMngr;
+		
+		AccountManagerDelegate(smClientAccountManager accountManager)
 		{
+			m_accountMngr = accountManager;
 		}
 
 		@Override
@@ -35,12 +38,10 @@ public class StateMachine_Account extends smA_StateMachine
 		@Override
 		public void onAuthenticationError()
 		{
-			smClientAccountManager accountManager = smAppContext.accountMngr;
-			
 			//--- DRK > Not entering this if block should be an extremely fringe, practically impossible case.
 			//---		It's still *technically* possible though, so we don't want to clear the spinner if we're still
 			//---		waiting on a response from the server
-			if( !accountManager.isWaitingOnServer() )
+			if( !m_accountMngr.isWaitingOnServer() )
 			{
 				onAccountManagerDelegation();
 			}
@@ -61,7 +62,14 @@ public class StateMachine_Account extends smA_StateMachine
 		}
 	}
 	
-	private final AccountManagerDelegate m_accountManagerDelegate = new AccountManagerDelegate();
+	private final AccountManagerDelegate m_accountManagerDelegate;
+	private final smClientAccountManager m_accountMngr;
+	
+	public StateMachine_Account(smClientAccountManager accountMngr)
+	{
+		m_accountManagerDelegate = new AccountManagerDelegate(accountMngr);
+		m_accountMngr = accountMngr;
+	}
 	
 	@Override
 	protected void didEnter(smA_StateConstructor constructor)
@@ -71,7 +79,7 @@ public class StateMachine_Account extends smA_StateMachine
 	@Override
 	protected void didForeground(Class<? extends smA_State> revealingState, Object[] args)
 	{
-		smClientAccountManager accountManager = smAppContext.accountMngr;
+		smClientAccountManager accountManager = m_accountMngr;
 		
 		accountManager.addDelegate(m_accountManagerDelegate);
 		
@@ -104,7 +112,7 @@ public class StateMachine_Account extends smA_StateMachine
 	{
 		smU_Debug.ASSERT(this.isForegrounded(), "popBlockerAndSetState1");
 		
-		smClientAccountManager accountManager = smAppContext.accountMngr;
+		smClientAccountManager accountManager = m_accountMngr;
 		
 		machine_beginBatch(this);
 	
@@ -136,7 +144,7 @@ public class StateMachine_Account extends smA_StateMachine
 	@Override 
 	protected void willBackground(Class<? extends smA_State> blockingState)
 	{
-		smClientAccountManager accountManager = smAppContext.accountMngr;
+		smClientAccountManager accountManager = m_accountMngr;
 		
 		accountManager.removeDelegate(m_accountManagerDelegate);
 		

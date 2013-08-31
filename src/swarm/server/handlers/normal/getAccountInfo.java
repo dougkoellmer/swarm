@@ -22,6 +22,6 @@ public class getAccountInfo implements smI_RequestHandler
 		
 		smUserSession userSession = sm_s.sessionMngr.getSession(request, response);
 		smAccountInfo accountInfo = new smAccountInfo(userSession.getUsername());
-		accountInfo.writeJson(null, response.getJson());
+		accountInfo.writeJson(null, response.getJsonArgs());
 	}
 }

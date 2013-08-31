@@ -9,7 +9,6 @@ import swarm.client.managers.smCellCodeManager;
 import swarm.client.managers.smClientAccountManager;
 import swarm.client.managers.smGridManager;
 import swarm.client.managers.smUserManager;
-import swarm.client.navigation.smMasterNavigator;
 import swarm.client.structs.smCellCodeCache;
 import swarm.client.thirdparty.captcha.smRecaptchaWrapper;
 import swarm.client.transaction.smClientTransactionManager;

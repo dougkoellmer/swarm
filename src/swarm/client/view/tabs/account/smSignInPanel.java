@@ -5,6 +5,8 @@ import swarm.client.input.smClickManager;
 import swarm.client.input.smI_ClickHandler;
 import swarm.client.managers.smClientAccountManager;
 import swarm.client.states.StateMachine_Base;
+import swarm.client.states.account.Action_SignInOrUp_SetNewPassword;
+import swarm.client.states.account.Action_SignInOrUp_SignIn;
 import swarm.client.states.account.State_AccountStatusPending;
 import swarm.client.states.account.State_SignInOrUp;
 import swarm.client.view.tooltip.smE_ToolTipType;
@@ -69,7 +71,7 @@ public class smSignInPanel extends VerticalPanel implements smI_StateEventListen
 	
 	private int m_lastFocusedFieldIndex = -1;
 	
-	private final State_SignInOrUp.SignIn.Args m_actionArgs = new State_SignInOrUp.SignIn.Args();
+	private final Action_SignInOrUp_SignIn.Args m_actionArgs = new Action_SignInOrUp_SignIn.Args();
 	
 	private final Anchor m_changePassword = new Anchor();
 
@@ -300,11 +302,11 @@ public class smSignInPanel extends VerticalPanel implements smI_StateEventListen
 			
 			if( type == E_SubmitType.SIGN_IN )
 			{
-				smA_Action.perform(State_SignInOrUp.SignIn.class, m_actionArgs);
+				smA_Action.perform(Action_SignInOrUp_SignIn.class, m_actionArgs);
 			}
 			else if( type == E_SubmitType.RESET_PASSWORD )
 			{
-				smA_Action.perform(State_SignInOrUp.SetNewPassword.class, m_actionArgs);
+				smA_Action.perform(Action_SignInOrUp_SetNewPassword.class, m_actionArgs);
 			}
 			
 			m_lastFocusedFieldIndex = focusedFieldIndex;

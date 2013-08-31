@@ -35,7 +35,7 @@ public abstract class smA_TransactionObject extends smA_JsonEncodable
 		m_jsonArgs = null;
 	}
 	
-	public smI_JsonObject getJson()
+	public smI_JsonObject getJsonArgs()
 	{		
 		if ( m_jsonArgs == null )
 		{

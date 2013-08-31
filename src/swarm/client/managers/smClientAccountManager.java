@@ -216,7 +216,7 @@ public class smClientAccountManager implements smI_TransactionResponseHandler
 		}
 		
 		smTransactionRequest request = new smTransactionRequest(smE_RequestPath.signUp);
-		credentials.writeJson(null, request.getJson());
+		credentials.writeJson(null, request.getJsonArgs());
 		
 		m_txnMngr.performAction(action, request);
 	}
@@ -258,11 +258,11 @@ public class smClientAccountManager implements smI_TransactionResponseHandler
 		}
 		
 		smTransactionRequest request = new smTransactionRequest(smE_RequestPath.signIn);
-		credentials.writeJson(null, request.getJson());
+		credentials.writeJson(null, request.getJsonArgs());
 		
 		if( m_passwordChangeToken != null )
 		{
-			m_jsonFactory.getHelper().putString(request.getJson(), smE_JsonKey.passwordChangeToken, m_passwordChangeToken);
+			m_jsonFactory.getHelper().putString(request.getJsonArgs(), smE_JsonKey.passwordChangeToken, m_passwordChangeToken);
 		}
 		
 		m_txnMngr.performAction(smE_TransactionAction.QUEUE_REQUEST, request);
@@ -329,12 +329,12 @@ public class smClientAccountManager implements smI_TransactionResponseHandler
 				
 				if( signInResponse.getError() == smE_ResponseError.NO_ERROR )
 				{
-					result.readJson(null, signInResponse.getJson());
+					result.readJson(null, signInResponse.getJsonArgs());
 					
 					if( result.isEverythingOk() )
 					{
 						m_accountInfo = new smAccountInfo();
-						m_accountInfo.readJson(null, response.getJson());
+						m_accountInfo.readJson(null, response.getJsonArgs());
 						
 						onResponse(E_ResponseType.SIGN_IN_SUCCESS);
 					}
@@ -355,7 +355,7 @@ public class smClientAccountManager implements smI_TransactionResponseHandler
 			{
 				m_isSignedIn = true;
 				m_accountInfo = new smAccountInfo();
-				m_accountInfo.readJson(null, response.getJson());
+				m_accountInfo.readJson(null, response.getJsonArgs());
 			}
 			
 			return smE_ResponseSuccessControl.BREAK;
@@ -367,12 +367,12 @@ public class smClientAccountManager implements smI_TransactionResponseHandler
 		}
 		else if( request.getPath() == smE_RequestPath.signUp )
 		{
-			smSignUpValidationResult result = new smSignUpValidationResult(response.getJson());
+			smSignUpValidationResult result = new smSignUpValidationResult(response.getJsonArgs());
 			
 			if( result.isEverythingOk() )
 			{
 				//--- DRK > Populate account info.
-				smSignUpCredentials	creds = new smSignUpCredentials(request.getJson());
+				smSignUpCredentials	creds = new smSignUpCredentials(request.getJsonArgs());
 				m_accountInfo = new smAccountInfo();
 				m_accountInfo.copyCredentials(creds);
 				
@@ -403,7 +403,7 @@ public class smClientAccountManager implements smI_TransactionResponseHandler
 		else if( request.getPath() == smE_RequestPath.getPasswordChangeToken )
 		{
 			 //--- DRK > Can be (usually is) null.
-			m_passwordChangeToken = m_jsonFactory.getHelper().getString(response.getJson(), smE_JsonKey.passwordChangeToken);
+			m_passwordChangeToken = m_jsonFactory.getHelper().getString(response.getJsonArgs(), smE_JsonKey.passwordChangeToken);
 			
 			if( m_passwordChangeToken == null )
 			{
@@ -445,7 +445,7 @@ public class smClientAccountManager implements smI_TransactionResponseHandler
 				
 				if( previousResponse.getError() == smE_ResponseError.NO_ERROR )
 				{
-					m_latestBadSignInResult.readJson(null, previousResponse.getJson());
+					m_latestBadSignInResult.readJson(null, previousResponse.getJsonArgs());
 				}
 				else
 				{

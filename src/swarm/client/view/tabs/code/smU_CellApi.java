@@ -10,6 +10,7 @@ import swarm.client.navigation.smBrowserNavigator;
 import swarm.client.states.camera.Action_Camera_SetCameraTarget;
 import swarm.client.states.camera.Action_Camera_SnapToAddress;
 import swarm.client.states.camera.Action_Camera_SnapToCoordinate;
+import swarm.client.states.camera.Action_ViewingCell_Refresh;
 import swarm.client.states.camera.StateMachine_Camera;
 import swarm.client.states.camera.State_ViewingCell;
 import swarm.client.structs.smAccountInfo;
@@ -232,7 +233,7 @@ public class smU_CellApi
 	{
 		if( rawAddress.equals("~") )
 		{
-			smA_Action.perform(State_ViewingCell.Refresh.class);
+			smA_Action.perform(Action_ViewingCell_Refresh.class);
 			
 			return;
 		}

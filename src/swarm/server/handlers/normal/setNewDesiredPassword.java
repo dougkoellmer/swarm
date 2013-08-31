@@ -45,7 +45,7 @@ public class setNewDesiredPassword implements smI_RequestHandler
 		}
 		
 		//--- DRK > Get password change token.
-		smSignInCredentials creds = new smSignInCredentials(request.getJson());
+		smSignInCredentials creds = new smSignInCredentials(request.getJsonArgs());
 		creds.setIsForNewPassword(true);
 		smSignInValidationResult result = new smSignInValidationResult();
 		String changeToken = accountManager.setNewDesiredPassword(creds, result);

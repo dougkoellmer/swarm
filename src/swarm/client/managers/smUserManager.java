@@ -99,8 +99,8 @@ public class smUserManager implements smI_TransactionResponseHandler, smClientAc
 	private void onGetUserDataSuccess(smTransactionResponse response)
 	{
 		smA_ClientUser user = m_user;
-		user.readJson(null, response.getJson());
-		Boolean createdUser = m_context.jsonFactory.getHelper().getBoolean(response.getJson(), smE_JsonKey.createdUser);
+		user.readJson(null, response.getJsonArgs());
+		Boolean createdUser = m_context.jsonFactory.getHelper().getBoolean(response.getJsonArgs(), smE_JsonKey.createdUser);
 		createdUser = createdUser != null ? createdUser : false; // can be null when reading inline transaction from the page and the user is already created.
 		
 		Iterator<? extends smUserCell> cellIterator = user.getCells();
@@ -170,7 +170,7 @@ public class smUserManager implements smI_TransactionResponseHandler, smClientAc
 		if( request.getPath() == smE_RequestPath.getStartingPosition )
 		{
 			smPoint startingPosition = new smPoint();
-			startingPosition.readJson(null, response.getJson());
+			startingPosition.readJson(null, response.getJsonArgs());
 			
 			m_user.getLastPosition().copy(startingPosition);
 			

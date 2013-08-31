@@ -74,7 +74,7 @@ public class smGridManager implements smI_TransactionResponseHandler
 	{
 		if( request.getPath() == smE_RequestPath.getGridData )
 		{
-			this.updateGridFromJson(response.getJson());
+			this.updateGridFromJson(response.getJsonArgs());
 			
 			return smE_ResponseSuccessControl.BREAK;
 		}
@@ -83,7 +83,7 @@ public class smGridManager implements smI_TransactionResponseHandler
 			//--- DRK > A getUserData request can implicitly also create the user as well if this is the 
 			//---		first getUserData (i.e., on signing up), or previous ones failed.  In turn, creating
 			//---		a user can implicitly expand the grid.
-			this.updateGridFromJson(response.getJson());
+			this.updateGridFromJson(response.getJsonArgs());
 			
 			return smE_ResponseSuccessControl.CONTINUE;
 		}

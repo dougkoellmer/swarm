@@ -1,4 +1,4 @@
-- fix default nul argument for all writeJson calls
+- fix default nul argument for all writeJson and readJson calls
 
 - give request handlers default json factory, maybe other stuff, depending
 

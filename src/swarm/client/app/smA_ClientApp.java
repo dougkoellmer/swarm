@@ -45,6 +45,7 @@ import swarm.client.transaction.smInlineRequestDispatcher;
 import swarm.client.view.smE_ZIndex;
 import swarm.client.view.smS_UI;
 import swarm.client.view.smViewConfig;
+import swarm.client.view.smViewContext;
 import swarm.client.view.smViewController;
 import swarm.client.view.tabs.code.smCellSandbox;
 import swarm.client.view.tooltip.smE_ToolTipType;
@@ -71,7 +72,8 @@ public class smA_ClientApp extends smA_App implements smI_TimeSource
 	
 	protected final smClientAppConfig m_appConfig;
 	protected final smViewConfig m_viewConfig;
-	protected final smAppContext m_module;
+	protected final smAppContext m_appContext;
+	protected final smViewContext m_viewContext;
 	
 	protected smA_ClientApp(smClientAppConfig appConfig, smViewConfig viewConfig)
 	{
@@ -79,7 +81,8 @@ public class smA_ClientApp extends smA_App implements smI_TimeSource
 		
 		m_appConfig = appConfig;
 		m_viewConfig = viewConfig;
-		m_module = new smAppContext();
+		m_appContext = new smAppContext();
+		m_viewContext = new smViewContext();
 	}
 	
 	protected void startUp(smE_StartUpStage stage)
@@ -162,9 +165,9 @@ public class smA_ClientApp extends smA_App implements smI_TimeSource
 				
 				s_logger.severe("ASSERTION FAILED: " + message);
 				
-				String platform = m_module.platformInfo.getRawPlatform();
+				String platform = m_appContext.platformInfo.getRawPlatform();
 				smTelemetryAssert telemetryAssert = new smTelemetryAssert(message, platform);
-				m_module.txnMngr.makeRequest(smE_TelemetryRequestPath.logAssert, telemetryAssert);
+				m_appContext.txnMngr.makeRequest(smE_TelemetryRequestPath.logAssert, telemetryAssert);
 
 				//assert(false);
 			}
@@ -173,7 +176,7 @@ public class smA_ClientApp extends smA_App implements smI_TimeSource
 	
 	protected void stage_browserSupportCheck()
 	{
-		m_module.cellSandbox = new smCellSandbox(new smCellSandbox.I_StartUpCallback()
+		m_appContext.cellSandbox = new smCellSandbox(new smCellSandbox.I_StartUpCallback()
 		{
 			public void onStartUpComplete(boolean success)
 			{
@@ -213,56 +216,56 @@ public class smA_ClientApp extends smA_App implements smI_TimeSource
 	
 	protected void stage_startAppManagers()
 	{
-		m_module.platformInfo = new smPlatformInfo();
-		m_module.jsonFactory = new smGwtJsonFactory(m_appConfig.verboseTransactions);
-		m_module.codeCompiler = new smClientCodeCompiler();
+		m_appContext.platformInfo = new smPlatformInfo();
+		m_appContext.jsonFactory = new smGwtJsonFactory(m_appConfig.verboseTransactions);
+		m_appContext.codeCompiler = new smClientCodeCompiler();
 		
-		m_module.codeCache = new smCellCodeCache(m_appConfig.codeCacheSize, m_appConfig.codeCacheExpiration_seconds, this);
-		m_module.userMngr = new smUserManager(m_module, m_appConfig.user);
-		m_module.requestPathMngr = new smRequestPathManager(m_module.jsonFactory, m_appConfig.verboseTransactions);
-		m_module.txnMngr = new smClientTransactionManager(m_module.requestPathMngr);
-		m_module.gridMngr = new smGridManager(m_module.txnMngr, m_appConfig.grid);
-		m_module.cameraMngr = new smCameraManager(m_module.gridMngr, new smCamera(), m_appConfig.minSnapTime, m_appConfig.maxSnapTime);
-		m_module.addressMngr = new smCellAddressManager(m_module, m_appConfig.addressCacheSize, m_appConfig.addressCacheExpiration_seconds, this);
-		m_module.accountMngr = new smClientAccountManager(m_module.txnMngr, m_module.jsonFactory);
+		m_appContext.codeCache = new smCellCodeCache(m_appConfig.codeCacheSize, m_appConfig.codeCacheExpiration_seconds, this);
+		m_appContext.userMngr = new smUserManager(m_appContext, m_appConfig.user);
+		m_appContext.requestPathMngr = new smRequestPathManager(m_appContext.jsonFactory, m_appConfig.verboseTransactions);
+		m_appContext.txnMngr = new smClientTransactionManager(m_appContext.requestPathMngr);
+		m_appContext.gridMngr = new smGridManager(m_appContext.txnMngr, m_appConfig.grid);
+		m_appContext.cameraMngr = new smCameraManager(m_appContext.gridMngr, new smCamera(), m_appConfig.minSnapTime, m_appConfig.maxSnapTime);
+		m_appContext.addressMngr = new smCellAddressManager(m_appContext, m_appConfig.addressCacheSize, m_appConfig.addressCacheExpiration_seconds, this);
+		m_appContext.accountMngr = new smClientAccountManager(m_appContext.txnMngr, m_appContext.jsonFactory);
 		
 		//--- DRK > Configure transaction stuff.
-		m_module.requestPathMngr.register(smE_RequestPath.values());
-		m_module.txnMngr.setSyncRequestDispatcher(new smInlineRequestDispatcher(m_appConfig.appId));
-		m_module.txnMngr.setAsyncRequestDispatcher(new smGwtRequestDispatcher());
+		m_appContext.requestPathMngr.register(smE_RequestPath.values());
+		m_appContext.txnMngr.setSyncRequestDispatcher(new smInlineRequestDispatcher(m_appContext.jsonFactory, m_appConfig.appId));
+		m_appContext.txnMngr.setAsyncRequestDispatcher(new smGwtRequestDispatcher(m_appContext.jsonFactory));
 	}
 	
 	protected void stage_startViewManagers()
 	{
-		m_module.recaptchaWrapper = new smRecaptchaWrapper();
-		m_module.clickMngr = new smClickManager();
-		m_module.toolTipMngr = new smToolTipManager(m_module.platformInfo.getPlatform() != smE_Platform.IOS, smS_UI.TOOL_TIP_DELAY);
+		m_viewContext.recaptchaWrapper = new smRecaptchaWrapper();
+		m_viewContext.clickMngr = new smClickManager();
+		m_viewContext.toolTipMngr = new smToolTipManager(m_appContext.platformInfo.getPlatform() != smE_Platform.IOS, smS_UI.TOOL_TIP_DELAY);
 		
 		//--- DRK > Set defaults for tool tips.
 		for( int i = smE_ZIndex.TOOL_TIP_1.ordinal(), j = 0; i <= smE_ZIndex.TOOL_TIP_5.ordinal(); i++, j++ )
 		{
-			m_module.toolTipMngr.setDefaultZIndex(smE_ToolTipType.values()[j], i);
+			m_viewContext.toolTipMngr.setDefaultZIndex(smE_ToolTipType.values()[j], i);
 		}
-		m_module.toolTipMngr.setDefaultPadding(smS_UI.TOOl_TIP_PADDING);
+		m_viewContext.toolTipMngr.setDefaultPadding(smS_UI.TOOl_TIP_PADDING);
 	}
 	
 	protected void stage_registerStateMachine()
 	{
-		smA_State.register(new StateMachine_Base());
+		smA_State.register(new StateMachine_Base(m_appContext));
 		{
-			smA_State.register(new State_Initializing());
+			smA_State.register(new State_Initializing(m_appContext));
 			
 			smA_State.register(new State_GenericDialog());
 			smA_State.register(new State_AsyncDialog());
 			
 			smA_State.register(new StateContainer_Base());
 			{
-				smA_State.register(new StateMachine_Camera());
+				smA_State.register(new StateMachine_Camera(m_appContext));
 				{
 					smA_State.register(new State_CameraFloating());
 					smA_State.register(new State_GettingMapping());
-					smA_State.register(new State_CameraSnapping(m_appConfig.cellHudHeight));
-					smA_State.register(new State_ViewingCell());
+					smA_State.register(new State_CameraSnapping(m_appContext, m_appConfig.cellHudHeight));
+					smA_State.register(new State_ViewingCell(m_appContext));
 				}
 			}
 		}
@@ -288,25 +291,25 @@ public class smA_ClientApp extends smA_App implements smI_TimeSource
 		smA_StateMachine.root_didEnter(StateMachine_Base.class, m_viewConfig.stateEventListener);
 		smA_StateMachine.root_didForeground(StateMachine_Base.class);
 		
-		m_module.txnMngr.flushSyncResponses();
+		m_appContext.txnMngr.flushSyncResponses();
 	}
 
-	protected static void registerCodeEditingStates()
+	protected void registerCodeEditingStates()
 	{
-		smA_State.register(new StateMachine_EditingCode());
+		smA_State.register(new StateMachine_EditingCode(m_appContext));
 		{
-			smA_State.register(new State_EditingCode());
+			smA_State.register(new State_EditingCode(m_appContext));
 			smA_State.register(new State_EditingCodeBlocker());
 		}
 	}
 	
-	protected static void registerAccountStates()
+	protected void registerAccountStates()
 	{
-		smA_State.register(new StateMachine_Account());
+		smA_State.register(new StateMachine_Account(m_appContext.accountMngr));
 		{
-			smA_State.register(new State_ManageAccount());
+			smA_State.register(new State_ManageAccount(m_appContext.accountMngr));
 			smA_State.register(new State_AccountStatusPending());
-			smA_State.register(new State_SignInOrUp());
+			smA_State.register(new State_SignInOrUp(m_appContext.accountMngr, m_appContext.userMngr));
 		}
 	}
 	
@@ -330,7 +333,7 @@ public class smA_ClientApp extends smA_App implements smI_TimeSource
 		smA_StateMachine.root_didUpdate(StateMachine_Base.class, currentTime - m_lastTime);
 		m_lastTime = currentTime;
 
-		m_module.txnMngr.flushSyncResponses();
+		m_appContext.txnMngr.flushSyncResponses();
 	}
 
 	@Override

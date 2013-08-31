@@ -14,6 +14,7 @@ import swarm.shared.json.smA_JsonFactory;
 import swarm.shared.json.smI_JsonArray;
 import swarm.shared.json.smI_ReadsJson;
 import swarm.shared.json.smI_JsonObject;
+import swarm.shared.json.smI_WritesJson;
 import swarm.shared.json.smJsonQuery;
 import swarm.shared.json.smJsonHelper;
 import swarm.shared.transaction.smA_TransactionObject;
@@ -152,10 +153,10 @@ public class smClientTransactionManager
 		return m_isInsideBatch;
 	}
 	
-	public void queueRequest(smE_RequestPath path, smI_ReadsJson jsonEncodable)
+	public void queueRequest(smE_RequestPath path, smI_WritesJson writesJson)
 	{
 		smTransactionRequest request = new smTransactionRequest(path);
-		jsonEncodable.writeJson(null, request.getJson());
+		writesJson.writeJson(null, request.getJsonArgs());
 		queueRequest(request);
 	}
 	
@@ -200,10 +201,10 @@ public class smClientTransactionManager
 		makeRequest(request);
 	}
 	
-	public void makeRequest(smI_RequestPath path, smI_ReadsJson jsonEncodable)
+	public void makeRequest(smI_RequestPath path, smI_WritesJson writesJson)
 	{
 		smTransactionRequest request = new smTransactionRequest(path);
-		jsonEncodable.writeJson(null, request.getJson());
+		writesJson.writeJson(null, request.getJsonArgs());
 		makeRequest(request);
 	}
 	
@@ -219,10 +220,10 @@ public class smClientTransactionManager
 		performAction(action, request);
 	}
 	
-	public void performAction(smE_TransactionAction action, smE_RequestPath requestPath, smI_ReadsJson jsonEncodable)
+	public void performAction(smE_TransactionAction action, smE_RequestPath requestPath, smI_WritesJson writesJson)
 	{
 		smTransactionRequest request = new smTransactionRequest(requestPath);
-		jsonEncodable.writeJson(null, request.getJson());
+		writesJson.writeJson(null, request.getJsonArgs());
 		performAction(action, request);
 	}
 	

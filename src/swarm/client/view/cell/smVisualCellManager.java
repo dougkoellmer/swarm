@@ -12,12 +12,14 @@ import swarm.client.managers.smCellBufferManager;
 import swarm.client.entities.smI_BufferCellListener;
 import swarm.client.states.StateMachine_Base;
 import swarm.client.states.camera.Action_Camera_SetCameraViewSize;
+import swarm.client.states.camera.Action_ViewingCell_Refresh;
 import swarm.client.states.camera.StateMachine_Camera;
 import swarm.client.states.camera.State_ViewingCell;
 import swarm.client.structs.smCellPool;
 import swarm.client.structs.smI_CellPoolDelegate;
 import swarm.client.view.smI_UIElement;
 import swarm.client.view.smU_UI;
+import swarm.client.view.smViewContext;
 import swarm.client.view.cell.smAlertManager.I_Delegate;
 import swarm.client.view.dialog.smDialog;
 import swarm.shared.app.smS_App;
@@ -76,13 +78,18 @@ public class smVisualCellManager implements smI_UIElement, smI_CellPoolDelegate
 	
 	private final smDialog m_alertDialog;
 	
-	public smVisualCellManager(Panel container) 
+	private final smAppContext m_appContext;
+	private final smViewContext m_viewContext;
+	
+	public smVisualCellManager(smAppContext appContext, smViewContext viewContext, Panel container) 
 	{
 		m_container = container;
+		m_appContext = appContext;
+		m_viewContext = viewContext;
 		
-		smCellPool.getInstance().setDelegate(this);
+		m_appContext.cellBufferMngr.getCellPool().setDelegate(this);
 
-		m_alertDialog = new smDialog(256, 164, new smDialog.I_Delegate()
+		m_alertDialog = new smDialog(m_viewContext.clickMngr, 256, 164, new smDialog.I_Delegate()
 		{
 			@Override
 			public void onOkPressed()
@@ -192,7 +199,7 @@ public class smVisualCellManager implements smI_UIElement, smI_CellPoolDelegate
 			return false;
 		}
 		
-		if( m_cameraController.getCameraManager().isCameraAtRest() )
+		if( m_appContext.cameraMngr.isCameraAtRest() )
 		{
 			if( !m_needsUpdateDueToResizingOfCameraOrGrid )
 			{
@@ -200,16 +207,16 @@ public class smVisualCellManager implements smI_UIElement, smI_CellPoolDelegate
 			}
 		}
 
-		smCellBufferManager cellManager = smCellBufferManager.getInstance();
+		smCellBufferManager cellManager = m_appContext.cellBufferMngr;
 		smCellBuffer cellBuffer = cellManager.getDisplayBuffer();
 		
-		smA_Grid grid = smAppContext.gridMngr.getGrid(); // TODO: Get grid from somewhere else.
+		smA_Grid grid = m_appContext.gridMngr.getGrid(); // TODO: Get grid from somewhere else.
 		
 		int bufferSize = cellBuffer.getCellCount();
 		int bufferWidth = cellBuffer.getWidth();
 		int bufferHeight = cellBuffer.getHeight();
 		
-		smCamera camera = smAppContext.cameraMngr.getCamera();
+		smCamera camera = m_appContext.cameraMngr.getCamera();
 		
 		double distanceRatio = camera.calcDistanceRatio();
 		
@@ -306,7 +313,7 @@ public class smVisualCellManager implements smI_UIElement, smI_CellPoolDelegate
 	
 	private void updateCellsIndividually(double timeStep)
 	{
-		smCellBufferManager cellManager = smCellBufferManager.getInstance();
+		smCellBufferManager cellManager = m_appContext.cellBufferMngr;
 		smCellBuffer cellBuffer = cellManager.getDisplayBuffer();
 		int bufferSize = cellBuffer.getCellCount();
 		
@@ -387,7 +394,7 @@ public class smVisualCellManager implements smI_UIElement, smI_CellPoolDelegate
 					//---		we move.
 					this.updateCellTransforms(0);
 				}
-				else if( event.getAction() == State_ViewingCell.Refresh.class )
+				else if( event.getAction() == Action_ViewingCell_Refresh.class )
 				{
 					//--- DRK > Used to clear alerts here, but moved it to the actual refresh button handler.
 					//--- 		Probably safe here, but refresh might instantly update the cell's code, before

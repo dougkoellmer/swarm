@@ -7,10 +7,10 @@ import swarm.client.entities.smBufferCell;
 import swarm.client.entities.smA_ClientUser;
 import swarm.client.entities.smE_CodeStatus;
 import swarm.client.states.StateMachine_Base;
+import swarm.client.states.camera.Action_ViewingCell_Refresh;
 import swarm.client.states.camera.StateMachine_Camera;
 import swarm.client.states.camera.State_CameraSnapping;
 import swarm.client.states.camera.State_ViewingCell;
-import swarm.client.states.camera.State_ViewingCell.Refresh;
 import swarm.client.states.code.State_EditingCodeBlocker.Reason;
 import swarm.client.transaction.smClientTransactionManager;
 import swarm.client.view.tabs.code.smCodeMirrorWrapper;
@@ -36,6 +36,12 @@ public class StateMachine_EditingCode extends smA_StateMachine implements smI_St
 	private boolean m_waitingOnHtmlForViewedCell = false;
 	
 	smCode m_code = null;
+	private final smAppContext m_appContext;
+	
+	public StateMachine_EditingCode(smAppContext appContext)
+	{
+		m_appContext = appContext;
+	}
 	
 	@Override
 	protected void didEnter(smA_StateConstructor constructor)
@@ -126,7 +132,7 @@ public class StateMachine_EditingCode extends smA_StateMachine implements smI_St
 				State_ViewingCell viewingState = (State_ViewingCell) cameraState;
 				smBufferCell viewedCell = viewingState.getCell();
 				smGridCoordinate coord = viewedCell.getCoordinate();
-				smA_ClientUser user = smAppContext.userMngr.getUser();
+				smA_ClientUser user = m_appContext.userMngr.getUser();
 				
 				if( user.isCellOwner(coord) )
 				{
@@ -141,10 +147,7 @@ public class StateMachine_EditingCode extends smA_StateMachine implements smI_St
 				}
 				
 				if( m_code == null )
-				{
-					smClientTransactionManager manager = smAppContext.txnMngr;
-					smCellCodeManager populator = smCellCodeManager.getInstance();
-					
+				{					
 					if( viewedCell.getStatus(smE_CodeType.SOURCE) != smE_CodeStatus.HAS_CODE )
 					{
 						//--- DRK > I had this smU_Debug.ASSERT here, but NEEDS_HTML is valid if this state is backgrounded.
@@ -295,7 +298,7 @@ public class StateMachine_EditingCode extends smA_StateMachine implements smI_St
 			
 			case DID_PERFORM_ACTION:
 			{
-				if( event.getAction() == State_ViewingCell.Refresh.class )
+				if( event.getAction() == Action_ViewingCell_Refresh.class )
 				{
 					State_ViewingCell viewingState = smA_State.getEnteredInstance(State_ViewingCell.class);
 					pushOrPopBlocker(viewingState);

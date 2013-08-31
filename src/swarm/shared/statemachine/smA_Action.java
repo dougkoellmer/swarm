@@ -19,8 +19,6 @@ public abstract class smA_Action extends smA_BaseStateObject
 	
 	smA_State m_state = null;
 	
-	static final ArrayList<smA_Action> s_actionStack = new ArrayList<smA_Action>();
-	
 	boolean m_isCancelled = false;
 	
 	protected smA_Action()
@@ -47,7 +45,7 @@ public abstract class smA_Action extends smA_BaseStateObject
 		return false;
 	}
 	
-	public static void cancel(Class<? extends smA_Action> T)
+	/*public static void cancel(Class<? extends smA_Action> T)
 	{
 		smA_Action registeredAction = s_actionRegistry.get(T);
 		
@@ -61,7 +59,7 @@ public abstract class smA_Action extends smA_BaseStateObject
 				action.cancel();
 			}
 		}
-	}
+	}*/
 	
 	public static void register(smA_Action action)
 	{

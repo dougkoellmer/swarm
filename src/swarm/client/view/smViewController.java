@@ -35,9 +35,11 @@ public class smViewController extends Object implements smI_StateEventListener
 	private final smViewConfig m_viewConfig;
 	private final smClientAppConfig m_appConfig;
 	private final smAppContext m_appContext;
+	private final smViewContext m_viewContext;
 	
-	public smViewController(smAppContext appContext, smViewConfig config, smClientAppConfig appConfig)
+	public smViewController(smAppContext appContext, smViewContext viewContext, smViewConfig config, smClientAppConfig appConfig)
 	{
+		m_viewContext = viewContext;
 		m_appContext = appContext;
 		m_viewConfig = config;
 		m_appConfig = appConfig;
@@ -56,24 +58,29 @@ public class smViewController extends Object implements smI_StateEventListener
 	
 	protected void startUpCoreUI()
 	{
-		smViewContext.splitPanel = new smSplitPanel(m_viewConfig);
-		smVisualCellContainer cellContainer = smViewContext.splitPanel.getCellContainer();
+		m_viewContext.splitPanel = new smSplitPanel(m_appContext, m_viewContext, m_viewConfig);
+		smVisualCellContainer cellContainer = m_viewContext.splitPanel.getCellContainer();
 		
 		smMouse mouse = new smMouse(cellContainer.getMouseEnabledLayer());
 		
 		smMouseNavigator mouseNavigator = new smMouseNavigator(m_appContext.gridMngr, m_appContext.cameraMngr, mouse);
 		smBrowserNavigator browserNavigator = new smBrowserNavigator(m_appContext.cameraMngr, m_appContext.jsonFactory, m_viewConfig.defaultPageTitle, m_appConfig.floatingHistoryUpdateFreq_seconds);
+		smVisualCellFocuser focuser = new smVisualCellFocuser(m_appContext);
+		//smVisualCellHighlight highlighter = new smVisualCellHighlight(appContext, config, appConfig);
+		
+		cellContainer.getCellContainerInner().add(focuser);
+		//cellContainer.getCellContainerInner().add(highlighter);
 		
 		// TODO: Clean this up so that all this crap doesn't add itself to parent containers in constructors.
 		m_listeners.add(mouseNavigator);
 		m_listeners.add(browserNavigator);
 		m_listeners.add(smViewContext.cellMngr = new smVisualCellManager(cellContainer.getCellContainerInner()));
-		m_listeners.add(smViewContext.splitPanel);
-		//m_listeners.add(new smVisualCellHighlight(cellContainer.getCellContainerLayer()));
-		m_listeners.add(new smVisualCellFocuser(cellContainer.getCellContainerInner()));
+		m_listeners.add(m_viewContext.splitPanel);
+		//m_listeners.add(highlighter);
+		m_listeners.add(focuser);
 		//m_listeners.add(new smVisualCellHud((Panel)cellContainer, m_appConfig));
 		
-		RootLayoutPanel.get().add(smViewContext.splitPanel);
+		RootLayoutPanel.get().add(m_viewContext.splitPanel);
 	}
 	
 	protected void addStateListener(smI_UIElement listener)
@@ -100,7 +107,7 @@ public class smViewController extends Object implements smI_StateEventListener
 		{
 			if( event.getState() instanceof StateMachine_Base )
 			{
-				smAppContext.toolTipMngr.update(event.getState().getLastTimeStep());
+				m_viewContext.toolTipMngr.update(event.getState().getLastTimeStep());
 			}
 		}
 		

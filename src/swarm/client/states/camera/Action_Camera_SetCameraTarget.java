@@ -1,6 +1,7 @@
 package swarm.client.states.camera;
 
-import swarm.client.states.camera.StateMachine_Camera.Action_SetCameraTarget.Args;
+
+import swarm.client.managers.smCameraManager;
 import swarm.shared.statemachine.smA_ActionArgs;
 import swarm.shared.statemachine.smA_State;
 import swarm.shared.structs.smPoint;
@@ -41,6 +42,13 @@ public class Action_Camera_SetCameraTarget extends smA_CameraAction
 		}
 	}
 	
+	private final smCameraManager m_cameraMngr;
+	
+	public Action_Camera_SetCameraTarget(smCameraManager cameraMngr)
+	{
+		m_cameraMngr = cameraMngr;
+	}
+	
 	@Override
 	public void perform(smA_ActionArgs args)
 	{
@@ -58,8 +66,7 @@ public class Action_Camera_SetCameraTarget extends smA_CameraAction
 		
 		if( point == null )  return;
 		
-		CameraManager manager = (CameraManager) machine.getCameraManager();
-		manager.internal_setTargetPosition(point, instant);
+		m_cameraMngr.setTargetPosition(point, instant);
 		
 		//--- DRK > If it's instant, it means the view layer's input is requesting a positional change,
 		//---		and then will immediately draw the buffer with the assumption that the positional change

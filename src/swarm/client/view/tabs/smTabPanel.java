@@ -16,6 +16,7 @@ import swarm.client.states.code.State_EditingCode;
 import swarm.client.view.smI_UIElement;
 import swarm.client.view.smS_UI;
 import swarm.client.view.smU_ToString;
+import swarm.client.view.smViewContext;
 import swarm.client.view.alignment.smAlignmentDefinition;
 import swarm.client.view.alignment.smU_Alignment;
 import swarm.client.view.tabs.account.smAccountTabContent;
@@ -60,8 +61,11 @@ public class smTabPanel extends AbsolutePanel implements smI_UIElement
 	
 	private final smI_Tab[] m_tabs;
 	
-	public smTabPanel(smI_Tab[] tabs)
+	private final smViewContext m_viewContext;
+	
+	public smTabPanel(smViewContext viewContext, smI_Tab[] tabs)
 	{
+		m_viewContext = viewContext;
 		m_tabs = tabs;
 		
 		m_tabContainerWrapper.addStyleName("sm_tab_container_wrapper");
@@ -118,7 +122,7 @@ public class smTabPanel extends AbsolutePanel implements smI_UIElement
 		smButtonWithText tabButton = new smButtonWithText();
 		tabButton.addStyleName("sm_tab");
 		tabButton.setText(tab.getName()); 
-		smAppContext.clickMngr.addClickHandler(tabButton, new smI_ClickHandler()
+		m_viewContext.clickMngr.addClickHandler(tabButton, new smI_ClickHandler()
 		{
 			public void onClick()
 			{
@@ -127,7 +131,7 @@ public class smTabPanel extends AbsolutePanel implements smI_UIElement
 			}
 		});
 		
-		smAppContext.toolTipMngr.addTip(tabButton, new smToolTipConfig(smE_ToolTipType.MOUSE_OVER, tab.getToolTipText()));
+		m_viewContext.toolTipMngr.addTip(tabButton, new smToolTipConfig(smE_ToolTipType.MOUSE_OVER, tab.getToolTipText()));
 		
 		m_tabContainer.add(tabButton);
 		

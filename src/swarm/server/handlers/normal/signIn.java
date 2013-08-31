@@ -20,9 +20,9 @@ public class signIn implements smI_RequestHandler
 	@Override
 	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
 	{
-		smSignInCredentials creds = new smSignInCredentials(request.getJson());
+		smSignInCredentials creds = new smSignInCredentials(request.getJsonArgs());
 		smSignInValidationResult result = new smSignInValidationResult();
-		String passwordChangeToken = factory.getHelper().getString(request.getJson(), smE_JsonKey.passwordChangeToken);
+		String passwordChangeToken = factory.getHelper().getString(request.getJsonArgs(), smE_JsonKey.passwordChangeToken);
 		
 		smUserSession userSession = null;
 		
@@ -40,6 +40,6 @@ public class signIn implements smI_RequestHandler
 			sm_s.sessionMngr.startSession(userSession, response, creds.rememberMe());
 		}
 		
-		result.writeJson(null, response.getJson());
+		result.writeJson(null, response.getJsonArgs());
 	}
 }

@@ -120,8 +120,8 @@ public class smCajaWrapper
 				(
 					function()
 					{
-						@swarm.client.ui.tabs.code.smCajaWrapper::tameApi(Ljava/lang/String;)(apiNamespace);
-						thisArg.@swarm.client.ui.tabs.code.smCajaWrapper::caja_initialize_success()();
+						@swarm.client.view.tabs.code.smCajaWrapper::tameApi(Ljava/lang/String;)(apiNamespace);
+						thisArg.@swarm.client.view.tabs.code.smCajaWrapper::caja_initialize_success()();
 					}
 				);
 			}
@@ -141,7 +141,7 @@ public class smCajaWrapper
 				},
 				function() // on failure
 				{
-					thisArg.@swarm.client.ui.tabs.code.smCajaWrapper::caja_initialize_failure()();
+					thisArg.@swarm.client.view.tabs.code.smCajaWrapper::caja_initialize_failure()();
 				}
 			);
 	}-*/;
@@ -252,7 +252,7 @@ public class smCajaWrapper
 				var scheme = uri.scheme_;
 				var fullUri = uri.toString();
 				
-				var rewrittenUri = thisArg.@swarm.client.ui.tabs.code.smCajaWrapper::rewriteUri(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)(fullUri, scheme, authority, attribute, path);
+				var rewrittenUri = thisArg.@swarm.client.view.tabs.code.smCajaWrapper::rewriteUri(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)(fullUri, scheme, authority, attribute, path);
 				
 				return rewrittenUri;
 			}
@@ -309,7 +309,7 @@ public class smCajaWrapper
 				
 				function(frame)
 				{
-					thisArg.@swarm.client.ui.tabs.code.smCajaWrapper::onFrameLoad(Lcom/google/gwt/core/client/JavaScriptObject;)(frame);
+					thisArg.@swarm.client.view.tabs.code.smCajaWrapper::onFrameLoad(Lcom/google/gwt/core/client/JavaScriptObject;)(frame);
 
 	   				frame.code('', 'text/html', compiledHtml)
 	   					 .api(makeApi())
@@ -317,7 +317,7 @@ public class smCajaWrapper
 	   				
 	   				if( listener != null )
 	   				{
-	   					listener.@swarm.client.ui.tabs.code.smI_CodeLoadListener::onCodeLoad()();
+	   					listener.@swarm.client.view.tabs.code.smI_CodeLoadListener::onCodeLoad()();
 	   				}
 				},
 				{

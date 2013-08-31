@@ -145,8 +145,8 @@ public class smCellCodeManager implements smI_TransactionResponseHandler
 		smGridCoordinate coord = cell.getCoordinate();
 		
 		smTransactionRequest request = new smTransactionRequest(smE_RequestPath.syncCode);
-		sourceCode.writeJson(null, request.getJson());
-		coord.writeJson(null, request.getJson());
+		sourceCode.writeJson(null, request.getJsonArgs());
+		coord.writeJson(null, request.getJsonArgs());
 
 		m_txnMngr.makeRequest(request);
 
@@ -237,8 +237,8 @@ public class smCellCodeManager implements smI_TransactionResponseHandler
 						{
 							smTransactionRequest request = new smTransactionRequest(smE_RequestPath.getCode);
 							
-							cell.getCoordinate().writeJson(null, request.getJson());
-							m_jsonFactory.getHelper().putInt(request.getJson(), smE_JsonKey.codeType, eType.ordinal());
+							cell.getCoordinate().writeJson(null, request.getJsonArgs());
+							m_jsonFactory.getHelper().putInt(request.getJsonArgs(), smE_JsonKey.codeType, eType.ordinal());
 							
 							txnMngr.queueRequest(request);
 						}
@@ -258,14 +258,14 @@ public class smCellCodeManager implements smI_TransactionResponseHandler
 	
 	private void onGetCellDataSuccess(smTransactionRequest request, smTransactionResponse response)
 	{
-		m_utilCell.readJson(null, response.getJson());
-		m_utilCoord.readJson(null, request.getJson());
+		m_utilCell.readJson(null, response.getJsonArgs());
+		m_utilCoord.readJson(null, request.getJsonArgs());
 		m_utilCell.getCoordinate().copy(m_utilCoord);
 
 		smUserManager userManager = m_userMngr;
 		smA_ClientUser user = userManager.getUser();
 		
-		int typeOrdinal = m_jsonFactory.getHelper().getInt(request.getJson(), smE_JsonKey.codeType);
+		int typeOrdinal = m_jsonFactory.getHelper().getInt(request.getJsonArgs(), smE_JsonKey.codeType);
 		smE_CodeType eCodeType = smE_CodeType.values()[typeOrdinal];
 		smCode code = m_utilCell.getCode(eCodeType);
 		
@@ -338,7 +338,7 @@ public class smCellCodeManager implements smI_TransactionResponseHandler
 		{
 			smUserManager userManager = m_userMngr;
 			smA_ClientUser user = userManager.getUser();
-			m_utilCoord.readJson(null, request.getJson());
+			m_utilCoord.readJson(null, request.getJsonArgs());
 			
 			if( isSyncing(m_utilCoord) )
 			{
@@ -350,9 +350,9 @@ public class smCellCodeManager implements smI_TransactionResponseHandler
 			boolean isStillCellOwner = user.isCellOwner(m_utilCoord);
 			
 			smCompilerResult result = new smCompilerResult();
-			result.readJson(null, response.getJson());
+			result.readJson(null, response.getJsonArgs());
 			
-			smCode sourceCode = new smCode(request.getJson(), smE_CodeType.SOURCE);
+			smCode sourceCode = new smCode(request.getJsonArgs(), smE_CodeType.SOURCE);
 			
 			if( result.getStatus() == smE_CompilationStatus.NO_ERROR )
 			{
@@ -460,10 +460,10 @@ public class smCellCodeManager implements smI_TransactionResponseHandler
 	{
 		if( response.getError() == smE_ResponseError.REDUNDANT )  return;
 		
-		int typeOrdinal = m_jsonFactory.getHelper().getInt(request.getJson(), smE_JsonKey.codeType);
+		int typeOrdinal = m_jsonFactory.getHelper().getInt(request.getJsonArgs(), smE_JsonKey.codeType);
 		smE_CodeType eCodeType = smE_CodeType.values()[typeOrdinal];
 		
-		m_utilCoord.readJson(null, request.getJson());
+		m_utilCoord.readJson(null, request.getJsonArgs());
 
 		if( eCodeType == smE_CodeType.SOURCE )
 		{
@@ -500,7 +500,7 @@ public class smCellCodeManager implements smI_TransactionResponseHandler
 			smUserManager userManager = m_userMngr;
 			smA_ClientUser user = userManager.getUser();
 			
-			m_utilCoord.readJson(null, request.getJson());
+			m_utilCoord.readJson(null, request.getJsonArgs());
 			
 			smCompilerResult result = new smCompilerResult();
 			result.onFailure(smE_CompilationStatus.RESPONSE_ERROR);

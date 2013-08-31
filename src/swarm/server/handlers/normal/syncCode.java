@@ -86,7 +86,7 @@ public class syncCode implements smI_RequestHandler
 	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
 	{
 		smServerCellAddressMapping mapping = new smServerCellAddressMapping(smE_GridType.ACTIVE);
-		mapping.readJson(null, request.getJson());
+		mapping.readJson(null, request.getJsonArgs());
 		boolean isSandbox = isSandBox(mapping);
 		smI_BlobManager blobManager = sm_s.blobMngrFactory.create(smE_BlobCacheLevel.PERSISTENT);
 		
@@ -106,7 +106,7 @@ public class syncCode implements smI_RequestHandler
 		
 		if( persistedCell == null )  return;
 		
-		smServerCode sourceCode = new smServerCode(request.getJson(), smE_CodeType.SOURCE);
+		smServerCode sourceCode = new smServerCode(request.getJsonArgs(), smE_CodeType.SOURCE);
 		
 		smCompilerResult result = smU_CellCode.compileCell(persistedCell, sourceCode, mapping);
 		
@@ -120,6 +120,6 @@ public class syncCode implements smI_RequestHandler
 			smU_CellCode.saveBackCompiledCell(blobManager, mapping, persistedCell, response);
 		}
 		
-		result.writeJson(null, response.getJson());
+		result.writeJson(null, response.getJsonArgs());
 	}
 }

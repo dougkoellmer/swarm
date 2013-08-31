@@ -48,8 +48,12 @@ public class smVisualCellFocuser extends FlowPanel implements smI_UIElement
 	private smVisualCell m_poppedCell = null;
 	private final smGridCoordinate m_poppedCellCoord = new smGridCoordinate();
 	
-	public smVisualCellFocuser(Panel parent)
+	private final smAppContext m_appContext;
+	
+	public smVisualCellFocuser(smAppContext appContext)
 	{
+		m_appContext = appContext;
+		
 		this.addStyleName("cell_focuser");
 		
 		this.getElement().setAttribute("ondragstart", "return false;");
@@ -57,8 +61,6 @@ public class smVisualCellFocuser extends FlowPanel implements smI_UIElement
 		this.setVisible(false);
 		
 		smE_ZIndex.CELL_FOCUSER.assignTo(this);
-		
-		parent.add(this);
 	}
 	
 	private void setAlpha(double alpha)
@@ -69,7 +71,7 @@ public class smVisualCellFocuser extends FlowPanel implements smI_UIElement
 	
 	private boolean popUpTargetCell(smA_State state)
 	{
-		smCellBuffer buffer = smCellBufferManager.getInstance().getDisplayBuffer();
+		smCellBuffer buffer = m_appContext.cellBufferMngr.getDisplayBuffer();
 		
 		if( buffer.getSubCellCount() == 1 )
 		{
@@ -212,8 +214,8 @@ public class smVisualCellFocuser extends FlowPanel implements smI_UIElement
 	private double calcCameraDistanceToTarget()
 	{
 		StateMachine_Camera cameraController = smA_State.getEnteredInstance(StateMachine_Camera.class);
-		smPoint cameraPoint = smAppContext.cameraMngr.getCamera().getPosition();
-		smPoint cameraTarget = cameraController.getCameraManager().getTargetPosition();
+		smPoint cameraPoint = m_appContext.cameraMngr.getCamera().getPosition();
+		smPoint cameraTarget = m_appContext.cameraMngr.getTargetPosition();
 		return cameraTarget.calcDistanceTo(cameraPoint);
 	}
 	
@@ -258,7 +260,7 @@ public class smVisualCellFocuser extends FlowPanel implements smI_UIElement
 			{
 				if( m_poppedCell != null )
 				{
-					smCellBuffer buffer = smCellBufferManager.getInstance().getDisplayBuffer();
+					smCellBuffer buffer = m_appContext.cellBufferMngr.getDisplayBuffer();
 					
 					if( buffer.getSubCellCount() != 1 || !buffer.isInBoundsAbsolute(m_poppedCellCoord) )
 					{

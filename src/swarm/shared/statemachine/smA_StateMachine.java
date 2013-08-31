@@ -28,14 +28,14 @@ public abstract class smA_StateMachine extends smA_State
 			this.exitSubState(currentState);
 		}
 		
-		smA_State newState = smA_State.getInstance(T);
+		smA_State newState = m_context.getInstance(T);
 		
 		this.enterSubState(newState, stateBeneath, false, constructor);
 	}
 	
 	void pushState_internal(Class<? extends smA_State> T, smA_StateConstructor constructor)
 	{
-		smA_State newState		= smA_State.getInstance(T);
+		smA_State newState		= m_context.getInstance(T);
 		smA_State currentState = this.getCurrentState();
 		
 		smU_Debug.ASSERT(currentState != null);
@@ -171,7 +171,7 @@ public abstract class smA_StateMachine extends smA_State
 		stateToEnter.m_parent = this;
 		
 		this.m_currentState = stateToEnter;
-		this.m_currentState.m_root = this.m_root;
+		this.m_currentState.m_context = this.m_context;
 
 		this.m_currentState.didEnter_internal(constructor);
 		this.m_currentState.didForeground_internal(null, null);
@@ -186,7 +186,7 @@ public abstract class smA_StateMachine extends smA_State
 		
 		stateToExit.willExit_internal();
 		
-		stateToExit.m_root = null;
+		stateToExit.m_context = null;
 		stateToExit.m_parent = null;
 		stateToExit.m_stateBeneath = null;
 		stateToExit.m_previousState = null;

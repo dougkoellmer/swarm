@@ -19,6 +19,13 @@ public class Action_Camera_SetInitialPosition extends smA_CameraAction
 		}
 	}
 	
+	private final smCameraManager m_cameraMngr;
+	
+	Action_Camera_SetInitialPosition(smCameraManager cameraMngr)
+	{
+		m_cameraMngr = cameraMngr;
+	}
+	
 	@Override
 	public void perform(smA_ActionArgs args)
 	{
@@ -26,8 +33,7 @@ public class Action_Camera_SetInitialPosition extends smA_CameraAction
 		
 		smPoint point = ((Args)args).m_point;
 		
-		smCameraManager manager = machine.getCameraManager();
-		manager.setCameraPosition(point, false);
+		m_cameraMngr.setCameraPosition(point, false);
 	}
 	
 	@Override

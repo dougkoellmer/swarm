@@ -68,9 +68,9 @@ class smSessionCookieValue extends smA_JsonEncodable implements smI_BlobKey
 	@Override
 	public void writeJson(smA_JsonFactory factory, smI_JsonObject json_out)
 	{
-		factory.getHelper().putString(json, JsonKey.TOKEN, m_token);
-		factory.getHelper().putInt(json, JsonKey.ACCOUNT_ID, m_accountId);
-		factory.getHelper().putString(json, JsonKey.TOKEN_SALT, m_tokenSalt);
+		factory.getHelper().putString(json_out, JsonKey.TOKEN, m_token);
+		factory.getHelper().putInt(json_out, JsonKey.ACCOUNT_ID, m_accountId);
+		factory.getHelper().putString(json_out, JsonKey.TOKEN_SALT, m_tokenSalt);
 	}
 
 	@Override

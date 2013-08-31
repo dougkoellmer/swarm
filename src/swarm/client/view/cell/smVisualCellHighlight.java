@@ -29,8 +29,14 @@ public class smVisualCellHighlight extends FlowPanel implements smI_UIElement
 	
 	private double m_lastScaling = -1;
 	
-	public smVisualCellHighlight(Panel parent)
+	private final smAppContext m_appContext;
+	private final smViewContext m_viewContext;
+	
+	public smVisualCellHighlight(smAppContext appContext, smViewContext viewContext)
 	{
+		m_appContext = appContext;
+		m_viewContext = viewContext;
+		
 		this.addStyleName("cell_highlight");
 		
 		this.getElement().setAttribute("ondragstart", "return false;");
@@ -38,8 +44,6 @@ public class smVisualCellHighlight extends FlowPanel implements smI_UIElement
 		smE_ZIndex.CELL_HIGHLIGHT.assignTo(this);
 		
 		this.setVisible(false);
-		
-		parent.add(this);
 	}
 	
 	private void update()
@@ -59,10 +63,10 @@ public class smVisualCellHighlight extends FlowPanel implements smI_UIElement
 			return;
 		}
 		
-		smCellBuffer buffer = smCellBufferManager.getInstance().getDisplayBuffer();
+		smCellBuffer buffer = m_appContext.cellBufferMngr.getDisplayBuffer();
 		int subCellDim = buffer.getSubCellCount();
 		
-		smCamera camera = smAppContext.cameraMngr.getCamera();
+		smCamera camera = m_appContext.cameraMngr.getCamera();
 		smPoint basePoint = null;
 		double highlightScaling = camera.calcDistanceRatio();
 		
@@ -83,7 +87,7 @@ public class smVisualCellHighlight extends FlowPanel implements smI_UIElement
 		//---		between the highlight and the actual mouse coordinate position for near-cell-boundary cases, but it's zoomed 
 		//---		out enough that it doesn't really matter...you'd really have to look for it to notice a discrepancy.
 		
-		smVisualCellManager cellManager = smViewContext.cellMngr;
+		smVisualCellManager cellManager = m_viewContext.cellMngr;
 		double lastScaling = cellManager.getLastScaling();
 		smPoint lastBasePoint = cellManager.getLastBasePoint();
 		

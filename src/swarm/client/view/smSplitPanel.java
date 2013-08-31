@@ -64,12 +64,18 @@ public class smSplitPanel extends SplitLayoutPanel implements smI_UIElement
 	private boolean m_justTweened = false;
 	private boolean m_reloadCaptchaASAP = false;
 	
-	smSplitPanel(smViewConfig config)
+	private final smAppContext m_appContext;
+	private final smViewContext m_viewContext;
+	
+	smSplitPanel(smAppContext appContext, smViewContext viewContext, smViewConfig config)
 	{
 		super((int) PARENT_SPLITTER_WIDTH);
 		
-		m_tabPanel = new smTabPanel(config.tabs);
-		m_cellContainer = new smVisualCellContainer(config);
+		m_viewContext = viewContext;
+		m_appContext = appContext;
+		
+		m_tabPanel = new smTabPanel(m_viewContext, config.tabs);
+		m_cellContainer = new smVisualCellContainer(m_appContext, m_viewContext, config);
 		
 		this.addStyleName("split_panel");
 		
@@ -131,7 +137,7 @@ public class smSplitPanel extends SplitLayoutPanel implements smI_UIElement
 		});
 		
 		//--- DRK > Initiates an open/close animation.
-		smAppContext.clickMngr.addClickHandler(m_panelButton, new smI_ClickHandler()
+		m_viewContext.clickMngr.addClickHandler(m_panelButton, new smI_ClickHandler()
 		{
 			@Override
 			public void onClick()
@@ -179,7 +185,7 @@ public class smSplitPanel extends SplitLayoutPanel implements smI_UIElement
 	
 	private void updateToggleButton()
 	{
-		smToolTipManager toolTipper = smAppContext.toolTipMngr;
+		smToolTipManager toolTipper = m_viewContext.toolTipMngr;
 		
 		StateMachine_Tabs tabMachine = smA_State.getEnteredInstance(StateMachine_Tabs.class);
 		
@@ -291,7 +297,7 @@ public class smSplitPanel extends SplitLayoutPanel implements smI_UIElement
 	
 								smE_ToolTipMood severity = responseType.isGood() ? smE_ToolTipMood.PAT_ON_BACK : smE_ToolTipMood.OOPS;
 								smToolTipConfig config = new smToolTipConfig(smE_ToolTipType.NOTIFICATION, alignment, text, severity);
-								smAppContext.toolTipMngr.addTip(m_panelButton, config);
+								m_viewContext.toolTipMngr.addTip(m_panelButton, config);
 							}
 						}
 					}
@@ -332,7 +338,7 @@ public class smSplitPanel extends SplitLayoutPanel implements smI_UIElement
 				if( smA_State.isForegrounded(State_SignInOrUp.class) )
 				{
 					m_reloadCaptchaASAP = false;
-					smAppContext.recaptchaWrapper.loadNewImage();
+					m_viewContext.recaptchaWrapper.loadNewImage();
 				}
 			}
 		}

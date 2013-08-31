@@ -69,7 +69,7 @@ public class getCode implements smI_RequestHandler, smI_DeferredRequestHandler
 		//smU_Servlet.simulateException(true);
 		
 		smServerCellAddressMapping mapping = new smServerCellAddressMapping(smE_GridType.ACTIVE);
-		mapping.readJson(null, request.getJson());
+		mapping.readJson(null, request.getJsonArgs());
 		
 		if( context.getRequestCount(smE_RequestPath.getCode) > 1 )
 		{
@@ -97,7 +97,7 @@ public class getCode implements smI_RequestHandler, smI_DeferredRequestHandler
 			return;
 		}
 
-		smE_CodeType eCodeType = m_jsonFactory.getHelper().getEnum(request.getJson(), smE_JsonKey.codeType, smE_CodeType.values());
+		smE_CodeType eCodeType = m_jsonFactory.getHelper().getEnum(request.getJsonArgs(), smE_JsonKey.codeType, smE_CodeType.values());
 		
 		writeResponse(eCodeType, persistedCell, response);
 	}
@@ -146,7 +146,7 @@ public class getCode implements smI_RequestHandler, smI_DeferredRequestHandler
 		//---		and don't send down all the other code types that the persisted cell might have.
 		smA_Cell responseCell = new smA_Cell(privileges){};
 		responseCell.setCode(eCodeType, responseCode);
-		responseCell.writeJson(null, response.getJson());
+		responseCell.writeJson(null, response.getJsonArgs());
 		response.setError(smE_ResponseError.NO_ERROR);
 		
 		return responseCode;
@@ -193,7 +193,7 @@ public class getCode implements smI_RequestHandler, smI_DeferredRequestHandler
 				continue;
 			}
 			
-			smE_CodeType eCodeType = m_jsonFactory.getHelper().getEnum(request.getJson(), smE_JsonKey.codeType, smE_CodeType.values());
+			smE_CodeType eCodeType = m_jsonFactory.getHelper().getEnum(request.getJsonArgs(), smE_JsonKey.codeType, smE_CodeType.values());
 
 			if( result == null )
 			{
@@ -203,7 +203,7 @@ public class getCode implements smI_RequestHandler, smI_DeferredRequestHandler
 			}
 			
 			smServerCellAddressMapping mapping = new smServerCellAddressMapping(smE_GridType.ACTIVE);
-			mapping.readJson(null, request.getJson());
+			mapping.readJson(null, request.getJsonArgs());
 			
 			smServerCell persistedCell = (smServerCell) result.get(mapping);
 			

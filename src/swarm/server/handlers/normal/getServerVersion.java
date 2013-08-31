@@ -30,6 +30,6 @@ public class getServerVersion implements smI_RequestHandler
 	@Override
 	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
 	{
-		m_jsonFactory.getHelper().putInt(response.getJson(), smE_JsonKey.serverVersion, smS_App.SERVER_VERSION);
+		m_jsonFactory.getHelper().putInt(response.getJsonArgs(), smE_JsonKey.serverVersion, smS_App.SERVER_VERSION);
 	}
 }

@@ -49,9 +49,11 @@ public class smSessionManager implements smI_TransactionScopeListener
 	private final ThreadLocal<smUserSession> m_sessionCache = new ThreadLocal<smUserSession>();
 	
 	private final smUserSession m_nullSession = new smUserSession();
+	private final smA_JsonFactory m_jsonFactory;
 	
-	public smSessionManager()
+	public smSessionManager(smA_JsonFactory jsonFactory)
 	{
+		m_jsonFactory = jsonFactory;
 		m_blobManager = sm_s.blobMngrFactory.create(smE_BlobCacheLevel.MEMCACHE, smE_BlobCacheLevel.PERSISTENT);
 	}
 	
@@ -59,7 +61,9 @@ public class smSessionManager implements smI_TransactionScopeListener
 	{
 		HttpServletResponse nativeResponse = ((HttpServletResponse) response.getNativeResponse());
 		smSessionCookieValue cookieValue = new smSessionCookieValue(userSession.getAccountId(), type);
-		String cookieValueJson = cookieValue.writeJson(null).writeString();
+		smI_JsonObject jsonObject = m_jsonFactory.createJsonObject();
+		cookieValue.writeJson(m_jsonFactory, jsonObject);
+		String cookieValueJson = jsonObject.writeString();
 		
 		try
 		{
@@ -117,7 +121,7 @@ public class smSessionManager implements smI_TransactionScopeListener
 			//--- DRK > Just being safe here in case someone is spamming invalid cookie data.
 			try
 			{
-				smA_JsonFactory jsonFactory = smSharedAppContext.jsonFactory;
+				smA_JsonFactory jsonFactory = m_jsonFactory;
 				smI_JsonObject json = jsonFactory.createJsonObject(cookieValueJson);
 				cookieValue = new smSessionCookieValue(json, type);
 			}

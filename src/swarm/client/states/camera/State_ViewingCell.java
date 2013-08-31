@@ -17,7 +17,6 @@ import swarm.shared.debugging.smU_Debug;
 import swarm.shared.entities.smE_CodeType;
 import swarm.shared.statemachine.smA_Action;
 
-import swarm.shared.statemachine.smA_ActionArgs;
 import swarm.shared.statemachine.smA_State;
 import swarm.shared.statemachine.smI_StateEventListener;
 import swarm.shared.statemachine.smA_StateConstructor;
@@ -45,46 +44,16 @@ public class State_ViewingCell extends smA_State implements smI_StateEventListen
 		}
 	}
 	
-	public static class Refresh extends smA_CameraAction 
-	{
-		@Override
-		public void perform(smA_ActionArgs args)
-		{
-			State_ViewingCell state = (State_ViewingCell) this.getState();
-			
-			state.refreshCell();
-		}
-		
-		@Override
-		public boolean isPerformable(smA_ActionArgs args)
-		{
-			State_ViewingCell state = (State_ViewingCell) this.getState();
-			smBufferCell cell = state.getCell();
-			
-			if( cell.getStatus(smE_CodeType.COMPILED) == smE_CodeStatus.WAITING_ON_CODE )
-			{
-				return false;
-			}
-			else
-			{
-				return true;
-			}
-		}
-		
-		@Override
-		public Class<? extends smA_State> getStateAssociation()
-		{
-			return State_ViewingCell.class;
-		}
-	}
-	
 	private smBufferCell m_cell = null;
 	
 	private boolean m_hasRequestedSourceCode = false;
+	private final smAppContext m_appContext;
 	
-	public State_ViewingCell()
+	public State_ViewingCell(smAppContext appContext)
 	{
-		smA_Action.register(new Refresh());
+		m_appContext = appContext;
+		
+		smA_Action.register(new Action_ViewingCell_Refresh());
 	}
 	
 	void refreshCell()
@@ -94,7 +63,7 @@ public class State_ViewingCell extends smA_State implements smI_StateEventListen
 		
 		//--- DRK > Even though "everything" is nuked from cell here, a user's cell will be immediately
 		//---		repopulated from the user data itself, so no server request will go out needlessly.
-		smCellCodeManager codeManager = smCellCodeManager.getInstance();
+		smCellCodeManager codeManager = m_appContext.codeMngr;
 		codeManager.nukeFromOrbit(coord, smE_CellNuke.EVERYTHING);
 		
 		smI_LocalCodeRepository localCodeRepo = ((StateMachine_Camera)this.getParent()).getCodeRepository();
@@ -115,14 +84,14 @@ public class State_ViewingCell extends smA_State implements smI_StateEventListen
 		{
 			//--- DRK > Try to get address ourselves...very well could turn up null.
 			smCellAddressMapping mapping = new smCellAddressMapping(cell.getCoordinate());
-			smCellAddressManager addyManager = smAppContext.addressMngr;
+			smCellAddressManager addyManager = m_appContext.addressMngr;
 			addyManager.getCellAddress(mapping, smE_TransactionAction.QUEUE_REQUEST);
 		}
 		
 		codeManager.populateCell(cell, localCodeRepo, 1, false, true, smE_CodeType.SPLASH);
 		codeManager.populateCell(cell, localCodeRepo, 1, false, true, smE_CodeType.COMPILED);
 		
-		smClientTransactionManager txnMngr = smAppContext.txnMngr;
+		smClientTransactionManager txnMngr = m_appContext.txnMngr;
 		txnMngr.flushRequestQueue();
 	}
 
@@ -151,7 +120,7 @@ public class State_ViewingCell extends smA_State implements smI_StateEventListen
 		//--- DRK > This ensures that any "preview" operations performed get cleared out.
 		//---		My programmer senses are tingling on this one, telling me it might be a
 		//---		hacky solution, at least as far as readability.
-		smUserManager userMngr = smAppContext.userMngr;
+		smUserManager userMngr = m_appContext.userMngr;
 		smA_ClientUser user = userMngr.getUser();
 		user.tryPopulatingCell(m_cell.getCoordinate(), smE_CodeType.COMPILED, m_cell);
 		
@@ -166,10 +135,10 @@ public class State_ViewingCell extends smA_State implements smI_StateEventListen
 			if( smA_State.isForegrounded(StateMachine_EditingCode.class) )
 			{
 				smI_LocalCodeRepository localHtmlSource = ((StateMachine_Camera)this.getParent()).getCodeRepository();
-				smCellCodeManager populator = smCellCodeManager.getInstance();
-				populator.populateCell(m_cell, localHtmlSource, 1, false, true, smE_CodeType.SOURCE);
+				smCellCodeManager codeMngr = m_appContext.codeMngr;
+				codeMngr.populateCell(m_cell, localHtmlSource, 1, false, true, smE_CodeType.SOURCE);
 				
-				populator.flush();
+				codeMngr.flush();
 				
 				m_hasRequestedSourceCode = true;
 			}

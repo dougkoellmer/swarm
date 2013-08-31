@@ -22,7 +22,7 @@ public class getCellAddressMapping implements smI_RequestHandler
 	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
 	{
 		smServerCellAddress address = new smServerCellAddress();
-		address.readJson(null, request.getJson());
+		address.readJson(null, request.getJsonArgs());
 		smE_CellAddressParseError parseError = address.getParseError();
 		smGetCellAddressMappingResult result = new smGetCellAddressMappingResult();
 		
@@ -57,6 +57,6 @@ public class getCellAddressMapping implements smI_RequestHandler
 			result.setError(smE_GetCellAddressMappingError.ADDRESS_PARSE_ERROR);
 		}
 		
-		result.writeJson(null, response.getJson());
+		result.writeJson(null, response.getJsonArgs());
 	}
 }

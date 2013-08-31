@@ -66,7 +66,7 @@ public class State_CameraSnapping extends smA_State implements smI_StateEventLis
 	private final smPoint m_utilPoint = new smPoint();
 	
 	private final smCamera m_snapCamera = new smCamera();
-	private final smCellBufferManager m_snapBufferManager = new smCellBufferManager();
+	private final smCellBufferManager m_snapBufferManager;
 	
 	//--- DRK > This is exposed externally so the main cell buffer manager can extract cell code that m_internalCodeRepo has.
 	private final smLocalCodeRepositoryWrapper m_externalCompiledStaticCodeRepo = new smLocalCodeRepositoryWrapper();
@@ -80,26 +80,30 @@ public class State_CameraSnapping extends smA_State implements smI_StateEventLis
 	private final double m_cellHudHeight;
 	
 	private double m_snapProgressBase;
+	private final smAppContext m_appContext;
 	
-	public State_CameraSnapping(double cellHudHeight)
+	public State_CameraSnapping(smAppContext appContext, double cellHudHeight)
 	{
 		m_cellHudHeight = cellHudHeight;
+		m_appContext = appContext;
 		
-		smUserManager userManager = smAppContext.userMngr;
+		m_snapBufferManager = new smCellBufferManager(m_appContext.codeMngr);
+		
+		smUserManager userManager = m_appContext.userMngr;
 		smA_ClientUser user = userManager.getUser();
 		
 		m_externalCompiledStaticCodeRepo.addSource(user);
 		m_externalCompiledStaticCodeRepo.addSource(m_snapBufferManager);
-		m_externalCompiledStaticCodeRepo.addSource(smAppContext.codeCache);
+		m_externalCompiledStaticCodeRepo.addSource(m_appContext.codeCache);
 		
 		m_internalCodeRepo.addSource(user);
-		m_internalCodeRepo.addSource(smCellBufferManager.getInstance());
-		m_internalCodeRepo.addSource(smAppContext.codeCache);
+		m_internalCodeRepo.addSource(m_appContext.cellBufferMngr);
+		m_internalCodeRepo.addSource(m_appContext.codeCache);
 	}
 
 	void updateGridCoordinate(smGridCoordinate targetCoordinate, smCellAddress targetAddress_nullable)
 	{
-		smA_Grid grid = smAppContext.gridMngr.getGrid();
+		smA_Grid grid = m_appContext.gridMngr.getGrid();
 		
 		m_targetAddress = targetAddress_nullable;
 		
@@ -118,7 +122,7 @@ public class State_CameraSnapping extends smA_State implements smI_StateEventLis
 		//--- and most of the time resulted in too much network traffic, so now only errors are cleared.
 		//--- User can still get guaranteed fresh version from server using refresh button.
 		smE_CellNuke nukeType = smE_CellNuke.ERRORS_ONLY;
-		smCellCodeManager.getInstance().nukeFromOrbit(targetCoordinate, nukeType);
+		m_appContext.codeMngr.nukeFromOrbit(targetCoordinate, nukeType);
 		
 		//--- DRK > Not flushing populator here because requestCodeForTargetCell() will do it for us.
 		this.updateSnapBufferManager(false);
@@ -130,7 +134,7 @@ public class State_CameraSnapping extends smA_State implements smI_StateEventLis
 		{
 			//--- DRK > Try to get address ourselves...could turn up null.
 			smCellAddressMapping mapping = new smCellAddressMapping(m_targetGridCoordinate);
-			smCellAddressManager addyManager = smAppContext.addressMngr;
+			smCellAddressManager addyManager = m_appContext.addressMngr;
 			addyManager.getCellAddress(mapping, smE_TransactionAction.QUEUE_REQUEST);
 		}
 		
@@ -138,13 +142,13 @@ public class State_CameraSnapping extends smA_State implements smI_StateEventLis
 		
 		m_snapProgressBase = this.getOverallSnapProgress();
 		
-		smCameraManager manager = ((StateMachine_Camera) getParent()).getCameraManager();
+		smCameraManager manager = m_appContext.cameraMngr;
 		manager.setTargetPosition(m_utilPoint, false);
 	}
 	
 	public double getOverallSnapProgress()
 	{
-		smCameraManager manager = ((StateMachine_Camera) getParent()).getCameraManager();
+		smCameraManager manager = m_appContext.cameraMngr;
 		
 		//s_logger.severe("snap prog base: " + m_snapProgressBase + "   snap prog: " + manager.getSnapProgress());
 		return m_snapProgressBase + (1-m_snapProgressBase)*manager.getSnapProgress();
@@ -152,7 +156,7 @@ public class State_CameraSnapping extends smA_State implements smI_StateEventLis
 
 	private void requestCodeForTargetCell()
 	{
-		smCellCodeManager populator = smCellCodeManager.getInstance();
+		smCellCodeManager populator = m_appContext.codeMngr;
 		
 		if( m_hasRequestedSourceCode && m_hasRequestedCompiledCode )
 		{
@@ -203,7 +207,7 @@ public class State_CameraSnapping extends smA_State implements smI_StateEventLis
 	
 	private void updateSnapBufferManager(boolean flushPopulator)
 	{
-		smA_Grid grid = smAppContext.gridMngr.getGrid();
+		smA_Grid grid = m_appContext.gridMngr.getGrid();
 		smI_LocalCodeRepository htmlSource = m_internalCodeRepo;
 		
 		int options = smF_BufferUpdateOption.COMMUNICATE_WITH_SERVER;
@@ -246,7 +250,7 @@ public class State_CameraSnapping extends smA_State implements smI_StateEventLis
 		
 		m_targetGridCoordinate.set(-1, -1);
 		
-		smCamera camera = smAppContext.cameraMngr.getCamera();
+		smCamera camera = m_appContext.cameraMngr.getCamera();
 		
 		m_snapCamera.setViewRect(camera.getViewWidth(), camera.getViewHeight());
 		
@@ -268,9 +272,10 @@ public class State_CameraSnapping extends smA_State implements smI_StateEventLis
 	protected void update(double timeStep)
 	{
 		StateMachine_Camera machine = ((StateMachine_Camera) getParent());
-		if ( machine.getCameraManager().isCameraAtRest() )
+		
+		if ( m_appContext.cameraMngr.isCameraAtRest() )
 		{
-			smBufferCell testCell = smCellBufferManager.getInstance().getDisplayBuffer().getCellAtAbsoluteCoord(m_targetGridCoordinate);
+			smBufferCell testCell = m_appContext.cellBufferMngr.getDisplayBuffer().getCellAtAbsoluteCoord(m_targetGridCoordinate);
 			
 			State_ViewingCell.Constructor constructor = new State_ViewingCell.Constructor(testCell);
 			
@@ -328,7 +333,7 @@ public class State_CameraSnapping extends smA_State implements smI_StateEventLis
 			{
 				if( event.getAction() == Action_Camera_SetCameraViewSize.class )
 				{
-					smCamera camera = smAppContext.cameraMngr.getCamera();
+					smCamera camera = m_appContext.cameraMngr.getCamera();
 					m_snapCamera.setViewRect(camera.getViewWidth(), camera.getViewHeight());
 					
 					this.updateSnapBufferManager(true);

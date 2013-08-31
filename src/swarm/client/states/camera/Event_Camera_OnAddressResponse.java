@@ -1,6 +1,5 @@
 package swarm.client.states.camera;
 
-import swarm.client.states.camera.StateMachine_Camera.Event_OnAddressResponse.E_Type;
 import swarm.shared.statemachine.smA_ActionArgs;
 import swarm.shared.statemachine.smA_EventAction;
 import swarm.shared.statemachine.smA_State;

@@ -342,11 +342,11 @@ public class smBrowserNavigator implements smI_StateEventListener
 							
 							if( m_stateAlreadyPushedForViewingExit || event.getState().getPreviousState() == State_CameraSnapping.class )
 							{
-								m_historyManager.setState(FLOATING_STATE_PATH, machine.getCameraManager().getTargetPosition());
+								m_historyManager.setState(FLOATING_STATE_PATH, m_cameraMngr.getTargetPosition());
 							}
 							else
 							{
-								m_historyManager.pushState(FLOATING_STATE_PATH, machine.getCameraManager().getTargetPosition());
+								m_historyManager.pushState(FLOATING_STATE_PATH, m_cameraMngr.getTargetPosition());
 							}
 						}
 					}

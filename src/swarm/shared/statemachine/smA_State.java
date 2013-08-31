@@ -15,9 +15,7 @@ public abstract class smA_State extends smA_BaseStateObject
 {
 	private static final Logger s_logger = Logger.getLogger(smA_State.class.getName());
 	
-	private static HashMap<Class<? extends smA_State>, smA_State> s_stateRegistry = new HashMap<Class<? extends smA_State>, smA_State>();
-	
-	smStateTreeRoot m_root;
+	smStateContext m_context;
 	
 	private float m_totalTimeInState = 0.0f;
 	private float m_foregroundedTimeInState = 0.0f;
@@ -29,7 +27,6 @@ public abstract class smA_State extends smA_BaseStateObject
 	private boolean m_isForegrounding = false;
 	
 	smA_State m_stateBeneath = null;
-	
 	
 	private HashMap<Class<? extends smA_Action>, Boolean> m_isPerformableOverrides = new HashMap<Class<? extends smA_Action>, Boolean>();
 	
@@ -51,29 +48,7 @@ public abstract class smA_State extends smA_BaseStateObject
 	{
 	}
 	
-	public static smStateTreeRoot root_didEnter(Class<? extends smA_State> state_T, smI_StateEventListener stateEventListener)
-	{
-		smA_State state = smA_State.getInstance(state_T);
-		smStateTreeRoot root = new smStateTreeRoot(state);
-		root.addListener(stateEventListener);
-		state.m_root = root;
-		
-		state.didEnter_internal(null);
-		
-		return root;
-	}
 	
-	public static void root_didForeground(Class<? extends smA_State> state_T)
-	{
-		smA_State state = smA_State.getEnteredInstance(state_T);
-		state.didForeground_internal(null, null);
-	}
-	
-	public static void root_didUpdate(Class<? extends smA_State> state_T, double timeStep)
-	{
-		smA_State state = smA_State.getEnteredInstance(state_T);
-		state.update_internal(timeStep);
-	}
 	
 	public boolean isTransparent()
 	{
@@ -209,10 +184,10 @@ public abstract class smA_State extends smA_BaseStateObject
 		{
 			this.m_lastActionPerformed = T;
 			
-			smStateTreeRoot root = m_root;
+			smStateContext context = m_context;
 
 			action.m_state = this;
-			root.queueEvent(new smStateEvent(action, args));
+			context.queueEvent(new smStateEvent(action, args));
 			{
 				smA_Action.s_actionStack.add(action);
 				
@@ -226,7 +201,7 @@ public abstract class smA_State extends smA_BaseStateObject
 			}
 			action.m_state = null;
 
-			root.processEventQueue();
+			context.processEventQueue();
 			
 			return true;
 		}
@@ -293,7 +268,7 @@ public abstract class smA_State extends smA_BaseStateObject
 	
 	void didEnter_internal(smA_StateConstructor constructor)
 	{
-		smStateTreeRoot root = m_root;
+		smStateContext root = m_context;
 		
 		if( this instanceof smI_StateEventListener )
 		{
@@ -330,11 +305,11 @@ public abstract class smA_State extends smA_BaseStateObject
 		m_foregroundedUpdateCount = 0;
 		m_blockingState = null;
 		
-		smStateTreeRoot root = m_root;
+		smStateContext context = m_context;
 		
 		//s_logger.log(Level.INFO, "Will foreground state: " + this.getClass().getName());
 		
-		root.queueEvent(new smStateEvent(smE_StateEventType.DID_FOREGROUND, this));
+		context.queueEvent(new smStateEvent(smE_StateEventType.DID_FOREGROUND, this));
 		
 		m_isForegrounding = true;
 		
@@ -342,12 +317,12 @@ public abstract class smA_State extends smA_BaseStateObject
 		
 		m_isForegrounding = false;
 		
-		root.processEventQueue();
+		context.processEventQueue();
 	}
 	
 	void update_internal(double timeStep)
 	{
-		smStateTreeRoot root = m_root;
+		smStateContext context = m_context;
 		
 		smU_Debug.ASSERT(m_isEntered, "smA_State::update1");
 		
@@ -364,7 +339,7 @@ public abstract class smA_State extends smA_BaseStateObject
 			m_foregroundedUpdateCount++;
 		}
 		
-		root.queueEvent(new smStateEvent( smE_StateEventType.DID_UPDATE, this));
+		context.queueEvent(new smStateEvent( smE_StateEventType.DID_UPDATE, this));
 		
 		m_lastTimeStep = timeStep;
 		
@@ -372,16 +347,16 @@ public abstract class smA_State extends smA_BaseStateObject
 		
 		this.update(timeStep);
 		
-		root.processEventQueue();
+		context.processEventQueue();
 	}
 	
 	void willBackground_internal(Class<? extends smA_State> blockingState)
 	{
-		smStateTreeRoot root = m_root;
+		smStateContext context = m_context;
 		
 		//s_logger.log(Level.INFO, "Will background state: " + this.getClass().getName());
 		
-		root.queueEvent(new smStateEvent(smE_StateEventType.DID_BACKGROUND, this, blockingState));
+		context.queueEvent(new smStateEvent(smE_StateEventType.DID_BACKGROUND, this, blockingState));
 		
 		this.m_blockingState = blockingState;
 		
@@ -389,7 +364,7 @@ public abstract class smA_State extends smA_BaseStateObject
 		
 		m_isForegrounded = false;
 		
-		root.processEventQueue();
+		context.processEventQueue();
 		
 		m_foregroundedTimeInState = 0.0f;
 		m_foregroundedUpdateCount = 0;
@@ -397,7 +372,7 @@ public abstract class smA_State extends smA_BaseStateObject
 	
 	void willExit_internal()
 	{
-		smStateTreeRoot root = m_root;
+		smStateContext root = m_context;
 		
 		//s_logger.log(Level.INFO, "Will exit state: " + this.getClass().getName());
 		
@@ -420,65 +395,4 @@ public abstract class smA_State extends smA_BaseStateObject
 	protected void update(double timeStep) {}
 	protected void willBackground(Class<? extends smA_State> blockingState) {}
 	protected void willExit() { }
-	
-	public static <T extends smA_State> T getEnteredInstance(Class<? extends smA_State> T)
-	{
-		smA_State registeredState = s_stateRegistry.get(T);
-		if ( registeredState != null )
-		{
-			if ( registeredState.m_isEntered )
-			{
-				return (T) registeredState;
-			}
-		}
-		
-		return null;
-	}
-	
-	public static boolean isForegrounded(Class<? extends smA_State> T)
-	{
-		return getForegroundedInstance(T) != null;
-	}
-	
-	public static boolean isEntered(Class<? extends smA_State> T)
-	{
-		return getEnteredInstance(T) != null;
-	}
-	
-	public static void register(smA_State state)
-	{
-		s_stateRegistry.put(state.getClass(), state);
-	}
-	
-	public static <T extends smA_State> T getForegroundedInstance(Class<? extends smA_State> T)
-	{
-		smA_State registeredState = s_stateRegistry.get(T);
-		if ( registeredState != null )
-		{
-			if ( registeredState.isForegrounded() )
-			{
-				return (T) registeredState;
-			}
-		}
-		
-		return null;
-	}
-	
-	protected static smA_State getInstance(Class<? extends smA_State> T)
-	{
-		smA_State registeredState = s_stateRegistry.get(T);
-		if ( registeredState != null )
-		{
-			if ( registeredState.isEntered() )
-			{
-				smU_Debug.ASSERT(false, "Tried to reuse state instance.");
-			}
-			
-			return registeredState;
-		}
-
-		smU_Debug.ASSERT(false, "No state instance registered.");
-		
-		return null;
-	}
 }

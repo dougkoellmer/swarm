@@ -73,23 +73,27 @@ public class StateMachine_Camera extends smA_StateMachine implements smI_StateEv
 	
 	private final smCellAddressManagerListener m_addressManagerListener = new smCellAddressManagerListener(this);
 	
-	public StateMachine_Camera()
-	{		
-		smA_Action.register(new Action_Camera_SetCameraViewSize());
-		smA_Action.register(new Action_Camera_SnapToAddress());
-		smA_Action.register(new Action_Camera_SnapToCoordinate());
-		smA_Action.register(new Event_Camera_OnAddressResponse());
-		smA_Action.register(new Action_Camera_SetCameraTarget());
-		smA_Action.register(new Action_Camera_SetInitialPosition());
+	private final smAppContext m_appContext;
+	
+	public StateMachine_Camera(smAppContext appContext)
+	{
+		m_appContext = appContext;
 		
-		smA_ClientUser user = smAppContext.userMngr.getUser();
+		smA_Action.register(new Action_Camera_SetCameraViewSize(m_appContext.cameraMngr));
+		smA_Action.register(new Action_Camera_SnapToAddress(m_appContext.addressMngr));
+		smA_Action.register(new Action_Camera_SnapToCoordinate(m_appContext.gridMngr));
+		smA_Action.register(new Event_Camera_OnAddressResponse());
+		smA_Action.register(new Action_Camera_SetCameraTarget(m_appContext.cameraMngr));
+		smA_Action.register(new Action_Camera_SetInitialPosition(m_appContext.cameraMngr));
+		
+		smA_ClientUser user = m_appContext.userMngr.getUser();
 		m_codeRepo.addSource(user);
-		m_codeRepo.addSource(smAppContext.codeCache);
+		m_codeRepo.addSource(m_appContext.codeCache);
 	}
 	
 	void snapToCellAddress(smCellAddress address)
 	{
-		smCellAddressManager addressManager = smAppContext.addressMngr;
+		smCellAddressManager addressManager = m_appContext.addressMngr;
 		smA_State currentState = this.getCurrentState();
 		
 		if( currentState instanceof State_GettingMapping )
@@ -103,7 +107,7 @@ public class StateMachine_Camera extends smA_StateMachine implements smI_StateEv
 				machine_setState(this, State_CameraFloating.class);
 				
 				//TODO: Might want to ease the camera instead of stopping it short.
-				m_cameraManager.setTargetPosition(smAppContext.cameraMngr.getCamera().getPosition(), false);
+				m_appContext.cameraMngr.setTargetPosition(m_appContext.cameraMngr.getCamera().getPosition(), false);
 			}
 			
 			State_GettingMapping.Constructor constructor = new State_GettingMapping.Constructor(address);
@@ -162,10 +166,12 @@ public class StateMachine_Camera extends smA_StateMachine implements smI_StateEv
 	{
 		//--- DRK > Not enforcing z constraints here because UI probably hasn't told us camera view size yet.
 		
-		smA_ClientUser user = smAppContext.userMngr.getUser();
-		m_cameraManager.setCameraPosition(user.getLastPosition(), false);
+		smA_ClientUser user = m_appContext.userMngr.getUser();
+		m_appContext.cameraMngr.setCameraPosition(user.getLastPosition(), false);
 
-		smCellCodeManager.getInstance().start(new smCellCodeManager.I_SyncOrPreviewDelegate()
+		smCellCodeManager codeMngr = m_appContext.codeMngr;
+
+		codeMngr.start(new smCellCodeManager.I_SyncOrPreviewDelegate()
 		{
 			@Override
 			public void onCompilationFinished(smCompilerResult result)
@@ -204,7 +210,7 @@ public class StateMachine_Camera extends smA_StateMachine implements smI_StateEv
 			}
 		});
 		
-		smAppContext.addressMngr.start(m_addressManagerListener);
+		m_appContext.addressMngr.start(m_addressManagerListener);
 	}
 	
 	@Override
@@ -236,9 +242,9 @@ public class StateMachine_Camera extends smA_StateMachine implements smI_StateEv
 	@Override
 	protected void update(double timeStep)
 	{
-		m_cameraManager.update(timeStep);
+		m_appContext.cameraMngr.update(timeStep);
 		
-		if( !m_cameraManager.isCameraAtRest() )
+		if( !m_appContext.cameraMngr.isCameraAtRest() )
 		{
 			updateBufferManager();
 		}
@@ -246,6 +252,8 @@ public class StateMachine_Camera extends smA_StateMachine implements smI_StateEv
 	
 	void updateBufferManager()
 	{
+		smCellBufferManager bufferMngr = m_appContext.cellBufferMngr;
+		
 		if( this.getCurrentState() instanceof State_CameraSnapping )
 		{
 			State_CameraSnapping snappingState = ((State_CameraSnapping)this.getCurrentState());
@@ -253,11 +261,11 @@ public class StateMachine_Camera extends smA_StateMachine implements smI_StateEv
 			
 			int options = smF_BufferUpdateOption.CREATE_VISUALIZATIONS;
 			
-			smCellBufferManager.getInstance().update(smAppContext.gridMngr.getGrid(), smAppContext.camera, compiledStaticHtmlSource, options);
+			bufferMngr.update(m_appContext.gridMngr.getGrid(), m_appContext.cameraMngr.getCamera(), compiledStaticHtmlSource, options);
 			
 			//--- DRK > As soon as target cell comes into sight, we start trying to populate
 			//---		it with compiled_dynamic and source html from the snapping state's html source(s).
-			smCellBuffer buffer = smCellBufferManager.getInstance().getDisplayBuffer();
+			smCellBuffer buffer = bufferMngr.getDisplayBuffer();
 			if( buffer.getSubCellCount() == 1 )
 			{
 				if( buffer.isInBoundsAbsolute(snappingState.getTargetCoordinate()) )
@@ -265,9 +273,8 @@ public class StateMachine_Camera extends smA_StateMachine implements smI_StateEv
 					smBufferCell cell = buffer.getCellAtAbsoluteCoord(snappingState.getTargetCoordinate());
 					smI_LocalCodeRepository targetCellHtmlSource = snappingState.getHtmlSourceForTargetCell();
 
-					smCellCodeManager populator = smCellCodeManager.getInstance();
-					populator.populateCell(cell, targetCellHtmlSource, 1, false, false, smE_CodeType.COMPILED);
-					populator.populateCell(cell, targetCellHtmlSource, 1, false, false, smE_CodeType.SOURCE);
+					m_appContext.codeMngr.populateCell(cell, targetCellHtmlSource, 1, false, false, smE_CodeType.COMPILED);
+					m_appContext.codeMngr.populateCell(cell, targetCellHtmlSource, 1, false, false, smE_CodeType.SOURCE);
 					
 					//--- DRK > NOTE: Don't need to flush populator because we're not telling it to communicate with server.
 				}
@@ -276,20 +283,15 @@ public class StateMachine_Camera extends smA_StateMachine implements smI_StateEv
 		else
 		{
 			int options = smF_BufferUpdateOption.ALL;
-			smCellBufferManager.getInstance().update(smAppContext.gridMngr.getGrid(), smAppContext.camera, m_codeRepo, options);
+			bufferMngr.update(m_appContext.gridMngr.getGrid(), m_appContext.cameraMngr.getCamera(), m_codeRepo, options);
 		}
 	}
 	
 	protected void willExit()
 	{
-		smAppContext.addressMngr.stop();
+		m_appContext.addressMngr.stop();
 		
-		smCellCodeManager.getInstance().stop();
-	}
-	
-	public smCameraManager getCameraManager()
-	{
-		return m_cameraManager;
+		m_appContext.codeMngr.stop();
 	}
 
 	@Override
@@ -316,7 +318,7 @@ public class StateMachine_Camera extends smA_StateMachine implements smI_StateEv
 			{
 				if( event.getAction() == StateMachine_Base.OnGridResize.class )
 				{
-					smAppContext.cameraMngr.getCamera().onGridSizeChanged();
+					m_appContext.cameraMngr.getCamera().onGridSizeChanged();
 					
 					updateBufferManager();
 				}

@@ -94,7 +94,7 @@ public class getUserData implements smI_RequestHandler
 						}
 					};
 					
-					dummyGrid.writeJson(null, response.getJson());
+					dummyGrid.writeJson(null, response.getJsonArgs());
 				}
 				
 				user = createUserTransaction.getUser();
@@ -120,7 +120,7 @@ public class getUserData implements smI_RequestHandler
 			return;
 		}
 
-		factory.getHelper().putBoolean(response.getJson(), smE_JsonKey.createdUser, createdUser);
-		user.writeJson(null, response.getJson());
+		factory.getHelper().putBoolean(response.getJsonArgs(), smE_JsonKey.createdUser, createdUser);
+		user.writeJson(null, response.getJsonArgs());
 	}
 }

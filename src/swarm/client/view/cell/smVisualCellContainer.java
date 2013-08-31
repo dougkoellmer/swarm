@@ -69,8 +69,14 @@ public class smVisualCellContainer extends FlowPanel implements ResizeHandler, s
 	
 	private final Action_Camera_SetCameraViewSize.Args m_args_SetCameraViewSize = new Action_Camera_SetCameraViewSize.Args();
 	
-	public smVisualCellContainer(smViewConfig config)
+	private final smAppContext m_appContext;
+	private final smViewContext m_viewContext;
+	
+	public smVisualCellContainer(smAppContext appContext, smViewContext viewContext, smViewConfig config)
 	{
+		m_appContext = appContext;
+		m_viewContext = viewContext;
+		
 		m_magnifier = new smMagnifier(config.magnifierTickCount, config.magFadeInTime_seconds);
 		
 		m_splashGlass.addStyleName("sm_splash_glass");
@@ -133,7 +139,7 @@ public class smVisualCellContainer extends FlowPanel implements ResizeHandler, s
 	private void updateCroppers()
 	{
 		//--- DRK > If cell sub count is 1, it means we can match the bottom/right sides of the grid exactly.
-		int cellSubCount = smCellBufferManager.getInstance().getDisplayBuffer().getSubCellCount();
+		int cellSubCount = m_appContext.cellBufferMngr.getDisplayBuffer().getSubCellCount();
 		if( cellSubCount == 0 || cellSubCount == 1 )
 		{
 			hideCroppers();
@@ -142,7 +148,7 @@ public class smVisualCellContainer extends FlowPanel implements ResizeHandler, s
 		}
 
 		//--- DRK > If the mod operation is 0, we can also always match bottom/right sides exactly.
-		smA_Grid grid = smAppContext.gridMngr.getGrid();
+		smA_Grid grid = m_appContext.gridMngr.getGrid();
 		if( (grid.getWidth() % cellSubCount) == 0 && (grid.getHeight() % cellSubCount) == 0 )
 		{
 			hideCroppers();
@@ -150,7 +156,7 @@ public class smVisualCellContainer extends FlowPanel implements ResizeHandler, s
 			return;
 		}
 		
-		smCamera camera = smAppContext.cameraMngr.getCamera();
+		smCamera camera = m_appContext.cameraMngr.getCamera();
 	
 		double gridWidthInPixels = grid.calcPixelWidth();
 		double gridHeightInPixels = grid.calcPixelHeight();
@@ -199,8 +205,8 @@ public class smVisualCellContainer extends FlowPanel implements ResizeHandler, s
 					//--- DRK > For some reason we can't use the updateCameraViewRect method because
 					//---		offset width/height return 0...I think it's because CSS isn't applied yet.
 					//---		So kind of a hack here...would be nice if I could fix this, so...TODO(DRK).
-					double width = smViewContext.splitPanel.getCellPanelWidth();
-					double x = smViewContext.splitPanel.getTabPanelWidth();
+					double width = m_viewContext.splitPanel.getCellPanelWidth();
+					double x = m_viewContext.splitPanel.getTabPanelWidth();
 					double height = RootPanel.get().getOffsetHeight();
 					
 					m_args_SetCameraViewSize.set(width, height);
@@ -270,8 +276,8 @@ public class smVisualCellContainer extends FlowPanel implements ResizeHandler, s
 				{
 					m_showingMappingNotFound = false;
 					
-					smAppContext.toolTipMngr.removeTip(this);
-					smAppContext.toolTipMngr.addTip(this, m_gettingAddressTipConfig);
+					m_viewContext.toolTipMngr.removeTip(this);
+					m_viewContext.toolTipMngr.addTip(this, m_gettingAddressTipConfig);
 				}
 				
 				break;
@@ -283,7 +289,7 @@ public class smVisualCellContainer extends FlowPanel implements ResizeHandler, s
 				{
 					if( !m_showingMappingNotFound )
 					{
-						smAppContext.toolTipMngr.removeTip(this);
+						m_viewContext.toolTipMngr.removeTip(this);
 					}
 					
 					m_showingMappingNotFound = false;
@@ -300,8 +306,8 @@ public class smVisualCellContainer extends FlowPanel implements ResizeHandler, s
 					
 					if( args.getType() != Event_GettingMapping_OnResponse.E_Type.ON_FOUND )
 					{
-						smAppContext.toolTipMngr.removeTip(this);
-						smAppContext.toolTipMngr.addTip(this, m_mappingNotFoundTipConfig);
+						m_viewContext.toolTipMngr.removeTip(this);
+						m_viewContext.toolTipMngr.addTip(this, m_mappingNotFoundTipConfig);
 						
 						m_showingMappingNotFound = true;
 					}
@@ -328,7 +334,7 @@ public class smVisualCellContainer extends FlowPanel implements ResizeHandler, s
 		
 		m_statusAlignment.setMasterRect(null);
 		
-		smAppContext.toolTipMngr.onTipMove(this);
+		m_viewContext.toolTipMngr.onTipMove(this);
 	}
 
 	@Override

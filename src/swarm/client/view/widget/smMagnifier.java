@@ -6,14 +6,17 @@ import swarm.client.app.smAppContext;
 import swarm.client.entities.smCamera;
 import swarm.client.input.smClickManager;
 import swarm.client.input.smI_ClickHandler;
+import swarm.client.managers.smCameraManager;
 import swarm.client.states.StateMachine_Base;
 import swarm.client.states.camera.Action_Camera_SetCameraTarget;
 import swarm.client.states.camera.Action_Camera_SetCameraViewSize;
+import swarm.client.states.camera.Action_Camera_SetInitialPosition;
 import swarm.client.states.camera.StateMachine_Camera;
 import swarm.client.states.camera.State_CameraFloating;
 import swarm.client.states.camera.State_CameraSnapping;
 import swarm.client.states.camera.State_ViewingCell;
 import swarm.client.view.smE_ZIndex;
+import swarm.client.view.smViewContext;
 import swarm.client.view.tooltip.smE_ToolTipType;
 import swarm.client.view.tooltip.smToolTipConfig;
 import swarm.client.view.tooltip.smToolTipManager;
@@ -93,9 +96,15 @@ public class smMagnifier extends FlowPanel implements smI_StateEventListener
 	
 	private double m_baseAlpha;
 	private double m_alpha;
+	
+	private final smViewContext m_viewContext;
+	private final smCameraManager m_cameraMngr;
 
-	public smMagnifier(double tickCount, double fadeInTime_seconds)
+	public smMagnifier(smViewContext viewContext, smCameraManager cameraMngr, double tickCount, double fadeInTime_seconds)
 	{
+		m_viewContext = viewContext;
+		m_cameraMngr = cameraMngr;
+		
 		m_fadeInTime_seconds = fadeInTime_seconds;
 		m_tickRatio = tickCount = 1.0 / (((double)tickCount)+1.0);
 		
@@ -126,7 +135,7 @@ public class smMagnifier extends FlowPanel implements smI_StateEventListener
 		m_zoomIn.setEnabled(false);
 		m_slider.setEnabled(false);
 		
-		smToolTipManager toolTipper = smAppContext.toolTipMngr;
+		smToolTipManager toolTipper = m_viewContext.toolTipMngr;
 		toolTipper.addTip(m_zoomIn, new smToolTipConfig(smE_ToolTipType.MOUSE_OVER, "Zoom In"));
 		toolTipper.addTip(m_zoomOut, new smToolTipConfig(smE_ToolTipType.MOUSE_OVER, "Zoom Out"));
 		toolTipper.addTip(m_dragger, new smToolTipConfig(smE_ToolTipType.MOUSE_OVER, "Drag'n'Zoom"));
@@ -135,7 +144,7 @@ public class smMagnifier extends FlowPanel implements smI_StateEventListener
 		
 		this.add(innerContainer);
 		
-		smAppContext.clickMngr.addClickHandler(m_zoomIn, new smI_ClickHandler()
+		m_viewContext.clickMngr.addClickHandler(m_zoomIn, new smI_ClickHandler()
 		{
 			public void onClick()
 			{
@@ -158,7 +167,7 @@ public class smMagnifier extends FlowPanel implements smI_StateEventListener
 			}
 		});
 		
-		smAppContext.clickMngr.addClickHandler(m_zoomOut, new smI_ClickHandler()
+		m_viewContext.clickMngr.addClickHandler(m_zoomOut, new smI_ClickHandler()
 		{
 			public void onClick()
 			{
@@ -294,7 +303,7 @@ public class smMagnifier extends FlowPanel implements smI_StateEventListener
 			//--- DRK > Pretty hacky, but I can't figure out how to "forward" the event up the DOM so tooltip can get it.
 			if( event instanceof MouseUpEvent )
 			{
-				smAppContext.toolTipMngr.onMouseUp((MouseUpEvent)event);
+				m_viewContext.toolTipMngr.onMouseUp((MouseUpEvent)event);
 			}
 			
 			double mouseY = relativeY;
@@ -324,7 +333,7 @@ public class smMagnifier extends FlowPanel implements smI_StateEventListener
 	
 	private void setDraggerPositionFromCamera()
 	{
-		smCamera camera = smAppContext.cameraMngr.getCamera();
+		smCamera camera = m_cameraMngr.getCamera();
 		double maxZ = camera.calcMaxZ();
 		double ratio = camera.getPosition().getZ() / maxZ;
 		ratio = smU_Math.clamp(ratio, 0, 1); // window resizes can make camera be temporarily zoomed out further than its max constraint.
@@ -371,7 +380,7 @@ public class smMagnifier extends FlowPanel implements smI_StateEventListener
 		
 		if( moveCamera )
 		{
-			smCamera camera = smAppContext.cameraMngr.getCamera();
+			smCamera camera = m_cameraMngr.getCamera();
 			double maxZ = camera.calcMaxZ();
 			m_utilPoint.copy(camera.getPosition());
 			m_utilPoint.setZ((ratio*ratio)*maxZ);
@@ -392,7 +401,7 @@ public class smMagnifier extends FlowPanel implements smI_StateEventListener
 			
 			if ( setTarget )
 			{
-				m_args_SetCameraTarget.setPoint(m_utilPoint);
+				m_args_SetCameraTarget.init(m_utilPoint, false);
 				smA_Action.perform(Action_Camera_SetCameraTarget.class, m_args_SetCameraTarget);
 			}
 		}
@@ -468,7 +477,7 @@ public class smMagnifier extends FlowPanel implements smI_StateEventListener
 				{
 					if( !m_underThisControl )
 					{
-						if( !((StateMachine_Camera) event.getState()).getCameraManager().isCameraAtRest() )
+						if( !m_cameraMngr.isCameraAtRest() )
 						{
 							setDraggerPositionFromCamera();
 						}
@@ -529,7 +538,7 @@ public class smMagnifier extends FlowPanel implements smI_StateEventListener
 				{
 					this.setDraggerPositionFromCamera();
 				}
-				else if( event.getAction() == StateMachine_Camera.Action_Camera_SetInitialPosition.class )
+				else if( event.getAction() == Action_Camera_SetInitialPosition.class )
 				{
 					this.setDraggerPositionFromCamera();
 				}
