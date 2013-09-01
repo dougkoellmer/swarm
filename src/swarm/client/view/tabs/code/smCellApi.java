@@ -14,6 +14,7 @@ import swarm.client.states.camera.Action_ViewingCell_Refresh;
 import swarm.client.states.camera.StateMachine_Camera;
 import swarm.client.states.camera.State_ViewingCell;
 import swarm.client.structs.smAccountInfo;
+import swarm.client.view.smViewContext;
 import swarm.client.view.cell.smAlertManager;
 import swarm.shared.debugging.smU_Debug;
 import swarm.shared.entities.smA_Grid;
@@ -28,16 +29,21 @@ import swarm.shared.structs.smPoint;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
 
-public class smU_CellApi
+public class smCellApi
 {
 	private static final Action_Camera_SnapToCoordinate.Args m_snapCoordArgs = new Action_Camera_SnapToCoordinate.Args();
 	private static final Action_Camera_SnapToAddress.Args m_snapAddressArgs = new Action_Camera_SnapToAddress.Args();
 	private static final Action_Camera_SetCameraTarget.Args m_snapPointArgs = new Action_Camera_SetCameraTarget.Args();
 	
+	private final smViewContext m_viewContext;
 	
-	static native void registerApi(String namespace)
+	public smCellApi(smViewContext viewContext)
+	{
+		m_viewContext = viewContext;
+	}
+	
+	native void registerApi(String namespace)
 	/*-{
-		
 		function isInt(value)
 		{ 
 		    return !isNaN(parseInt(value,10)) && (parseFloat(value,10) == parseInt(value,10)); 
@@ -224,16 +230,16 @@ public class smU_CellApi
 		
 	}-*/;
 	
-	private static void snapToHistory(double delta)
+	private void snapToHistory(double delta)
 	{
-		smAppContext.navigator.getBrowserNavigator().go((int)delta);
+		m_viewContext.navigator.getBrowserNavigator().go((int)delta);
 	}
 	
-	private static void snapToAddress(String rawAddress)
+	private void snapToAddress(String rawAddress)
 	{
 		if( rawAddress.equals("~") )
 		{
-			smA_Action.performAction(Action_ViewingCell_Refresh.class);
+			m_viewContext.stateContext.performAction(Action_ViewingCell_Refresh.class);
 			
 			return;
 		}
@@ -246,20 +252,20 @@ public class smU_CellApi
 		}
 		
 		m_snapAddressArgs.init(address);
-		smA_Action.performAction(Action_Camera_SnapToAddress.class, m_snapAddressArgs);
+		m_viewContext.stateContext.performAction(Action_Camera_SnapToAddress.class, m_snapAddressArgs);
 	}
 	
-	private static void alert(String message)
+	private void alert(String message)
 	{
 		smAlertManager.getInstance().queue(message);
 	}
 	
-	private static void snapToPoint(double x, double y, double z)
+	private void snapToPoint(double x, double y, double z)
 	{
 		smPoint point = new smPoint(x, y, z);
 
 		m_snapPointArgs.init(point, false);
-		smA_Action.performAction(Action_Camera_SetCameraTarget.class, m_snapPointArgs);
+		m_viewContext.stateContext.performAction(Action_Camera_SetCameraTarget.class, m_snapPointArgs);
 	}
 	
 	/*private static void snapToRelativePoint(double x, double y, double z)
@@ -269,11 +275,11 @@ public class smU_CellApi
 		snapToPoint(point.getX() + x, point.getY() + y, point.getZ() + z);
 	}*/
 	
-	private static void snapToCoordinate(double m, double n)
+	private void snapToCoordinate(double m, double n)
 	{
 		smGridCoordinate coordinate = new smGridCoordinate((int)m, (int)n);
 		
-		smA_Grid grid = smAppContext.gridMngr.getGrid();
+		smA_Grid grid = m_viewContext.appContext.gridMngr.getGrid();
 		
 		if( !grid.isInBounds(coordinate) )
 		{
@@ -282,59 +288,59 @@ public class smU_CellApi
 		}
 		
 		m_snapCoordArgs.setCoordinate(coordinate);
-		smA_Action.performAction(Action_Camera_SnapToCoordinate.class, m_snapCoordArgs);
+		m_viewContext.stateContext.performAction(Action_Camera_SnapToCoordinate.class, m_snapCoordArgs);
 	}
 	
-	private static void snapToRelativeCoordinate(double m, double n)
+	private void snapToRelativeCoordinate(double m, double n)
 	{
 		smBufferCell cell = getCurrentCell();
 		snapToCoordinate(cell.getCoordinate().getM() + m, cell.getCoordinate().getN() + n);
 	}
 	
-	private static int getCoordinateM()
+	private int getCoordinateM()
 	{
 		smBufferCell cell = getCurrentCell();
 
 		return cell.getCoordinate().getM();
 	}
 	
-	private static int getCoordinateN()
+	private int getCoordinateN()
 	{
 		smBufferCell cell = getCurrentCell();
 
 		return cell.getCoordinate().getN();
 	}
 	
-	private static smPoint getPosition()
+	private smPoint getPosition()
 	{
-		StateMachine_Camera machine = smA_State.getEnteredState(StateMachine_Camera.class);
+		smCamera camera = m_viewContext.appContext.cameraMngr.getCamera();
 		
-		return machine.getCamera().getPosition();
+		return camera.getPosition();
 	}
 	
-	private static double getPositionX()
+	private double getPositionX()
 	{
 		return getPosition().getX();
 	}
 	
-	private static double getPositionY()
+	private double getPositionY()
 	{
 		return getPosition().getY();
 	}
 	
-	private static double getPositionZ()
+	private double getPositionZ()
 	{
 		return getPosition().getZ();
 	}
 	
-	private static String getAddress()
+	private String getAddress()
 	{
 		return getCurrentCell().getCellAddress().getRawAddress();
 	}
 	
-	private static String getUsername()
+	private String getUsername()
 	{
-		smClientAccountManager accountManager = smAppContext.accountMngr;
+		smClientAccountManager accountManager = m_viewContext.appContext.accountMngr;
 		
 		smAccountInfo accountInfo = accountManager.getAccountInfo();
 		
@@ -348,19 +354,19 @@ public class smU_CellApi
 		}
 	}
 	
-	private static int getGridWidth()
+	private int getGridWidth()
 	{
 		return getCurrentCell().getGrid().getWidth();
 	}
 	
-	private static int getGridHeight()
+	private int getGridHeight()
 	{
 		return getCurrentCell().getGrid().getHeight();
 	}
 	
-	static State_ViewingCell getViewingState()
+	State_ViewingCell getViewingState()
 	{
-		State_ViewingCell viewingState = smA_State.getEnteredState(State_ViewingCell.class);
+		State_ViewingCell viewingState = m_viewContext.stateContext.getEnteredState(State_ViewingCell.class);
 		
 		if( viewingState == null )
 		{
@@ -370,12 +376,12 @@ public class smU_CellApi
 		return viewingState;
 	}
 	
-	static smBufferCell getCurrentCell()
+	smBufferCell getCurrentCell()
 	{
 		return getViewingState().getCell();
 	}
 	
-	private static native void logError(String message)
+	private native void logError(String message)
 	/*-{
 		console.log(message);
 	}-*/;

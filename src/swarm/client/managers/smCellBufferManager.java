@@ -29,9 +29,16 @@ public class smCellBufferManager implements smI_LocalCodeRepository
 	{
 		private int m_currentIndex = 0;
 		
-		void reset()
+		private final ArrayList<smCellBufferManager> m_bufferMngrs;
+		
+		public Iterator(ArrayList<smCellBufferManager> bufferMngrs)
 		{
-			m_currentIndex = s_registeredInstances.size()-1; 
+			m_bufferMngrs = bufferMngrs;
+		}
+		
+		public void reset()
+		{
+			m_currentIndex = m_bufferMngrs.size()-1; 
 		}
 		
 		public smCellBufferManager next()
@@ -40,7 +47,7 @@ public class smCellBufferManager implements smI_LocalCodeRepository
 			{
 				m_currentIndex--;
 				
-				return s_registeredInstances.get(m_currentIndex+1);
+				return m_bufferMngrs.get(m_currentIndex+1);
 			}
 			else
 			{
@@ -60,10 +67,6 @@ public class smCellBufferManager implements smI_LocalCodeRepository
 	private final smPoint m_utilPoint2 = new smPoint();
 	
 	private int m_updateCount = 0;
-	
-	private static final ArrayList<smCellBufferManager> s_registeredInstances = new ArrayList<smCellBufferManager>();
-	
-	private static final Iterator s_iterator = new Iterator();
 	
 	private final smCellPool m_cellPool;
 	
@@ -96,31 +99,6 @@ public class smCellBufferManager implements smI_LocalCodeRepository
 	{
 		return m_displayBuffer;
 	}
-	
-	/*public static void registerInstance(smCellBufferManager instance)
-	{
-		s_registeredInstances.add(instance);
-	}
-	
-	public static Iterator getRegisteredInstances()
-	{
-		s_iterator.reset();
-		
-		return s_iterator;
-	}
-	
-	public static void unregisterInstance(smCellBufferManager instance)
-	{
-		for( int i = s_registeredInstances.size()-1; i >= 0; i-- )
-		{
-			if( s_registeredInstances.get(i) == instance )
-			{
-				s_registeredInstances.remove(i);
-				
-				return;
-			}
-		}
-	}*/
 	
 	public void drain()
 	{

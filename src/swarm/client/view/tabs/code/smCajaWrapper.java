@@ -7,6 +7,7 @@ import org.apache.commons.collections.map.HashedMap;
 import swarm.client.entities.smBufferCell;
 import swarm.client.states.camera.StateMachine_Camera;
 import swarm.client.states.camera.State_ViewingCell;
+import swarm.client.view.smViewContext;
 import swarm.client.view.tabs.code.smCellSandbox.I_StartUpCallback;
 import swarm.shared.code.smU_UriPolicy;
 import swarm.shared.code.smUriData;
@@ -43,13 +44,15 @@ public class smCajaWrapper
 	
 	private final smUriData m_utilUriData = new smUriData();
 	
-	smCajaWrapper(I_StartUpCallback callback, String apiNamespace)
+	private final smCellApi m_cellApi;
+	
+	smCajaWrapper(smViewContext viewContext, I_StartUpCallback callback, String apiNamespace)
 	{
 		m_apiNamespace = apiNamespace;
 		
 		m_callback = callback;
-		
-		smU_CellApi.registerApi(apiNamespace);
+
+		m_cellApi = new smCellApi(viewContext);
 		
 		initialize_native(this, apiNamespace);
 	}
@@ -227,7 +230,7 @@ public class smCajaWrapper
 			m_utilUriData.scheme = null;
 		}
 		
-		smBufferCell cell = smU_CellApi.getCurrentCell();
+		smBufferCell cell = m_cellApi.getCurrentCell();
 		smCodePrivileges privileges = cell.getCodePrivileges();
 		
 		if( privileges == null )

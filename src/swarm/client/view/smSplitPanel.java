@@ -66,25 +66,23 @@ public class smSplitPanel extends SplitLayoutPanel implements smI_UIElement
 	private boolean m_justTweened = false;
 	private boolean m_reloadCaptchaASAP = false;
 	
-	private final smAppContext m_appContext;
 	private final smViewContext m_viewContext;
 	
-	smSplitPanel(smAppContext appContext, smViewContext viewContext, smViewConfig config)
+	smSplitPanel(smViewContext viewContext, smViewConfig config)
 	{
 		super((int) PARENT_SPLITTER_WIDTH);
 		
 		m_viewContext = viewContext;
-		m_appContext = appContext;
 		
 		m_tabPanel = new smTabPanel(m_viewContext, config.tabs);
-		m_cellContainer = new smVisualCellContainer(m_appContext, m_viewContext, config);
+		m_cellContainer = new smVisualCellContainer(m_viewContext, config);
 		
 		this.addStyleName("split_panel");
 		
 		int pageWidth = RootPanel.get().getOffsetWidth();
 		double panelWidth = 0;
 		
-		if( smA_State.isForegrounded(StateMachine_Tabs.class) )
+		if( m_viewContext.stateContext.isForegrounded(StateMachine_Tabs.class) )
 		{
 			panelWidth = pageWidth*STARTING_PANEL_RATIO;
 
@@ -144,13 +142,13 @@ public class smSplitPanel extends SplitLayoutPanel implements smI_UIElement
 			@Override
 			public void onClick()
 			{
-				if( smA_Action.performAction(Action_Base_HideSupplementState.class) )
+				if( m_viewContext.stateContext.performAction(Action_Base_HideSupplementState.class) )
 				{
 					m_lastTabPanelSize = m_tabPanel.getOffsetWidth();
 					
 					m_tweener.start(m_lastTabPanelSize, 0);
 				}
-				else if( smA_Action.performAction(Action_Base_ShowSupplementState.class) )
+				else if( m_viewContext.stateContext.performAction(Action_Base_ShowSupplementState.class) )
 				{
 					double windowWidth = RootPanel.get().getOffsetWidth();
 					
@@ -189,7 +187,7 @@ public class smSplitPanel extends SplitLayoutPanel implements smI_UIElement
 	{
 		smToolTipManager toolTipper = m_viewContext.toolTipMngr;
 		
-		StateMachine_Tabs tabMachine = smA_State.getEnteredState(StateMachine_Tabs.class);
+		StateMachine_Tabs tabMachine = m_viewContext.stateContext.getEnteredState(StateMachine_Tabs.class);
 		
 		boolean isCollapsed = !tabMachine.isForegrounded() && tabMachine.getBlockingState() == null;
 		
@@ -291,9 +289,9 @@ public class smSplitPanel extends SplitLayoutPanel implements smI_UIElement
 					
 					if( text != null )
 					{
-						if( smA_State.isForegrounded(StateContainer_Base.class) )
+						if( m_viewContext.stateContext.isForegrounded(StateContainer_Base.class) )
 						{
-							if( !smA_State.isForegrounded(StateMachine_Tabs.class) )
+							if( !m_viewContext.stateContext.isForegrounded(StateMachine_Tabs.class) )
 							{
 								smAlignmentDefinition alignment = smU_Alignment.createHorRightVerCenter(smS_UI.TOOl_TIP_PADDING);
 	
@@ -337,7 +335,7 @@ public class smSplitPanel extends SplitLayoutPanel implements smI_UIElement
 		{
 			if( event.getType() != smE_StateEventType.DID_UPDATE )
 			{
-				if( smA_State.isForegrounded(State_SignInOrUp.class) )
+				if( m_viewContext.stateContext.isForegrounded(State_SignInOrUp.class) )
 				{
 					m_reloadCaptchaASAP = false;
 					m_viewContext.recaptchaWrapper.loadNewImage();
@@ -370,14 +368,14 @@ public class smSplitPanel extends SplitLayoutPanel implements smI_UIElement
 	
 	private void showOrHideTabControllerStateFromManualResize()
 	{
-		boolean showable = smA_Action.isActionPerformable(Action_Base_ShowSupplementState.class);
-		boolean hideable = smA_Action.isActionPerformable(Action_Base_HideSupplementState.class);
+		boolean showable = m_viewContext.stateContext.isActionPerformable(Action_Base_ShowSupplementState.class);
+		boolean hideable = m_viewContext.stateContext.isActionPerformable(Action_Base_HideSupplementState.class);
 		
 		if( showable )
 		{
 			if( m_splitter.getAbsoluteLeft() > 0 )
 			{
-				smA_Action.performAction(Action_Base_ShowSupplementState.class);
+				m_viewContext.stateContext.performAction(Action_Base_ShowSupplementState.class);
 			}
 		}
 		else if( hideable )
@@ -385,7 +383,7 @@ public class smSplitPanel extends SplitLayoutPanel implements smI_UIElement
 			if( m_splitter.getAbsoluteLeft() <= 0 )
 			{
 				m_lastTabPanelSize = 0;
-				smA_Action.performAction(Action_Base_HideSupplementState.class);
+				m_viewContext.stateContext.performAction(Action_Base_HideSupplementState.class);
 			}
 		}
 	}

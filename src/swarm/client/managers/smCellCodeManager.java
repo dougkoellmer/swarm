@@ -64,17 +64,11 @@ public class smCellCodeManager implements smI_TransactionResponseHandler
 	private final smMutableJsonQuery m_postQuery = new smMutableJsonQuery();
 	private final smMutableJsonQuery m_getQuery	 = new smMutableJsonQuery();
 	
-	private final smClientTransactionManager m_txnMngr;
-	private final smUserManager m_userMngr;
-	private final smA_JsonFactory m_jsonFactory;
-	private final smCellCodeCache m_codeCache;
+	private final smAppContext m_appContext;
 	
-	public smCellCodeManager(smClientTransactionManager txnMngr, smUserManager userMngr, smCellCodeCache codeCache, smA_JsonFactory jsonFactory)
+	public smCellCodeManager(smAppContext appContext)
 	{
-		m_txnMngr = txnMngr;
-		m_userMngr = userMngr;
-		m_jsonFactory = jsonFactory;
-		m_codeCache = codeCache;
+		m_appContext = appContext;
 		
 		m_postQuery.addCondition(null);
 		
@@ -84,7 +78,7 @@ public class smCellCodeManager implements smI_TransactionResponseHandler
 	
 	public void start(I_SyncOrPreviewDelegate syncOrPreviewErrorDelegate)
 	{
-		smClientTransactionManager txnMngr = m_txnMngr;
+		smClientTransactionManager txnMngr = m_appContext.txnMngr;
 		txnMngr.addHandler(this);
 		
 		m_syncOrPreviewErrorDelegate = syncOrPreviewErrorDelegate;
@@ -92,7 +86,7 @@ public class smCellCodeManager implements smI_TransactionResponseHandler
 	
 	public void stop()
 	{
-		smClientTransactionManager txnMngr = m_txnMngr;
+		smClientTransactionManager txnMngr = m_appContext.txnMngr;
 		txnMngr.removeHandler(this);
 		
 		m_syncOrPreviewErrorDelegate = null;
@@ -100,7 +94,7 @@ public class smCellCodeManager implements smI_TransactionResponseHandler
 	
 	public void flush()
 	{
-		smClientTransactionManager txnMngr = m_txnMngr;
+		smClientTransactionManager txnMngr = m_appContext.txnMngr;
 		txnMngr.flushRequestQueue();
 	}
 	
@@ -119,12 +113,12 @@ public class smCellCodeManager implements smI_TransactionResponseHandler
 	{
 		if( nukeType == smE_CellNuke.EVERYTHING )
 		{
-			m_codeCache.clear(coord);
+			m_appContext.codeCache.clear(coord);
 		}
 		
 		//--- DRK > If not a user's cell, below we go about ensuring that the cell has all local code references cleared
 		//---		by delving into the registered buffer managers and clearing the cell if it's visible.
-		smCellBufferManager.Iterator bufferManagerIterator = smCellBufferManager.getRegisteredInstances();
+		smCellBufferManager.Iterator bufferManagerIterator = m_appContext.getRegisteredBufferMngrs();
 		for( smCellBufferManager manager = null; (manager = bufferManagerIterator.next()) != null; )
 		{
 			smCellBuffer buffer = manager.getDisplayBuffer();
@@ -148,13 +142,13 @@ public class smCellCodeManager implements smI_TransactionResponseHandler
 		sourceCode.writeJson(null, request.getJsonArgs());
 		coord.writeJson(null, request.getJsonArgs());
 
-		m_txnMngr.makeRequest(request);
+		m_appContext.txnMngr.makeRequest(request);
 
 		smCode compiledCode = new smCode(sourceCode.getRawCode(), smE_CodeType.COMPILED);
 		compiledCode.setSafetyLevel(smE_CodeSafetyLevel.REQUIRES_DYNAMIC_SANDBOX);
 		cell.onSyncStart(sourceCode, compiledCode);
 		
-		smUserManager userManager = m_userMngr;
+		smUserManager userManager = m_appContext.userMngr;
 		smA_ClientUser user = userManager.getUser();
 		user.onSyncStart(coord, compiledCode);
 		
@@ -175,14 +169,14 @@ public class smCellCodeManager implements smI_TransactionResponseHandler
 	private boolean isSyncing(smGridCoordinate coord)
 	{
 		preparePostQuery(coord);
-		smClientTransactionManager txnMngr = m_txnMngr;
+		smClientTransactionManager txnMngr = m_appContext.txnMngr;
 		
 		return txnMngr.containsDispatchedRequest(smE_RequestPath.syncCode, m_postQuery);
 	}
 	
 	public void populateCell(smBufferCell cell, smI_LocalCodeRepository localHtmlSource, int cellSize, boolean recycled, boolean communicateWithServer, smE_CodeType eType)
 	{
-		smClientTransactionManager txnMngr = m_txnMngr;
+		smClientTransactionManager txnMngr = m_appContext.txnMngr;
 		
 		smGridCoordinate absCoord = cell.getCoordinate();
 		
@@ -238,7 +232,7 @@ public class smCellCodeManager implements smI_TransactionResponseHandler
 							smTransactionRequest request = new smTransactionRequest(smE_RequestPath.getCode);
 							
 							cell.getCoordinate().writeJson(null, request.getJsonArgs());
-							m_jsonFactory.getHelper().putInt(request.getJsonArgs(), smE_JsonKey.codeType, eType.ordinal());
+							m_appContext.jsonFactory.getHelper().putInt(request.getJsonArgs(), smE_JsonKey.codeType, eType.ordinal());
 							
 							txnMngr.queueRequest(request);
 						}
@@ -262,10 +256,10 @@ public class smCellCodeManager implements smI_TransactionResponseHandler
 		m_utilCoord.readJson(null, request.getJsonArgs());
 		m_utilCell.getCoordinate().copy(m_utilCoord);
 
-		smUserManager userManager = m_userMngr;
+		smUserManager userManager = m_appContext.userMngr;
 		smA_ClientUser user = userManager.getUser();
 		
-		int typeOrdinal = m_jsonFactory.getHelper().getInt(request.getJsonArgs(), smE_JsonKey.codeType);
+		int typeOrdinal = m_appContext.jsonFactory.getHelper().getInt(request.getJsonArgs(), smE_JsonKey.codeType);
 		smE_CodeType eCodeType = smE_CodeType.values()[typeOrdinal];
 		smCode code = m_utilCell.getCode(eCodeType);
 		
@@ -304,10 +298,10 @@ public class smCellCodeManager implements smI_TransactionResponseHandler
 		{
 			//--- DRK > Should only use cache if we can't dump it in user.
 			//---		On sign out, user will dump all data into cache to preserve it.
-			m_codeCache.cacheCell(m_utilCell);
+			m_appContext.codeCache.cacheCell(m_utilCell);
 		}
 		
-		smCellBufferManager.Iterator iterator = smCellBufferManager.getRegisteredInstances();
+		smCellBufferManager.Iterator iterator = m_appContext.getRegisteredBufferMngrs();
 		for( smCellBufferManager manager = null; (manager = iterator.next()) != null; )
 		{
 			smCellBuffer buffer = manager.getDisplayBuffer();
@@ -336,7 +330,7 @@ public class smCellCodeManager implements smI_TransactionResponseHandler
 		}
 		else if( request.getPath() == smE_RequestPath.syncCode )
 		{
-			smUserManager userManager = m_userMngr;
+			smUserManager userManager = m_appContext.userMngr;
 			smA_ClientUser user = userManager.getUser();
 			m_utilCoord.readJson(null, request.getJsonArgs());
 			
@@ -372,16 +366,16 @@ public class smCellCodeManager implements smI_TransactionResponseHandler
 				else
 				{
 					//--- DRK > Since user is no longer available, we dump this right into the cache.
-					m_codeCache.cacheCode(m_utilCoord, sourceCode, smE_CodeType.SOURCE);
-					m_codeCache.cacheCode(m_utilCoord, splashScreenCode, smE_CodeType.SPLASH);
-					m_codeCache.cacheCode(m_utilCoord, compiledCode, smE_CodeType.COMPILED);
+					m_appContext.codeCache.cacheCode(m_utilCoord, sourceCode, smE_CodeType.SOURCE);
+					m_appContext.codeCache.cacheCode(m_utilCoord, splashScreenCode, smE_CodeType.SPLASH);
+					m_appContext.codeCache.cacheCode(m_utilCoord, compiledCode, smE_CodeType.COMPILED);
 				}
 				
 				//--- DRK > I think technically we need only supply the compiled html to the main display buffer in this case.
 				//---		This is unlike the "get" method, which SHOULD iterate through all registered buffers so
 				//---		that there is zero reliance on the LRU cache.  In practice, the LRU cache again probably makes it
 				//---		unnecessary to iterate through all buffers for those cases, but I like not having a reliance on it.
-				smCellBufferManager.Iterator bufferManagerIterator = smCellBufferManager.getRegisteredInstances();
+				smCellBufferManager.Iterator bufferManagerIterator = m_appContext.getRegisteredBufferMngrs();
 				for( smCellBufferManager manager = null; (manager = bufferManagerIterator.next()) != null; )
 				{
 					smCellBuffer buffer = manager.getDisplayBuffer();
@@ -423,14 +417,14 @@ public class smCellCodeManager implements smI_TransactionResponseHandler
 	private void assertNotPosting(smGridCoordinate coord)
 	{
 		preparePostQuery(m_utilCoord);
-		smClientTransactionManager txnMngr = m_txnMngr;
+		smClientTransactionManager txnMngr = m_appContext.txnMngr;
 		
 		smU_Debug.ASSERT(!txnMngr.containsDispatchedRequest(smE_RequestPath.syncCode, m_postQuery), "assertNotPosting1");
 	}
 	
 	private void cell_onServerError(smGridCoordinate coordinate, smE_CodeType eCodeType, boolean isSync)
 	{
-		smCellBufferManager.Iterator bufferManagerIterator = smCellBufferManager.getRegisteredInstances();
+		smCellBufferManager.Iterator bufferManagerIterator = m_appContext.getRegisteredBufferMngrs();
 		for( smCellBufferManager manager = null; (manager = bufferManagerIterator.next()) != null; )
 		{
 			smCellBuffer buffer = manager.getDisplayBuffer();
@@ -460,7 +454,7 @@ public class smCellCodeManager implements smI_TransactionResponseHandler
 	{
 		if( response.getError() == smE_ResponseError.REDUNDANT )  return;
 		
-		int typeOrdinal = m_jsonFactory.getHelper().getInt(request.getJsonArgs(), smE_JsonKey.codeType);
+		int typeOrdinal = m_appContext.jsonFactory.getHelper().getInt(request.getJsonArgs(), smE_JsonKey.codeType);
 		smE_CodeType eCodeType = smE_CodeType.values()[typeOrdinal];
 		
 		m_utilCoord.readJson(null, request.getJsonArgs());
@@ -497,7 +491,7 @@ public class smCellCodeManager implements smI_TransactionResponseHandler
 				return smE_ResponseErrorControl.BREAK;
 			}
 
-			smUserManager userManager = m_userMngr;
+			smUserManager userManager = m_appContext.userMngr;
 			smA_ClientUser user = userManager.getUser();
 			
 			m_utilCoord.readJson(null, request.getJsonArgs());

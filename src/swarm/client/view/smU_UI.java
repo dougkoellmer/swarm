@@ -60,14 +60,14 @@ public class smU_UI
 		}
 	}
 	
-	public static String createScaleTransform(double scale)
+	public static String createScaleTransform(double scale, boolean use3d)
 	{
-		return createScaleTransform(scale, scale);
+		return createScaleTransform(scale, scale, use3d);
 	}
 	
-	public static String createTranslateTransform(double xValue, double yValue)
+	public static String createTranslateTransform(double xValue, double yValue, boolean use3d)
 	{
-		if( smAppContext.platformInfo.has3dTransforms() )
+		if( use3d )
 		{
 			return "translate3d("+xValue+"px,"+yValue+"px, 0px)";
 		}
@@ -77,9 +77,9 @@ public class smU_UI
 		}
 	}
 	
-	public static String createScaleTransform(double xScale, double yScale)
+	public static String createScaleTransform(double xScale, double yScale, boolean use3d)
 	{
-		if( smAppContext.platformInfo.has3dTransforms() )
+		if( use3d )
 		{
 			return "scale3d("+xScale+","+yScale+", 1)";
 		}
@@ -89,9 +89,9 @@ public class smU_UI
 		}
 	}
 	
-	public static String createRotate2dTransform(double degrees)
+	public static String createRotate2dTransform(double degrees, boolean use3d)
 	{
-		if( smAppContext.platformInfo.has3dTransforms() )
+		if( use3d )
 		{
 			return "rotate3d(0, 0, 1, "+degrees+"deg)";
 		}
@@ -109,18 +109,6 @@ public class smU_UI
 			element.getStyle().clearProperty(TRANSFORM_PROPERTIES[i]);
 		}
 	}*/
-	
-	public static void setTransform(Element element, String transform)
-	{
-		String transformProperty = smAppContext.platformInfo.getTransformProperty();
-		element.getStyle().setProperty(transformProperty, transform);
-		
-		/*for( int i = 0; i < TRANSFORM_PROPERTIES.length; i++ )
-		{
-			//--- DRK > This is fucking ridiculous, but yea...
-			element.getStyle().setProperty(TRANSFORM_PROPERTIES[i], transform);
-		}*/
-	}
 	
 	public static void setBoxShadow(Element element, String value)
 	{

@@ -54,7 +54,7 @@ public class smVisualCellManager implements smI_UIElement, smI_CellPoolDelegate
 		@Override
 		public smVisualCell newInstance()
 		{
-			return new smVisualCell();
+			return new smVisualCell(smVisualCellManager.this.m_viewContext.appContext.cellSandbox);
 		}
 	};
 	
@@ -78,16 +78,14 @@ public class smVisualCellManager implements smI_UIElement, smI_CellPoolDelegate
 	
 	private final smDialog m_alertDialog;
 	
-	private final smAppContext m_appContext;
 	private final smViewContext m_viewContext;
 	
-	public smVisualCellManager(smAppContext appContext, smViewContext viewContext, Panel container) 
+	public smVisualCellManager(smViewContext viewContext, Panel container) 
 	{
 		m_container = container;
-		m_appContext = appContext;
 		m_viewContext = viewContext;
 		
-		m_appContext.cellBufferMngr.getCellPool().setDelegate(this);
+		viewContext.appContext.cellBufferMngr.getCellPool().setDelegate(this);
 
 		m_alertDialog = new smDialog(m_viewContext.clickMngr, 256, 164, new smDialog.I_Delegate()
 		{
@@ -199,7 +197,7 @@ public class smVisualCellManager implements smI_UIElement, smI_CellPoolDelegate
 			return false;
 		}
 		
-		if( m_appContext.cameraMngr.isCameraAtRest() )
+		if( m_viewContext.appContext.cameraMngr.isCameraAtRest() )
 		{
 			if( !m_needsUpdateDueToResizingOfCameraOrGrid )
 			{
@@ -207,16 +205,16 @@ public class smVisualCellManager implements smI_UIElement, smI_CellPoolDelegate
 			}
 		}
 
-		smCellBufferManager cellManager = m_appContext.cellBufferMngr;
+		smCellBufferManager cellManager = m_viewContext.appContext.cellBufferMngr;
 		smCellBuffer cellBuffer = cellManager.getDisplayBuffer();
 		
-		smA_Grid grid = m_appContext.gridMngr.getGrid(); // TODO: Get grid from somewhere else.
+		smA_Grid grid = m_viewContext.appContext.gridMngr.getGrid(); // TODO: Get grid from somewhere else.
 		
 		int bufferSize = cellBuffer.getCellCount();
 		int bufferWidth = cellBuffer.getWidth();
 		int bufferHeight = cellBuffer.getHeight();
 		
-		smCamera camera = m_appContext.cameraMngr.getCamera();
+		smCamera camera = m_viewContext.appContext.cameraMngr.getCamera();
 		
 		double distanceRatio = camera.calcDistanceRatio();
 		
@@ -253,8 +251,10 @@ public class smVisualCellManager implements smI_UIElement, smI_CellPoolDelegate
 			
 			cellHeightPlusPadding = grid.getCellHeight() * scaling;
 		}
+		
+		boolean use3dTransforms = m_viewContext.appContext.platformInfo.has3dTransforms();
 	
-		String scaleProperty = scaling < NO_SCALING ? smU_UI.createScaleTransform(scaling) : null;
+		String scaleProperty = scaling < NO_SCALING ? smU_UI.createScaleTransform(scaling, use3dTransforms) : null;
 		
 		
 		
@@ -290,9 +290,10 @@ public class smVisualCellManager implements smI_UIElement, smI_CellPoolDelegate
 				
 				double translateX = basePoint.getX() + offsetX;
 				double translateY = basePoint.getY() + offsetY;
-				String translateProperty = smU_UI.createTranslateTransform(translateX, translateY);
+				String translateProperty = smU_UI.createTranslateTransform(translateX, translateY, use3dTransforms);
 				String transform = scaleProperty != null ? translateProperty + " " + scaleProperty : translateProperty;
-				smU_UI.setTransform(ithVisualCell.getElement(), transform);
+				String transformProperty = m_viewContext.appContext.platformInfo.getTransformProperty();
+				ithVisualCell.getElement().getStyle().setProperty(transformProperty, transform);
 				
 				ithVisualCell.update(timeStep);
 				
@@ -313,7 +314,7 @@ public class smVisualCellManager implements smI_UIElement, smI_CellPoolDelegate
 	
 	private void updateCellsIndividually(double timeStep)
 	{
-		smCellBufferManager cellManager = m_appContext.cellBufferMngr;
+		smCellBufferManager cellManager = m_viewContext.appContext.cellBufferMngr;
 		smCellBuffer cellBuffer = cellManager.getDisplayBuffer();
 		int bufferSize = cellBuffer.getCellCount();
 		
@@ -409,7 +410,7 @@ public class smVisualCellManager implements smI_UIElement, smI_CellPoolDelegate
 	
 	private smBufferCell getCurrentBufferCell()
 	{
-		State_ViewingCell state = smA_State.getEnteredState(State_ViewingCell.class);
+		State_ViewingCell state = m_viewContext.stateContext.getEnteredState(State_ViewingCell.class);
 		if( state != null )
 		{
 			return state.getCell();

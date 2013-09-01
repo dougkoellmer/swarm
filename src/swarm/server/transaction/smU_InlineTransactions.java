@@ -29,6 +29,7 @@ import swarm.server.structs.smServerCellAddress;
 import swarm.server.structs.smServerCellAddressMapping;
 import swarm.shared.entities.smA_Grid;
 import swarm.shared.json.smI_ReadsJson;
+import swarm.shared.json.smI_WritesJson;
 import swarm.shared.structs.smCellAddress;
 import swarm.shared.structs.smCellAddressMapping;
 import swarm.shared.structs.smE_CellAddressParseError;
@@ -134,7 +135,7 @@ public class smU_InlineTransactions
 			{
 				if( blobBatchResult.containsKey(session))
 				{
-					transactionManager.makeInlineRequestWithResponse(smE_RequestPath.getUserData, (smI_ReadsJson) blobBatchResult.get(session));
+					transactionManager.makeInlineRequestWithResponse(smE_RequestPath.getUserData, (smI_WritesJson) blobBatchResult.get(session));
 					
 					makeUserRequest = false;
 				}

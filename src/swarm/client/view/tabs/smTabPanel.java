@@ -128,7 +128,7 @@ public class smTabPanel extends AbsolutePanel implements smI_UIElement
 			public void onClick()
 			{
 				m_args_SelectTab.setIndex(tabIndex);
-				smA_Action.performAction(Action_Tabs_SelectTab.class, m_args_SelectTab);
+				m_viewContext.stateContext.performAction(Action_Tabs_SelectTab.class, m_args_SelectTab);
 			}
 		});
 		

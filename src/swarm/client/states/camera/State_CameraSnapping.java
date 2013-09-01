@@ -246,7 +246,7 @@ public class State_CameraSnapping extends smA_State implements smI_StateEventLis
 		
 		Constructor castConstructor = (Constructor) constructor;
 		
-		smCellBufferManager.registerInstance(m_snapBufferManager);
+		m_appContext.registerBufferMngr(m_snapBufferManager);
 		
 		m_targetGridCoordinate.set(-1, -1);
 		
@@ -311,7 +311,7 @@ public class State_CameraSnapping extends smA_State implements smI_StateEventLis
 		//---		in a pool, so not a huge deal as far as thrashing memory or anything.
 		m_snapBufferManager.drain();
 		
-		smCellBufferManager.unregisterInstance(m_snapBufferManager);
+		m_appContext.unregisterBufferMngr(m_snapBufferManager);
 	}
 
 	@Override

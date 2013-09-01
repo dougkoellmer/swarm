@@ -15,6 +15,7 @@ import swarm.client.states.code.State_EditingCodeBlocker;
 import swarm.client.view.smConsoleBlocker;
 import swarm.client.view.smI_UIElement;
 import swarm.client.view.smSplitPanel;
+import swarm.client.view.smViewContext;
 import swarm.client.view.tabs.smI_TabContent;
 import swarm.client.view.tabs.code.smCodeMirrorWrapper;
 import swarm.client.view.tabs.code.smI_CodeMirrorListener;
@@ -39,12 +40,15 @@ public class smAccountTabContent extends AbsolutePanel implements smI_TabContent
 {
 	private static final Logger s_logger = Logger.getLogger(smAccountTabContent.class.getName());
 	
-	private final smSignInOrUpPanel m_signUpOrIn = new smSignInOrUpPanel();
-	private final smManageAccountPanel m_manage = new smManageAccountPanel();
+	private final smSignInOrUpPanel m_signUpOrIn;
+	private final smManageAccountPanel m_manage;
 	
-	public smAccountTabContent()
+	public smAccountTabContent(smViewContext viewContext)
 	{
 		this.addStyleName("sm_account_tab");
+		
+		m_signUpOrIn = new smSignInOrUpPanel(viewContext);
+		m_manage = new smManageAccountPanel(viewContext);
 	}
 	
 	@Override
@@ -115,7 +119,7 @@ public class smAccountTabContent extends AbsolutePanel implements smI_TabContent
 				{
 					//--- DRK > Pulling a little sleight of hand here so that we don't remove the blocker if it appears
 					//---		that the console is being animated out.
-					if( smA_State.isForegrounded(StateMachine_Tabs.class) )
+					if( event.getContext().isForegrounded(StateMachine_Tabs.class) )
 					{
 						//--- DRK > This should be called in the "exit" event because background event could be called for something
 						//---		like an error dialog being pushed over the topmost state in the machine.

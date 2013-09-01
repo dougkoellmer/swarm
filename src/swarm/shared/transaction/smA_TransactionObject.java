@@ -69,7 +69,7 @@ public abstract class smA_TransactionObject extends smA_JsonEncodable
 	{
 		if( m_jsonArgs != null )
 		{
-			factory.getHelper().putJsonObject(json, smE_JsonKey.requestArgs, m_jsonArgs);
+			factory.getHelper().putJsonObject(json_out, smE_JsonKey.requestArgs, m_jsonArgs);
 		}
 	}
 	

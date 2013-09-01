@@ -42,8 +42,12 @@ public class smManageAccountPanel extends FlowPanel implements smI_StateEventLis
 		private final FlowPanel m_buttonTrayWrapper = new FlowPanel();
 			private final smDefaultButton m_signOutButton = new smDefaultButton();
 	
-	public smManageAccountPanel()
+	private final smViewContext m_viewContext;
+	
+	public smManageAccountPanel(smViewContext viewContext)
 	{
+		m_viewContext = viewContext;
+		
 		m_contentPanel.getElement().getStyle().setOverflow(Overflow.AUTO);
 		
 		m_buttonTrayWrapper.addStyleName("sm_button_tray_wrapper");
@@ -57,14 +61,14 @@ public class smManageAccountPanel extends FlowPanel implements smI_StateEventLis
 		
 		m_signOutButton.setText("Sign Out");
 		
-		smAppContext.toolTipMngr.addTip(m_signOutButton, new smToolTipConfig(smE_ToolTipType.MOUSE_OVER, "Don't do it!"));
+		m_viewContext.toolTipMngr.addTip(m_signOutButton, new smToolTipConfig(smE_ToolTipType.MOUSE_OVER, "Don't do it!"));
 		
-		smAppContext.clickMngr.addClickHandler(m_signOutButton, new smI_ClickHandler()
+		m_viewContext.clickMngr.addClickHandler(m_signOutButton, new smI_ClickHandler()
 		{
 			@Override
 			public void onClick()
 			{
-				smA_Action.performAction(Action_ManageAccount_SignOut.class);
+				m_viewContext.stateContext.performAction(Action_ManageAccount_SignOut.class);
 			}
 		});
 		
@@ -99,7 +103,7 @@ public class smManageAccountPanel extends FlowPanel implements smI_StateEventLis
 	private void updateLayout()
 	{
 		double contentHeight = RootPanel.get().getOffsetHeight() - smTabPanel.TAB_HEIGHT*2 - smS_UI.MAGIC_UI_SPACING*2;
-		m_contentPanel.setSize(smViewContext.splitPanel.getTabPanelWidth() + "px", contentHeight + "px");
+		m_contentPanel.setSize(m_viewContext.splitPanel.getTabPanelWidth() + "px", contentHeight + "px");
 	}
 
 	@Override
@@ -111,7 +115,7 @@ public class smManageAccountPanel extends FlowPanel implements smI_StateEventLis
 			{
 				if( event.getState() instanceof State_ManageAccount )
 				{
-					smAccountInfo info = smAppContext.accountMngr.getAccountInfo();
+					smAccountInfo info = m_viewContext.appContext.accountMngr.getAccountInfo();
 					String username = info.get(smAccountInfo.Type.USERNAME);
 					String welcomeText = "Welcome, " + username + ".";
 					String href = smU_Code.transformPathToJavascript(username);

@@ -63,13 +63,13 @@ public class smCellSpinner extends FlowPanel
 		m_currentB33 = 0;
 	}
 	
-	private void updateSpinnerRotation()
+	/*private void updateSpinnerRotation()
 	{
 		double deg = m_currentRotation * (180/Math.PI);
 		deg = Math.round(deg);
 		String transform = smU_UI.createRotate2dTransform(deg);
 		smU_UI.setTransform(m_inner.getElement(), transform);
-	}
+	}*/
 	
 	public void update(double timeStep)
 	{

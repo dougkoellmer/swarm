@@ -6,6 +6,7 @@ import swarm.client.states.State_GenericDialog;
 import swarm.client.view.smE_ZIndex;
 import swarm.client.view.smI_UIElement;
 import swarm.shared.statemachine.smA_Action;
+import swarm.shared.statemachine.smStateContext;
 import swarm.shared.statemachine.smStateEvent;
 import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.dom.client.Style.Unit;
@@ -32,9 +33,11 @@ public class smDialogManager implements smI_UIElement
 	private boolean m_initialized = false;
 	
 	private final smClickManager m_clickMngr;
+	private final smStateContext m_stateContext;
 	
-	public smDialogManager(smClickManager clickMngr, Panel outerContainer)
+	public smDialogManager(smStateContext stateContext, smClickManager clickMngr, Panel outerContainer)
 	{
+		m_stateContext = stateContext;
 		m_outerContainer = outerContainer;
 		m_clickMngr = clickMngr;
 	}
@@ -54,10 +57,10 @@ public class smDialogManager implements smI_UIElement
 				//---				so that I only have to call State_GenericDialog.Ok, and the system knows
 				//---				to call State_AsyncDialog.Ok because it is State_AsyncDialog that is foregrounded.
 				//---				Until then, I present the following somewhat sloppy workaround.
-				if( smA_Action.performAction(State_GenericDialog.Ok.class) )
+				if( m_stateContext.performAction(State_GenericDialog.Ok.class) )
 				{
 				}
-				else if( smA_Action.performAction(State_AsyncDialog.Ok.class) )
+				else if( m_stateContext.performAction(State_AsyncDialog.Ok.class) )
 				{
 					
 				}

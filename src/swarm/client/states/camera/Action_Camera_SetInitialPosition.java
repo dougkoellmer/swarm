@@ -13,7 +13,7 @@ public class Action_Camera_SetInitialPosition extends smA_CameraAction
 	{
 		private smPoint m_point;
 		
-		public void setPoint(smPoint point)
+		public void init(smPoint point)
 		{
 			m_point = point;
 		}

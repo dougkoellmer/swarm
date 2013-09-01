@@ -159,7 +159,8 @@ public class smServerUser extends smA_User implements smI_Blob
 				continue;
 			}
 			
-			smI_JsonObject coordJson = m_ownedCells.get(i).getCoordinate().writeJson(null);
+			smI_JsonObject coordJson = factory.createJsonObject();
+			m_ownedCells.get(i).getCoordinate().writeJson(factory, coordJson);
 			ownedCoordinates.addObject(coordJson);
 		}
 		

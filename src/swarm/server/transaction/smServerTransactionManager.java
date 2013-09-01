@@ -185,7 +185,7 @@ public class smServerTransactionManager
 					}
 				};
 				
-				smU_RequestBatch.readRequestList(requestJson, readDelegate);
+				smU_RequestBatch.readRequestList(m_jsonFactory, requestJson, readDelegate);
 				
 				smTransactionBatch transactionBatch = context.getBatch();
 				

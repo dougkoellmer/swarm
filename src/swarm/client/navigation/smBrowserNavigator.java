@@ -27,6 +27,7 @@ import swarm.shared.statemachine.smA_Action;
 import swarm.shared.statemachine.smA_State;
 import swarm.shared.statemachine.smE_StateTimeType;
 import swarm.shared.statemachine.smI_StateEventListener;
+import swarm.shared.statemachine.smStateContext;
 import swarm.shared.statemachine.smStateEvent;
 import swarm.shared.structs.smCellAddress;
 import swarm.shared.structs.smCellAddressMapping;
@@ -71,9 +72,11 @@ public class smBrowserNavigator implements smI_StateEventListener
 	private final double m_floatingHistoryUpdateRate;
 	
 	private final smCameraManager m_cameraMngr;
+	private final smStateContext m_stateContext;
 	
-	public smBrowserNavigator(smCameraManager cameraMngr, smA_JsonFactory jsonFactory, String defaultPageTitle, double floatingHistoryUpdateRate_seconds)
+	public smBrowserNavigator(smStateContext stateContext, smCameraManager cameraMngr, smA_JsonFactory jsonFactory, String defaultPageTitle, double floatingHistoryUpdateRate_seconds)
 	{
+		m_stateContext = stateContext;
 		m_cameraMngr = cameraMngr;
 		
 		m_floatingHistoryUpdateRate = floatingHistoryUpdateRate_seconds;
@@ -97,18 +100,18 @@ public class smBrowserNavigator implements smI_StateEventListener
 				{
 					m_args_SnapToCoordinate.setCoordinate(state.getMapping().getCoordinate());
 					
-					if( !smA_Action.isActionPerformable(Action_Camera_SnapToCoordinate.class, m_args_SnapToCoordinate) )
+					if( !m_stateContext.isActionPerformable(Action_Camera_SnapToCoordinate.class, m_args_SnapToCoordinate) )
 					{
 						m_historyManager./*re*/pushState(path, state.getMapping());
 					}
 					else
 					{
-						smA_Action.performAction(Action_Camera_SnapToCoordinate.class, m_args_SnapToCoordinate);
+						m_stateContext.performAction(Action_Camera_SnapToCoordinate.class, m_args_SnapToCoordinate);
 					}
 				}
 				else if( state.getPoint() != null )
 				{
-					if( !smA_Action.isActionPerformable(Action_Camera_SetCameraTarget.class) )
+					if( !m_stateContext.isActionPerformable(Action_Camera_SetCameraTarget.class) )
 					{
 						m_historyManager./*re*/pushState(path, state.getPoint());
 					}
@@ -116,15 +119,15 @@ public class smBrowserNavigator implements smI_StateEventListener
 					{
 						//--- DRK > Always try to set camera's initial position first.  This can essentially only be done
 						//---		at app start up.  The rest of the time it will fail and we'll set camera target normally.
-						m_args_SetInitialPosition.setPoint(state.getPoint());
-						if( smA_Action.performAction(Action_Camera_SetInitialPosition.class, m_args_SetInitialPosition) )
+						m_args_SetInitialPosition.init(state.getPoint());
+						if( m_stateContext.performAction(Action_Camera_SetInitialPosition.class, m_args_SetInitialPosition) )
 						{
 							//s_logger.info("SETTING INITIAL POINT: " + state.getPoint());
 						}
 						else
 						{
 							m_args_SetCameraTarget.init(state.getPoint(), false);
-							smA_Action.performAction(Action_Camera_SetCameraTarget.class, m_args_SetCameraTarget);
+							m_stateContext.performAction(Action_Camera_SetCameraTarget.class, m_args_SetCameraTarget);
 							
 							//s_logger.info("SETTING TARGET POINT: " + state.getPoint());
 						}
@@ -338,7 +341,7 @@ public class smBrowserNavigator implements smI_StateEventListener
 					{
 						if( m_pushHistoryStateForFloating )
 						{
-							StateMachine_Camera machine = smA_State.getEnteredState(StateMachine_Camera.class);
+							StateMachine_Camera machine = m_stateContext.getEnteredState(StateMachine_Camera.class);
 							
 							if( m_stateAlreadyPushedForViewingExit || event.getState().getPreviousState() == State_CameraSnapping.class )
 							{
@@ -399,7 +402,7 @@ public class smBrowserNavigator implements smI_StateEventListener
 						//---		you navigate from a different page...if this check isn't here, the path goes like
 						//---		mydomain.com/mypath, mydomain.com while snapping, then mydomain.com/mypath again.
 						//---		It would be better if the statemachine didn't enter the floating state initially.
-						smA_State state = smA_State.getEnteredState(StateMachine_Camera.class);
+						smA_State state = m_stateContext.getEnteredState(StateMachine_Camera.class);
 						if( state != null && state.getUpdateCount() > 0 ) // dunno why it would be null, just being paranoid before a deploy
 						{
 							this.setPositionForFloatingState(event.getState(), m_cameraMngr.getCamera().getPosition(), true);
@@ -418,11 +421,11 @@ public class smBrowserNavigator implements smI_StateEventListener
 				{
 					Event_Camera_OnAddressResponse.Args args = event.getActionArgs();
 					
-					if( smA_State.isEntered(State_CameraSnapping.class) )
+					if( m_stateContext.isEntered(State_CameraSnapping.class) )
 					{
 						m_args_OnAddressResponse = args;
 					}
-					else if( smA_State.isEntered(State_ViewingCell.class) )
+					else if( m_stateContext.isEntered(State_ViewingCell.class) )
 					{
 						m_args_OnAddressResponse = null;
 						
@@ -490,7 +493,7 @@ public class smBrowserNavigator implements smI_StateEventListener
 				}
 				else if( event.getAction() == Action_Camera_SetCameraTarget.class )
 				{
-					State_CameraFloating floatingState = smA_State.getEnteredState(State_CameraFloating.class);
+					State_CameraFloating floatingState = m_stateContext.getEnteredState(State_CameraFloating.class);
 					
 					m_pushHistoryStateForFloating = true;
 					

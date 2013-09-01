@@ -14,6 +14,7 @@ import swarm.client.states.account.State_AccountStatusPending;
 import swarm.client.states.account.State_SignInOrUp;
 import swarm.client.view.smInitialSyncScreen;
 import swarm.client.view.smS_UI;
+import swarm.client.view.smViewContext;
 import swarm.client.view.alignment.smAlignmentDefinition;
 import swarm.client.view.alignment.smE_AlignmentPosition;
 import swarm.client.view.alignment.smE_AlignmentType;
@@ -81,7 +82,7 @@ public class smSignUpPanel extends VerticalPanel implements smI_StateEventListen
 	
 	private final smHtmlWrapper m_captchaImageContainer;
 	
-	private final smStaySignedInCheckbox m_checkbox = new smStaySignedInCheckbox();
+	private final smStaySignedInCheckbox m_checkbox;
 	
 	private final smTextBoxWrapper m_emailInput = new smTextBoxWrapper(new smTextBox("Email"));
 	private final smTextBoxWrapper m_usernameInput = new smTextBoxWrapper(new smTextBox("Username"));
@@ -102,13 +103,19 @@ public class smSignUpPanel extends VerticalPanel implements smI_StateEventListen
 	
 	private final Action_SignInOrUp_SignUp.Args m_args_SignUp = new Action_SignInOrUp_SignUp.Args();
 	
-	smSignUpPanel()
+	private final smViewContext m_viewContext;
+	
+	smSignUpPanel(smViewContext viewContext)
 	{
+		m_viewContext = viewContext;
+		
+		m_checkbox = new smStaySignedInCheckbox(m_viewContext);
+		
 		this.addStyleName("sm_signuporin_sub_panel_wrapper");
 		m_panel.addStyleName("sm_signuporin_sub_panel");
 		m_stack.setWidth("100%");
 		
-		smAppContext.toolTipMngr.addTip(m_button, new smToolTipConfig(smE_ToolTipType.MOUSE_OVER, "Do it now!"));
+		m_viewContext.toolTipMngr.addTip(m_button, new smToolTipConfig(smE_ToolTipType.MOUSE_OVER, "Do it now!"));
 		
 		Element recaptchaResponseFieldElement = Document.get().getElementById("recaptcha_response_field");
 		recaptchaResponseFieldElement.removeFromParent();
@@ -134,7 +141,7 @@ public class smSignUpPanel extends VerticalPanel implements smI_StateEventListen
 		m_captchaHelp.setHref("javascript:Recaptcha.showhelp()");
 		m_reloadCaptcha.setHref("javascript:Recaptcha.reload('t')");
 		
-		smAppContext.clickMngr.addClickHandler(m_reloadCaptcha, new smI_ClickHandler()
+		m_viewContext.clickMngr.addClickHandler(m_reloadCaptcha, new smI_ClickHandler()
 		{
 			@Override
 			public void onClick()
@@ -159,7 +166,7 @@ public class smSignUpPanel extends VerticalPanel implements smI_StateEventListen
 		smAlignmentDefinition alignment = smU_Alignment.createHorRightVerCenter(smS_UI.TOOl_TIP_PADDING);
 		alignment.setPadding(smE_AlignmentType.MASTER_ANCHOR_VERTICAL, -1.0);
 		
-		smToolTipManager toolTipper = smAppContext.toolTipMngr;
+		smToolTipManager toolTipper = m_viewContext.toolTipMngr;
 		smToolTipConfig config = null;
 		
 		config = new smToolTipConfig(smE_ToolTipType.FOCUS, alignment, "Uniquely identifies you.  Invisible to others.");
@@ -266,7 +273,7 @@ public class smSignUpPanel extends VerticalPanel implements smI_StateEventListen
 			});
 		}
 		
-		smAppContext.clickMngr.addClickHandler(m_button, new smI_ClickHandler()
+		m_viewContext.clickMngr.addClickHandler(m_button, new smI_ClickHandler()
 		{
 			@Override
 			public void onClick()
@@ -328,13 +335,13 @@ public class smSignUpPanel extends VerticalPanel implements smI_StateEventListen
 		if( canSubmit )
 		{
 			boolean rememberMe = m_checkbox.isChecked();
-			String captchaResponse = smAppContext.recaptchaWrapper.getResponse();
-			String captchaChallenge = smAppContext.recaptchaWrapper.getChallenge();
+			String captchaResponse = m_viewContext.recaptchaWrapper.getResponse();
+			String captchaChallenge = m_viewContext.recaptchaWrapper.getChallenge();
 			String[] args = {m_inputs[0].getText(), m_inputs[1].getText(), m_inputs[2].getText(), captchaResponse, captchaChallenge};
 			smSignUpCredentials creds = new smSignUpCredentials(rememberMe, args);
 			
 			m_args_SignUp.setCreds(creds);
-			smA_Action.performAction(Action_SignInOrUp_SignUp.class, m_args_SignUp);
+			m_viewContext.stateContext.performAction(Action_SignInOrUp_SignUp.class, m_args_SignUp);
 			
 			m_lastFocusedFieldIndex = focusedFieldIndex;
 			
@@ -362,7 +369,7 @@ public class smSignUpPanel extends VerticalPanel implements smI_StateEventListen
 	
 	private void updateToolTips()
 	{
-		smToolTipManager toolTipper = smAppContext.toolTipMngr;
+		smToolTipManager toolTipper = m_viewContext.toolTipMngr;
 		
 		for( int i = 0; i < m_inputs.length; i++ )
 		{
@@ -384,7 +391,7 @@ public class smSignUpPanel extends VerticalPanel implements smI_StateEventListen
 			{
 				if( event.getState() instanceof State_SignInOrUp )
 				{
-					smClientAccountManager accountManager = smAppContext.accountMngr;
+					smClientAccountManager accountManager = m_viewContext.appContext.accountMngr;
 					smSignUpValidationResult result = accountManager.checkOutLatestBadSignUpResult();
 					
 					if( result != null )

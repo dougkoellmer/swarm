@@ -1,5 +1,6 @@
 package swarm.client.view.tabs.code;
 
+import swarm.client.view.smViewContext;
 import swarm.shared.debugging.smU_Debug;
 import com.google.gwt.user.client.Element;
 
@@ -14,9 +15,9 @@ public class smCellSandbox
 	
 	private boolean m_isRunning = false;
 	
-	public smCellSandbox(I_StartUpCallback callback, String apiNamespace)
+	public smCellSandbox(smViewContext viewContext, I_StartUpCallback callback, String apiNamespace)
 	{
-		m_cajaWrapper = new smCajaWrapper(callback, apiNamespace);
+		m_cajaWrapper = new smCajaWrapper(viewContext, callback, apiNamespace);
 	}
 	
 	public void insertStaticHtml(Element element, String compiledHtml, String cellNamespace)

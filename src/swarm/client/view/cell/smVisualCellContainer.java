@@ -69,15 +69,13 @@ public class smVisualCellContainer extends FlowPanel implements ResizeHandler, s
 	
 	private final Action_Camera_SetCameraViewSize.Args m_args_SetCameraViewSize = new Action_Camera_SetCameraViewSize.Args();
 	
-	private final smAppContext m_appContext;
 	private final smViewContext m_viewContext;
 	
-	public smVisualCellContainer(smAppContext appContext, smViewContext viewContext, smViewConfig config)
+	public smVisualCellContainer(smViewContext viewContext, smViewConfig config)
 	{
-		m_appContext = appContext;
 		m_viewContext = viewContext;
 		
-		m_magnifier = new smMagnifier(viewContext, appContext.cameraMngr, config.magnifierTickCount, config.magFadeInTime_seconds);
+		m_magnifier = new smMagnifier(viewContext, config.magnifierTickCount, config.magFadeInTime_seconds);
 		
 		m_splashGlass.addStyleName("sm_splash_glass");
 		m_cellContainerInner.addStyleName("sm_cell_container_inner");
@@ -139,7 +137,7 @@ public class smVisualCellContainer extends FlowPanel implements ResizeHandler, s
 	private void updateCroppers()
 	{
 		//--- DRK > If cell sub count is 1, it means we can match the bottom/right sides of the grid exactly.
-		int cellSubCount = m_appContext.cellBufferMngr.getDisplayBuffer().getSubCellCount();
+		int cellSubCount = m_viewContext.appContext.cellBufferMngr.getDisplayBuffer().getSubCellCount();
 		if( cellSubCount == 0 || cellSubCount == 1 )
 		{
 			hideCroppers();
@@ -148,7 +146,7 @@ public class smVisualCellContainer extends FlowPanel implements ResizeHandler, s
 		}
 
 		//--- DRK > If the mod operation is 0, we can also always match bottom/right sides exactly.
-		smA_Grid grid = m_appContext.gridMngr.getGrid();
+		smA_Grid grid = m_viewContext.appContext.gridMngr.getGrid();
 		if( (grid.getWidth() % cellSubCount) == 0 && (grid.getHeight() % cellSubCount) == 0 )
 		{
 			hideCroppers();
@@ -156,7 +154,7 @@ public class smVisualCellContainer extends FlowPanel implements ResizeHandler, s
 			return;
 		}
 		
-		smCamera camera = m_appContext.cameraMngr.getCamera();
+		smCamera camera = m_viewContext.appContext.cameraMngr.getCamera();
 	
 		double gridWidthInPixels = grid.calcPixelWidth();
 		double gridHeightInPixels = grid.calcPixelHeight();
@@ -323,7 +321,7 @@ public class smVisualCellContainer extends FlowPanel implements ResizeHandler, s
 	private void updateCameraViewRect()
 	{
 		m_args_SetCameraViewSize.set((double)this.getOffsetWidth(), (double)this.getOffsetHeight());
-		smA_Action.performAction(Action_Camera_SetCameraViewSize.class, m_args_SetCameraViewSize);
+		m_viewContext.stateContext.performAction(Action_Camera_SetCameraViewSize.class, m_args_SetCameraViewSize);
 	}
 	
 	public void onResize()

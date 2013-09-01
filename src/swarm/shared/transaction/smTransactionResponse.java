@@ -69,10 +69,10 @@ public class smTransactionResponse extends smA_TransactionObject
 	{
 		if( m_error == smE_ResponseError.NO_ERROR )
 		{
-			super.writeJson(factory, json);
+			super.writeJson(factory, json_out);
 		}
 		
-		factory.getHelper().putEnum(json, smE_JsonKey.responseError, m_error);
+		factory.getHelper().putEnum(json_out, smE_JsonKey.responseError, m_error);
 	}
 	
 	@Override

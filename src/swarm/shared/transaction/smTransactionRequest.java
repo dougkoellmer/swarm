@@ -133,13 +133,13 @@ public class smTransactionRequest extends smA_TransactionObject
 	@Override
 	public void writeJson(smA_JsonFactory factory, smI_JsonObject json_out)
 	{
-		super.writeJson(factory, json);
+		super.writeJson(factory, json_out);
 		
-		smSharedAppContext.requestPathMngr.putToJson(json, m_path);
+		smSharedAppContext.requestPathMngr.putToJson(json_out, m_path);
 		
 		if( m_serverVersion != null )
 		{
-			factory.getHelper().putInt(json, smE_JsonKey.serverVersion, m_serverVersion);
+			factory.getHelper().putInt(json_out, smE_JsonKey.serverVersion, m_serverVersion);
 		}
 	}
 	

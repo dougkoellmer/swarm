@@ -68,16 +68,14 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 
 	private boolean m_waitingForBeingRefreshableAgain = false;
 	
-	private final smAppContext m_appContext;
 	private final smViewContext m_viewContext;
 	
 	private final smClientAppConfig m_appConfig;
 	
 	private final Action_Camera_SetCameraTarget.Args m_args_SetCameraTarget = new Action_Camera_SetCameraTarget.Args();
 	
-	public smVisualCellHud(smAppContext appContext, smViewContext viewContext, smClientAppConfig appConfig)
+	public smVisualCellHud(smViewContext viewContext, smClientAppConfig appConfig)
 	{
-		m_appContext = appContext;
 		m_viewContext = viewContext;
 		
 		m_appConfig = appConfig;
@@ -134,7 +132,7 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 				
 				smVisualCellHud.this.m_viewContext.cellMngr.clearAlerts();
 				
-				smA_Action.performAction(Action_ViewingCell_Refresh.class);
+				m_viewContext.stateContext.performAction(Action_ViewingCell_Refresh.class);
 			}
 		});
 		
@@ -143,7 +141,7 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 			@Override
 			public void onClick()
 			{
-				State_ViewingCell state = smA_State.getEnteredState(State_ViewingCell.class);
+				State_ViewingCell state = m_viewContext.stateContext.getEnteredState(State_ViewingCell.class);
 				
 				if( state == null )
 				{
@@ -160,7 +158,7 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 				s_utilPoint1.incZ(m_appConfig.backOffDistance);
 				
 				m_args_SetCameraTarget.init(s_utilPoint1, false);
-				smA_Action.performAction(Action_Camera_SetCameraTarget.class, m_args_SetCameraTarget);
+				m_viewContext.stateContext.performAction(Action_Camera_SetCameraTarget.class, m_args_SetCameraTarget);
 			}
 		});
 		
@@ -174,7 +172,7 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 	
 	private void updateRefreshButton()
 	{
-		boolean canRefresh = smA_Action.isActionPerformable(Action_ViewingCell_Refresh.class);
+		boolean canRefresh = m_viewContext.stateContext.isActionPerformable(Action_ViewingCell_Refresh.class);
 		m_refresh.setEnabled(canRefresh);
 		
 		if( !canRefresh )
@@ -189,7 +187,7 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 	
 	private void updatePosition(State_ViewingCell state)
 	{
-		smCamera camera = m_appContext.cameraMngr.getCamera();
+		smCamera camera = m_viewContext.appContext.cameraMngr.getCamera();
 		smBufferCell cell = ((State_ViewingCell)state).getCell();
 		smA_Grid grid = cell.getGrid();
 		smGridCoordinate coord = cell.getCoordinate();
@@ -206,7 +204,7 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 		/*boolean enabled = smA_Action.isPerformable(State_ViewingCell.Back.class);
 		m_back.setEnabled(enabled);
 		m_forward.setEnabled(smA_Action.isPerformable(State_ViewingCell.Forward.class));*/
-		m_refresh.setEnabled(smA_Action.isActionPerformable(Action_ViewingCell_Refresh.class));
+		m_refresh.setEnabled(m_viewContext.stateContext.isActionPerformable(Action_ViewingCell_Refresh.class));
 	}
 	
 	@Override

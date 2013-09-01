@@ -64,10 +64,13 @@ public class smCodeEditorTabContent extends AbsolutePanel implements smI_TabCont
 	private smCodeEditor m_editor = null;
 	
 	private final Action_EditingCode_Edit.Args m_args_CodeChanged = new Action_EditingCode_Edit.Args();
+	private smViewContext m_viewContext;
 	
-	public smCodeEditorTabContent()
+	public smCodeEditorTabContent(smViewContext viewContext)
 	{
-		m_editor = new smCodeEditor(this);
+		m_viewContext = viewContext;
+		
+		m_editor = new smCodeEditor(m_viewContext.appContext.userMngr, this);
 		
 		this.addStyleName("html_editor_tab");
 		
@@ -93,7 +96,7 @@ public class smCodeEditorTabContent extends AbsolutePanel implements smI_TabCont
 			}
 		};
 		
-		smToolTipManager tipManager = smAppContext.toolTipMngr;
+		smToolTipManager tipManager = m_viewContext.toolTipMngr;
 		smClickManager clickMngr = new smClickManager();
 		
 		clickMngr.addClickHandler(m_saveButton, commitHandler);
@@ -126,37 +129,37 @@ public class smCodeEditorTabContent extends AbsolutePanel implements smI_TabCont
 	
 	private void onSaveClicked()
 	{
-		if( !smA_Action.isActionPerformable(Action_EditingCode_Save.class) )
+		if( !m_viewContext.stateContext.isActionPerformable(Action_EditingCode_Save.class) )
 		{
 			return;
 		}
 		
-		smViewContext.cellMngr.clearAlerts();
+		m_viewContext.cellMngr.clearAlerts();
 		
 		onChange(); // one last time to make sure all changes are provided to the machine.
 		
-		smA_Action.performAction(Action_EditingCode_Save.class);
+		m_viewContext.stateContext.performAction(Action_EditingCode_Save.class);
 	}
 	
 	private void onPreviewClicked()
 	{
-		if( !smA_Action.isActionPerformable(Action_EditingCode_Preview.class) )
+		if( !m_viewContext.stateContext.isActionPerformable(Action_EditingCode_Preview.class) )
 		{
 			return;
 		}
 		
-		smViewContext.cellMngr.clearAlerts();
+		m_viewContext.cellMngr.clearAlerts();
 		
 		onChange(); // one last time to make sure all changes are provided to the machine.
 		
-		smA_Action.performAction(Action_EditingCode_Preview.class);
+		m_viewContext.stateContext.performAction(Action_EditingCode_Preview.class);
 	}
 	
 	private void updateLayout()
 	{
-		double tabButtonContainerHeight = smViewContext.splitPanel.getTabPanel().getTabButtonContainerHeight();
+		double tabButtonContainerHeight = m_viewContext.splitPanel.getTabPanel().getTabButtonContainerHeight();
 		double editorHeight = RootPanel.get().getOffsetHeight() - smTabPanel.TAB_HEIGHT - smS_UI.MAGIC_UI_SPACING*2 - tabButtonContainerHeight;
-		m_editor.setSize(smViewContext.splitPanel.getTabPanelWidth() + "px", editorHeight + "px");
+		m_editor.setSize(m_viewContext.splitPanel.getTabPanelWidth() + "px", editorHeight + "px");
 		
 		m_editor.updateLayout();
 	}
@@ -176,8 +179,8 @@ public class smCodeEditorTabContent extends AbsolutePanel implements smI_TabCont
 	
 	private void refreshButtons()
 	{
-		boolean canCommit = smA_Action.isActionPerformable(Action_EditingCode_Save.class);
-		boolean canPreview = smA_Action.isActionPerformable(Action_EditingCode_Preview.class);
+		boolean canCommit = m_viewContext.stateContext.isActionPerformable(Action_EditingCode_Save.class);
+		boolean canPreview = m_viewContext.stateContext.isActionPerformable(Action_EditingCode_Preview.class);
 		
 		m_previewButton.setEnabled(canPreview);
 		m_saveButton.setEnabled(canCommit);
@@ -321,7 +324,7 @@ public class smCodeEditorTabContent extends AbsolutePanel implements smI_TabCont
 	
 	private void updateConsoleBlocker()
 	{
-		State_EditingCodeBlocker blocker = smA_State.getForegroundedState(State_EditingCodeBlocker.class);
+		State_EditingCodeBlocker blocker = m_viewContext.stateContext.getForegroundedState(State_EditingCodeBlocker.class);
 		
 		if( blocker == null )
 		{
@@ -361,9 +364,9 @@ public class smCodeEditorTabContent extends AbsolutePanel implements smI_TabCont
 	
 	private void refreshCharacterCount()
 	{
-		State_ViewingCell viewingState = smA_State.getEnteredState(State_ViewingCell.class);
+		State_ViewingCell viewingState = m_viewContext.stateContext.getEnteredState(State_ViewingCell.class);
 		
-		if( viewingState != null && !smA_State.isForegrounded(State_EditingCodeBlocker.class) )
+		if( viewingState != null && !m_viewContext.stateContext.isForegrounded(State_EditingCodeBlocker.class) )
 		{
 			smCodePrivileges privileges = viewingState.getCell().getCodePrivileges();
 			
@@ -396,7 +399,7 @@ public class smCodeEditorTabContent extends AbsolutePanel implements smI_TabCont
 		refreshCharacterCount();
 		
 		m_args_CodeChanged.init(sourceCode);
-		smA_Action.performAction(Action_EditingCode_Edit.class, m_args_CodeChanged);
+		m_viewContext.stateContext.performAction(Action_EditingCode_Edit.class, m_args_CodeChanged);
 	}
 
 	@Override

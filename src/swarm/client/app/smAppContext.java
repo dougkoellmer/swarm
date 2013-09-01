@@ -1,5 +1,8 @@
 package swarm.client.app;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
 import swarm.client.entities.smCamera;
 import swarm.client.input.smClickManager;
 import swarm.client.managers.smCameraManager;
@@ -29,4 +32,32 @@ public class smAppContext extends smSharedAppContext
 	public smCameraManager cameraMngr;
 	public smCellCodeCache codeCache;
 	public smCellBufferManager cellBufferMngr;
+	
+	private final ArrayList<smCellBufferManager> m_registeredInstances = new ArrayList<smCellBufferManager>();
+	private final smCellBufferManager.Iterator m_iterator = new smCellBufferManager.Iterator(m_registeredInstances);
+	
+	public void registerBufferMngr(smCellBufferManager instance)
+	{
+		m_registeredInstances.add(instance);
+	}
+	
+	public smCellBufferManager.Iterator getRegisteredBufferMngrs()
+	{
+		m_iterator.reset();
+		
+		return m_iterator;
+	}
+	
+	public void unregisterBufferMngr(smCellBufferManager instance)
+	{
+		for( int i = m_registeredInstances.size()-1; i >= 0; i-- )
+		{
+			if( m_registeredInstances.get(i) == instance )
+			{
+				m_registeredInstances.remove(i);
+				
+				return;
+			}
+		}
+	}
 }

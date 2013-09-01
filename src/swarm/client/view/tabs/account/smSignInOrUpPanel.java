@@ -47,11 +47,18 @@ public class smSignInOrUpPanel extends FlowPanel implements smI_StateEventListen
 	
 	private final AbsolutePanel m_innerContainer = new AbsolutePanel();
 	
-	private final smSignInPanel m_signIn = new smSignInPanel();
-	private final smSignUpPanel m_signUp = new smSignUpPanel();
+	private final smSignInPanel m_signIn;
+	private final smSignUpPanel m_signUp;
 	
-	public smSignInOrUpPanel()
+	private final smViewContext m_viewContext;
+	
+	public smSignInOrUpPanel(smViewContext viewContext)
 	{
+		m_viewContext = viewContext;
+		
+		m_signIn = new smSignInPanel(viewContext);
+		m_signUp = new smSignUpPanel(viewContext);
+		
 		this.addStyleName("sm_signuporin_panel");
 		m_innerContainer.setSize("100%", "100%");
 		
@@ -77,7 +84,7 @@ public class smSignInOrUpPanel extends FlowPanel implements smI_StateEventListen
 		int signInHeight = m_signIn.getOffsetHeight();
 		int signUpHeight = m_signUp.getOffsetHeight();
 		int thisHeight = this.getOffsetHeight();
-		int thisWidth = (int) smViewContext.splitPanel.getTabPanelWidth(); // sigh...
+		int thisWidth = (int) m_viewContext.splitPanel.getTabPanelWidth(); // sigh...
 		int minLayoutHeight = 3 * MIN_SUB_PANEL_MARGIN + signInHeight + signUpHeight;
 		int minLayoutWidth = subPanelWidth;
 		int left = thisWidth/2 - subPanelWidth/2;

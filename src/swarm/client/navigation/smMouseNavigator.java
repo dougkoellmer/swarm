@@ -27,6 +27,7 @@ import swarm.shared.debugging.smU_Debug;
 import swarm.shared.entities.smA_Grid;
 import swarm.shared.statemachine.smA_Action;
 import swarm.shared.statemachine.smA_State;
+import swarm.shared.statemachine.smStateContext;
 import swarm.shared.statemachine.smStateEvent;
 import swarm.shared.structs.smCellAddress;
 import swarm.shared.structs.smE_GetCellAddressMappingError;
@@ -50,8 +51,6 @@ public class smMouseNavigator implements smI_UIElement, smMouse.I_Listener
 	private static final double BASE_SCROLL_SCALE = 10;
 	private static final double DISTANCE_SCROLL_SCALE = 10;
 	private static final smTolerance MOUSE_TOLERANCE = new smTolerance(smTolerance.DEFAULT);
-	
-	private static smMouseNavigator s_instance = null;
 	
 	private final smPoint m_mouseZoomPoint2d = new smPoint();
 	private final smPoint m_mouseZoomPoint3d = new smPoint();
@@ -79,27 +78,17 @@ public class smMouseNavigator implements smI_UIElement, smMouse.I_Listener
 	
 	private final smGridManager m_gridMngr;
 	private final smCameraManager m_cameraMngr;
+	private final smStateContext m_stateContext;
 	
-	public smMouseNavigator(smGridManager gridMngr, smCameraManager cameraMngr, smMouse mouse)
+	public smMouseNavigator(smStateContext stateContext, smGridManager gridMngr, smCameraManager cameraMngr, smMouse mouse)
 	{
+		m_stateContext = stateContext;
 		m_gridMngr = gridMngr;
 		m_cameraMngr = cameraMngr;
 		
 		m_mouse = mouse;
 		
 		m_mouse.setListener(this);
-		
-		s_instance = this;
-	}
-	
-	public static smMouseNavigator getInstance()
-	{
-		if( s_instance == null )
-		{
-			smU_Debug.ASSERT(false);
-		}
-		
-		return s_instance;
 	}
 	
 	public smMouse getMouse()
@@ -438,7 +427,7 @@ public class smMouseNavigator implements smI_UIElement, smMouse.I_Listener
 				if( m_utilVector.calcLengthSquared() > 0)
 				{
 					m_setTargetArgs.init(m_utilPoint2, true);
-					smA_Action.performAction(Action_Camera_SetCameraTarget.class, m_setTargetArgs);
+					m_stateContext.performAction(Action_Camera_SetCameraTarget.class, m_setTargetArgs);
 				}
 				
 				m_utilPoint2.calcDifference(m_lastWorldPoint, m_utilVector);

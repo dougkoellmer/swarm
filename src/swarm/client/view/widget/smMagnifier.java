@@ -98,12 +98,10 @@ public class smMagnifier extends FlowPanel implements smI_StateEventListener
 	private double m_alpha;
 	
 	private final smViewContext m_viewContext;
-	private final smCameraManager m_cameraMngr;
 
-	public smMagnifier(smViewContext viewContext, smCameraManager cameraMngr, double tickCount, double fadeInTime_seconds)
+	public smMagnifier(smViewContext viewContext, double tickCount, double fadeInTime_seconds)
 	{
 		m_viewContext = viewContext;
-		m_cameraMngr = cameraMngr;
 		
 		m_fadeInTime_seconds = fadeInTime_seconds;
 		m_tickRatio = tickCount = 1.0 / (((double)tickCount)+1.0);
@@ -333,7 +331,7 @@ public class smMagnifier extends FlowPanel implements smI_StateEventListener
 	
 	private void setDraggerPositionFromCamera()
 	{
-		smCamera camera = m_cameraMngr.getCamera();
+		smCamera camera = m_viewContext.appContext.cameraMngr.getCamera();
 		double maxZ = camera.calcMaxZ();
 		double ratio = camera.getPosition().getZ() / maxZ;
 		ratio = smU_Math.clamp(ratio, 0, 1); // window resizes can make camera be temporarily zoomed out further than its max constraint.
@@ -380,7 +378,7 @@ public class smMagnifier extends FlowPanel implements smI_StateEventListener
 		
 		if( moveCamera )
 		{
-			smCamera camera = m_cameraMngr.getCamera();
+			smCamera camera = m_viewContext.appContext.cameraMngr.getCamera();
 			double maxZ = camera.calcMaxZ();
 			m_utilPoint.copy(camera.getPosition());
 			m_utilPoint.setZ((ratio*ratio)*maxZ);
@@ -402,7 +400,7 @@ public class smMagnifier extends FlowPanel implements smI_StateEventListener
 			if ( setTarget )
 			{
 				m_args_SetCameraTarget.init(m_utilPoint, false);
-				smA_Action.performAction(Action_Camera_SetCameraTarget.class, m_args_SetCameraTarget);
+				m_viewContext.stateContext.performAction(Action_Camera_SetCameraTarget.class, m_args_SetCameraTarget);
 			}
 		}
 		
@@ -462,7 +460,7 @@ public class smMagnifier extends FlowPanel implements smI_StateEventListener
 			{
 				if( event.getState() instanceof State_ViewingCell || event.getState() instanceof State_CameraSnapping )
 				{
-					if( !smA_State.isEntered(State_CameraSnapping.class) && !smA_State.isEntered(State_ViewingCell.class))
+					if( !m_viewContext.stateContext.isEntered(State_CameraSnapping.class) && !m_viewContext.stateContext.isEntered(State_ViewingCell.class))
 					{
 						startFadeIn();
 					}
@@ -477,7 +475,7 @@ public class smMagnifier extends FlowPanel implements smI_StateEventListener
 				{
 					if( !m_underThisControl )
 					{
-						if( !m_cameraMngr.isCameraAtRest() )
+						if( !m_viewContext.appContext.cameraMngr.isCameraAtRest() )
 						{
 							setDraggerPositionFromCamera();
 						}
@@ -487,7 +485,7 @@ public class smMagnifier extends FlowPanel implements smI_StateEventListener
 				{
 					if( event.getState() instanceof State_CameraSnapping )
 					{
-						State_CameraSnapping cameraSnapping = smA_State.getEnteredState(State_CameraSnapping.class);
+						State_CameraSnapping cameraSnapping = m_viewContext.stateContext.getEnteredState(State_CameraSnapping.class);
 						if( cameraSnapping != null && cameraSnapping.getPreviousState() != State_ViewingCell.class )
 						{
 							this.setAlpha(m_baseAlpha * (1 - cameraSnapping.getOverallSnapProgress()));

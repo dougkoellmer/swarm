@@ -12,6 +12,7 @@ import swarm.client.states.account.State_ManageAccount;
 import swarm.client.states.account.State_SignInOrUp;
 import swarm.client.view.smS_UI;
 import swarm.client.view.smU_ToString;
+import swarm.client.view.smViewContext;
 import swarm.client.view.alignment.smAlignmentDefinition;
 import swarm.client.view.alignment.smU_Alignment;
 import swarm.client.view.tabs.smA_Tab;
@@ -27,16 +28,20 @@ import swarm.shared.statemachine.smStateEvent;
 
 public class smAccountTab extends smA_Tab
 {
-	public smAccountTab()
+	private final smViewContext m_viewContext;
+	
+	public smAccountTab(smViewContext viewContext)
 	{
-		super("Account", "", new smAccountTabContent());
+		super("Account", "", new smAccountTabContent(viewContext));
+		
+		m_viewContext = viewContext;
 	}
 	
 	private void updateToolTip()
 	{
-		smToolTipManager tipManager = smAppContext.toolTipMngr;
+		smToolTipManager tipManager = m_viewContext.toolTipMngr;
 		
-		if( smAppContext.accountMngr.isSignedIn() )
+		if( m_viewContext.appContext.accountMngr.isSignedIn() )
 		{
 			tipManager.addTip(m_tabButton, new smToolTipConfig(smE_ToolTipType.MOUSE_OVER, "Manage your account."));
 		}
@@ -77,9 +82,9 @@ public class smAccountTab extends smA_Tab
 				{
 					updateToolTip();
 					
-					if( smA_State.isForegrounded(StateMachine_Tabs.class) )
+					if( event.getContext().isForegrounded(StateMachine_Tabs.class) )
 					{
-						if( !smA_State.isForegrounded(StateMachine_Account.class) )
+						if( !event.getContext().isForegrounded(StateMachine_Account.class) )
 						{
 							StateMachine_Base.OnAccountManagerResponse.Args args = event.getActionArgs();
 							smClientAccountManager.E_ResponseType responseType = args.getType();
@@ -90,7 +95,7 @@ public class smAccountTab extends smA_Tab
 								smAlignmentDefinition alignment = smU_Alignment.createHorRightVerCenter(smS_UI.TOOl_TIP_PADDING);
 								smE_ToolTipMood severity = responseType.isGood() ? smE_ToolTipMood.PAT_ON_BACK : smE_ToolTipMood.OOPS;
 								smToolTipConfig config = new smToolTipConfig(smE_ToolTipType.NOTIFICATION, alignment, text, severity);
-								smAppContext.toolTipMngr.addTip(m_tabButton, config);
+								m_viewContext.toolTipMngr.addTip(m_tabButton, config);
 							}
 						}
 					}

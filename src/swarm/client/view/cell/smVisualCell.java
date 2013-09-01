@@ -71,8 +71,11 @@ public class smVisualCell extends AbsolutePanel implements smI_BufferCellListene
 	
 	private final CodeLoadListener m_codeLoadListener = new CodeLoadListener(this);
 	
-	public smVisualCell()
+	private final smCellSandbox m_sandbox;
+	
+	public smVisualCell(smCellSandbox sandbox)
 	{
+		m_sandbox = sandbox;
 		m_id = s_currentId; s_currentId++;
 		
 		this.addStyleName("visual_cell");
@@ -230,7 +233,7 @@ public class smVisualCell extends AbsolutePanel implements smI_BufferCellListene
 
 		this.allowUserSelect(true);
 		
-		smAppContext.cellSandbox.allowScrolling(m_contentPanel.getElement(), true);
+		m_sandbox.allowScrolling(m_contentPanel.getElement(), true);
 	}
 	
 	@Override
@@ -242,12 +245,12 @@ public class smVisualCell extends AbsolutePanel implements smI_BufferCellListene
 		
 		this.allowUserSelect(false);
 		
-		if( smAppContext.cellSandbox.isRunning() )
+		if( m_sandbox.isRunning() )
 		{
-			smAppContext.cellSandbox.stop();
+			m_sandbox.stop();
 		}
 		
-		smAppContext.cellSandbox.allowScrolling(m_contentPanel.getElement(), false);
+		m_sandbox.allowScrolling(m_contentPanel.getElement(), false);
 	}
 	
 	public void popUp()
@@ -312,7 +315,7 @@ public class smVisualCell extends AbsolutePanel implements smI_BufferCellListene
 		{
 			this.setStatusHtml(null, false);
 			
-			smAppContext.cellSandbox.insertStaticHtml(m_contentPanel.getElement(), code.getRawCode(), idClass);
+			m_sandbox.insertStaticHtml(m_contentPanel.getElement(), code.getRawCode(), idClass);
 		}
 		else if( code.getSafetyLevel() == smE_CodeSafetyLevel.REQUIRES_DYNAMIC_SANDBOX )
 		{
@@ -323,12 +326,12 @@ public class smVisualCell extends AbsolutePanel implements smI_BufferCellListene
 			//---		character count or something.
 			//this.setStatusText("Initializing...", true);
 			
-			if( smAppContext.cellSandbox.isRunning() )
+			if( m_sandbox.isRunning() )
 			{
-				smAppContext.cellSandbox.stop();
+				m_sandbox.stop();
 			}
 			
-			smAppContext.cellSandbox.start(m_contentPanel.getElement(), code.getRawCode(), null, idClass, m_codeLoadListener);
+			m_sandbox.start(m_contentPanel.getElement(), code.getRawCode(), null, idClass, m_codeLoadListener);
 		}
 	}
 	

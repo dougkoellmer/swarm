@@ -9,6 +9,7 @@ import swarm.client.states.account.Action_SignInOrUp_SetNewPassword;
 import swarm.client.states.account.Action_SignInOrUp_SignIn;
 import swarm.client.states.account.State_AccountStatusPending;
 import swarm.client.states.account.State_SignInOrUp;
+import swarm.client.view.smViewContext;
 import swarm.client.view.tooltip.smE_ToolTipType;
 import swarm.client.view.tooltip.smToolTipConfig;
 import swarm.client.view.tooltip.smToolTipManager;
@@ -64,7 +65,7 @@ public class smSignInPanel extends VerticalPanel implements smI_StateEventListen
 	private final smTextBoxWrapper m_passwordInput = new smTextBoxWrapper(new smPasswordTextBox("Password"));
 	
 	private final smSignInOrUpButton m_button = new smSignInOrUpButton();
-	private final smStaySignedInCheckbox m_checkbox = new smStaySignedInCheckbox();
+	private final smStaySignedInCheckbox m_checkbox;
 	
 	private smSignInOrUpErrorField 	m_errorFields[] = {m_emailErrorField, m_passwordErrorField};
 	private smTextBoxWrapper	m_inputs[] = {m_emailInput, m_passwordInput};
@@ -74,23 +75,29 @@ public class smSignInPanel extends VerticalPanel implements smI_StateEventListen
 	private final Action_SignInOrUp_SignIn.Args m_actionArgs = new Action_SignInOrUp_SignIn.Args();
 	
 	private final Anchor m_changePassword = new Anchor();
+	
+	private final smViewContext m_viewContext;
 
-	smSignInPanel()
+	smSignInPanel(smViewContext viewContext)
 	{
+		m_viewContext = viewContext;
+		
+		m_checkbox = new smStaySignedInCheckbox(m_viewContext);
+		
 		this.addStyleName("sm_signuporin_sub_panel_wrapper");
 		m_panel.addStyleName("sm_signuporin_sub_panel");
 		m_stack.setWidth("100%");
 		m_button.addStyleName("sm_signin_button");
 		
-		smAppContext.toolTipMngr.addTip(m_button, new smToolTipConfig(smE_ToolTipType.MOUSE_OVER, "Do it!"));
-		smAppContext.toolTipMngr.addTip(m_changePassword, new smToolTipConfig(smE_ToolTipType.MOUSE_OVER,
+		m_viewContext.toolTipMngr.addTip(m_button, new smToolTipConfig(smE_ToolTipType.MOUSE_OVER, "Do it!"));
+		m_viewContext.toolTipMngr.addTip(m_changePassword, new smToolTipConfig(smE_ToolTipType.MOUSE_OVER,
 				"Forgot your password? Enter a new one along with your e-mail, then click here."));
 		
 		FlowPanel passwordResetContainer = new FlowPanel();
 		m_changePassword.setHref("javascript:void(0)");
 		m_changePassword.setText("change");
 		m_changePassword.addStyleName("sm_js_anchor");
-		smAppContext.clickMngr.addClickHandler(m_changePassword, new smI_ClickHandler()
+		m_viewContext.clickMngr.addClickHandler(m_changePassword, new smI_ClickHandler()
 		{
 			@Override
 			public void onClick()
@@ -165,7 +172,7 @@ public class smSignInPanel extends VerticalPanel implements smI_StateEventListen
 			});
 		}
 		
-		smAppContext.clickMngr.addClickHandler(m_button, new smI_ClickHandler()
+		m_viewContext.clickMngr.addClickHandler(m_button, new smI_ClickHandler()
 		{
 			@Override
 			public void onClick()
@@ -302,11 +309,11 @@ public class smSignInPanel extends VerticalPanel implements smI_StateEventListen
 			
 			if( type == E_SubmitType.SIGN_IN )
 			{
-				smA_Action.performAction(Action_SignInOrUp_SignIn.class, m_actionArgs);
+				m_viewContext.stateContext.performAction(Action_SignInOrUp_SignIn.class, m_actionArgs);
 			}
 			else if( type == E_SubmitType.RESET_PASSWORD )
 			{
-				smA_Action.performAction(Action_SignInOrUp_SetNewPassword.class, m_actionArgs);
+				m_viewContext.stateContext.performAction(Action_SignInOrUp_SetNewPassword.class, m_actionArgs);
 			}
 			
 			m_lastFocusedFieldIndex = focusedFieldIndex;
@@ -331,7 +338,7 @@ public class smSignInPanel extends VerticalPanel implements smI_StateEventListen
 			{
 				if( event.getState() instanceof State_SignInOrUp )
 				{
-					smClientAccountManager accountManager = smAppContext.accountMngr;
+					smClientAccountManager accountManager = m_viewContext.appContext.accountMngr;
 					smSignInValidationResult result = accountManager.checkOutLatestBadSignInResult();
 					if( result != null )
 					{

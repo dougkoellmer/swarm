@@ -18,6 +18,7 @@ import swarm.client.view.tooltip.smToolTipManager;
 import swarm.shared.statemachine.smA_Action;
 import swarm.shared.statemachine.smE_StateEventType;
 import swarm.shared.statemachine.smI_StateEventListener;
+import swarm.shared.statemachine.smStateContext;
 import swarm.shared.statemachine.smStateEvent;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
@@ -35,6 +36,7 @@ public class smViewController extends Object implements smI_StateEventListener
 	private final smClientAppConfig m_appConfig;
 	private final smAppContext m_appContext;
 	private final smViewContext m_viewContext;
+	private final smStateContext m_stateContext;
 	
 	public smViewController(smAppContext appContext, smViewContext viewContext, smViewConfig config, smClientAppConfig appConfig)
 	{
@@ -57,7 +59,7 @@ public class smViewController extends Object implements smI_StateEventListener
 	
 	protected void startUpCoreUI()
 	{
-		m_viewContext.splitPanel = new smSplitPanel(m_appContext, m_viewContext, m_viewConfig);
+		m_viewContext.splitPanel = new smSplitPanel(m_viewContext, m_viewConfig);
 		smVisualCellContainer cellContainer = m_viewContext.splitPanel.getCellContainer();
 		
 		smMouse mouse = new smMouse(cellContainer.getMouseEnabledLayer());
