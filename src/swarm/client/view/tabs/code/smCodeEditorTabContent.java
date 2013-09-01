@@ -126,7 +126,7 @@ public class smCodeEditorTabContent extends AbsolutePanel implements smI_TabCont
 	
 	private void onSaveClicked()
 	{
-		if( !smA_Action.isPerformable(Action_EditingCode_Save.class) )
+		if( !smA_Action.isActionPerformable(Action_EditingCode_Save.class) )
 		{
 			return;
 		}
@@ -135,12 +135,12 @@ public class smCodeEditorTabContent extends AbsolutePanel implements smI_TabCont
 		
 		onChange(); // one last time to make sure all changes are provided to the machine.
 		
-		smA_Action.perform(Action_EditingCode_Save.class);
+		smA_Action.performAction(Action_EditingCode_Save.class);
 	}
 	
 	private void onPreviewClicked()
 	{
-		if( !smA_Action.isPerformable(Action_EditingCode_Preview.class) )
+		if( !smA_Action.isActionPerformable(Action_EditingCode_Preview.class) )
 		{
 			return;
 		}
@@ -149,7 +149,7 @@ public class smCodeEditorTabContent extends AbsolutePanel implements smI_TabCont
 		
 		onChange(); // one last time to make sure all changes are provided to the machine.
 		
-		smA_Action.perform(Action_EditingCode_Preview.class);
+		smA_Action.performAction(Action_EditingCode_Preview.class);
 	}
 	
 	private void updateLayout()
@@ -176,8 +176,8 @@ public class smCodeEditorTabContent extends AbsolutePanel implements smI_TabCont
 	
 	private void refreshButtons()
 	{
-		boolean canCommit = smA_Action.isPerformable(Action_EditingCode_Save.class);
-		boolean canPreview = smA_Action.isPerformable(Action_EditingCode_Preview.class);
+		boolean canCommit = smA_Action.isActionPerformable(Action_EditingCode_Save.class);
+		boolean canPreview = smA_Action.isActionPerformable(Action_EditingCode_Preview.class);
 		
 		m_previewButton.setEnabled(canPreview);
 		m_saveButton.setEnabled(canCommit);
@@ -194,7 +194,7 @@ public class smCodeEditorTabContent extends AbsolutePanel implements smI_TabCont
 			{
 				if( event.getState() instanceof State_ViewingCell )
 				{
-					State_EditingCode editingHtmlState = smA_State.getEnteredInstance(State_EditingCode.class);
+					State_EditingCode editingHtmlState = event.getContext().getEnteredState(State_EditingCode.class);
 					
 					if( editingHtmlState != null )
 					{
@@ -216,7 +216,7 @@ public class smCodeEditorTabContent extends AbsolutePanel implements smI_TabCont
 				{
 					refreshButtons();
 					
-					if( !smA_State.isEntered(State_ViewingCell.class) )
+					if( !event.getContext().isEntered(State_ViewingCell.class) )
 					{
 						setEditorContent(""); // some bug in code mirror forces you to set content initially for gutter to display correctly.
 					}
@@ -276,7 +276,7 @@ public class smCodeEditorTabContent extends AbsolutePanel implements smI_TabCont
 				{
 					//--- DRK > Pulling a little sleight of hand here so that we don't remove the blocker if it appears
 					//---		that the console is being animated out.
-					if( smA_State.isForegrounded(StateMachine_Tabs.class) )
+					if( event.getContext().isForegrounded(StateMachine_Tabs.class) )
 					{
 						//--- DRK > This should be called in the "exit" event because background event could be called for something
 						//---		like an error dialog being pushed over the topmost state in the machine.
@@ -305,8 +305,8 @@ public class smCodeEditorTabContent extends AbsolutePanel implements smI_TabCont
 				else if( event.getAction() == StateMachine_Base.OnUserPopulated.class || 
 						 event.getAction() == StateMachine_Base.OnUserCleared.class  )
 				{
-					State_ViewingCell viewingState = smA_State.getEnteredInstance(State_ViewingCell.class);
-					State_EditingCode editingState = smA_State.getEnteredInstance(State_EditingCode.class);
+					State_ViewingCell viewingState = event.getContext().getEnteredState(State_ViewingCell.class);
+					State_EditingCode editingState = event.getContext().getEnteredState(State_EditingCode.class);
 					
 					if( viewingState != null && editingState != null )
 					{
@@ -321,7 +321,7 @@ public class smCodeEditorTabContent extends AbsolutePanel implements smI_TabCont
 	
 	private void updateConsoleBlocker()
 	{
-		State_EditingCodeBlocker blocker = smA_State.getForegroundedInstance(State_EditingCodeBlocker.class);
+		State_EditingCodeBlocker blocker = smA_State.getForegroundedState(State_EditingCodeBlocker.class);
 		
 		if( blocker == null )
 		{
@@ -361,7 +361,7 @@ public class smCodeEditorTabContent extends AbsolutePanel implements smI_TabCont
 	
 	private void refreshCharacterCount()
 	{
-		State_ViewingCell viewingState = smA_State.getEnteredInstance(State_ViewingCell.class);
+		State_ViewingCell viewingState = smA_State.getEnteredState(State_ViewingCell.class);
 		
 		if( viewingState != null && !smA_State.isForegrounded(State_EditingCodeBlocker.class) )
 		{
@@ -396,7 +396,7 @@ public class smCodeEditorTabContent extends AbsolutePanel implements smI_TabCont
 		refreshCharacterCount();
 		
 		m_args_CodeChanged.init(sourceCode);
-		smA_Action.perform(Action_EditingCode_Edit.class, m_args_CodeChanged);
+		smA_Action.performAction(Action_EditingCode_Edit.class, m_args_CodeChanged);
 	}
 
 	@Override

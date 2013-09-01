@@ -21,10 +21,4 @@ public class Action_EditingCode_Save extends smA_Action
 		
 		return state.isCommitOrPreviewPerformable(false);
 	}
-	
-	@Override
-	public Class<? extends smA_State> getStateAssociation()
-	{
-		return State_EditingCode.class;
-	}
 }

@@ -176,7 +176,7 @@ public class State_CameraSnapping extends smA_State implements smI_StateEventLis
 			if( !m_hasRequestedSourceCode )
 			{
 				//--- DRK > As an optimization, we only retrieve the source html if we're in the html state.
-				if( smA_State.isForegrounded(StateMachine_EditingCode.class) )
+				if( getContext().isForegrounded(StateMachine_EditingCode.class) )
 				{
 					populator.populateCell(cell, localCodeRepo, 1, false, true, smE_CodeType.SOURCE);
 					

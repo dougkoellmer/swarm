@@ -31,10 +31,4 @@ public class Action_SignInOrUp_SetNewPassword extends smA_Action
 	{
 		return State_SignInOrUp.isSignInOrResetPerformable(args, true);
 	}
-
-	@Override
-	public Class<? extends smA_State> getStateAssociation()
-	{
-		return State_SignInOrUp.class;
-	}
 }

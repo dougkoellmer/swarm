@@ -1,5 +1,6 @@
 package swarm.shared.statemachine;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -14,8 +15,6 @@ import swarm.shared.debugging.smU_Debug;
 public abstract class smA_State extends smA_BaseStateObject
 {
 	private static final Logger s_logger = Logger.getLogger(smA_State.class.getName());
-	
-	smStateContext m_context;
 	
 	private float m_totalTimeInState = 0.0f;
 	private float m_foregroundedTimeInState = 0.0f;
@@ -42,13 +41,47 @@ public abstract class smA_State extends smA_BaseStateObject
 	private int m_foregroundedUpdateCount = 0;
 	private int m_totalUpdateCount = 0;
 	
-	private Object m_userData = null;
+	private ArrayList<smA_Action> m_queuedActionsToRegister = null;
 	
 	protected smA_State() 
 	{
 	}
 	
+	void onRegistered()
+	{
+		if( m_queuedActionsToRegister != null )
+		{
+			for( int i = 0; i < m_queuedActionsToRegister.size(); i++ )
+			{
+				registerAction_private(m_queuedActionsToRegister.get(i));
+			}
+			
+			m_queuedActionsToRegister = null;
+		}
+	}
 	
+	protected void queueActionRegistration(smA_Action action)
+	{
+		m_queuedActionsToRegister = m_queuedActionsToRegister != null ? m_queuedActionsToRegister : new ArrayList<smA_Action>();
+		m_queuedActionsToRegister.add(action);
+	}
+	
+	private void registerAction_private(smA_Action action)
+	{
+		m_context.registerAction(this.getClass(), action);
+	}
+	
+	protected void registerAction(smA_Action action)
+	{
+		if( m_context == null )
+		{
+			queueActionRegistration(action);
+		}
+		else
+		{
+			registerAction_private(action);
+		}
+	}
 	
 	public boolean isTransparent()
 	{
@@ -139,7 +172,6 @@ public abstract class smA_State extends smA_BaseStateObject
 		m_isForegrounded = false;
 		m_isEntered = false;
 		m_totalUpdateCount = 0;
-		m_userData = null;
 		m_foregroundedUpdateCount = 0;
 
 		m_isPerformableOverrides.clear();
@@ -160,7 +192,7 @@ public abstract class smA_State extends smA_BaseStateObject
 	
 	public boolean performAction(Class<? extends smA_Action> T, smA_ActionArgs args)
 	{
-		smA_Action action = smA_Action.getInstance(T);
+		smA_Action action = m_context.getAction(T);
 
 		if ( action == null )
 		{
@@ -172,7 +204,7 @@ public abstract class smA_State extends smA_BaseStateObject
 			//s_logger.log(Level.INFO, "Will perform action: " + action.getClass().getName());
 		}
 		
-		boolean performable = this.isPerformable_private(action, args);
+		boolean performable = this.isActionPerformable_private(action, args);
 		
 		if( !performable )
 		{				
@@ -187,17 +219,15 @@ public abstract class smA_State extends smA_BaseStateObject
 			smStateContext context = m_context;
 
 			action.m_state = this;
-			context.queueEvent(new smStateEvent(action, args));
+			context.queueEvent(new smStateEvent(this, action, args));
 			{
-				smA_Action.s_actionStack.add(action);
-				
-				action.m_isCancelled = false;
+				//smA_Action.s_actionStack.add(action);
 				
 				action.prePerform();
 				
 				action.perform(args);
 			
-				smA_Action.s_actionStack.remove(smA_Action.s_actionStack.size()-1);
+				//smA_Action.s_actionStack.remove(smA_Action.s_actionStack.size()-1);
 			}
 			action.m_state = null;
 
@@ -209,10 +239,10 @@ public abstract class smA_State extends smA_BaseStateObject
 	
 	public boolean isActionPerfomable(Class<? extends smA_Action> T, smA_ActionArgs args)
 	{
-		return this.isPerformable_private(smA_Action.getInstance(T), args);
+		return this.isActionPerformable_private(m_context.getAction(T), args);
 	}
 	
-	private boolean isPerformable_private(smA_Action action, smA_ActionArgs args)
+	private boolean isActionPerformable_private(smA_Action action, smA_ActionArgs args)
 	{
 		boolean perfomable = true;
 
@@ -276,11 +306,6 @@ public abstract class smA_State extends smA_BaseStateObject
 		}
 		
 		this.clean();
-		
-		if( constructor != null )
-		{
-			m_userData = constructor.getUserData();
-		}
 		
 		m_isEntered = true;
 		

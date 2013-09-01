@@ -79,16 +79,16 @@ public class StateMachine_Camera extends smA_StateMachine implements smI_StateEv
 	{
 		m_appContext = appContext;
 		
-		smA_Action.register(new Action_Camera_SetCameraViewSize(m_appContext.cameraMngr));
-		smA_Action.register(new Action_Camera_SnapToAddress(m_appContext.addressMngr));
-		smA_Action.register(new Action_Camera_SnapToCoordinate(m_appContext.gridMngr));
-		smA_Action.register(new Event_Camera_OnAddressResponse());
-		smA_Action.register(new Action_Camera_SetCameraTarget(m_appContext.cameraMngr));
-		smA_Action.register(new Action_Camera_SetInitialPosition(m_appContext.cameraMngr));
-		
 		smA_ClientUser user = m_appContext.userMngr.getUser();
 		m_codeRepo.addSource(user);
 		m_codeRepo.addSource(m_appContext.codeCache);
+		
+		registerAction(new Action_Camera_SetCameraViewSize(m_appContext.cameraMngr));
+		registerAction(new Action_Camera_SnapToAddress(m_appContext.addressMngr));
+		registerAction(new Action_Camera_SnapToCoordinate(m_appContext.gridMngr));
+		registerAction(new Event_Camera_OnAddressResponse());
+		registerAction(new Action_Camera_SetCameraTarget(m_appContext.cameraMngr));
+		registerAction(new Action_Camera_SetInitialPosition(m_appContext.cameraMngr));
 	}
 	
 	void snapToCellAddress(smCellAddress address)
@@ -202,7 +202,7 @@ public class StateMachine_Camera extends smA_StateMachine implements smI_StateEv
 				
 				if( title != null )
 				{
-					StateMachine_Base baseController = smA_State.getEnteredInstance(StateMachine_Base.class);
+					StateMachine_Base baseController = getContext().getEnteredState(StateMachine_Base.class);
 					
 					State_GenericDialog.Constructor constructor = new State_GenericDialog.Constructor(title, body);
 					baseController.queueAsyncDialog(State_AsyncDialog.class, constructor);

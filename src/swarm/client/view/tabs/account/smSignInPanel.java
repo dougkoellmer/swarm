@@ -302,11 +302,11 @@ public class smSignInPanel extends VerticalPanel implements smI_StateEventListen
 			
 			if( type == E_SubmitType.SIGN_IN )
 			{
-				smA_Action.perform(Action_SignInOrUp_SignIn.class, m_actionArgs);
+				smA_Action.performAction(Action_SignInOrUp_SignIn.class, m_actionArgs);
 			}
 			else if( type == E_SubmitType.RESET_PASSWORD )
 			{
-				smA_Action.perform(Action_SignInOrUp_SetNewPassword.class, m_actionArgs);
+				smA_Action.performAction(Action_SignInOrUp_SetNewPassword.class, m_actionArgs);
 			}
 			
 			m_lastFocusedFieldIndex = focusedFieldIndex;

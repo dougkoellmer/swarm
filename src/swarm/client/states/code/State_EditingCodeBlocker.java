@@ -41,7 +41,7 @@ public class State_EditingCodeBlocker extends smA_State
 	
 	public State_EditingCodeBlocker()
 	{
-		smA_Action.register(new OnReasonChange());
+		registerAction(new OnReasonChange());
 	}
 	
 	

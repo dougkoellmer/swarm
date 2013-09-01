@@ -7,7 +7,6 @@ import swarm.client.states.account.StateMachine_Account;
 import swarm.client.states.code.StateMachine_EditingCode;
 import swarm.shared.statemachine.smA_Action;
 
-import swarm.shared.statemachine.smA_ActionArgs;
 import swarm.shared.statemachine.smA_State;
 import swarm.shared.statemachine.smA_StateMachine;
 import swarm.shared.statemachine.smA_StateConstructor;
@@ -18,56 +17,13 @@ import swarm.shared.statemachine.smA_StateConstructor;
  */
 public class StateMachine_Tabs extends smA_StateMachine
 {	
-	public static class SelectTab extends smA_Action 
-	{
-		public static class Args extends smA_ActionArgs
-		{
-			private int m_index;
-			
-			public void setIndex(int index)
-			{
-				m_index = index;
-			}
-		}
-		
-		@Override
-		public void perform(smA_ActionArgs args)
-		{
-			int tabIndex = ((Args) args).m_index;
-			StateMachine_Tabs tabController = (StateMachine_Tabs) this.getState();
-			tabController.setTab(tabIndex);
-		}
-		
-		@Override
-		public boolean isPerformable(smA_ActionArgs args)
-		{
-			int tabIndex = ((Args) args).m_index;
-			StateMachine_Tabs tabController = (StateMachine_Tabs) this.getState();
-			
-			if( tabController.getTab() == tabIndex )
-			{
-				return false;
-			}
-			else
-			{
-				return true;
-			}
-		}
-		
-		@Override
-		public Class<? extends smA_State> getStateAssociation()
-		{
-			return StateMachine_Tabs.class;
-		}
-	}
-	
 	private final List<Class<? extends smA_State>> m_tabStates;
 	
 	private int m_tabIndex = -1;
 	
 	public StateMachine_Tabs(List<Class<? extends smA_State>> tabStates) 
 	{
-		smA_Action.register(new SelectTab());
+		registerAction(new Action_Tabs_SelectTab());
 		
 		m_tabStates = tabStates;
 	}

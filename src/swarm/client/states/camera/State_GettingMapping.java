@@ -24,7 +24,7 @@ public class State_GettingMapping extends smA_State
 	
 	public State_GettingMapping()
 	{
-		smA_Action.register(new Event_GettingMapping_OnResponse());
+		registerAction(new Event_GettingMapping_OnResponse());
 	}
 	
 	smCellAddress getAddress()

@@ -118,7 +118,7 @@ public class State_Initializing extends smA_State implements smI_TransactionResp
 		{
 			machine_setState(getParent(), StateContainer_Base.class);
 			
-			StateMachine_Base baseController = smA_State.getEnteredInstance(StateMachine_Base.class);
+			StateMachine_Base baseController = getContext().getEnteredState(StateMachine_Base.class);
 			
 			smClientAccountManager accountManager = m_context.accountMngr;
 			smClientAccountManager.E_PasswordChangeTokenState resetTokenState = accountManager.getPasswordChangeTokenState();
@@ -128,7 +128,7 @@ public class State_Initializing extends smA_State implements smI_TransactionResp
 				State_GenericDialog.Constructor constructor = new State_GenericDialog.Constructor
 				(
 					"Sorry!",
-					"The window for confirming your password change has either expired or was otherwise invalidated.<br><br>Please try again."
+					"The time window for confirming your password change has either expired or was otherwise invalidated.<br><br>Please try again."
 				);
 				
 				baseController.queueAsyncDialog(State_AsyncDialog.class, constructor);

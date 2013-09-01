@@ -59,7 +59,7 @@ public class StateMachine_EditingCode extends smA_StateMachine implements smI_St
 	protected void didForeground(Class<? extends smA_State> revealingState, Object[] argsFromRevealingState)
 	{
 		//--- DRK > Camera controller can be null during start up...should be the only time.
-		smA_StateMachine cameraController = smA_State.getEnteredInstance(StateMachine_Camera.class);
+		smA_StateMachine cameraController = getContext().getEnteredState(StateMachine_Camera.class);
 		if( cameraController != null )
 		{
 			pushOrPopBlocker(cameraController.getCurrentState());
@@ -300,15 +300,15 @@ public class StateMachine_EditingCode extends smA_StateMachine implements smI_St
 			{
 				if( event.getAction() == Action_ViewingCell_Refresh.class )
 				{
-					State_ViewingCell viewingState = smA_State.getEnteredInstance(State_ViewingCell.class);
+					State_ViewingCell viewingState = getContext().getEnteredState(State_ViewingCell.class);
 					pushOrPopBlocker(viewingState);
 				}
 				else if( event.getAction() == StateMachine_Base.OnUserCleared.class )
 				{
 					if( event.getAction() == StateMachine_Base.OnUserCleared.class  )
 					{
-						State_ViewingCell viewingState = smA_State.getEnteredInstance(State_ViewingCell.class);
-						State_EditingCode editingState = smA_State.getEnteredInstance(State_EditingCode.class);
+						State_ViewingCell viewingState = getContext().getEnteredState(State_ViewingCell.class);
+						State_EditingCode editingState = getContext().getEnteredState(State_EditingCode.class);
 						
 						if( viewingState != null && editingState != null )
 						{
@@ -319,8 +319,8 @@ public class StateMachine_EditingCode extends smA_StateMachine implements smI_St
 				else if( event.getAction() == StateMachine_Base.OnUserPopulated.class || 
 						 event.getAction() == StateMachine_Base.OnUserCleared.class  )
 				{
-					State_ViewingCell viewingState = smA_State.getEnteredInstance(State_ViewingCell.class);
-					State_EditingCode editingState = smA_State.getEnteredInstance(State_EditingCode.class);
+					State_ViewingCell viewingState = getContext().getEnteredState(State_ViewingCell.class);
+					State_EditingCode editingState = getContext().getEnteredState(State_EditingCode.class);
 					
 					if( viewingState != null && editingState != null )
 					{

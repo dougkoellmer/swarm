@@ -402,7 +402,7 @@ public class smMagnifier extends FlowPanel implements smI_StateEventListener
 			if ( setTarget )
 			{
 				m_args_SetCameraTarget.init(m_utilPoint, false);
-				smA_Action.perform(Action_Camera_SetCameraTarget.class, m_args_SetCameraTarget);
+				smA_Action.performAction(Action_Camera_SetCameraTarget.class, m_args_SetCameraTarget);
 			}
 		}
 		
@@ -487,7 +487,7 @@ public class smMagnifier extends FlowPanel implements smI_StateEventListener
 				{
 					if( event.getState() instanceof State_CameraSnapping )
 					{
-						State_CameraSnapping cameraSnapping = smA_State.getEnteredInstance(State_CameraSnapping.class);
+						State_CameraSnapping cameraSnapping = smA_State.getEnteredState(State_CameraSnapping.class);
 						if( cameraSnapping != null && cameraSnapping.getPreviousState() != State_ViewingCell.class )
 						{
 							this.setAlpha(m_baseAlpha * (1 - cameraSnapping.getOverallSnapProgress()));

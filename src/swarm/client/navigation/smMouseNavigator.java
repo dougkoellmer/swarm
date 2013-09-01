@@ -438,7 +438,7 @@ public class smMouseNavigator implements smI_UIElement, smMouse.I_Listener
 				if( m_utilVector.calcLengthSquared() > 0)
 				{
 					m_setTargetArgs.init(m_utilPoint2, true);
-					smA_Action.perform(Action_Camera_SetCameraTarget.class, m_setTargetArgs);
+					smA_Action.performAction(Action_Camera_SetCameraTarget.class, m_setTargetArgs);
 				}
 				
 				m_utilPoint2.calcDifference(m_lastWorldPoint, m_utilVector);

@@ -47,10 +47,4 @@ public class Event_GettingMapping_OnResponse extends smA_EventAction
 	{
 		return true;
 	}
-	
-	@Override
-	public Class<? extends smA_State> getStateAssociation()
-	{
-		return State_GettingMapping.class;
-	}
 }

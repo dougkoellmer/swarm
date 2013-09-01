@@ -22,6 +22,7 @@ public class smStateContext
 	private int m_queueEvent_recursionDepth = 0;
 	
 	private final HashMap<Class<? extends smA_State>, smA_State> m_stateRegistry = new HashMap<Class<? extends smA_State>, smA_State>();
+	private final HashMap<Class<? extends smA_Action>, smA_Action> m_actionRegistry = new HashMap<Class<? extends smA_Action>, smA_Action>();
 	
 	public smStateContext(smA_State rootState, smI_StateEventListener stateEventListener)
 	{
@@ -29,7 +30,7 @@ public class smStateContext
 		
 		this.addListener(stateEventListener);
 		
-		register(m_rootState);
+		registerState(m_rootState);
 	}
 	
 	public smA_State getRootState()
@@ -42,17 +43,94 @@ public class smStateContext
 		m_rootState.didEnter_internal(null);
 	}
 	
-	public void didForeground(Class<? extends smA_State> state_T)
+	public void didForeground()
 	{
 		m_rootState.didForeground_internal(null, null);
 	}
 	
-	public void didUpdate(Class<? extends smA_State> state_T, double timeStep)
+	public void didUpdate(double timeStep)
 	{
 		m_rootState.update_internal(timeStep);
 	}
 	
-	public <T extends smA_State> T getEnteredInstance(Class<? extends smA_State> T)
+	void registerAction(Class<? extends smA_State> association, smA_Action action)
+	{
+		m_actionRegistry.put(action.getClass(), action);
+		
+		action.m_context = this;
+		action.m_association = association;
+	}
+	
+	smA_Action getAction(Class<? extends smA_Action> T)
+	{
+		smA_Action registeredAction = m_actionRegistry.get(T);
+	
+		if ( registeredAction != null )
+		{
+			if ( registeredAction.m_state != null )
+			{
+				smU_Debug.ASSERT(false, "Action reuse.");
+			}
+			
+			return registeredAction;
+		}
+		
+		return null;
+	}
+
+	private smA_State getEnteredStateForAction(Class<? extends smA_Action> T)
+	{
+		smA_Action action = getAction(T);
+		
+		if( action != null )
+		{
+			Class<? extends smA_State> state_T = action.getStateAssociation();
+			
+			smA_State state = this.getEnteredState(state_T);
+			
+			return state;
+		}
+		
+		return null;
+	}
+	
+	public boolean performAction(Class<? extends smA_Action> T)
+	{
+		return performAction(T, null);
+	}
+	
+	public boolean performAction(Class<? extends smA_Action> T, smA_ActionArgs args)
+	{
+		smA_State state = getEnteredStateForAction(T);
+		
+		return state.performAction(T, args);
+	}
+	
+	public boolean isActionPerformable(Class<? extends smA_Action> T)
+	{
+		return isActionPerformable(T, null);
+	}
+	
+	public boolean isActionPerformable(Class<? extends smA_Action> T, smA_ActionArgs args)
+	{
+		smA_State state = getEnteredStateForAction(T);
+		
+		return isActionPerformable_private(state, T, args);
+	}
+	
+	private boolean isActionPerformable_private(smA_State state, Class<? extends smA_Action> T, smA_ActionArgs args)
+	{
+		if( state == null )
+		{
+			return false;
+		}
+		else
+		{
+			return state.isActionPerfomable(T, args);
+		}
+	}
+	
+	public <T extends smA_State> T getEnteredState(Class<? extends smA_State> T)
 	{
 		smA_State registeredState = m_stateRegistry.get(T);
 		if ( registeredState != null )
@@ -68,21 +146,23 @@ public class smStateContext
 	
 	public boolean isForegrounded(Class<? extends smA_State> T)
 	{
-		return getForegroundedInstance(T) != null;
+		return getForegroundedState(T) != null;
 	}
 	
 	public boolean isEntered(Class<? extends smA_State> T)
 	{
-		return getEnteredInstance(T) != null;
+		return getEnteredState(T) != null;
 	}
 	
-	public void register(smA_State state)
+	public void registerState(smA_State state)
 	{
 		m_stateRegistry.put(state.getClass(), state);
 		state.m_context = this;
+		
+		state.onRegistered();
 	}
 	
-	public <T extends smA_State> T getForegroundedInstance(Class<? extends smA_State> T)
+	public <T extends smA_State> T getForegroundedState(Class<? extends smA_State> T)
 	{
 		smA_State registeredState = m_stateRegistry.get(T);
 		if ( registeredState != null )

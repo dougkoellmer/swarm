@@ -59,6 +59,7 @@ import swarm.shared.debugging.smTelemetryAssert;
 import swarm.shared.debugging.smU_Debug;
 import swarm.shared.statemachine.smA_State;
 import swarm.shared.statemachine.smA_StateMachine;
+import swarm.shared.statemachine.smStateContext;
 import swarm.shared.time.smI_TimeSource;
 import swarm.shared.transaction.smE_RequestPath;
 import swarm.shared.transaction.smE_TelemetryRequestPath;
@@ -74,6 +75,7 @@ public class smA_ClientApp extends smA_App implements smI_TimeSource
 	protected final smViewConfig m_viewConfig;
 	protected final smAppContext m_appContext;
 	protected final smViewContext m_viewContext;
+	protected smStateContext m_stateContext;
 	
 	protected smA_ClientApp(smClientAppConfig appConfig, smViewConfig viewConfig)
 	{
@@ -251,21 +253,22 @@ public class smA_ClientApp extends smA_App implements smI_TimeSource
 	
 	protected void stage_registerStateMachine()
 	{
-		smA_State.register(new StateMachine_Base(m_appContext));
+		m_stateContext = new smStateContext(new StateMachine_Base(m_appContext), m_viewConfig.stateEventListener);
+		
 		{
-			smA_State.register(new State_Initializing(m_appContext));
+			m_stateContext.registerState(new State_Initializing(m_appContext));
 			
-			smA_State.register(new State_GenericDialog());
-			smA_State.register(new State_AsyncDialog());
+			m_stateContext.registerState(new State_GenericDialog());
+			m_stateContext.registerState(new State_AsyncDialog());
 			
-			smA_State.register(new StateContainer_Base());
+			m_stateContext.registerState(new StateContainer_Base());
 			{
-				smA_State.register(new StateMachine_Camera(m_appContext));
+				m_stateContext.registerState(new StateMachine_Camera(m_appContext));
 				{
-					smA_State.register(new State_CameraFloating());
-					smA_State.register(new State_GettingMapping());
-					smA_State.register(new State_CameraSnapping(m_appContext, m_appConfig.cellHudHeight));
-					smA_State.register(new State_ViewingCell(m_appContext));
+					m_stateContext.registerState(new State_CameraFloating());
+					m_stateContext.registerState(new State_GettingMapping());
+					m_stateContext.registerState(new State_CameraSnapping(m_appContext, m_appConfig.cellHudHeight));
+					m_stateContext.registerState(new State_ViewingCell(m_appContext));
 				}
 			}
 		}
@@ -288,28 +291,28 @@ public class smA_ClientApp extends smA_App implements smI_TimeSource
 	
 	protected void stage_gunshotSound()
 	{
-		smA_StateMachine.root_didEnter(StateMachine_Base.class, m_viewConfig.stateEventListener);
-		smA_StateMachine.root_didForeground(StateMachine_Base.class);
+		m_stateContext.didEnter();
+		m_stateContext.didForeground();
 		
 		m_appContext.txnMngr.flushSyncResponses();
 	}
 
 	protected void registerCodeEditingStates()
 	{
-		smA_State.register(new StateMachine_EditingCode(m_appContext));
+		m_stateContext.registerState(new StateMachine_EditingCode(m_appContext));
 		{
-			smA_State.register(new State_EditingCode(m_appContext));
-			smA_State.register(new State_EditingCodeBlocker());
+			m_stateContext.registerState(new State_EditingCode(m_appContext));
+			m_stateContext.registerState(new State_EditingCodeBlocker());
 		}
 	}
 	
 	protected void registerAccountStates()
 	{
-		smA_State.register(new StateMachine_Account(m_appContext.accountMngr));
+		m_stateContext.registerState(new StateMachine_Account(m_appContext.accountMngr));
 		{
-			smA_State.register(new State_ManageAccount(m_appContext.accountMngr));
-			smA_State.register(new State_AccountStatusPending());
-			smA_State.register(new State_SignInOrUp(m_appContext.accountMngr, m_appContext.userMngr));
+			m_stateContext.registerState(new State_ManageAccount(m_appContext.accountMngr));
+			m_stateContext.registerState(new State_AccountStatusPending());
+			m_stateContext.registerState(new State_SignInOrUp(m_appContext.accountMngr, m_appContext.userMngr));
 		}
 	}
 	
@@ -330,7 +333,7 @@ public class smA_ClientApp extends smA_App implements smI_TimeSource
 	public void update()
 	{
 		double currentTime = smU_Time.getSeconds();
-		smA_StateMachine.root_didUpdate(StateMachine_Base.class, currentTime - m_lastTime);
+		m_stateContext.didUpdate(currentTime - m_lastTime);
 		m_lastTime = currentTime;
 
 		m_appContext.txnMngr.flushSyncResponses();

@@ -33,7 +33,7 @@ public class Action_EditingCode_Edit extends smA_Action
 	{
 		String code = ((Action_EditingCode_Edit.Args) args).m_changedCode;
 		
-		State_ViewingCell viewingState = (State_ViewingCell) smA_State.getForegroundedInstance(State_ViewingCell.class);
+		State_ViewingCell viewingState = getContext().getForegroundedState(State_ViewingCell.class);
 		smBufferCell viewedCell = viewingState.getCell();
 		
 		smA_ClientUser user = m_userMngr.getUser();
@@ -44,7 +44,7 @@ public class Action_EditingCode_Edit extends smA_Action
 	@Override
 	public boolean isPerformable(smA_ActionArgs args)
 	{
-		State_ViewingCell state = (State_ViewingCell) smA_State.getForegroundedInstance(State_ViewingCell.class);
+		State_ViewingCell state = getContext().getForegroundedState(State_ViewingCell.class);
 		
 		if( state == null )
 		{
@@ -59,11 +59,5 @@ public class Action_EditingCode_Edit extends smA_Action
 		}
 		
 		return true;
-	}
-	
-	@Override
-	public Class<? extends smA_State> getStateAssociation()
-	{
-		return State_EditingCode.class;
 	}
 }

@@ -4,13 +4,20 @@ import swarm.shared.debugging.smU_Debug;
 
 /**
  * This base class provides both actions and states with a unified API to safely manipulate the machine tree.
- * More runtime protections, mostly for debugging purposes, will be added to this class in the future.
+ * More runtime protections, mostly for debugging purposes, may be added to this class in the future.
  * 
  * @author Doug
  *
  */
 public class smA_BaseStateObject extends Object
 {
+	smStateContext m_context;
+	
+	public smStateContext getContext()
+	{
+		return m_context;
+	}
+	
 	protected void container_enterState(smA_State thisArg, Class<? extends smA_State> T)
 	{
 		this.container_enterState(thisArg, T, null);

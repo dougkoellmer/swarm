@@ -48,12 +48,6 @@ public class Action_SignInOrUp_SignUp extends smA_Action
 	}
 
 	@Override
-	public Class<? extends smA_State> getStateAssociation()
-	{
-		return State_SignInOrUp.class;
-	}
-	
-	@Override
 	public boolean isPerformable(smA_ActionArgs args)
 	{
 		//--- DRK > Just a final double-check catch-all here...UI should have completely validated before performing the action.

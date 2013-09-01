@@ -29,6 +29,7 @@ import swarm.shared.statemachine.smA_EventAction;
 import swarm.shared.statemachine.smA_State;
 import swarm.shared.statemachine.smA_StateMachine;
 import swarm.shared.statemachine.smA_StateConstructor;
+import swarm.shared.statemachine.smStateContext;
 import swarm.shared.structs.smCellAddressMapping;
 import swarm.shared.transaction.smE_RequestPath;
 import swarm.shared.transaction.smE_ResponseError;
@@ -50,12 +51,6 @@ public class StateMachine_Base extends smA_StateMachine implements smI_Transacti
 		{
 			machine_pushState(this.getState(), State_GenericDialog.class, args[0]);
 		}
-
-		@Override
-		public Class<? extends smA_State> getStateAssociation()
-		{
-			return StateMachine_Base.class;
-		}
 	}*/
 	
 	public static class OnAccountManagerResponse extends smA_EventAction
@@ -74,39 +69,18 @@ public class StateMachine_Base extends smA_StateMachine implements smI_Transacti
 				return m_type;
 			}
 		}
-		
-		@Override
-		public Class<? extends smA_State> getStateAssociation()
-		{
-			return StateMachine_Base.class;
-		}
 	}
 	
 	public static class OnUserPopulated extends smA_EventAction
 	{
-		@Override
-		public Class<? extends smA_State> getStateAssociation()
-		{
-			return StateMachine_Base.class;
-		}
 	}
 	
 	public static class OnUserCleared extends smA_EventAction
 	{
-		@Override
-		public Class<? extends smA_State> getStateAssociation()
-		{
-			return StateMachine_Base.class;
-		}
 	}
 	
 	public static class OnGridResize extends smA_EventAction
 	{
-		@Override
-		public Class<? extends smA_State> getStateAssociation()
-		{
-			return StateMachine_Base.class;
-		}
 	}
 	
 	private static class BatchListener implements smI_ResponseBatchListener
@@ -145,13 +119,20 @@ public class StateMachine_Base extends smA_StateMachine implements smI_Transacti
 	
 	private static class AccountManagerDelegate implements smClientAccountManager.I_Delegate
 	{
+		private final StateMachine_Base m_state;
+		
+		AccountManagerDelegate(StateMachine_Base state)
+		{
+			m_state = state;
+		}
+		
 		@Override
 		public void onAccountTransactionResponse(E_ResponseType type)
 		{
 			OnAccountManagerResponse.Args args= new OnAccountManagerResponse.Args(type);
-			smA_Action.perform(OnAccountManagerResponse.class, args);
+			m_state.performAction(OnAccountManagerResponse.class, args);
 			
-			StateMachine_Base baseMachine = smA_State.getForegroundedInstance(StateMachine_Base.class);
+			StateMachine_Base baseMachine = m_state.getContext().getForegroundedState(StateMachine_Base.class);
 			
 			if( type == E_ResponseType.PASSWORD_CHANGE_SUCCESS )
 			{
@@ -191,7 +172,7 @@ public class StateMachine_Base extends smA_StateMachine implements smI_Transacti
 		@Override
 		public void onAuthenticationError()
 		{
-			StateMachine_Base baseController = smA_State.getEnteredInstance(StateMachine_Base.class);
+			StateMachine_Base baseController = m_state.getContext().getEnteredState(StateMachine_Base.class);
 			
 			State_GenericDialog.Constructor constructor = new State_GenericDialog.Constructor
 			(
@@ -203,7 +184,7 @@ public class StateMachine_Base extends smA_StateMachine implements smI_Transacti
 		}
 	}
 	
-	private final AccountManagerDelegate m_accountManagerDelegate = new AccountManagerDelegate();
+	private final AccountManagerDelegate m_accountManagerDelegate;
 	
 	private final ArrayList<DialogData> m_asyncDialogQueue = new ArrayList<DialogData>();
 	
@@ -211,6 +192,22 @@ public class StateMachine_Base extends smA_StateMachine implements smI_Transacti
 	private boolean m_hasShownGeneralTransactionErrorDialog = false;
 	
 	private final smI_ResponseBatchListener m_batchListener = new BatchListener(this);
+	
+	private final smAppContext m_appContext;
+	
+	public StateMachine_Base(smAppContext appContext)
+	{
+		m_appContext = appContext;
+		
+		//smA_Action.register(new PushDialog());
+		registerAction(new OnGridResize());
+		registerAction(new OnAccountManagerResponse());
+		
+		registerAction(new OnUserPopulated());
+		registerAction(new OnUserCleared());
+		
+		m_accountManagerDelegate = new AccountManagerDelegate(this);
+	}
 	
 	void dequeueAsyncDialog()
 	{
@@ -250,20 +247,6 @@ public class StateMachine_Base extends smA_StateMachine implements smI_Transacti
 		{
 			m_asyncDialogQueue.add(new DialogData(T, constructor));
 		}
-	}
-	
-	private final smAppContext m_appContext;
-	
-	public StateMachine_Base(smAppContext appContext)
-	{
-		m_appContext = appContext;
-		
-		//smA_Action.register(new PushDialog());
-		smA_Action.register(new OnGridResize());
-		smA_Action.register(new OnAccountManagerResponse());
-		
-		smA_Action.register(new OnUserPopulated());
-		smA_Action.register(new OnUserCleared());
 	}
 	
 	@Override

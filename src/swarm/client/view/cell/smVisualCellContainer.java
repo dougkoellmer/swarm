@@ -77,7 +77,7 @@ public class smVisualCellContainer extends FlowPanel implements ResizeHandler, s
 		m_appContext = appContext;
 		m_viewContext = viewContext;
 		
-		m_magnifier = new smMagnifier(config.magnifierTickCount, config.magFadeInTime_seconds);
+		m_magnifier = new smMagnifier(viewContext, appContext.cameraMngr, config.magnifierTickCount, config.magFadeInTime_seconds);
 		
 		m_splashGlass.addStyleName("sm_splash_glass");
 		m_cellContainerInner.addStyleName("sm_cell_container_inner");
@@ -211,7 +211,7 @@ public class smVisualCellContainer extends FlowPanel implements ResizeHandler, s
 					
 					m_args_SetCameraViewSize.set(width, height);
 					
-					smA_Action.perform(Action_Camera_SetCameraViewSize.class, m_args_SetCameraViewSize);
+					event.getContext().performAction(Action_Camera_SetCameraViewSize.class, m_args_SetCameraViewSize);
 					
 					//--- DRK > Because width/height of "this" is still 0/0, we temporarily
 					//---		give the tool tip an override rectangle to work with.
@@ -323,7 +323,7 @@ public class smVisualCellContainer extends FlowPanel implements ResizeHandler, s
 	private void updateCameraViewRect()
 	{
 		m_args_SetCameraViewSize.set((double)this.getOffsetWidth(), (double)this.getOffsetHeight());
-		smA_Action.perform(Action_Camera_SetCameraViewSize.class, m_args_SetCameraViewSize);
+		smA_Action.performAction(Action_Camera_SetCameraViewSize.class, m_args_SetCameraViewSize);
 	}
 	
 	public void onResize()

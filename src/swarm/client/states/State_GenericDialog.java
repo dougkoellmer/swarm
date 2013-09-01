@@ -31,19 +31,13 @@ public class State_GenericDialog extends smA_State
 		@Override
 		public void perform(smA_ActionArgs args)
 		{
-			machine_popState(smA_State.getForegroundedInstance(StateMachine_Base.class));
-		}
-
-		@Override
-		public Class<? extends smA_State> getStateAssociation()
-		{
-			return State_GenericDialog.class;
+			machine_popState(getContext().getForegroundedState(StateMachine_Base.class));
 		}
 	}
 	
 	public State_GenericDialog()
 	{
-		smA_Action.register(new State_GenericDialog.Ok());
+		registerAction(new State_GenericDialog.Ok());
 	}
 	
 	

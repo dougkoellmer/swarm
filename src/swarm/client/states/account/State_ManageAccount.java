@@ -20,7 +20,7 @@ public class State_ManageAccount extends smA_State
 {
 	public State_ManageAccount(smClientAccountManager accountMngr)
 	{
-		smA_Action.register(new Action_ManageAccount_SignOut(accountMngr));
+		registerAction(new Action_ManageAccount_SignOut(accountMngr));
 	}
 	
 	@Override

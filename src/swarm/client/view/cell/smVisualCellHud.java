@@ -134,7 +134,7 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 				
 				smVisualCellHud.this.m_viewContext.cellMngr.clearAlerts();
 				
-				smA_Action.perform(Action_ViewingCell_Refresh.class);
+				smA_Action.performAction(Action_ViewingCell_Refresh.class);
 			}
 		});
 		
@@ -143,7 +143,7 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 			@Override
 			public void onClick()
 			{
-				State_ViewingCell state = smA_State.getEnteredInstance(State_ViewingCell.class);
+				State_ViewingCell state = smA_State.getEnteredState(State_ViewingCell.class);
 				
 				if( state == null )
 				{
@@ -160,7 +160,7 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 				s_utilPoint1.incZ(m_appConfig.backOffDistance);
 				
 				m_args_SetCameraTarget.init(s_utilPoint1, false);
-				smA_Action.perform(Action_Camera_SetCameraTarget.class, m_args_SetCameraTarget);
+				smA_Action.performAction(Action_Camera_SetCameraTarget.class, m_args_SetCameraTarget);
 			}
 		});
 		
@@ -174,7 +174,7 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 	
 	private void updateRefreshButton()
 	{
-		boolean canRefresh = smA_Action.isPerformable(Action_ViewingCell_Refresh.class);
+		boolean canRefresh = smA_Action.isActionPerformable(Action_ViewingCell_Refresh.class);
 		m_refresh.setEnabled(canRefresh);
 		
 		if( !canRefresh )
@@ -206,7 +206,7 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 		/*boolean enabled = smA_Action.isPerformable(State_ViewingCell.Back.class);
 		m_back.setEnabled(enabled);
 		m_forward.setEnabled(smA_Action.isPerformable(State_ViewingCell.Forward.class));*/
-		m_refresh.setEnabled(smA_Action.isPerformable(Action_ViewingCell_Refresh.class));
+		m_refresh.setEnabled(smA_Action.isActionPerformable(Action_ViewingCell_Refresh.class));
 	}
 	
 	@Override
@@ -270,7 +270,7 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 			{
 				if( event.getAction() == Action_Camera_SetCameraViewSize.class )
 				{
-					State_ViewingCell state = (State_ViewingCell)smA_State.getEnteredInstance(State_ViewingCell.class);
+					State_ViewingCell state = event.getContext().getEnteredState(State_ViewingCell.class);
 					
 					if( state != null )
 					{

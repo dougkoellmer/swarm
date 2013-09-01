@@ -24,10 +24,10 @@ public class smStateEvent
 		m_state = state;
 	}
 	
-	smStateEvent(smA_Action action, smA_ActionArgs args)
+	smStateEvent(smA_State state, smA_Action action, smA_ActionArgs args)
 	{
 		m_actionArgs = args;
-		m_state = action.getState();
+		m_state = state;
 		m_action = action;
 		m_eventType = smE_StateEventType.DID_PERFORM_ACTION;
 	}
@@ -76,6 +76,11 @@ public class smStateEvent
 	public <T extends smA_State> T getState()
 	{
 		return (T) (m_eventType != smE_StateEventType.DID_PERFORM_ACTION ? m_state : null);
+	}
+	
+	public smStateContext getContext()
+	{
+		return m_state.getContext();
 	}
 	
 	public smE_StateEventType getType()

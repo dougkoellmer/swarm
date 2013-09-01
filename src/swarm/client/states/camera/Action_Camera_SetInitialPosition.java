@@ -42,10 +42,4 @@ public class Action_Camera_SetInitialPosition extends smA_CameraAction
 		StateMachine_Camera machine = this.getState();
 		return machine.getUpdateCount() == 0;
 	}
-	
-	@Override
-	public Class<? extends smA_State> getStateAssociation()
-	{
-		return StateMachine_Camera.class;
-	}
 }

@@ -151,7 +151,7 @@ public class smVisualCellFocuser extends FlowPanel implements smI_UIElement
 					{
 						if( this.m_poppedCell != null )
 						{
-							StateMachine_Camera cameraController = smA_State.getEnteredInstance(StateMachine_Camera.class);
+							StateMachine_Camera cameraController = smA_State.getEnteredState(StateMachine_Camera.class);
 							
 							State_CameraSnapping snappingState = (State_CameraSnapping) cameraController.getCurrentState();
 							
@@ -192,7 +192,7 @@ public class smVisualCellFocuser extends FlowPanel implements smI_UIElement
 					//---
 					//--- DRK > Note to past doug, this is future doug...it should now be an impossible case, with a
 					//---		forced update in between snapping and viewing, but you never know.
-					StateMachine_Camera cameraController = smA_State.getEnteredInstance(StateMachine_Camera.class);
+					StateMachine_Camera cameraController = smA_State.getEnteredState(StateMachine_Camera.class);
 					this.popUpTargetCell(cameraController.getCurrentState());
 				}
 				
@@ -201,7 +201,7 @@ public class smVisualCellFocuser extends FlowPanel implements smI_UIElement
 			
 			case FADING_OUT:
 			{
-				StateMachine_Camera cameraController = smA_State.getEnteredInstance(StateMachine_Camera.class);
+				StateMachine_Camera cameraController = smA_State.getEnteredState(StateMachine_Camera.class);
 				
 				m_fadeStartTime = cameraController.getTimeInState(smE_StateTimeType.TOTAL);
 				m_startAlpha = m_alpha;
@@ -213,7 +213,7 @@ public class smVisualCellFocuser extends FlowPanel implements smI_UIElement
 	
 	private double calcCameraDistanceToTarget()
 	{
-		StateMachine_Camera cameraController = smA_State.getEnteredInstance(StateMachine_Camera.class);
+		StateMachine_Camera cameraController = smA_State.getEnteredState(StateMachine_Camera.class);
 		smPoint cameraPoint = m_appContext.cameraMngr.getCamera().getPosition();
 		smPoint cameraTarget = m_appContext.cameraMngr.getTargetPosition();
 		return cameraTarget.calcDistanceTo(cameraPoint);
@@ -337,7 +337,7 @@ public class smVisualCellFocuser extends FlowPanel implements smI_UIElement
 			{
 				if( event.getAction() == Action_Camera_SnapToCoordinate.class )
 				{
-					StateMachine_Camera machine = smA_State.getEnteredInstance(StateMachine_Camera.class);
+					StateMachine_Camera machine = smA_State.getEnteredState(StateMachine_Camera.class);
 					
 					if( machine.getCurrentState() instanceof State_CameraSnapping )
 					{

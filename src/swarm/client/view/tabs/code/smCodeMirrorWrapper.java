@@ -50,17 +50,17 @@ public class smCodeMirrorWrapper extends Widget
 		
 		var onChange = function()
 		{
-			self.@swarm.client.ui.tabs.code.smCodeMirrorWrapper::onChange()();
+			self.@swarm.client.view.tabs.code.smCodeMirrorWrapper::onChange()();
 		}
 		
 		var onSave = function()
 		{
-			self.@swarm.client.ui.tabs.code.smCodeMirrorWrapper::onSave()();
+			self.@swarm.client.view.tabs.code.smCodeMirrorWrapper::onSave()();
 		}
 		
 		var onPreview = function()
 		{
-			self.@swarm.client.ui.tabs.code.smCodeMirrorWrapper::onPreview()();
+			self.@swarm.client.view.tabs.code.smCodeMirrorWrapper::onPreview()();
 		}
 		
 		var config = 
@@ -77,7 +77,7 @@ public class smCodeMirrorWrapper extends Widget
 			}
 		};
 		
-		var hostElement = this.@swarm.client.ui.tabs.code.smCodeMirrorWrapper::m_hostElement;
+		var hostElement = this.@swarm.client.view.tabs.code.smCodeMirrorWrapper::m_hostElement;
 		
 		var codeMirror = $wnd.CodeMirror(hostElement, config);
 		
@@ -109,13 +109,13 @@ public class smCodeMirrorWrapper extends Widget
 	
 	public native void setCodeMirrorHeight(String height)
 	/*-{
-			var codeMirror = this.@swarm.client.ui.tabs.code.smCodeMirrorWrapper::m_codeMirror;
+			var codeMirror = this.@swarm.client.view.tabs.code.smCodeMirrorWrapper::m_codeMirror;
 			codeMirror.setSize(null, height);
 	}-*/;
 	
 	public native String getContent()
 	/*-{
-			var codeMirror = this.@swarm.client.ui.tabs.code.smCodeMirrorWrapper::m_codeMirror;
+			var codeMirror = this.@swarm.client.view.tabs.code.smCodeMirrorWrapper::m_codeMirror;
 			return codeMirror.getValue();
 	}-*/;
 	
@@ -130,13 +130,13 @@ public class smCodeMirrorWrapper extends Widget
 	
 	private native void native_setContent(String content)
 	/*-{
-			var codeMirror = this.@swarm.client.ui.tabs.code.smCodeMirrorWrapper::m_codeMirror;
+			var codeMirror = this.@swarm.client.view.tabs.code.smCodeMirrorWrapper::m_codeMirror;
 			codeMirror.setValue(content);
 	}-*/;
 	
 	public native void focus()
 	/*-{
-			var codeMirror = this.@swarm.client.ui.tabs.code.smCodeMirrorWrapper::m_codeMirror;
+			var codeMirror = this.@swarm.client.view.tabs.code.smCodeMirrorWrapper::m_codeMirror;
 			codeMirror.focus();
 	}-*/;
 	
@@ -155,13 +155,13 @@ public class smCodeMirrorWrapper extends Widget
 			    element.fireEvent("onresize",event);
 			}
 	
-			var codeMirror = this.@swarm.client.ui.tabs.code.smCodeMirrorWrapper::m_codeMirror;
+			var codeMirror = this.@swarm.client.view.tabs.code.smCodeMirrorWrapper::m_codeMirror;
 			codeMirror.refresh();
 	}-*/;
 	
 	public native void blur()
 	/*-{
-			var codeMirror = this.@swarm.client.ui.tabs.code.smCodeMirrorWrapper::m_codeMirror;
+			var codeMirror = this.@swarm.client.view.tabs.code.smCodeMirrorWrapper::m_codeMirror;
 			codeMirror.getInputField().blur();
 	}-*/;
 }

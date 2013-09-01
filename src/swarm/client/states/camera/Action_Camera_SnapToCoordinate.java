@@ -94,10 +94,4 @@ public class Action_Camera_SnapToCoordinate extends smA_CameraAction
 			return true;
 		}
 	}
-	
-	@Override
-	public Class<? extends smA_State> getStateAssociation()
-	{
-		return StateMachine_Camera.class;
-	}
 }

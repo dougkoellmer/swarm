@@ -6,6 +6,7 @@ import swarm.client.app.smAppContext;
 import swarm.client.input.smClickManager;
 import swarm.client.input.smI_ClickHandler;
 import swarm.client.managers.smClientAccountManager;
+import swarm.client.states.Action_Tabs_SelectTab;
 import swarm.client.states.StateMachine_Base;
 import swarm.client.states.StateMachine_Tabs;
 import swarm.client.states.account.StateMachine_Account;
@@ -57,7 +58,7 @@ public class smTabPanel extends AbsolutePanel implements smI_UIElement
 	private smI_TabContent m_currentContent = null;
 	private smButtonWithText m_currentTab = null;
 	
-	private static final StateMachine_Tabs.SelectTab.Args m_args_SelectTab = new StateMachine_Tabs.SelectTab.Args();
+	private static final Action_Tabs_SelectTab.Args m_args_SelectTab = new Action_Tabs_SelectTab.Args();
 	
 	private final smI_Tab[] m_tabs;
 	
@@ -127,7 +128,7 @@ public class smTabPanel extends AbsolutePanel implements smI_UIElement
 			public void onClick()
 			{
 				m_args_SelectTab.setIndex(tabIndex);
-				smA_Action.perform(StateMachine_Tabs.SelectTab.class, m_args_SelectTab);
+				smA_Action.performAction(Action_Tabs_SelectTab.class, m_args_SelectTab);
 			}
 		});
 		

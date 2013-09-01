@@ -57,9 +57,9 @@ public class State_SignInOrUp extends smA_State
 	
 	public State_SignInOrUp(smClientAccountManager accountMngr, smUserManager userMngr)
 	{
-		smA_Action.register(new Action_SignInOrUp_SignIn(accountMngr, userMngr));
-		smA_Action.register(new Action_SignInOrUp_SignUp(accountMngr, userMngr));
-		smA_Action.register(new Action_SignInOrUp_SetNewPassword(accountMngr));
+		registerAction(new Action_SignInOrUp_SignIn(accountMngr, userMngr));
+		registerAction(new Action_SignInOrUp_SignUp(accountMngr, userMngr));
+		registerAction(new Action_SignInOrUp_SetNewPassword(accountMngr));
 	}
 	
 	@Override

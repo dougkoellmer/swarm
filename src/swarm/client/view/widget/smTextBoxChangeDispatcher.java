@@ -48,7 +48,7 @@ public class smTextBoxChangeDispatcher
 		var _this = this;
 		$wnd.setTimeout(function()
 		{
-			_this.@swarm.client.ui.widget.smTextBoxChangeDispatcher::dispatchTextChange()();
+			_this.@swarm.client.view.widget.smTextBoxChangeDispatcher::dispatchTextChange()();
 		}, 0);
 	}-*/;
 	

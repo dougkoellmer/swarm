@@ -11,19 +11,13 @@ public class State_AsyncDialog extends State_GenericDialog
 		@Override
 		public void perform(smA_ActionArgs args)
 		{
-			StateMachine_Base baseController = smA_State.getForegroundedInstance(StateMachine_Base.class);
+			StateMachine_Base baseController = getContext().getForegroundedState(StateMachine_Base.class);
 			baseController.dequeueAsyncDialog();
-		}
-		
-		@Override
-		public Class<? extends smA_State> getStateAssociation()
-		{
-			return State_AsyncDialog.class;
 		}
 	}
 	
 	public State_AsyncDialog()
 	{
-		smA_Action.register(new State_AsyncDialog.Ok());
+		registerAction(new State_AsyncDialog.Ok());
 	}
 }

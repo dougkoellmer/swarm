@@ -334,7 +334,7 @@ public class smSignUpPanel extends VerticalPanel implements smI_StateEventListen
 			smSignUpCredentials creds = new smSignUpCredentials(rememberMe, args);
 			
 			m_args_SignUp.setCreds(creds);
-			smA_Action.perform(Action_SignInOrUp_SignUp.class, m_args_SignUp);
+			smA_Action.performAction(Action_SignInOrUp_SignUp.class, m_args_SignUp);
 			
 			m_lastFocusedFieldIndex = focusedFieldIndex;
 			

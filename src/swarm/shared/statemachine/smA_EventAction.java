@@ -8,7 +8,4 @@ public abstract class smA_EventAction extends smA_Action
 	{
 		// do nothing
 	}
-
-	@Override
-	public abstract Class<? extends smA_State> getStateAssociation();
 }

@@ -64,7 +64,7 @@ public class smManageAccountPanel extends FlowPanel implements smI_StateEventLis
 			@Override
 			public void onClick()
 			{
-				smA_Action.perform(Action_ManageAccount_SignOut.class);
+				smA_Action.performAction(Action_ManageAccount_SignOut.class);
 			}
 		});
 		

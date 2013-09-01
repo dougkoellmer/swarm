@@ -42,12 +42,6 @@ public class Action_SignInOrUp_SignIn extends smA_Action
 		
 		machine_pushState(this.getState().getParent(), State_AccountStatusPending.class);			
 	}
-
-	@Override
-	public Class<? extends smA_State> getStateAssociation()
-	{
-		return State_SignInOrUp.class;
-	}
 	
 	@Override
 	public boolean isPerformable(smA_ActionArgs args)

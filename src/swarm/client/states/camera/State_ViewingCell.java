@@ -53,7 +53,7 @@ public class State_ViewingCell extends smA_State implements smI_StateEventListen
 	{
 		m_appContext = appContext;
 		
-		smA_Action.register(new Action_ViewingCell_Refresh());
+		registerAction(new Action_ViewingCell_Refresh());
 	}
 	
 	void refreshCell()
@@ -69,7 +69,7 @@ public class State_ViewingCell extends smA_State implements smI_StateEventListen
 		smI_LocalCodeRepository localCodeRepo = ((StateMachine_Camera)this.getParent()).getCodeRepository();
 		
 		//--- DRK > NOTE: Directly manipulating m_hasRequestedSourceHtml is a little hacky, but whatever.
-		if( smA_State.isForegrounded(StateMachine_EditingCode.class) )
+		if( getContext().isForegrounded(StateMachine_EditingCode.class) )
 		{
 			codeManager.populateCell(cell, localCodeRepo, 1, false, true, smE_CodeType.SOURCE);
 			
@@ -132,7 +132,7 @@ public class State_ViewingCell extends smA_State implements smI_StateEventListen
 		//--- DRK > As an optimization, we only retrieve the source html if we're in the html state.
 		if( !m_hasRequestedSourceCode )
 		{
-			if( smA_State.isForegrounded(StateMachine_EditingCode.class) )
+			if( getContext().isForegrounded(StateMachine_EditingCode.class) )
 			{
 				smI_LocalCodeRepository localHtmlSource = ((StateMachine_Camera)this.getParent()).getCodeRepository();
 				smCellCodeManager codeMngr = m_appContext.codeMngr;

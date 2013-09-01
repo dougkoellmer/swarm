@@ -21,12 +21,6 @@ public class Action_ManageAccount_SignOut extends smA_Action
 		
 		machine_pushState(this.getState().getParent(), State_AccountStatusPending.class);			
 	}
-
-	@Override
-	public Class<? extends smA_State> getStateAssociation()
-	{
-		return State_ManageAccount.class;
-	}
 	
 	@Override
 	public boolean isPerformable(smA_ActionArgs args)

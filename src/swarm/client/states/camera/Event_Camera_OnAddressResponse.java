@@ -56,10 +56,4 @@ public class Event_Camera_OnAddressResponse extends smA_EventAction
 	{
 		return true;
 	}
-	
-	@Override
-	public Class<? extends smA_State> getStateAssociation()
-	{
-		return StateMachine_Camera.class;
-	}
 }

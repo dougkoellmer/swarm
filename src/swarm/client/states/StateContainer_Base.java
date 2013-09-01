@@ -7,8 +7,6 @@ import swarm.client.transaction.smE_ResponseSuccessControl;
 import swarm.client.transaction.smI_TransactionResponseHandler;
 import swarm.client.transaction.smClientTransactionManager;
 
-import swarm.shared.statemachine.smA_Action;
-import swarm.shared.statemachine.smA_ActionArgs;
 import swarm.shared.statemachine.smA_State;
 import swarm.shared.statemachine.smA_StateContainer;
 import swarm.shared.statemachine.smA_StateConstructor;
@@ -21,52 +19,10 @@ import swarm.shared.transaction.smTransactionResponse;
  */
 public class StateContainer_Base extends smA_StateContainer
 {
-	public static class HideSupplementState extends smA_Action
-	{
-		@Override
-		public void perform(smA_ActionArgs args)
-		{
-			container_backgroundState(this.getState(), StateMachine_Tabs.class);
-		}
-		
-		@Override
-		public boolean isPerformable(smA_ActionArgs args)
-		{
-			return smA_State.isForegrounded(StateMachine_Tabs.class);
-		}
-		
-		@Override
-		public Class<? extends smA_State> getStateAssociation()
-		{
-			return StateContainer_Base.class;
-		}
-	}
-	
-	public static class ShowSupplementState extends smA_Action 
-	{
-		@Override
-		public void perform(smA_ActionArgs args)
-		{
-			container_foregroundState(this.getState(), StateMachine_Tabs.class);
-		}
-		
-		@Override
-		public boolean isPerformable(smA_ActionArgs args)
-		{
-			return !smA_State.isForegrounded(StateMachine_Tabs.class);
-		}
-		
-		@Override
-		public Class<? extends smA_State> getStateAssociation()
-		{
-			return StateContainer_Base.class;
-		}
-	}
-	
 	public StateContainer_Base()
 	{
-		smA_Action.register(new HideSupplementState());
-		smA_Action.register(new ShowSupplementState());
+		registerAction(new Action_Base_HideSupplementState());
+		registerAction(new Action_Base_ShowSupplementState());
 	}
 	
 	@Override

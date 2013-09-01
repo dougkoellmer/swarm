@@ -6,7 +6,6 @@ import swarm.client.app.smClientAppConfig;
 import swarm.client.app.smAppContext;
 import swarm.client.input.smMouse;
 import swarm.client.navigation.smBrowserNavigator;
-import swarm.client.navigation.smMasterNavigator;
 import swarm.client.navigation.smMouseNavigator;
 import swarm.client.states.StateContainer_Base;
 import swarm.client.states.StateMachine_Base;

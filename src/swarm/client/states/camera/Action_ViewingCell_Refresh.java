@@ -31,10 +31,4 @@ public class Action_ViewingCell_Refresh extends smA_CameraAction
 			return true;
 		}
 	}
-	
-	@Override
-	public Class<? extends smA_State> getStateAssociation()
-	{
-		return State_ViewingCell.class;
-	}
 }

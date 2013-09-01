@@ -409,7 +409,7 @@ public class smVisualCellManager implements smI_UIElement, smI_CellPoolDelegate
 	
 	private smBufferCell getCurrentBufferCell()
 	{
-		State_ViewingCell state = smA_State.getEnteredInstance(State_ViewingCell.class);
+		State_ViewingCell state = smA_State.getEnteredState(State_ViewingCell.class);
 		if( state != null )
 		{
 			return state.getCell();

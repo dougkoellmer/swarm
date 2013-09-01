@@ -34,7 +34,7 @@ public class State_EditingCode extends smA_State
 {
 	void performCommitOrPreview(smA_Action thisArg)
 	{
-		State_ViewingCell viewingState = smA_State.getForegroundedInstance(State_ViewingCell.class);
+		State_ViewingCell viewingState = getContext().getForegroundedState(State_ViewingCell.class);
 		smBufferCell viewedCell = viewingState.getCell();
 		smGridCoordinate coord = viewedCell.getCoordinate();
 		
@@ -65,7 +65,7 @@ public class State_EditingCode extends smA_State
 			String title = "Compiler Error";
 			String body = smCompilerErrorMessageGenerator.getInstance().generate(compilerResult);
 			
-			StateMachine_Base baseController = smA_State.getEnteredInstance(StateMachine_Base.class);
+			StateMachine_Base baseController = getContext().getEnteredState(StateMachine_Base.class);
 			
 			State_GenericDialog.Constructor constructor = new State_GenericDialog.Constructor(title, body);
 			
@@ -75,7 +75,7 @@ public class State_EditingCode extends smA_State
 	
 	boolean isCommitOrPreviewPerformable(boolean isPreview)
 	{
-		State_ViewingCell state = (State_ViewingCell) smA_State.getForegroundedInstance(State_ViewingCell.class);
+		State_ViewingCell state = getContext().getForegroundedState(State_ViewingCell.class);
 		
 		if( state == null )
 		{
@@ -125,9 +125,9 @@ public class State_EditingCode extends smA_State
 	{
 		m_appContext = appContext;
 		
-		smA_Action.register(new Action_EditingCode_Save());
-		smA_Action.register(new Action_EditingCode_Edit(m_appContext.userMngr));
-		smA_Action.register(new Action_EditingCode_Preview());
+		registerAction(new Action_EditingCode_Save());
+		registerAction(new Action_EditingCode_Edit(m_appContext.userMngr));
+		registerAction(new Action_EditingCode_Preview());
 	}
 	
 	@Override

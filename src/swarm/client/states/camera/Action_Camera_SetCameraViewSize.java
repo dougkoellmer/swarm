@@ -46,12 +46,6 @@ public class Action_Camera_SetCameraViewSize extends smA_Action
 	}
 
 	@Override
-	public Class<? extends smA_State> getStateAssociation()
-	{
-		return StateMachine_Camera.class;
-	}
-	
-	@Override
 	public boolean isPerformableInBackground()
 	{
 		return true;

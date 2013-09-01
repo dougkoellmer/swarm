@@ -76,12 +76,6 @@ public class Action_Camera_SetCameraTarget extends smA_CameraAction
 			machine.updateBufferManager();
 		}
 	}
-	
-	@Override
-	public Class<? extends smA_State> getStateAssociation()
-	{
-		return StateMachine_Camera.class;
-	}
 
 	@Override
 	public boolean suppressLog()

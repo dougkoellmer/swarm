@@ -134,7 +134,7 @@ public abstract class smA_ServerApp extends smA_App
 	private void addClientHandlers()
 	{
 		smServerTransactionManager txnManager = sm_s.txnMngr;
-		smSharedAppContext.requestPathMngr.register(smE_RequestPath.values());
+		smSharedAppContext.requestPathMngr.registerState(smE_RequestPath.values());
 		
 		getCode getCodeHandler = new getCode();
 		
@@ -158,7 +158,7 @@ public abstract class smA_ServerApp extends smA_App
 	private static void addAdminHandlers(Class<? extends smI_HomeCellCreator> T_homeCellCreator)
 	{
 		smServerTransactionManager txnManager = sm_s.txnMngr;
-		smSharedAppContext.requestPathMngr.register(smE_AdminRequestPath.values());
+		smSharedAppContext.requestPathMngr.registerState(smE_AdminRequestPath.values());
 		
 		setAdminHandler(new createGrid(smServerGrid.class),						smE_AdminRequestPath.createGrid);
 		setAdminHandler(new deactivateUserCells(),								smE_AdminRequestPath.deactivateUserCells);
@@ -177,7 +177,7 @@ public abstract class smA_ServerApp extends smA_App
 	private static void addTelemetryHandlers()
 	{
 		smServerTransactionManager txnManager = sm_s.txnMngr;
-		smSharedAppContext.requestPathMngr.register(smE_TelemetryRequestPath.values());
+		smSharedAppContext.requestPathMngr.registerState(smE_TelemetryRequestPath.values());
 		
 		txnManager.setRequestHandler(new logAssert(),	smE_TelemetryRequestPath.logAssert);
 	}
@@ -185,7 +185,7 @@ public abstract class smA_ServerApp extends smA_App
 	private static void addDebugHandlers()
 	{
 		smServerTransactionManager txnManager = sm_s.txnMngr;
-		smSharedAppContext.requestPathMngr.register(smE_DebugRequestPath.values());
+		smSharedAppContext.requestPathMngr.registerState(smE_DebugRequestPath.values());
 		
 		txnManager.setRequestHandler(new sessionQueryTest(),		smE_DebugRequestPath.sessionQueryTest);
 	}

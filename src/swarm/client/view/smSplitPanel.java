@@ -6,6 +6,8 @@ import swarm.client.app.smAppContext;
 import swarm.client.input.smClickManager;
 import swarm.client.input.smI_ClickHandler;
 import swarm.client.managers.smClientAccountManager;
+import swarm.client.states.Action_Base_HideSupplementState;
+import swarm.client.states.Action_Base_ShowSupplementState;
 import swarm.client.states.StateContainer_Base;
 import swarm.client.states.StateMachine_Base;
 import swarm.client.states.StateMachine_Tabs;
@@ -142,13 +144,13 @@ public class smSplitPanel extends SplitLayoutPanel implements smI_UIElement
 			@Override
 			public void onClick()
 			{
-				if( smA_Action.perform(StateContainer_Base.HideSupplementState.class) )
+				if( smA_Action.performAction(Action_Base_HideSupplementState.class) )
 				{
 					m_lastTabPanelSize = m_tabPanel.getOffsetWidth();
 					
 					m_tweener.start(m_lastTabPanelSize, 0);
 				}
-				else if( smA_Action.perform(StateContainer_Base.ShowSupplementState.class) )
+				else if( smA_Action.performAction(Action_Base_ShowSupplementState.class) )
 				{
 					double windowWidth = RootPanel.get().getOffsetWidth();
 					
@@ -187,7 +189,7 @@ public class smSplitPanel extends SplitLayoutPanel implements smI_UIElement
 	{
 		smToolTipManager toolTipper = m_viewContext.toolTipMngr;
 		
-		StateMachine_Tabs tabMachine = smA_State.getEnteredInstance(StateMachine_Tabs.class);
+		StateMachine_Tabs tabMachine = smA_State.getEnteredState(StateMachine_Tabs.class);
 		
 		boolean isCollapsed = !tabMachine.isForegrounded() && tabMachine.getBlockingState() == null;
 		
@@ -368,14 +370,14 @@ public class smSplitPanel extends SplitLayoutPanel implements smI_UIElement
 	
 	private void showOrHideTabControllerStateFromManualResize()
 	{
-		boolean showable = smA_Action.isPerformable(StateContainer_Base.ShowSupplementState.class);
-		boolean hideable = smA_Action.isPerformable(StateContainer_Base.HideSupplementState.class);
+		boolean showable = smA_Action.isActionPerformable(Action_Base_ShowSupplementState.class);
+		boolean hideable = smA_Action.isActionPerformable(Action_Base_HideSupplementState.class);
 		
 		if( showable )
 		{
 			if( m_splitter.getAbsoluteLeft() > 0 )
 			{
-				smA_Action.perform(StateContainer_Base.ShowSupplementState.class);
+				smA_Action.performAction(Action_Base_ShowSupplementState.class);
 			}
 		}
 		else if( hideable )
@@ -383,7 +385,7 @@ public class smSplitPanel extends SplitLayoutPanel implements smI_UIElement
 			if( m_splitter.getAbsoluteLeft() <= 0 )
 			{
 				m_lastTabPanelSize = 0;
-				smA_Action.perform(StateContainer_Base.HideSupplementState.class);
+				smA_Action.performAction(Action_Base_HideSupplementState.class);
 			}
 		}
 	}

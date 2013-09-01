@@ -54,10 +54,10 @@ public class smDialogManager implements smI_UIElement
 				//---				so that I only have to call State_GenericDialog.Ok, and the system knows
 				//---				to call State_AsyncDialog.Ok because it is State_AsyncDialog that is foregrounded.
 				//---				Until then, I present the following somewhat sloppy workaround.
-				if( smA_Action.perform(State_GenericDialog.Ok.class) )
+				if( smA_Action.performAction(State_GenericDialog.Ok.class) )
 				{
 				}
-				else if( smA_Action.perform(State_AsyncDialog.Ok.class) )
+				else if( smA_Action.performAction(State_AsyncDialog.Ok.class) )
 				{
 					
 				}

@@ -23,9 +23,11 @@ public class StateMachine_Account extends smA_StateMachine
 	private static class AccountManagerDelegate implements smClientAccountManager.I_Delegate
 	{
 		private final smClientAccountManager m_accountMngr;
+		private final StateMachine_Account m_state;
 		
-		AccountManagerDelegate(smClientAccountManager accountManager)
+		AccountManagerDelegate(StateMachine_Account state, smClientAccountManager accountManager)
 		{
+			m_state = state;
 			m_accountMngr = accountManager;
 		}
 
@@ -49,7 +51,7 @@ public class StateMachine_Account extends smA_StateMachine
 		
 		private void onAccountManagerDelegation()
 		{
-			StateMachine_Account accountMachine = smA_State.getForegroundedInstance(StateMachine_Account.class);
+			StateMachine_Account accountMachine = m_state.getContext().getForegroundedState(StateMachine_Account.class);
 
 			if( accountMachine != null )
 			{
@@ -67,7 +69,7 @@ public class StateMachine_Account extends smA_StateMachine
 	
 	public StateMachine_Account(smClientAccountManager accountMngr)
 	{
-		m_accountManagerDelegate = new AccountManagerDelegate(accountMngr);
+		m_accountManagerDelegate = new AccountManagerDelegate(this, accountMngr);
 		m_accountMngr = accountMngr;
 	}
 	
