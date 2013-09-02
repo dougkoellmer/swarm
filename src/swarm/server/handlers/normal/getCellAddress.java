@@ -1,6 +1,6 @@
 package swarm.server.handlers.normal;
 
-import swarm.server.account.sm_s;
+
 import swarm.server.data.blob.smBlobException;
 import swarm.server.data.blob.smBlobManagerFactory;
 import swarm.server.data.blob.smE_BlobCacheLevel;
@@ -8,6 +8,7 @@ import swarm.server.data.blob.smI_BlobManager;
 import swarm.server.entities.smE_GridType;
 import swarm.server.entities.smServerCell;
 import swarm.server.structs.smServerCellAddressMapping;
+import swarm.server.transaction.smA_DefaultRequestHandler;
 import swarm.server.transaction.smI_RequestHandler;
 import swarm.server.transaction.smTransactionContext;
 import swarm.shared.structs.smE_GetCellAddressError;
@@ -16,7 +17,7 @@ import swarm.shared.transaction.smE_ResponseError;
 import swarm.shared.transaction.smTransactionRequest;
 import swarm.shared.transaction.smTransactionResponse;
 
-public class getCellAddress implements smI_RequestHandler
+public class getCellAddress extends smA_DefaultRequestHandler
 {
 	@Override
 	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
@@ -25,7 +26,7 @@ public class getCellAddress implements smI_RequestHandler
 		mapping.readJson(null, request.getJsonArgs());
 		smGetCellAddressResult result = new smGetCellAddressResult();
 		
-		smI_BlobManager blobManager = sm_s.blobMngrFactory.create(smE_BlobCacheLevel.values());
+		smI_BlobManager blobManager = m_context.blobMngrFactory.create(smE_BlobCacheLevel.values());
 		
 		try
 		{

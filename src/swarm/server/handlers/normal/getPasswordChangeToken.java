@@ -5,7 +5,7 @@ import javax.servlet.http.HttpServletRequest;
 import swarm.server.account.smS_ServerAccount;
 import swarm.server.account.smServerAccountManager;
 import swarm.server.account.smUserSession;
-import swarm.server.account.sm_s;
+
 import swarm.server.data.blob.smBlobException;
 import swarm.server.data.blob.smBlobManagerFactory;
 import swarm.server.data.blob.smE_BlobCacheLevel;
@@ -16,6 +16,7 @@ import swarm.server.entities.smServerCell;
 import swarm.server.session.smSessionManager;
 import swarm.server.structs.smServerCellAddressMapping;
 import swarm.server.telemetry.smTelemetryDatabase;
+import swarm.server.transaction.smA_DefaultRequestHandler;
 import swarm.server.transaction.smI_RequestHandler;
 import swarm.server.transaction.smTransactionContext;
 import swarm.shared.app.smSharedAppContext;
@@ -28,12 +29,12 @@ import swarm.shared.transaction.smE_ResponseError;
 import swarm.shared.transaction.smTransactionRequest;
 import swarm.shared.transaction.smTransactionResponse;
 
-public class getPasswordChangeToken implements smI_RequestHandler
+public class getPasswordChangeToken extends smA_DefaultRequestHandler
 {
 	@Override
 	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
 	{
-		smSessionManager sessionManager = sm_s.sessionMngr;
+		smSessionManager sessionManager = m_context.sessionMngr;
 		HttpServletRequest nativeRequest = (HttpServletRequest) request.getNativeRequest();
 		
 		String passwordChangeToken = nativeRequest.getParameter(smS_ServerAccount.PASSWORD_CHANGE_TOKEN_PARAMETER_NAME);
@@ -46,9 +47,9 @@ public class getPasswordChangeToken implements smI_RequestHandler
 				sessionManager.endSession(request, response);
 			}
 			
-			if( sm_s.accountMngr.isPasswordChangeTokenValid(passwordChangeToken) )
+			if( m_context.accountMngr.isPasswordChangeTokenValid(passwordChangeToken) )
 			{
-				factory.getHelper().putString(response.getJsonArgs(), smE_JsonKey.passwordChangeToken, passwordChangeToken);
+				m_context.jsonFactory.getHelper().putString(response.getJsonArgs(), smE_JsonKey.passwordChangeToken, passwordChangeToken);
 			}
 			else
 			{

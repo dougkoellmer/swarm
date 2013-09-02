@@ -53,6 +53,7 @@ public class smCajaWrapper
 		m_callback = callback;
 
 		m_cellApi = new smCellApi(viewContext);
+		m_cellApi.registerApi(apiNamespace);
 		
 		initialize_native(this, apiNamespace);
 	}

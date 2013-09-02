@@ -13,8 +13,9 @@ import swarm.server.account.smE_Role;
 import swarm.server.account.smS_ServerAccount;
 import swarm.server.account.smServerAccountManager;
 import swarm.server.account.smUserSession;
-import swarm.server.account.sm_s;
+
 import swarm.server.session.smSessionManager;
+import swarm.server.transaction.smA_DefaultRequestHandler;
 import swarm.server.transaction.smI_RequestHandler;
 import swarm.server.transaction.smTransactionContext;
 import swarm.shared.account.smE_SignInCredentialType;
@@ -26,17 +27,17 @@ import swarm.shared.transaction.smE_ResponseError;
 import swarm.shared.transaction.smTransactionRequest;
 import swarm.shared.transaction.smTransactionResponse;
 
-public class setNewDesiredPassword implements smI_RequestHandler
+public class setNewDesiredPassword extends smA_DefaultRequestHandler
 {
 	private static final Logger s_logger = Logger.getLogger(setNewDesiredPassword.class.getName());
 	
 	@Override
 	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
 	{
-		smServerAccountManager accountManager = sm_s.accountMngr;
+		smServerAccountManager accountManager = m_context.accountMngr;
 		
 		//--- DRK > Just a sanity check...probably meaningless.
-		smUserSession session = sm_s.sessionMngr.getSession(request, response);
+		smUserSession session = m_context.sessionMngr.getSession(request, response);
 		if( session != null )
 		{
 			response.setError(smE_ResponseError.BAD_STATE);

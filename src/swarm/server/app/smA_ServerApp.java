@@ -10,7 +10,7 @@ import com.google.appengine.api.rdbms.AppEngineDriver;
 import swarm.client.app.smClientAppConfig;
 import swarm.server.account.smAccountDatabase;
 import swarm.server.account.smServerAccountManager;
-import swarm.server.account.sm_s;
+
 import swarm.server.code.smServerCodeCompiler;
 import swarm.server.data.blob.smBlobManagerFactory;
 import swarm.server.entities.smServerGrid;
@@ -40,6 +40,7 @@ import swarm.server.session.smSessionManager;
 import swarm.server.telemetry.smTelemetryDatabase;
 import swarm.server.thirdparty.json.smServerJsonFactory;
 import swarm.server.thirdparty.servlet.smServletRedirector;
+import swarm.server.transaction.smA_DefaultRequestHandler;
 import swarm.server.transaction.smE_AdminRequestPath;
 import swarm.server.transaction.smE_DebugRequestPath;
 import swarm.server.transaction.smI_RequestHandler;
@@ -62,11 +63,26 @@ public abstract class smA_ServerApp extends smA_App
 {
 	private static final Logger s_logger = Logger.getLogger(smA_ServerApp.class.getName());
 	
+	private static smA_ServerApp s_instance;
+	
 	private smServerAppConfig m_appConfig;
+	private final smServerContext m_context = new smServerContext();
 	
 	protected smA_ServerApp()
 	{
 		super(smE_AppEnvironment.SERVER);
+		
+		s_instance = this;
+	}
+	
+	public static smA_ServerApp getInstance()
+	{
+		return s_instance;
+	}
+	
+	public smServerContext getContext()
+	{
+		return m_context;
 	}
 	
 	public smServerAppConfig getConfig()
@@ -77,7 +93,6 @@ public abstract class smA_ServerApp extends smA_App
 	protected void entryPoint(smServerAppConfig appConfig)
 	{
 		m_appConfig = appConfig;
-		sm_s.app = this;
 		
 		smU_Debug.setDelegate(new smI_AssertionDelegate()
 		{
@@ -97,16 +112,16 @@ public abstract class smA_ServerApp extends smA_App
 			s_logger.log(Level.SEVERE, "Could not start up sql databases.", e1);
 		}
 		
-		sm_s.jsonFactory = new smServerJsonFactory();
-		sm_s.codeCompiler = new smServerCodeCompiler();
-		smSharedAppContext.requestPathMngr = new smRequestPathManager(sm_s.jsonFactory, appConfig.verboseTransactions);
-		sm_s.txnMngr = new smServerTransactionManager((smA_ServerJsonFactory) sm_s.jsonFactory, smSharedAppContext.requestPathMngr, appConfig.verboseTransactions);
-		sm_s.inlineTxnMngr = new smInlineTransactionManager((smA_ServerJsonFactory) sm_s.jsonFactory, appConfig.appId, appConfig.verboseTransactions);
-		sm_s.blobMngrFactory = new smBlobManagerFactory();
-		sm_s.sessionMngr = new smSessionManager();
-		sm_s.accountMngr = new smServerAccountManager(new smAccountDatabase(appConfig.databaseUrl, appConfig.accountsDatabase));
-		sm_s.telemetryDb = new smTelemetryDatabase(appConfig.databaseUrl, appConfig.telemetryDatabase);
-		sm_s.requestRedirector = new smServletRedirector(appConfig.mainPage);
+		m_context.jsonFactory = new smServerJsonFactory();
+		m_context.codeCompiler = new smServerCodeCompiler();
+		m_context.requestPathMngr = new smRequestPathManager(m_context.jsonFactory, appConfig.verboseTransactions);
+		m_context.txnMngr = new smServerTransactionManager((smA_ServerJsonFactory) m_context.jsonFactory, m_context.requestPathMngr, appConfig.verboseTransactions);
+		m_context.inlineTxnMngr = new smInlineTransactionManager(m_context.txnMngr, (smA_ServerJsonFactory) m_context.jsonFactory, appConfig.appId, appConfig.verboseTransactions);
+		m_context.blobMngrFactory = new smBlobManagerFactory();
+		m_context.sessionMngr = new smSessionManager(m_context.blobMngrFactory, m_context.jsonFactory);
+		m_context.accountMngr = new smServerAccountManager(new smAccountDatabase(appConfig.databaseUrl, appConfig.accountsDatabase));
+		m_context.telemetryDb = new smTelemetryDatabase(appConfig.databaseUrl, appConfig.telemetryDatabase);
+		m_context.redirector = new smServletRedirector(appConfig.mainPage);
 		
 		addClientHandlers();
 		addAdminHandlers(m_appConfig.T_homeCellCreator);
@@ -114,51 +129,59 @@ public abstract class smA_ServerApp extends smA_App
 		//addDebugHandlers();
 		//addDebugPathResponseErrors();
 		
-		addTxnScopeListener(sm_s.blobMngrFactory);
-		addTxnScopeListener(sm_s.sessionMngr);
-		addTxnScopeListener(sm_s.accountMngr.getAccountDb());
-		addTxnScopeListener(sm_s.telemetryDb);
+		addTxnScopeListener(m_context.blobMngrFactory);
+		addTxnScopeListener(m_context.sessionMngr);
+		addTxnScopeListener(m_context.accountMngr.getAccountDb());
+		addTxnScopeListener(m_context.telemetryDb);
 	}
 	
 	private void addTxnScopeListener(smI_TransactionScopeListener listener)
 	{
-		sm_s.txnMngr.addScopeListener(listener);
-		sm_s.inlineTxnMngr.addScopeListener(listener);
+		m_context.txnMngr.addScopeListener(listener);
+		m_context.inlineTxnMngr.addScopeListener(listener);
 	}
 	
-	private static void addDebugPathResponseErrors()
+	private void addDebugPathResponseErrors()
 	{
-		sm_s.txnMngr.setDebugResponseError(smE_RequestPath.syncCode);
+		m_context.txnMngr.setDebugResponseError(smE_RequestPath.syncCode);
 	}
 	
 	private void addClientHandlers()
 	{
-		smServerTransactionManager txnManager = sm_s.txnMngr;
-		smSharedAppContext.requestPathMngr.registerState(smE_RequestPath.values());
+		m_context.requestPathMngr.register(smE_RequestPath.values());
 		
 		getCode getCodeHandler = new getCode();
 		
-		txnManager.setRequestHandler(getCodeHandler,				smE_RequestPath.getCode);
-		txnManager.setRequestHandler(new syncCode(),				smE_RequestPath.syncCode);
-		txnManager.setRequestHandler(new getCellAddress(),			smE_RequestPath.getCellAddress);
-		txnManager.setRequestHandler(new getCellAddressMapping(),	smE_RequestPath.getCellAddressMapping);
-		txnManager.setRequestHandler(new getUserData(false),		smE_RequestPath.getUserData);
-		txnManager.setRequestHandler(new getGridData(),				smE_RequestPath.getGridData);
-		txnManager.setRequestHandler(new signIn(),					smE_RequestPath.signIn);
-		txnManager.setRequestHandler(new signUp(m_appConfig.publicRecaptchaKey, m_appConfig.privateRecaptchaKey), smE_RequestPath.signUp);
-		txnManager.setRequestHandler(new signOut(),					smE_RequestPath.signOut);
-		txnManager.setRequestHandler(new getAccountInfo(),			smE_RequestPath.getAccountInfo);
-		txnManager.setRequestHandler(new setNewDesiredPassword(),	smE_RequestPath.setNewDesiredPassword);
-		txnManager.setRequestHandler(new getPasswordChangeToken(),	smE_RequestPath.getPasswordChangeToken);
-		txnManager.setRequestHandler(new getServerVersion(),		smE_RequestPath.getServerVersion);
+		setNormalHandler(getCodeHandler,				smE_RequestPath.getCode);
+		setNormalHandler(new syncCode(),				smE_RequestPath.syncCode);
+		setNormalHandler(new getCellAddress(),			smE_RequestPath.getCellAddress);
+		setNormalHandler(new getCellAddressMapping(),	smE_RequestPath.getCellAddressMapping);
+		setNormalHandler(new getUserData(false),		smE_RequestPath.getUserData);
+		setNormalHandler(new getGridData(),				smE_RequestPath.getGridData);
+		setNormalHandler(new signIn(),					smE_RequestPath.signIn);
+		setNormalHandler(new signUp(m_appConfig.publicRecaptchaKey, m_appConfig.privateRecaptchaKey), smE_RequestPath.signUp);
+		setNormalHandler(new signOut(),					smE_RequestPath.signOut);
+		setNormalHandler(new getAccountInfo(),			smE_RequestPath.getAccountInfo);
+		setNormalHandler(new setNewDesiredPassword(),	smE_RequestPath.setNewDesiredPassword);
+		setNormalHandler(new getPasswordChangeToken(),	smE_RequestPath.getPasswordChangeToken);
+		setNormalHandler(new getServerVersion(),		smE_RequestPath.getServerVersion);
 		
-		txnManager.addDeferredHandler(getCodeHandler);
+		m_context.txnMngr.addDeferredHandler(getCodeHandler);
 	}
 	
-	private static void addAdminHandlers(Class<? extends smI_HomeCellCreator> T_homeCellCreator)
+	private void setNormalHandler(smA_DefaultRequestHandler handler, smI_RequestPath path)
 	{
-		smServerTransactionManager txnManager = sm_s.txnMngr;
-		smSharedAppContext.requestPathMngr.registerState(smE_AdminRequestPath.values());
+		smServerTransactionManager txnManager = m_context.txnMngr;
+		
+		handler.init(m_context);
+		
+		txnManager.setRequestHandler(handler, path);
+	}
+	
+	private void addAdminHandlers(Class<? extends smI_HomeCellCreator> T_homeCellCreator)
+	{
+		smServerTransactionManager txnManager = m_context.txnMngr;
+		m_context.requestPathMngr.register(smE_AdminRequestPath.values());
 		
 		setAdminHandler(new createGrid(smServerGrid.class),						smE_AdminRequestPath.createGrid);
 		setAdminHandler(new deactivateUserCells(),								smE_AdminRequestPath.deactivateUserCells);
@@ -167,25 +190,25 @@ public abstract class smA_ServerApp extends smA_App
 		setAdminHandler(new recompileCells(),									smE_AdminRequestPath.recompileCells);
 	}
 	
-	protected static void setAdminHandler(smI_RequestHandler handler, smI_RequestPath path)
+	protected void setAdminHandler(smI_RequestHandler handler, smI_RequestPath path)
 	{
-		smServerTransactionManager txnManager = sm_s.txnMngr;
+		smServerTransactionManager txnManager = m_context.txnMngr;
 		
-		txnManager.setRequestHandler(new adminHandler(handler), path);
+		txnManager.setRequestHandler(new adminHandler(m_context.sessionMngr, handler), path);
 	}
 	
-	private static void addTelemetryHandlers()
+	private void addTelemetryHandlers()
 	{
-		smServerTransactionManager txnManager = sm_s.txnMngr;
-		smSharedAppContext.requestPathMngr.registerState(smE_TelemetryRequestPath.values());
+		smServerTransactionManager txnManager = m_context.txnMngr;
+		m_context.requestPathMngr.register(smE_TelemetryRequestPath.values());
 		
 		txnManager.setRequestHandler(new logAssert(),	smE_TelemetryRequestPath.logAssert);
 	}
 	
-	private static void addDebugHandlers()
+	private void addDebugHandlers()
 	{
-		smServerTransactionManager txnManager = sm_s.txnMngr;
-		smSharedAppContext.requestPathMngr.registerState(smE_DebugRequestPath.values());
+		smServerTransactionManager txnManager = m_context.txnMngr;
+		m_context.requestPathMngr.register(smE_DebugRequestPath.values());
 		
 		txnManager.setRequestHandler(new sessionQueryTest(),		smE_DebugRequestPath.sessionQueryTest);
 	}

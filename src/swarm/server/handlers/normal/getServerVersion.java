@@ -13,6 +13,7 @@ import swarm.server.entities.smServerCell;
 import swarm.server.session.smSessionManager;
 import swarm.server.structs.smServerCellAddressMapping;
 import swarm.server.telemetry.smTelemetryDatabase;
+import swarm.server.transaction.smA_DefaultRequestHandler;
 import swarm.server.transaction.smI_RequestHandler;
 import swarm.server.transaction.smTransactionContext;
 import swarm.shared.app.smSharedAppContext;
@@ -25,11 +26,11 @@ import swarm.shared.transaction.smE_ResponseError;
 import swarm.shared.transaction.smTransactionRequest;
 import swarm.shared.transaction.smTransactionResponse;
 
-public class getServerVersion implements smI_RequestHandler
+public class getServerVersion extends smA_DefaultRequestHandler
 {
 	@Override
 	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
 	{
-		m_jsonFactory.getHelper().putInt(response.getJsonArgs(), smE_JsonKey.serverVersion, smS_App.SERVER_VERSION);
+		m_context.jsonFactory.getHelper().putInt(response.getJsonArgs(), smE_JsonKey.serverVersion, smS_App.SERVER_VERSION);
 	}
 }

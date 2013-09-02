@@ -29,12 +29,10 @@ public class smVisualCellHighlight extends FlowPanel implements smI_UIElement
 	
 	private double m_lastScaling = -1;
 	
-	private final smAppContext m_appContext;
 	private final smViewContext m_viewContext;
 	
-	public smVisualCellHighlight(smAppContext appContext, smViewContext viewContext)
+	public smVisualCellHighlight(smViewContext viewContext)
 	{
-		m_appContext = appContext;
 		m_viewContext = viewContext;
 		
 		this.addStyleName("cell_highlight");
@@ -48,7 +46,7 @@ public class smVisualCellHighlight extends FlowPanel implements smI_UIElement
 	
 	private void update()
 	{
-		smMouseNavigator navManager = smMouseNavigator.getInstance();
+		smMouseNavigator navManager = m_viewContext.mouseNavigator;
 		boolean isMouseTouchingSnappableCell = navManager.isMouseTouchingSnappableCell();
 		
 		//--- DRK > TODO: Really minor so might never fix, but this is kinda sloppy.
@@ -63,10 +61,10 @@ public class smVisualCellHighlight extends FlowPanel implements smI_UIElement
 			return;
 		}
 		
-		smCellBuffer buffer = m_appContext.cellBufferMngr.getDisplayBuffer();
+		smCellBuffer buffer = m_viewContext.appContext.cellBufferMngr.getDisplayBuffer();
 		int subCellDim = buffer.getSubCellCount();
 		
-		smCamera camera = m_appContext.cameraMngr.getCamera();
+		smCamera camera = m_viewContext.appContext.cameraMngr.getCamera();
 		smPoint basePoint = null;
 		double highlightScaling = camera.calcDistanceRatio();
 		

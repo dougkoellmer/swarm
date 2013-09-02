@@ -15,6 +15,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONException;
 
+import swarm.server.app.smA_ServerApp;
+import swarm.server.app.smServerContext;
 import swarm.server.thirdparty.json.smServerJsonObject;
 import swarm.shared.app.smSharedAppContext;
 import swarm.shared.json.smA_JsonFactory;
@@ -100,7 +102,8 @@ public class smU_Servlet
 			}
 		}
 		
-		smI_JsonObject requestJson = jsonString == null ? null : smSharedAppContext.jsonFactory.createJsonObject(jsonString);
+		smServerContext context = smA_ServerApp.getInstance().getContext();
+		smI_JsonObject requestJson = jsonString == null ? null : context.jsonFactory.createJsonObject(jsonString);
 		
 		return requestJson;
 	}

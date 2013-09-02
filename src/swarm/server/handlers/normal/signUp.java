@@ -8,8 +8,9 @@ import net.tanesha.recaptcha.ReCaptchaResponse;
 
 import swarm.server.account.smServerAccountManager;
 import swarm.server.account.smUserSession;
-import swarm.server.account.sm_s;
+
 import swarm.server.session.smSessionManager;
+import swarm.server.transaction.smA_DefaultRequestHandler;
 import swarm.server.transaction.smI_RequestHandler;
 import swarm.server.transaction.smTransactionContext;
 import swarm.shared.account.smE_SignUpCredentialType;
@@ -20,7 +21,7 @@ import swarm.shared.account.smSignUpValidator;
 import swarm.shared.transaction.smTransactionRequest;
 import swarm.shared.transaction.smTransactionResponse;
 
-public class signUp implements smI_RequestHandler
+public class signUp extends smA_DefaultRequestHandler
 {
 	private final String m_publicRecaptchaKey;
 	private final String m_privateRecaptchaKey;
@@ -53,7 +54,7 @@ public class signUp implements smI_RequestHandler
 	@Override
 	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
 	{
-		smServerAccountManager accountManager = sm_s.accountMngr;
+		smServerAccountManager accountManager = m_context.accountMngr;
 		smSignUpCredentials creds = new smSignUpCredentials(request.getJsonArgs());
 		smSignUpValidationResult result = new smSignUpValidationResult();
 		String remoteAddress = ((HttpServletRequest) request.getNativeRequest()).getRemoteAddr();
@@ -64,7 +65,7 @@ public class signUp implements smI_RequestHandler
 			
 			if( userSession != null )
 			{
-				sm_s.sessionMngr.startSession(userSession, response, creds.rememberMe());
+				m_context.sessionMngr.startSession(userSession, response, creds.rememberMe());
 			}
 		}
 		

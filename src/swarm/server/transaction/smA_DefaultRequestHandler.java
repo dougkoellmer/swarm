@@ -1,13 +1,16 @@
 package swarm.server.transaction;
 
+import swarm.server.app.smServerContext;
+import swarm.server.data.blob.smBlobManagerFactory;
+import swarm.server.session.smSessionManager;
 import swarm.shared.json.smA_JsonFactory;
 
 public abstract class smA_DefaultRequestHandler implements smI_RequestHandler
 {
-	protected smA_JsonFactory m_jsonFactory;
+	protected smServerContext m_context;
 	
-	public void init(smA_JsonFactory jsonFactory)
+	public void init(smServerContext context)
 	{
-		m_jsonFactory = jsonFactory;
+		m_context = context;
 	}
 }

@@ -1,9 +1,10 @@
 package swarm.server.handlers.normal;
 
 import swarm.server.account.smE_Role;
-import swarm.server.account.sm_s;
+
 import swarm.server.session.smSessionManager;
 import swarm.server.structs.smServerGridCoordinate;
+import swarm.server.transaction.smA_DefaultRequestHandler;
 import swarm.server.transaction.smI_RequestHandler;
 import swarm.server.transaction.smTransactionContext;
 import swarm.shared.app.smSharedAppContext;
@@ -17,12 +18,12 @@ import swarm.shared.transaction.smTransactionRequest;
 import swarm.shared.transaction.smTransactionResponse;
 
 
-public class previewCode implements smI_RequestHandler
+public class previewCode extends smA_DefaultRequestHandler
 {
 	@Override
 	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
 	{
-		if( !sm_s.sessionMngr.isAuthorized(request, response, smE_Role.USER) )
+		if( !m_context.sessionMngr.isAuthorized(request, response, smE_Role.USER) )
 		{
 			return;
 		}
@@ -46,7 +47,7 @@ public class previewCode implements smI_RequestHandler
 		
 		smCode sourceCode = new smCode(request.getJsonArgs(), smE_CodeType.SOURCE);
 		
-		smCompilerResult result = smSharedAppContext.codeCompiler.compile(sourceCode, privileges, coordinate.writeString());
+		smCompilerResult result = m_context.codeCompiler.compile(sourceCode, privileges, coordinate.writeString());
 		
 		result.writeJson(null, response.getJsonArgs());
 	}

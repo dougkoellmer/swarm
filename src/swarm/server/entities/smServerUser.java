@@ -118,7 +118,7 @@ public class smServerUser extends smA_User implements smI_Blob
 	{
 		for( int i = 0; i < m_ownedCells.size(); i++ )
 		{
-			if( coordinate.isEqualTo(null, m_ownedCells.get(i)) )
+			if( coordinate.isEqualTo(m_ownedCells.get(i).getCoordinate()) )
 			{
 				return true;
 			}

@@ -3,7 +3,7 @@ package swarm.server.blobxn;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import swarm.server.account.sm_s;
+
 import swarm.server.data.blob.smA_BlobTransaction;
 import swarm.server.data.blob.smBlobException;
 import swarm.server.data.blob.smBlobManagerFactory;

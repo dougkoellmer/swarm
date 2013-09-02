@@ -248,7 +248,7 @@ public class smVisualCellContainer extends FlowPanel implements ResizeHandler, s
 					{
 						smBufferCell viewedCell = ((State_ViewingCell) event.getState()).getCell();
 						
-						smMouseNavigator navigator = smMouseNavigator.getInstance();
+						smMouseNavigator navigator = m_viewContext.mouseNavigator;
 	
 						/*if( navigator.getMouseGridCoord().isEqualTo(viewedCell.getCoordinate()) )
 						{

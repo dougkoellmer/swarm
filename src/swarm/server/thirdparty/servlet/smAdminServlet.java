@@ -15,8 +15,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONException;
 
 import swarm.server.account.smE_Role;
-import swarm.server.account.sm_s;
+
+import swarm.server.app.smA_ServerApp;
 import swarm.server.app.smA_ServerJsonFactory;
+import swarm.server.app.smServerContext;
 import swarm.server.session.smSessionManager;
 import swarm.server.transaction.smServerTransactionManager;
 import swarm.shared.app.smSharedAppContext;
@@ -46,15 +48,17 @@ public class smAdminServlet extends smA_BaseServlet
 	
 	private void doGetOrPost(HttpServletRequest nativeRequest, HttpServletResponse nativeResponse, boolean isGet) throws ServletException, IOException
 	{
-		((smA_ServerJsonFactory)sm_s.jsonFactory).startScope(true);
+		smServerContext context = smA_ServerApp.getInstance().getContext();
+		
+		((smA_ServerJsonFactory)context.jsonFactory).startScope(true);
 		
 		//TODO: Move this check into an abstract base class or utlity method or
 		//		something so we can have other admin servlets with same behavior.
-		if( !sm_s.sessionMngr.isAuthorized(nativeRequest, nativeResponse, smE_Role.ADMIN) )
+		if( !context.sessionMngr.isAuthorized(nativeRequest, nativeResponse, smE_Role.ADMIN) )
 		{
-			((smA_ServerJsonFactory)sm_s.jsonFactory).endScope();
+			((smA_ServerJsonFactory)context.jsonFactory).endScope();
 
-			sm_s.requestRedirector.redirectToMainPage(nativeResponse);
+			context.redirector.redirectToMainPage(nativeResponse);
 			
 			return;
 		}
@@ -69,7 +73,7 @@ public class smAdminServlet extends smA_BaseServlet
 			if( !isGet )
 			{
 				requestJsonString = nativeRequest.getParameter("json");
-				requestJson = requestJsonString == null ? null : smSharedAppContext.jsonFactory.createJsonObject(requestJsonString);
+				requestJson = requestJsonString == null ? null : context.jsonFactory.createJsonObject(requestJsonString);
 			}
 			
 			PrintWriter writer = nativeResponse.getWriter();
@@ -81,9 +85,9 @@ public class smAdminServlet extends smA_BaseServlet
 			
 			if( !isGet )
 			{
-				smI_JsonObject responseJson = smSharedAppContext.jsonFactory.createJsonObject();
+				smI_JsonObject responseJson = context.jsonFactory.createJsonObject();
 				
-				sm_s.txnMngr.handleRequestFromClient(nativeRequest, nativeResponse, this.getServletContext(), requestJson, responseJson, true);
+				context.txnMngr.handleRequestFromClient(nativeRequest, nativeResponse, this.getServletContext(), requestJson, responseJson, true);
 				
 				smU_Servlet.writeJsonResponse(responseJson, nativeResponse.getWriter());
 			}
@@ -92,7 +96,7 @@ public class smAdminServlet extends smA_BaseServlet
 		}
 		finally
 		{
-			((smA_ServerJsonFactory)sm_s.jsonFactory).endScope();
+			((smA_ServerJsonFactory)context.jsonFactory).endScope();
 		}
 	}
 }

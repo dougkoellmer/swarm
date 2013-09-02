@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 
 
 import swarm.shared.app.smSharedAppContext;
-import swarm.server.account.sm_s;
+
 import swarm.server.data.blob.smBlobException;
 import swarm.server.data.blob.smBlobManagerFactory;
 import swarm.server.data.blob.smE_BlobCacheLevel;
@@ -20,6 +20,7 @@ import swarm.server.entities.smE_GridType;
 import swarm.server.entities.smServerCell;
 import swarm.server.structs.smServerCellAddressMapping;
 import swarm.server.structs.smServerGridCoordinate;
+import swarm.server.transaction.smA_DefaultRequestHandler;
 import swarm.server.transaction.smI_DeferredRequestHandler;
 import swarm.server.transaction.smI_RequestHandler;
 import swarm.server.transaction.smServerTransactionManager;
@@ -39,16 +40,9 @@ import swarm.shared.transaction.smE_ResponseError;
 import swarm.shared.transaction.smTransactionRequest;
 import swarm.shared.transaction.smTransactionResponse;
 
-public class getCode implements smI_RequestHandler, smI_DeferredRequestHandler
+public class getCode extends smA_DefaultRequestHandler implements smI_DeferredRequestHandler
 {
 	private static final Logger s_logger = Logger.getLogger(getCode.class.getName());
-	
-	private final smA_JsonFactory m_jsonFactory;
-	
-	public getCode(smA_JsonFactory jsonFactory)
-	{
-		m_jsonFactory = jsonFactory;
-	}
 	
 	private HashMap<smI_BlobKey, Class<? extends smI_Blob>> getBlobCoordSet(smTransactionContext context, boolean forceCreate)
 	{
@@ -82,7 +76,7 @@ public class getCode implements smI_RequestHandler, smI_DeferredRequestHandler
 			return;
 		}
 		
-		smI_BlobManager blobManager = sm_s.blobMngrFactory.create(smE_BlobCacheLevel.values());
+		smI_BlobManager blobManager = m_context.blobMngrFactory.create(smE_BlobCacheLevel.values());
 		
 		smServerCell persistedCell = null;
 		
@@ -97,7 +91,7 @@ public class getCode implements smI_RequestHandler, smI_DeferredRequestHandler
 			return;
 		}
 
-		smE_CodeType eCodeType = m_jsonFactory.getHelper().getEnum(request.getJsonArgs(), smE_JsonKey.codeType, smE_CodeType.values());
+		smE_CodeType eCodeType = m_context.jsonFactory.getHelper().getEnum(request.getJsonArgs(), smE_JsonKey.codeType, smE_CodeType.values());
 		
 		writeResponse(eCodeType, persistedCell, response);
 	}
@@ -162,7 +156,7 @@ public class getCode implements smI_RequestHandler, smI_DeferredRequestHandler
 			return;
 		}
 
-		smI_BlobManager blobManager = sm_s.blobMngrFactory.create(smE_BlobCacheLevel.values());
+		smI_BlobManager blobManager = m_context.blobMngrFactory.create(smE_BlobCacheLevel.values());
 		
 		Map<smI_BlobKey, smI_Blob> result = null;
 		smE_ResponseError error = smE_ResponseError.NO_ERROR;
@@ -193,7 +187,7 @@ public class getCode implements smI_RequestHandler, smI_DeferredRequestHandler
 				continue;
 			}
 			
-			smE_CodeType eCodeType = m_jsonFactory.getHelper().getEnum(request.getJsonArgs(), smE_JsonKey.codeType, smE_CodeType.values());
+			smE_CodeType eCodeType = m_context.jsonFactory.getHelper().getEnum(request.getJsonArgs(), smE_JsonKey.codeType, smE_CodeType.values());
 
 			if( result == null )
 			{

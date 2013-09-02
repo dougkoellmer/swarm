@@ -7,7 +7,7 @@ import javax.servlet.ServletContext;
 
 import swarm.server.account.smE_Role;
 import swarm.server.account.smUserSession;
-import swarm.server.account.sm_s;
+
 import swarm.server.data.blob.smBlobException;
 import swarm.server.data.blob.smBlobManagerFactory;
 import swarm.server.data.blob.smE_BlobCacheLevel;
@@ -17,6 +17,7 @@ import swarm.server.entities.smServerUser;
 import swarm.server.handlers.smU_Handler;
 import swarm.server.session.smSessionManager;
 import swarm.server.structs.smServerCellAddressMapping;
+import swarm.server.transaction.smA_DefaultRequestHandler;
 import swarm.server.transaction.smI_RequestHandler;
 import swarm.server.transaction.smTransactionContext;
 import swarm.shared.structs.smE_GetCellAddressError;
@@ -25,7 +26,7 @@ import swarm.shared.transaction.smE_ResponseError;
 import swarm.shared.transaction.smTransactionRequest;
 import swarm.shared.transaction.smTransactionResponse;
 
-public class refreshHomeCells implements smI_RequestHandler
+public class refreshHomeCells extends smA_DefaultRequestHandler
 {
 	private static final Logger s_logger = Logger.getLogger(refreshHomeCells.class.getName());
 	
@@ -39,8 +40,8 @@ public class refreshHomeCells implements smI_RequestHandler
 	@Override
 	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
 	{
-		smI_BlobManager blobManager = sm_s.blobMngrFactory.create(smE_BlobCacheLevel.values());
-		smUserSession session = sm_s.sessionMngr.getSession(request, response);
+		smI_BlobManager blobManager = m_context.blobMngrFactory.create(smE_BlobCacheLevel.values());
+		smUserSession session = m_context.sessionMngr.getSession(request, response);
 		
 		smServerUser user = null;
 		try

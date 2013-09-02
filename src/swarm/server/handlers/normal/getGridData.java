@@ -3,7 +3,7 @@ package swarm.server.handlers.normal;
 import java.util.logging.Logger;
 
 
-import swarm.server.account.sm_s;
+
 import swarm.server.data.blob.smBlobException;
 import swarm.server.data.blob.smBlobManagerFactory;
 import swarm.server.data.blob.smE_BlobCacheLevel;
@@ -11,20 +11,21 @@ import swarm.server.data.blob.smE_BlobTransactionType;
 import swarm.server.data.blob.smI_BlobManager;
 import swarm.server.entities.smE_GridType;
 import swarm.server.entities.smServerGrid;
+import swarm.server.transaction.smA_DefaultRequestHandler;
 import swarm.server.transaction.smI_RequestHandler;
 import swarm.server.transaction.smTransactionContext;
 import swarm.shared.transaction.smE_ResponseError;
 import swarm.shared.transaction.smTransactionRequest;
 import swarm.shared.transaction.smTransactionResponse;
 
-public class getGridData implements smI_RequestHandler
+public class getGridData extends smA_DefaultRequestHandler
 {
 	private static final Logger s_logger = Logger.getLogger(getGridData.class.getName());
 	
 	@Override
 	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
 	{
-		smI_BlobManager blobManager = sm_s.blobMngrFactory.create(smE_BlobCacheLevel.values());
+		smI_BlobManager blobManager = m_context.blobMngrFactory.create(smE_BlobCacheLevel.values());
 		
 		smServerGrid grid = null;
 		

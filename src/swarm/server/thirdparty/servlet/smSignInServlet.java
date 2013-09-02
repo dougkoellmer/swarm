@@ -17,8 +17,10 @@ import org.json.JSONException;
 import swarm.server.account.smE_Role;
 import swarm.server.account.smServerAccountManager;
 import swarm.server.account.smUserSession;
-import swarm.server.account.sm_s;
+
+import swarm.server.app.smA_ServerApp;
 import swarm.server.app.smA_ServerJsonFactory;
+import swarm.server.app.smServerContext;
 import swarm.server.session.smSessionManager;
 import swarm.server.transaction.smServerTransactionManager;
 import swarm.shared.account.smSignInCredentials;
@@ -51,10 +53,12 @@ public class smSignInServlet extends smA_BaseServlet
 	
 	private void doGetOrPost(HttpServletRequest nativeRequest, HttpServletResponse nativeResponse, boolean isGet) throws ServletException, IOException
 	{
-		smSessionManager sessionMngr = sm_s.sessionMngr;
-		smServerAccountManager accountMngr = sm_s.accountMngr;
+		smServerContext context = smA_ServerApp.getInstance().getContext();
 		
-		((smA_ServerJsonFactory)sm_s.jsonFactory).startScope(true);
+		smSessionManager sessionMngr = context.sessionMngr;
+		smServerAccountManager accountMngr = context.accountMngr;
+		
+		((smA_ServerJsonFactory)context.jsonFactory).startScope(true);
 		
 		try
 		{
@@ -119,7 +123,7 @@ public class smSignInServlet extends smA_BaseServlet
 		}
 		finally
 		{
-			((smA_ServerJsonFactory)sm_s.jsonFactory).endScope();
+			((smA_ServerJsonFactory)context.jsonFactory).endScope();
 		}
 	}
 }

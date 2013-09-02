@@ -13,7 +13,9 @@ import javax.servlet.jsp.JspWriter;
 
 import swarm.server.account.smS_ServerAccount;
 import swarm.server.account.smUserSession;
-import swarm.server.account.sm_s;
+import swarm.server.app.smA_ServerApp;
+import swarm.server.app.smServerContext;
+
 import swarm.server.data.blob.smBlobException;
 import swarm.server.data.blob.smBlobManagerFactory;
 import swarm.server.data.blob.smE_BlobCacheLevel;
@@ -48,6 +50,8 @@ public class smU_InlineTransactions
 	
 	public static void addInlineTransactions(HttpServletRequest nativeRequest, HttpServletResponse nativeResponse, Writer out) throws IOException
 	{
+		smServerContext context = smA_ServerApp.getInstance().getContext();
+		
 		String rawAddress = nativeRequest.getRequestURI();
 		smServerCellAddress cellAddress = new smServerCellAddress(rawAddress);
 		smE_CellAddressParseError parseError = cellAddress.getParseError();
@@ -59,14 +63,14 @@ public class smU_InlineTransactions
 		//---		It's done so that hitting "private" servlet mappings have the same behavior as invalid addresses.
 		if( parseError != smE_CellAddressParseError.NO_ERROR && parseError != smE_CellAddressParseError.EMPTY )
 		{
-			sm_s.requestRedirector.redirectToMainPage(nativeResponse);
+			context.redirector.redirectToMainPage(nativeResponse);
 			
 			//s_logger.severe("redirecting");
 			
 			return;
 		}
 		
-		smInlineTransactionManager transactionManager = sm_s.inlineTxnMngr;
+		smInlineTransactionManager transactionManager = context.inlineTxnMngr;
 		
 		try
 		{
@@ -90,7 +94,7 @@ public class smU_InlineTransactions
 			
 			smTransactionRequest dummyRequest = new smTransactionRequest(nativeRequest);
 			smTransactionResponse dummyResponse = new smTransactionResponse(nativeResponse);
-			smUserSession session = sm_s.sessionMngr.getSession(dummyRequest, dummyResponse);
+			smUserSession session = context.sessionMngr.getSession(dummyRequest, dummyResponse);
 			boolean isSessionActive = session != null;
 			
 			transactionManager.makeInlineRequest(smE_RequestPath.getPasswordChangeToken);
@@ -116,7 +120,7 @@ public class smU_InlineTransactions
 				makeUserRequest = false;
 			}
 			
-			smI_BlobManager blobManager = sm_s.blobMngrFactory.create(smE_BlobCacheLevel.MEMCACHE, smE_BlobCacheLevel.PERSISTENT);
+			smI_BlobManager blobManager = context.blobMngrFactory.create(smE_BlobCacheLevel.MEMCACHE, smE_BlobCacheLevel.PERSISTENT);
 			Map<smI_BlobKey, smI_Blob> blobBatchResult = null;
 			
 			try
@@ -196,7 +200,7 @@ public class smU_InlineTransactions
 				(new smGridCoordinate()).calcCenterPoint(startingPosition, grid.getCellWidth(), grid.getCellHeight(), grid.getCellPadding(), 1);
 			}
 			
-			startingPosition.setZ(sm_s.app.getConfig().startingZ);
+			startingPosition.setZ(smA_ServerApp.getInstance().getConfig().startingZ);
 			transactionManager.makeInlineRequestWithResponse(smE_RequestPath.getStartingPosition, startingPosition);
 		}
 		finally

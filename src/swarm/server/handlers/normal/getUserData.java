@@ -6,7 +6,7 @@ import java.util.logging.Logger;
 
 import swarm.server.account.smE_Role;
 import swarm.server.account.smUserSession;
-import swarm.server.account.sm_s;
+
 import swarm.server.blobxn.smBlobTransaction_CreateUser;
 import swarm.server.data.blob.smBlobException;
 import swarm.server.data.blob.smBlobManagerFactory;
@@ -15,6 +15,7 @@ import swarm.server.data.blob.smE_BlobTransactionType;
 import swarm.server.data.blob.smI_BlobManager;
 import swarm.server.entities.smServerUser;
 import swarm.server.session.smSessionManager;
+import swarm.server.transaction.smA_DefaultRequestHandler;
 import swarm.server.transaction.smI_RequestHandler;
 import swarm.server.transaction.smTransactionContext;
 import swarm.shared.app.smSharedAppContext;
@@ -27,7 +28,7 @@ import swarm.shared.transaction.smE_ResponseError;
 import swarm.shared.transaction.smTransactionRequest;
 import swarm.shared.transaction.smTransactionResponse;
 
-public class getUserData implements smI_RequestHandler
+public class getUserData extends smA_DefaultRequestHandler
 {
 	private static final Logger s_logger = Logger.getLogger(getUserData.class.getName());
 	
@@ -41,16 +42,16 @@ public class getUserData implements smI_RequestHandler
 	@Override
 	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
 	{
-		if( !sm_s.sessionMngr.isAuthorized(request, response, smE_Role.USER) )
+		if( !m_context.sessionMngr.isAuthorized(request, response, smE_Role.USER) )
 		{
 			return;
 		}
 		
-		smUserSession userSession = sm_s.sessionMngr.getSession(request, response);
+		smUserSession userSession = m_context.sessionMngr.getSession(request, response);
 
 		smServerUser user = null;
 		
-		smI_BlobManager blobManager = sm_s.blobMngrFactory.create(smE_BlobCacheLevel.PERSISTENT);
+		smI_BlobManager blobManager = m_context.blobMngrFactory.create(smE_BlobCacheLevel.PERSISTENT);
 
 		//--- DRK > First try to just get the user with a straight read...should be successful most of the time.
 		try
@@ -120,7 +121,7 @@ public class getUserData implements smI_RequestHandler
 			return;
 		}
 
-		factory.getHelper().putBoolean(response.getJsonArgs(), smE_JsonKey.createdUser, createdUser);
+		m_context.jsonFactory.getHelper().putBoolean(response.getJsonArgs(), smE_JsonKey.createdUser, createdUser);
 		user.writeJson(null, response.getJsonArgs());
 	}
 }

@@ -6,7 +6,7 @@ import java.util.logging.Logger;
 
 import swarm.server.account.smE_Role;
 import swarm.server.account.smUserSession;
-import swarm.server.account.sm_s;
+
 import swarm.server.data.blob.smBlobException;
 import swarm.server.data.blob.smBlobManagerFactory;
 import swarm.server.data.blob.smE_BlobCacheLevel;
@@ -19,6 +19,7 @@ import swarm.server.session.smSessionManager;
 import swarm.server.structs.smServerCellAddressMapping;
 import swarm.server.structs.smServerCode;
 import swarm.server.structs.smServerGridCoordinate;
+import swarm.server.transaction.smA_DefaultRequestHandler;
 import swarm.server.transaction.smI_RequestHandler;
 import swarm.server.transaction.smTransactionContext;
 import swarm.shared.app.smS_App;
@@ -31,7 +32,7 @@ import swarm.shared.transaction.smE_ResponseError;
 import swarm.shared.transaction.smTransactionRequest;
 import swarm.shared.transaction.smTransactionResponse;
 
-public class syncCode implements smI_RequestHandler
+public class syncCode extends smA_DefaultRequestHandler
 {
 	private static final Logger s_logger = Logger.getLogger(syncCode.class.getName());
 	
@@ -42,13 +43,13 @@ public class syncCode implements smI_RequestHandler
 	
 	private boolean isAuthorized(smI_BlobManager blobManager, smServerCellAddressMapping mapping, smTransactionRequest request, smTransactionResponse response)
 	{
-		if( !sm_s.sessionMngr.isAuthorized(request, response, smE_Role.USER) )
+		if( !m_context.sessionMngr.isAuthorized(request, response, smE_Role.USER) )
 		{
 			return false;
 		}
 
 		//--- DRK > Have to do a further checking here to make sure user owns this cell.
-		smUserSession session = sm_s.sessionMngr.getSession(request, response);
+		smUserSession session = m_context.sessionMngr.getSession(request, response);
 		
 		//--- DRK > Used to have this check here...don't see why we shouldn't also
 		//---		force admins to own their own cells too.
@@ -88,7 +89,7 @@ public class syncCode implements smI_RequestHandler
 		smServerCellAddressMapping mapping = new smServerCellAddressMapping(smE_GridType.ACTIVE);
 		mapping.readJson(null, request.getJsonArgs());
 		boolean isSandbox = isSandBox(mapping);
-		smI_BlobManager blobManager = sm_s.blobMngrFactory.create(smE_BlobCacheLevel.PERSISTENT);
+		smI_BlobManager blobManager = m_context.blobMngrFactory.create(smE_BlobCacheLevel.PERSISTENT);
 		
 		if( !isSandbox )
 		{
@@ -108,7 +109,7 @@ public class syncCode implements smI_RequestHandler
 		
 		smServerCode sourceCode = new smServerCode(request.getJsonArgs(), smE_CodeType.SOURCE);
 		
-		smCompilerResult result = smU_CellCode.compileCell(persistedCell, sourceCode, mapping);
+		smCompilerResult result = smU_CellCode.compileCell(m_context.codeCompiler, persistedCell, sourceCode, mapping);
 		
 		//--- DRK > This write could obviously cause contention if user was saving from multiple clients,
 		//---		but if a user wants to do that for whatever reason, it's their own problem.

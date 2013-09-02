@@ -8,7 +8,7 @@ import javax.servlet.ServletContext;
 
 import swarm.server.account.smE_Role;
 import swarm.server.account.smUserSession;
-import swarm.server.account.sm_s;
+
 import swarm.server.blobxn.smBlobTransaction_CreateUser;
 import swarm.server.data.blob.smBlobException;
 import swarm.server.data.blob.smBlobManagerFactory;
@@ -24,6 +24,7 @@ import swarm.server.handlers.smU_Handler;
 import swarm.server.session.smSessionManager;
 import swarm.server.structs.smServerCellAddress;
 import swarm.server.structs.smServerCodePrivileges;
+import swarm.server.transaction.smA_DefaultRequestHandler;
 import swarm.server.transaction.smI_RequestHandler;
 import swarm.server.transaction.smServerTransactionManager;
 import swarm.server.transaction.smTransactionContext;
@@ -37,7 +38,7 @@ import swarm.shared.transaction.smE_ResponseError;
 import swarm.shared.transaction.smTransactionRequest;
 import swarm.shared.transaction.smTransactionResponse;
 
-public class createGrid implements smI_RequestHandler
+public class createGrid extends smA_DefaultRequestHandler
 {
 	private static final Logger s_logger = Logger.getLogger(createGrid.class.getName());
 	
@@ -52,9 +53,9 @@ public class createGrid implements smI_RequestHandler
 	@Override
 	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
 	{		
-		smUserSession session = sm_s.sessionMngr.getSession(request, response);
+		smUserSession session = m_context.sessionMngr.getSession(request, response);
 		
-		smI_BlobManager blobManager = sm_s.blobMngrFactory.create(smE_BlobCacheLevel.values());
+		smI_BlobManager blobManager = m_context.blobMngrFactory.create(smE_BlobCacheLevel.values());
 		
 		smServerGrid activeGrid = null;
 		

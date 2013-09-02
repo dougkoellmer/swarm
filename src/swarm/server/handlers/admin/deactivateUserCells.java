@@ -18,6 +18,7 @@ import swarm.server.entities.smServerUser;
 import swarm.server.session.smSessionManager;
 import swarm.server.structs.smServerCellAddress;
 import swarm.server.structs.smServerCodePrivileges;
+import swarm.server.transaction.smA_DefaultRequestHandler;
 import swarm.server.transaction.smI_RequestHandler;
 import swarm.server.transaction.smServerTransactionManager;
 import swarm.server.transaction.smTransactionContext;
@@ -34,14 +35,14 @@ import swarm.shared.transaction.smE_ResponseError;
 import swarm.shared.transaction.smTransactionRequest;
 import swarm.shared.transaction.smTransactionResponse;
 
-public class deactivateUserCells implements smI_RequestHandler
+public class deactivateUserCells extends smA_DefaultRequestHandler
 {
 	private static final Logger s_logger = Logger.getLogger(deactivateUserCells.class.getName());
 	
 	@Override
 	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
 	{
-		Integer accountId = factory.getHelper().getInt(request.getJsonArgs(), smE_JsonKey.accountId);
+		Integer accountId = m_context.jsonFactory.getHelper().getInt(request.getJsonArgs(), smE_JsonKey.accountId);
 		
 		if( accountId == null )
 		{

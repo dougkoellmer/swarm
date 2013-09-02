@@ -7,7 +7,7 @@ import javax.servlet.ServletContext;
 
 import swarm.server.account.smE_Role;
 import swarm.server.account.smUserSession;
-import swarm.server.account.sm_s;
+
 import swarm.server.data.blob.smBlobException;
 import swarm.server.data.blob.smBlobManagerFactory;
 import swarm.server.data.blob.smE_BlobCacheLevel;
@@ -17,6 +17,7 @@ import swarm.server.entities.smServerUser;
 import swarm.server.session.smS_Session;
 import swarm.server.session.smSessionManager;
 import swarm.server.structs.smServerCellAddressMapping;
+import swarm.server.transaction.smA_DefaultRequestHandler;
 import swarm.server.transaction.smI_RequestHandler;
 import swarm.server.transaction.smTransactionContext;
 import swarm.shared.structs.smE_GetCellAddressError;
@@ -26,7 +27,7 @@ import swarm.shared.transaction.smTransactionRequest;
 import swarm.shared.transaction.smTransactionResponse;
 import com.google.appengine.api.datastore.*;
 
-public class sessionQueryTest implements smI_RequestHandler
+public class sessionQueryTest extends smA_DefaultRequestHandler
 {
 	private static final Logger s_logger = Logger.getLogger(sessionQueryTest.class.getName());
 	
@@ -34,12 +35,12 @@ public class sessionQueryTest implements smI_RequestHandler
 	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
 	{
 		//--- DRK > debug handler, so just doing basic security check.
-		if( !sm_s.sessionMngr.isAuthorized(request, response, smE_Role.ADMIN) )
+		if( !m_context.sessionMngr.isAuthorized(request, response, smE_Role.ADMIN) )
 		{
 			return;
 		}
 		
-		smUserSession session = sm_s.sessionMngr.getSession(request, response);
+		smUserSession session = m_context.sessionMngr.getSession(request, response);
 		
 		int accountId = session.getAccountId();
 		

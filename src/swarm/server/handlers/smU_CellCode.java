@@ -7,7 +7,6 @@ import java.util.logging.Logger;
 
 import swarm.server.account.smE_Role;
 import swarm.server.account.smUserSession;
-import swarm.server.account.sm_s;
 import swarm.server.data.blob.smBlobException;
 import swarm.server.data.blob.smBlobManagerFactory;
 import swarm.server.data.blob.smE_BlobCacheLevel;
@@ -144,7 +143,8 @@ public final class smU_CellCode
 		//--- DRK > Here we attempt to delete this cell from memcache so that subsequent requests for this cell get a fresh copy.
 		//---		Note that we could put a fresh copy in memcache, but we don't know how popular this cell is, and memcache
 		//---		space is potentially very limited. Therefore we let user demand determine when/if this cell gets cached again.
-		smI_BlobManager blobManager = sm_s.blobMngrFactory.create(smE_BlobCacheLevel.MEMCACHE);
+		smI_BlobManager blobManager = blobMngrFactory.create(smE_BlobCacheLevel.MEMCACHE);
+		
 		try
 		{
 			blobManager.deleteBlobAsync(mapping, smServerCell.class);

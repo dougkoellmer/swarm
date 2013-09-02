@@ -20,7 +20,7 @@ import org.apache.commons.codec.net.URLCodec;
 import swarm.server.account.smE_Role;
 import swarm.server.account.smS_ServerAccount;
 import swarm.server.account.smUserSession;
-import swarm.server.account.sm_s;
+
 import swarm.server.data.blob.smBlobException;
 import swarm.server.data.blob.smBlobManagerFactory;
 import swarm.server.data.blob.smE_BlobCacheLevel;
@@ -51,10 +51,10 @@ public class smSessionManager implements smI_TransactionScopeListener
 	private final smUserSession m_nullSession = new smUserSession();
 	private final smA_JsonFactory m_jsonFactory;
 	
-	public smSessionManager(smA_JsonFactory jsonFactory)
+	public smSessionManager(smBlobManagerFactory blobMngrFactory, smA_JsonFactory jsonFactory)
 	{
 		m_jsonFactory = jsonFactory;
-		m_blobManager = sm_s.blobMngrFactory.create(smE_BlobCacheLevel.MEMCACHE, smE_BlobCacheLevel.PERSISTENT);
+		m_blobManager = blobMngrFactory.create(smE_BlobCacheLevel.MEMCACHE, smE_BlobCacheLevel.PERSISTENT);
 	}
 	
 	private smSessionCookieValue createSessionCookieValue(smTransactionResponse response, smUserSession userSession, smE_SessionType type)

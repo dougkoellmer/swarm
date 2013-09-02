@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspWriter;
 
-import swarm.server.account.sm_s;
+
 import swarm.server.app.smA_ServerJsonFactory;
 import swarm.shared.app.smS_App;
 import swarm.shared.json.smI_JsonObject;
@@ -41,9 +41,11 @@ public class smInlineTransactionManager
 	private final smA_ServerJsonFactory m_jsonFactory;
 	private final boolean m_verboseTransactions;
 	private final String m_appId;
+	private final smServerTransactionManager m_txnMngr;
 	
-	public smInlineTransactionManager(smA_ServerJsonFactory jsonFactory, String appId, boolean verboseTransactions)
+	public smInlineTransactionManager(smServerTransactionManager txnMngr, smA_ServerJsonFactory jsonFactory, String appId, boolean verboseTransactions)
 	{
+		m_txnMngr = txnMngr;
 		m_appId = appId;
 		m_jsonFactory = jsonFactory;
 		m_verboseTransactions = verboseTransactions;
@@ -99,7 +101,7 @@ public class smInlineTransactionManager
 	
 	public void makeInlineRequest(smTransactionRequest request, smTransactionResponse response) throws IOException
 	{
-		sm_s.txnMngr.callRequestHandler(new smTransactionContext(false, null), request, response);
+		m_txnMngr.callRequestHandler(new smTransactionContext(false, null), request, response);
 		
 		writeInlineTransaction(request, response);
 	}

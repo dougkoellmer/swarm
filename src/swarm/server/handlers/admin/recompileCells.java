@@ -10,7 +10,7 @@ import javax.servlet.ServletContext;
 
 import swarm.server.account.smE_Role;
 import swarm.server.account.smUserSession;
-import swarm.server.account.sm_s;
+
 import swarm.server.data.blob.smBlobException;
 import swarm.server.data.blob.smBlobManagerFactory;
 import swarm.server.data.blob.smE_BlobCacheLevel;
@@ -28,6 +28,7 @@ import swarm.server.structs.smServerCellAddress;
 import swarm.server.structs.smServerCellAddressMapping;
 import swarm.server.structs.smServerCode;
 import swarm.server.structs.smServerCodePrivileges;
+import swarm.server.transaction.smA_DefaultRequestHandler;
 import swarm.server.transaction.smI_RequestHandler;
 import swarm.server.transaction.smServerTransactionManager;
 import swarm.server.transaction.smTransactionContext;
@@ -44,14 +45,14 @@ import swarm.shared.transaction.smE_ResponseError;
 import swarm.shared.transaction.smTransactionRequest;
 import swarm.shared.transaction.smTransactionResponse;
 
-public class recompileCells implements smI_RequestHandler
+public class recompileCells extends smA_DefaultRequestHandler
 {
 	private static final Logger s_logger = Logger.getLogger(recompileCells.class.getName());
 	
 	@Override
 	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
 	{
-		smI_BlobManager blobManager = sm_s.blobMngrFactory.create(smE_BlobCacheLevel.PERSISTENT);
+		smI_BlobManager blobManager = m_context.blobMngrFactory.create(smE_BlobCacheLevel.PERSISTENT);
 		
 		smServerGrid grid = null;
 		
@@ -113,7 +114,7 @@ public class recompileCells implements smI_RequestHandler
 			return true;
 		}
 		
-		smCompilerResult result = smU_CellCode.compileCell(persistedCell, sourceCode, mapping);
+		smCompilerResult result = smU_CellCode.compileCell(m_context.codeCompiler, persistedCell, sourceCode, mapping);
 		
 		if( result.getStatus() != smE_CompilationStatus.NO_ERROR )
 		{
