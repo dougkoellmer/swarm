@@ -183,7 +183,7 @@ public class StateMachine_Camera extends smA_StateMachine implements smI_StateEv
 					if( result.getMessages() != null )
 					{
 						title = "Warnings...fix them if you want.";
-						body = smCompilerErrorMessageGenerator.getInstance().generate(result);
+						body = m_appContext.compilerErrorMsgGenerator.generate(result);
 					}
 				}
 				else
@@ -197,7 +197,7 @@ public class StateMachine_Camera extends smA_StateMachine implements smI_StateEv
 						title = "Compiler Error";
 					}
 					
-					body = smCompilerErrorMessageGenerator.getInstance().generate(result);
+					body = m_appContext.compilerErrorMsgGenerator.generate(result);
 				}
 				
 				if( title != null )

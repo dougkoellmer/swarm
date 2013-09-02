@@ -10,21 +10,9 @@ import com.google.appengine.api.datastore.TransactionOptions;
 
 public class smBlobTransactionManager
 {
-	private static smBlobTransactionManager s_instance = null;
-	
-	static void startUp()
-	{
-		s_instance = new smBlobTransactionManager();
-	}
-	
 	smBlobTransactionManager()
 	{
 		
-	}
-	
-	static smBlobTransactionManager getInstance()
-	{
-		return s_instance;
 	}
 	
 	void commit(Transaction transaction)

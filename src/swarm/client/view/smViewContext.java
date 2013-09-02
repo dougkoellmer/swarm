@@ -2,7 +2,10 @@ package swarm.client.view;
 
 import swarm.client.app.smAppContext;
 import swarm.client.input.smClickManager;
+import swarm.client.navigation.smBrowserNavigator;
+import swarm.client.navigation.smMouseNavigator;
 import swarm.client.thirdparty.captcha.smRecaptchaWrapper;
+import swarm.client.view.cell.smAlertManager;
 import swarm.client.view.cell.smVisualCellManager;
 import swarm.client.view.tooltip.smToolTipManager;
 import swarm.shared.statemachine.smStateContext;
@@ -17,5 +20,9 @@ public class smViewContext
 	public smClickManager clickMngr;
 	public smToolTipManager toolTipMngr;
 	public smRecaptchaWrapper recaptchaWrapper;
+	public smAlertManager alertMngr;
+	public smConsoleBlocker consoleBlocker;
 	
+	public smBrowserNavigator browserNavigator;
+	public smMouseNavigator mouseNavigator;
 }

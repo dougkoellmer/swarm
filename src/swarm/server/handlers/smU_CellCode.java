@@ -46,15 +46,13 @@ public final class smU_CellCode
 {
 	private static final Logger s_logger = Logger.getLogger(smU_CellCode.class.getName());
 	
-	private smU_CellCode()
-	{
-	}
+	private smU_CellCode(){}
 	
-	public static boolean saveBackCompiledCell(smI_BlobManager blobManager, smServerCellAddressMapping mapping, smServerCell cell, smTransactionResponse response)
+	public static boolean saveBackCompiledCell(smI_BlobManager persistentBlobManager, smI_BlobManager cachingBlobManager, smServerCellAddressMapping mapping, smServerCell cell, smTransactionResponse response)
 	{
 		try
 		{
-			blobManager.putBlob(mapping, cell);
+			persistentBlobManager.putBlob(mapping, cell);
 		}
 		catch(ConcurrentModificationException e)
 		{
@@ -71,7 +69,7 @@ public final class smU_CellCode
 			return false;
 		}
 		
-		smU_CellCode.removeFromCache(mapping);
+		smU_CellCode.removeFromCache(cachingBlobManager, mapping);
 		
 		return true;
 	}
@@ -138,16 +136,14 @@ public final class smU_CellCode
 		return result;
 	}
 
-	public static void removeFromCache(smServerCellAddressMapping mapping)
+	public static void removeFromCache(smI_BlobManager cacheBlobManager, smServerCellAddressMapping mapping)
 	{
 		//--- DRK > Here we attempt to delete this cell from memcache so that subsequent requests for this cell get a fresh copy.
 		//---		Note that we could put a fresh copy in memcache, but we don't know how popular this cell is, and memcache
 		//---		space is potentially very limited. Therefore we let user demand determine when/if this cell gets cached again.
-		smI_BlobManager blobManager = blobMngrFactory.create(smE_BlobCacheLevel.MEMCACHE);
-		
 		try
 		{
-			blobManager.deleteBlobAsync(mapping, smServerCell.class);
+			cacheBlobManager.deleteBlobAsync(mapping, smServerCell.class);
 		}
 		catch(smBlobException e)
 		{

@@ -4,26 +4,21 @@ import swarm.shared.smE_AppEnvironment;
 import swarm.shared.app.smA_App;
 
 public class smSignUpValidator
-{	
-	private static final smSignUpValidator s_instance = new smSignUpValidator();
-	
+{
 	private final smSignUpValidationResult m_reusedResult = new smSignUpValidationResult();
 	
-	private smSignUpValidator()
-	{
-		
-	}
+	private final boolean m_clientSide;
 	
-	public static smSignUpValidator getInstance()
+	public smSignUpValidator(boolean clientSide)
 	{
-		return s_instance;
+		m_clientSide =  clientSide;
 	}
 	
 	public smSignUpValidationResult validate(smSignUpCredentials credentials)
 	{
 		smSignUpValidationResult result = null;
 		
-		if( smA_App.getInstance().getEnvironment() == smE_AppEnvironment.CLIENT )
+		if( m_clientSide )
 		{
 			result = m_reusedResult;
 		}

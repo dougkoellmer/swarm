@@ -32,11 +32,13 @@ public class getUserData extends smA_DefaultRequestHandler
 {
 	private static final Logger s_logger = Logger.getLogger(getUserData.class.getName());
 	
-	public boolean m_autoCreateHomeCell;
+	public final boolean m_autoCreateHomeCell;
+	public final int m_gridExpansionDelta;
 	
-	public getUserData(boolean autoCreateHomeCell)
+	public getUserData(boolean autoCreateHomeCell, int gridExpansionDelta)
 	{
 		m_autoCreateHomeCell = autoCreateHomeCell;
+		m_gridExpansionDelta = gridExpansionDelta;
 	}
 	
 	@Override
@@ -76,8 +78,8 @@ public class getUserData extends smA_DefaultRequestHandler
 		{
 			try
 			{
-				smBlobTransaction_CreateUser createUserTransaction = new smBlobTransaction_CreateUser(userSession, m_autoCreateHomeCell);
-				createUserTransaction.perform(smE_BlobTransactionType.MULTI_BLOB_TYPE, 5);
+				smBlobTransaction_CreateUser createUserTransaction = new smBlobTransaction_CreateUser(userSession, m_autoCreateHomeCell, m_gridExpansionDelta);
+				createUserTransaction.perform(m_context.blobMngrFactory, smE_BlobTransactionType.MULTI_BLOB_TYPE, 5);
 				
 				//--- DRK > Not a huge fan of this method of letting client know that grid size changed.
 				//---		Better would be if I could let client know through batch system, but I can't figure

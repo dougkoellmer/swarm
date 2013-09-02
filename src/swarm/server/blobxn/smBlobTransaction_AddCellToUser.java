@@ -39,23 +39,16 @@ private static final Logger s_logger = Logger.getLogger(smBlobTransaction_AddCel
 	
 	private final smBlobTransaction_CreateCell m_createCellTransaction;
 	
-	public smBlobTransaction_AddCellToUser(smUserSession session, smServerCellAddress[] cellAddresses, smGridCoordinate preference, smServerCodePrivileges privileges)
+	public smBlobTransaction_AddCellToUser(smUserSession session, smServerCellAddress[] cellAddresses, smGridCoordinate preference, smServerCodePrivileges privileges, int gridExpansionDelta)
 	{
-		m_createCellTransaction = new smBlobTransaction_CreateCell(cellAddresses, preference, privileges);
+		m_createCellTransaction = new smBlobTransaction_CreateCell(cellAddresses, preference, privileges, gridExpansionDelta);
 		
 		m_session = session;
 	}
 	
-	public smBlobTransaction_AddCellToUser(smUserSession session, smServerCellAddress[] cellAddresses, smGridCoordinate preference)
+	public smBlobTransaction_AddCellToUser(smUserSession session, smServerCellAddress[] cellAddresses, smGridCoordinate preference, int gridExpansionDelta)
 	{
-		m_createCellTransaction = new smBlobTransaction_CreateCell(cellAddresses, preference, null);
-		
-		m_session = session;
-	}
-	
-	smBlobTransaction_AddCellToUser(smUserSession session, smServerCellAddress[] cellAddresses)
-	{
-		m_createCellTransaction = new smBlobTransaction_CreateCell(cellAddresses, null, null);
+		m_createCellTransaction = new smBlobTransaction_CreateCell(cellAddresses, preference, null, gridExpansionDelta);
 		
 		m_session = session;
 	}
@@ -87,7 +80,7 @@ private static final Logger s_logger = Logger.getLogger(smBlobTransaction_AddCel
 		}
 		
 		//--- DRK > Do a get that we'll use to perform some sanity checks.
-		smI_BlobManager blobManager = sm_s.blobMngrFactory.create(smE_BlobCacheLevel.PERSISTENT);
+		smI_BlobManager blobManager = m_blobMngrFactory.create(smE_BlobCacheLevel.PERSISTENT);
 		HashMap<smI_BlobKey, Class<? extends smI_Blob>> existanceQuery = new HashMap<smI_BlobKey, Class<? extends smI_Blob>>();
 		existanceQuery.put(m_session, smServerUser.class);
 		existanceQuery.put(address, smServerCellAddressMapping.class);

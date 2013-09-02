@@ -36,7 +36,7 @@ public abstract class smA_TransactionObject extends smA_JsonEncodable
 	}
 	
 	public smI_JsonObject getJsonArgs()
-	{		
+	{
 		if ( m_jsonArgs == null )
 		{
 			smA_JsonFactory jsonFactory = smSharedAppContext.jsonFactory;

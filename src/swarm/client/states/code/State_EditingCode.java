@@ -31,7 +31,20 @@ import swarm.shared.structs.smGridCoordinate;
  * @author 
  */
 public class State_EditingCode extends smA_State
-{
+{	
+	private State_EditingCodeBlocker.Reason m_mostRecentBlockerReason = null;
+	
+	private final smAppContext m_appContext;
+	
+	public State_EditingCode(smAppContext appContext)
+	{
+		m_appContext = appContext;
+		
+		registerAction(new Action_EditingCode_Save());
+		registerAction(new Action_EditingCode_Edit(m_appContext.userMngr));
+		registerAction(new Action_EditingCode_Preview());
+	}
+	
 	void performCommitOrPreview(smA_Action thisArg)
 	{
 		State_ViewingCell viewingState = getContext().getForegroundedState(State_ViewingCell.class);
@@ -63,7 +76,7 @@ public class State_EditingCode extends smA_State
 		else
 		{
 			String title = "Compiler Error";
-			String body = smCompilerErrorMessageGenerator.getInstance().generate(compilerResult);
+			String body = m_appContext.compilerErrorMsgGenerator.generate(compilerResult);
 			
 			StateMachine_Base baseController = getContext().getEnteredState(StateMachine_Base.class);
 			
@@ -115,19 +128,6 @@ public class State_EditingCode extends smA_State
 		}
 		
 		return true;
-	}
-	
-	private State_EditingCodeBlocker.Reason m_mostRecentBlockerReason = null;
-	
-	private final smAppContext m_appContext;
-	
-	public State_EditingCode(smAppContext appContext)
-	{
-		m_appContext = appContext;
-		
-		registerAction(new Action_EditingCode_Save());
-		registerAction(new Action_EditingCode_Edit(m_appContext.userMngr));
-		registerAction(new Action_EditingCode_Preview());
 	}
 	
 	@Override

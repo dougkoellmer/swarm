@@ -57,7 +57,7 @@ public class deactivateUserCells extends smA_DefaultRequestHandler
 		
 		try
 		{
-			deactivateCells.perform(smE_BlobTransactionType.MULTI_BLOB_TYPE, 1);
+			deactivateCells.perform(m_context.blobMngrFactory, smE_BlobTransactionType.MULTI_BLOB_TYPE, 1);
 		}
 		catch(smBlobException e)
 		{

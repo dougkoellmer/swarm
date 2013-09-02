@@ -48,7 +48,7 @@ public class smBlobTransaction_DeactivateCell extends smA_BlobTransaction
 	{
 		m_newMapping = null;
 		
-		smI_BlobManager blobManager = sm_s.blobMngrFactory.create(smE_BlobCacheLevel.MEMCACHE, smE_BlobCacheLevel.PERSISTENT);
+		smI_BlobManager blobManager = m_blobMngrFactory.create(smE_BlobCacheLevel.MEMCACHE, smE_BlobCacheLevel.PERSISTENT);
 		
 		smServerGrid activeGrid = blobManager.getBlob(smE_GridType.ACTIVE, smServerGrid.class);
 		

@@ -241,7 +241,7 @@ public class smCodeEditorTabContent extends AbsolutePanel implements smI_TabCont
 				}
 				else if( event.getState() instanceof State_EditingCodeBlocker )
 				{
-					smConsoleBlocker.getInstance().attachTo(this);
+					m_viewContext.consoleBlocker.attachTo(this);
 					
 					updateConsoleBlocker();
 				}
@@ -252,7 +252,7 @@ public class smCodeEditorTabContent extends AbsolutePanel implements smI_TabCont
 						//--- DRK > This goes along with the sleight of hand we pull below for not detaching the blocker while animating out.
 						//---		This just makes sure that the console blocker gets detached...it might be the case that it gets immediately
 						//---		reattached.
-						smConsoleBlocker.getInstance().detachFrom(this);
+						m_viewContext.consoleBlocker.detachFrom(this);
 					}
 				}
 				
@@ -284,7 +284,7 @@ public class smCodeEditorTabContent extends AbsolutePanel implements smI_TabCont
 						//--- DRK > This should be called in the "exit" event because background event could be called for something
 						//---		like an error dialog being pushed over the topmost state in the machine.
 						//---		Other tabs needing the console blocker will simply take over if they need it anyway.
-						smConsoleBlocker.getInstance().detachFrom(this);
+						m_viewContext.consoleBlocker.detachFrom(this);
 					}
 				}
 				
@@ -337,16 +337,16 @@ public class smCodeEditorTabContent extends AbsolutePanel implements smI_TabCont
 		
 		switch(reason)
 		{
-			case NO_CELL_SELECTED:	statusText = "No cell selected.";				break;
-			case LOADING:			statusText = "Waiting on server...";			break;
-			case NO_HTML:			statusText = "No html available.";				break;
-			case SNAPPING:			statusText = "Snapping...";						break;
-			case ERROR:				statusText = "Error retrieving html.";			break;
-			case SYNCING:			statusText = "Saving...";						break;
-			case PREVIEWING:		statusText = "Generating preview...";			break;
+			case NO_CELL_SELECTED:	statusText = "No cell selected.";			break;
+			case LOADING:			statusText = "Waiting on server...";		break;
+			case NO_HTML:			statusText = "No html available.";			break;
+			case SNAPPING:			statusText = "Snapping...";					break;
+			case ERROR:				statusText = "Error retrieving html.";		break;
+			case SYNCING:			statusText = "Saving...";					break;
+			case PREVIEWING:		statusText = "Generating preview...";		break;
 		}
 		
-		smConsoleBlocker.getInstance().setHtml(statusText);
+		m_viewContext.consoleBlocker.setHtml(statusText);
 
 		if( reason != State_EditingCodeBlocker.Reason.SYNCING && reason != State_EditingCodeBlocker.Reason.PREVIEWING)
 		{

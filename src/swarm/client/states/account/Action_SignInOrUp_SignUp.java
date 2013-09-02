@@ -53,7 +53,7 @@ public class Action_SignInOrUp_SignUp extends smA_Action
 		//--- DRK > Just a final double-check catch-all here...UI should have completely validated before performing the action.
 		
 		smSignUpCredentials creds = ((Action_SignInOrUp_SignUp.Args) args).m_creds;
-		boolean everythingOk = smSignUpValidator.getInstance().validate(creds).isEverythingOk();
+		boolean everythingOk = m_accountMngr.getSignUpValidator().validate(creds).isEverythingOk();
 		
 		smU_Debug.ASSERT(everythingOk, "SignUp1");
 		

@@ -53,6 +53,7 @@ public class recompileCells extends smA_DefaultRequestHandler
 	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
 	{
 		smI_BlobManager blobManager = m_context.blobMngrFactory.create(smE_BlobCacheLevel.PERSISTENT);
+		smI_BlobManager cachedBlobManager = m_context.blobMngrFactory.create(smE_BlobCacheLevel.MEMCACHE);
 		
 		smServerGrid grid = null;
 		
@@ -94,18 +95,18 @@ public class recompileCells extends smA_DefaultRequestHandler
 						s_logger.severe("Grid was marked as cell taken, but cell came up null at mapping: " + mapping);
 					}
 
-					if( !recompile(blobManager, cell, mapping, response) )
+					if( !recompile(blobManager, cachedBlobManager, cell, mapping, response) )
 					{
 						break;
 					}
 					
-					smU_CellCode.removeFromCache(mapping);
+					smU_CellCode.removeFromCache(cachedBlobManager, mapping);
 				}
 			}
 		}
 	}
 	
-	private boolean recompile(smI_BlobManager blobManager, smServerCell persistedCell, smServerCellAddressMapping mapping, smTransactionResponse response)
+	private boolean recompile(smI_BlobManager blobMngr, smI_BlobManager cachedBlobMngr, smServerCell persistedCell, smServerCellAddressMapping mapping, smTransactionResponse response)
 	{
 		smCode sourceCode = persistedCell.getCode(smE_CodeType.SOURCE);
 		
@@ -125,6 +126,6 @@ public class recompileCells extends smA_DefaultRequestHandler
 			s_logger.severe("Source code now has an error in it...presumably it did not before.");
 		}
 		
-		return smU_CellCode.saveBackCompiledCell(blobManager, mapping, persistedCell, response);
+		return smU_CellCode.saveBackCompiledCell(blobMngr, cachedBlobMngr, mapping, persistedCell, response);
 	}
 }

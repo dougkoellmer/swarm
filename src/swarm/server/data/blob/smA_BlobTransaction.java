@@ -9,13 +9,17 @@ import swarm.shared.transaction.smE_ResponseError;
 
 public abstract class smA_BlobTransaction
 {
+	protected smBlobManagerFactory m_blobMngrFactory;
+	
 	protected abstract void performOperations() throws smBlobException;
 	
 	protected abstract void onSuccess();
 	
-	public void perform(smE_BlobTransactionType transactionType, int maxTryCount) throws smBlobException
+	public void perform(smBlobManagerFactory blobMngrFactory, smE_BlobTransactionType transactionType, int maxTryCount) throws smBlobException
 	{
-		smBlobTransactionManager blobTransactionManager = smBlobTransactionManager.getInstance();
+		smBlobTransactionManager blobTransactionManager = blobMngrFactory.getBlobTxnMngr();
+		
+		m_blobMngrFactory = blobMngrFactory;
 		
 		int tryCount = 0;
 		while( tryCount < maxTryCount )

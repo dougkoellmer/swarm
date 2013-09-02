@@ -5,12 +5,16 @@ import swarm.server.transaction.smI_TransactionScopeListener;
 public class smBlobManagerFactory implements smI_TransactionScopeListener
 {
 	private final smLocalBlobCache m_localCache = new smLocalBlobCache();
-	private final smBlobTransactionManager m_txnMngr = new smBlobTransactionManager();
+	private final smBlobTransactionManager m_blobTxnMngr = new smBlobTransactionManager();
 	private final smBlobTemplateManager m_templateMngr = new smBlobTemplateManager();
 	
 	public smBlobManagerFactory()
 	{
-		smBlobTransactionManager.startUp(); // TODO(DRK): Shouldn't be singleton.
+	}
+	
+	public smBlobTransactionManager getBlobTxnMngr()
+	{
+		return m_blobTxnMngr;
 	}
 	
 	private smI_BlobManager createInstance(smE_BlobCacheLevel cacheLevel, smI_BlobManager wrappedManager)
@@ -19,7 +23,7 @@ public class smBlobManagerFactory implements smI_TransactionScopeListener
 		{
 			case LOCAL:			return new smBlobManager_LocalCache(m_templateMngr, m_localCache, wrappedManager);
 			case MEMCACHE:  	return new smBlobManager_MemCache(m_templateMngr, wrappedManager);
-			case PERSISTENT:	return new smBlobManager_Persistent(m_templateMngr);
+			case PERSISTENT:	return new smBlobManager_Persistent(m_blobTxnMngr, m_templateMngr);
 		}
 		
 		return null;

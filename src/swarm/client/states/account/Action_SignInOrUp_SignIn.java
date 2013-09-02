@@ -46,6 +46,8 @@ public class Action_SignInOrUp_SignIn extends smA_Action
 	@Override
 	public boolean isPerformable(smA_ActionArgs args)
 	{
-		return State_SignInOrUp.isSignInOrResetPerformable(args, false);
+		State_SignInOrUp state = this.getState();
+		
+		return state.isSignInOrResetPerformable(args, false);
 	}
 }

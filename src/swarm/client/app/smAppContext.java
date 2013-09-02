@@ -3,6 +3,7 @@ package swarm.client.app;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import swarm.client.code.smCompilerErrorMessageGenerator;
 import swarm.client.entities.smCamera;
 import swarm.client.input.smClickManager;
 import swarm.client.managers.smCameraManager;
@@ -32,6 +33,7 @@ public class smAppContext extends smSharedAppContext
 	public smCameraManager cameraMngr;
 	public smCellCodeCache codeCache;
 	public smCellBufferManager cellBufferMngr;
+	public smCompilerErrorMessageGenerator compilerErrorMsgGenerator;
 	
 	private final ArrayList<smCellBufferManager> m_registeredInstances = new ArrayList<smCellBufferManager>();
 	private final smCellBufferManager.Iterator m_iterator = new smCellBufferManager.Iterator(m_registeredInstances);

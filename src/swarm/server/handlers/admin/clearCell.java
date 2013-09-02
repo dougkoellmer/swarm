@@ -18,6 +18,7 @@ import swarm.server.entities.smServerUser;
 import swarm.server.session.smSessionManager;
 import swarm.server.structs.smServerCellAddress;
 import swarm.server.structs.smServerCellAddressMapping;
+import swarm.server.transaction.smA_DefaultRequestHandler;
 import swarm.server.transaction.smI_RequestHandler;
 import swarm.server.transaction.smTransactionContext;
 import swarm.shared.json.smJsonHelper;
@@ -27,7 +28,7 @@ import swarm.shared.transaction.smE_ResponseError;
 import swarm.shared.transaction.smTransactionRequest;
 import swarm.shared.transaction.smTransactionResponse;
 
-public class clearCell implements smI_RequestHandler
+public class clearCell extends smA_DefaultRequestHandler
 {
 	private static final Logger s_logger = Logger.getLogger(clearCell.class.getName());
 	
@@ -38,9 +39,11 @@ public class clearCell implements smI_RequestHandler
 		
 		smBlobTransaction_ClearCell transaction = new smBlobTransaction_ClearCell(address);
 		
-		try {
-			transaction.perform(smE_BlobTransactionType.MULTI_BLOB_TYPE, 1);
-		} catch (smBlobException e)
+		try
+		{
+			transaction.perform(m_context.blobMngrFactory, smE_BlobTransactionType.MULTI_BLOB_TYPE, 1);
+		}
+		catch (smBlobException e)
 		{
 			response.setError(smE_ResponseError.SERVICE_EXCEPTION);
 			

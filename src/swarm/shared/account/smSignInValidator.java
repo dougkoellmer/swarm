@@ -5,25 +5,20 @@ import swarm.shared.app.smA_App;
 
 public class smSignInValidator
 {	
-	private static final smSignInValidator s_instance = new smSignInValidator();
-	
 	private final smSignInValidationResult m_reusedResult = new smSignInValidationResult();
 	
-	private smSignInValidator()
-	{
-		
-	}
+	private final boolean m_clientSide;
 	
-	public static smSignInValidator getInstance()
+	public smSignInValidator(boolean clientSide)
 	{
-		return s_instance;
+		m_clientSide = clientSide;
 	}
 	
 	public smSignInValidationResult validate(smSignInCredentials credentials)
 	{
 		smSignInValidationResult result;
 		
-		if( smA_App.getInstance().getEnvironment() == smE_AppEnvironment.CLIENT )
+		if( m_clientSide )
 		{
 			result = m_reusedResult;
 		}

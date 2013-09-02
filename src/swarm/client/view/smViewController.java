@@ -31,24 +31,21 @@ import com.google.gwt.user.client.ui.RootPanel;
  */
 public class smViewController extends Object implements smI_StateEventListener
 {	
-	private final ArrayList<smI_UIElement> m_listeners = new ArrayList<smI_UIElement>();
+	private final ArrayList<smI_StateEventListener> m_listeners = new ArrayList<smI_StateEventListener>();
 	private final smViewConfig m_viewConfig;
 	private final smClientAppConfig m_appConfig;
-	private final smAppContext m_appContext;
 	private final smViewContext m_viewContext;
-	private final smStateContext m_stateContext;
 	
-	public smViewController(smAppContext appContext, smViewContext viewContext, smViewConfig config, smClientAppConfig appConfig)
+	public smViewController(smViewContext viewContext, smViewConfig config, smClientAppConfig appConfig)
 	{
 		m_viewContext = viewContext;
-		m_appContext = appContext;
 		m_viewConfig = config;
 		m_appConfig = appConfig;
 	}
 	
 	private void startUpInitialUI()
 	{
-		m_listeners.add(new smDialogManager(RootPanel.get()));
+		m_listeners.add(new smDialogManager(m_viewContext.stateContext, m_viewContext.clickMngr, RootPanel.get()));
 		m_listeners.add(new smInitialSyncScreen());
 	}
 	
@@ -64,18 +61,18 @@ public class smViewController extends Object implements smI_StateEventListener
 		
 		smMouse mouse = new smMouse(cellContainer.getMouseEnabledLayer());
 		
-		smMouseNavigator mouseNavigator = new smMouseNavigator(m_appContext.gridMngr, m_appContext.cameraMngr, mouse);
-		smBrowserNavigator browserNavigator = new smBrowserNavigator(m_appContext.cameraMngr, m_appContext.jsonFactory, m_viewConfig.defaultPageTitle, m_appConfig.floatingHistoryUpdateFreq_seconds);
-		smVisualCellFocuser focuser = new smVisualCellFocuser(m_appContext);
+		m_viewContext.mouseNavigator = new smMouseNavigator(m_viewContext.stateContext, m_viewContext.appContext.gridMngr, m_viewContext.appContext.cameraMngr, mouse);
+		m_viewContext.browserNavigator = new smBrowserNavigator(m_viewContext.stateContext, m_viewContext.appContext.cameraMngr, m_viewContext.appContext.jsonFactory, m_viewConfig.defaultPageTitle, m_appConfig.floatingHistoryUpdateFreq_seconds);
+		smVisualCellFocuser focuser = new smVisualCellFocuser(m_viewContext.stateContext, m_viewContext.appContext);
 		//smVisualCellHighlight highlighter = new smVisualCellHighlight(appContext, config, appConfig);
 		
 		cellContainer.getCellContainerInner().add(focuser);
 		//cellContainer.getCellContainerInner().add(highlighter);
 		
 		// TODO: Clean this up so that all this crap doesn't add itself to parent containers in constructors.
-		m_listeners.add(mouseNavigator);
-		m_listeners.add(browserNavigator);
-		m_listeners.add(smViewContext.cellMngr = new smVisualCellManager(cellContainer.getCellContainerInner()));
+		m_listeners.add(m_viewContext.mouseNavigator);
+		m_listeners.add(m_viewContext.browserNavigator);
+		m_listeners.add(m_viewContext.cellMngr = new smVisualCellManager(m_viewContext, cellContainer.getCellContainerInner()));
 		m_listeners.add(m_viewContext.splitPanel);
 		//m_listeners.add(highlighter);
 		m_listeners.add(focuser);

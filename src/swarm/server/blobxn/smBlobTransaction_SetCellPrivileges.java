@@ -36,7 +36,7 @@ public class smBlobTransaction_SetCellPrivileges extends smA_BlobTransaction
 	@Override
 	protected void performOperations() throws smBlobException
 	{
-		smI_BlobManager blobManager = sm_s.blobMngrFactory.create(smE_BlobCacheLevel.MEMCACHE, smE_BlobCacheLevel.PERSISTENT);
+		smI_BlobManager blobManager = m_blobMngrFactory.create(smE_BlobCacheLevel.MEMCACHE, smE_BlobCacheLevel.PERSISTENT);
 		
 		smServerGrid activeGrid = blobManager.getBlob(smE_GridType.ACTIVE, smServerGrid.class);
 		

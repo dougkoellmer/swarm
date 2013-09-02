@@ -37,7 +37,18 @@ import com.google.gwt.http.client.RequestBuilder;
  */
 public class State_SignInOrUp extends smA_State
 {
-	static boolean isSignInOrResetPerformable(smA_ActionArgs args, boolean isForNewPassword)
+	private final smClientAccountManager m_accountMngr;
+	
+	public State_SignInOrUp(smClientAccountManager accountMngr, smUserManager userMngr)
+	{
+		m_accountMngr = accountMngr;
+		
+		registerAction(new Action_SignInOrUp_SignIn(accountMngr, userMngr));
+		registerAction(new Action_SignInOrUp_SignUp(accountMngr, userMngr));
+		registerAction(new Action_SignInOrUp_SetNewPassword(accountMngr));
+	}
+	
+	boolean isSignInOrResetPerformable(smA_ActionArgs args, boolean isForNewPassword)
 	{
 		//--- DRK > Just a final double-check catch-all here...UI should probably have completely validated before performing the action.
 		
@@ -48,18 +59,11 @@ public class State_SignInOrUp extends smA_State
 			creds.setIsForNewPassword(true);
 		}
 		
-		boolean everythingOk = smSignInValidator.getInstance().validate(creds).isEverythingOk();
+		boolean everythingOk = m_accountMngr.getSignInValidator().validate(creds).isEverythingOk();
 		
 		smU_Debug.ASSERT(everythingOk, "SignIn1");
 		
 		return everythingOk;
-	}
-	
-	public State_SignInOrUp(smClientAccountManager accountMngr, smUserManager userMngr)
-	{
-		registerAction(new Action_SignInOrUp_SignIn(accountMngr, userMngr));
-		registerAction(new Action_SignInOrUp_SignUp(accountMngr, userMngr));
-		registerAction(new Action_SignInOrUp_SetNewPassword(accountMngr));
 	}
 	
 	@Override

@@ -51,6 +51,8 @@ import swarm.client.view.tabs.code.smCellSandbox;
 import swarm.client.view.tooltip.smE_ToolTipType;
 import swarm.client.view.tooltip.smToolTipManager;
 import swarm.shared.smE_AppEnvironment;
+import swarm.shared.account.smSignInValidator;
+import swarm.shared.account.smSignUpValidator;
 import swarm.shared.app.smSharedAppContext;
 import swarm.shared.app.smA_App;
 import swarm.shared.app.smS_App;
@@ -178,7 +180,7 @@ public class smA_ClientApp extends smA_App implements smI_TimeSource
 	
 	protected void stage_browserSupportCheck()
 	{
-		m_appContext.cellSandbox = new smCellSandbox(new smCellSandbox.I_StartUpCallback()
+		m_appContext.cellSandbox = new smCellSandbox(m_viewContext, new smCellSandbox.I_StartUpCallback()
 		{
 			public void onStartUpComplete(boolean success)
 			{
@@ -218,6 +220,10 @@ public class smA_ClientApp extends smA_App implements smI_TimeSource
 	
 	protected void stage_startAppManagers()
 	{
+		boolean clientSide = true;
+		smSignInValidator signInValidator = new smSignInValidator(clientSide);
+		smSignUpValidator signUpValidator = new smSignUpValidator(clientSide);
+		
 		m_appContext.platformInfo = new smPlatformInfo();
 		m_appContext.jsonFactory = new smGwtJsonFactory(m_appConfig.verboseTransactions);
 		m_appContext.codeCompiler = new smClientCodeCompiler();
@@ -229,7 +235,7 @@ public class smA_ClientApp extends smA_App implements smI_TimeSource
 		m_appContext.gridMngr = new smGridManager(m_appContext.txnMngr, m_appConfig.grid);
 		m_appContext.cameraMngr = new smCameraManager(m_appContext.gridMngr, new smCamera(), m_appConfig.minSnapTime, m_appConfig.maxSnapTime);
 		m_appContext.addressMngr = new smCellAddressManager(m_appContext, m_appConfig.addressCacheSize, m_appConfig.addressCacheExpiration_seconds, this);
-		m_appContext.accountMngr = new smClientAccountManager(m_appContext.txnMngr, m_appContext.jsonFactory);
+		m_appContext.accountMngr = new smClientAccountManager(signInValidator, signUpValidator, m_appContext.txnMngr, m_appContext.jsonFactory);
 		
 		//--- DRK > Configure transaction stuff.
 		m_appContext.requestPathMngr.register(smE_RequestPath.values());

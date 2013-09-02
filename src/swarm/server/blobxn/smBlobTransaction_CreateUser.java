@@ -35,10 +35,10 @@ public class smBlobTransaction_CreateUser extends smA_BlobTransaction
 	
 	private final smBlobTransaction_CreateCell m_createCellTransaction;
 	
-	public smBlobTransaction_CreateUser(smUserSession session, boolean createHomeCell)
+	public smBlobTransaction_CreateUser(smUserSession session, boolean createHomeCell, int gridExpansionDelta)
 	{
 		smServerCellAddress[] cellAddresses = {new smServerCellAddress(session.getUsername())};
-		m_createCellTransaction = createHomeCell ? new smBlobTransaction_CreateCell(cellAddresses, null, null) : null;
+		m_createCellTransaction = createHomeCell ? new smBlobTransaction_CreateCell(cellAddresses, null, null, gridExpansionDelta) : null;
 		
 		m_session = session;
 	}
@@ -63,7 +63,7 @@ public class smBlobTransaction_CreateUser extends smA_BlobTransaction
 			createCellTxn = null;
 		}
 		
-		smI_BlobManager blobManager = sm_s.blobMngrFactory.create(smE_BlobCacheLevel.PERSISTENT);
+		smI_BlobManager blobManager = m_blobMngrFactory.create(smE_BlobCacheLevel.PERSISTENT);
 		
 		//--- DRK > Add a user to the database.
 		m_user = new smServerUser();

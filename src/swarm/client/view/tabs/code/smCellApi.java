@@ -232,7 +232,7 @@ public class smCellApi
 	
 	private void snapToHistory(double delta)
 	{
-		m_viewContext.navigator.getBrowserNavigator().go((int)delta);
+		m_viewContext.browserNavigator.go((int)delta);
 	}
 	
 	private void snapToAddress(String rawAddress)
@@ -257,7 +257,7 @@ public class smCellApi
 	
 	private void alert(String message)
 	{
-		smAlertManager.getInstance().queue(message);
+		m_viewContext.alertMngr.queue(message);
 	}
 	
 	private void snapToPoint(double x, double y, double z)

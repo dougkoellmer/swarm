@@ -43,7 +43,7 @@ public class smBlobTransaction_DeactivateUserCells extends smA_BlobTransaction
 	@Override
 	protected void performOperations() throws smBlobException
 	{
-		smI_BlobManager blobManager = sm_s.blobMngrFactory.create(smE_BlobCacheLevel.PERSISTENT);
+		smI_BlobManager blobManager = m_blobMngrFactory.create(smE_BlobCacheLevel.PERSISTENT);
 		
 		smServerUser user = blobManager.getBlob(m_session, smServerUser.class);
 		

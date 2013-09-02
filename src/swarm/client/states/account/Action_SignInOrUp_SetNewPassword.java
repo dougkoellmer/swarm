@@ -29,6 +29,8 @@ public class Action_SignInOrUp_SetNewPassword extends smA_Action
 	@Override
 	public boolean isPerformable(smA_ActionArgs args)
 	{
-		return State_SignInOrUp.isSignInOrResetPerformable(args, true);
+		State_SignInOrUp state = this.getState();
+		
+		return state.isSignInOrResetPerformable(args, true);
 	}
 }

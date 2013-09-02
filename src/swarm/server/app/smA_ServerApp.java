@@ -48,6 +48,8 @@ import swarm.server.transaction.smI_TransactionScopeListener;
 import swarm.server.transaction.smInlineTransactionManager;
 import swarm.server.transaction.smServerTransactionManager;
 import swarm.shared.smE_AppEnvironment;
+import swarm.shared.account.smSignInValidator;
+import swarm.shared.account.smSignUpValidator;
 import swarm.shared.app.smSharedAppContext;
 import swarm.shared.app.smA_App;
 import swarm.shared.app.smS_App;
@@ -112,6 +114,11 @@ public abstract class smA_ServerApp extends smA_App
 			s_logger.log(Level.SEVERE, "Could not start up sql databases.", e1);
 		}
 		
+		boolean clientSide = false;
+		smAccountDatabase accountDatabase = new smAccountDatabase(appConfig.databaseUrl, appConfig.accountsDatabase);
+		smSignInValidator signInValidator = new smSignInValidator(clientSide);
+		smSignUpValidator signUpValidator = new smSignUpValidator(clientSide);
+		
 		m_context.jsonFactory = new smServerJsonFactory();
 		m_context.codeCompiler = new smServerCodeCompiler();
 		m_context.requestPathMngr = new smRequestPathManager(m_context.jsonFactory, appConfig.verboseTransactions);
@@ -119,7 +126,7 @@ public abstract class smA_ServerApp extends smA_App
 		m_context.inlineTxnMngr = new smInlineTransactionManager(m_context.txnMngr, (smA_ServerJsonFactory) m_context.jsonFactory, appConfig.appId, appConfig.verboseTransactions);
 		m_context.blobMngrFactory = new smBlobManagerFactory();
 		m_context.sessionMngr = new smSessionManager(m_context.blobMngrFactory, m_context.jsonFactory);
-		m_context.accountMngr = new smServerAccountManager(new smAccountDatabase(appConfig.databaseUrl, appConfig.accountsDatabase));
+		m_context.accountMngr = new smServerAccountManager(signInValidator, signUpValidator, accountDatabase);
 		m_context.telemetryDb = new smTelemetryDatabase(appConfig.databaseUrl, appConfig.telemetryDatabase);
 		m_context.redirector = new smServletRedirector(appConfig.mainPage);
 		
@@ -156,7 +163,7 @@ public abstract class smA_ServerApp extends smA_App
 		setNormalHandler(new syncCode(),				smE_RequestPath.syncCode);
 		setNormalHandler(new getCellAddress(),			smE_RequestPath.getCellAddress);
 		setNormalHandler(new getCellAddressMapping(),	smE_RequestPath.getCellAddressMapping);
-		setNormalHandler(new getUserData(false),		smE_RequestPath.getUserData);
+		setNormalHandler(new getUserData(false, m_appConfig.gridExpansionDelta),		smE_RequestPath.getUserData);
 		setNormalHandler(new getGridData(),				smE_RequestPath.getGridData);
 		setNormalHandler(new signIn(),					smE_RequestPath.signIn);
 		setNormalHandler(new signUp(m_appConfig.publicRecaptchaKey, m_appConfig.privateRecaptchaKey), smE_RequestPath.signUp);
@@ -171,16 +178,13 @@ public abstract class smA_ServerApp extends smA_App
 	
 	private void setNormalHandler(smA_DefaultRequestHandler handler, smI_RequestPath path)
 	{
-		smServerTransactionManager txnManager = m_context.txnMngr;
-		
 		handler.init(m_context);
 		
-		txnManager.setRequestHandler(handler, path);
+		m_context.txnMngr.setRequestHandler(handler, path);
 	}
 	
 	private void addAdminHandlers(Class<? extends smI_HomeCellCreator> T_homeCellCreator)
 	{
-		smServerTransactionManager txnManager = m_context.txnMngr;
 		m_context.requestPathMngr.register(smE_AdminRequestPath.values());
 		
 		setAdminHandler(new createGrid(smServerGrid.class),						smE_AdminRequestPath.createGrid);
@@ -190,11 +194,11 @@ public abstract class smA_ServerApp extends smA_App
 		setAdminHandler(new recompileCells(),									smE_AdminRequestPath.recompileCells);
 	}
 	
-	protected void setAdminHandler(smI_RequestHandler handler, smI_RequestPath path)
+	protected void setAdminHandler(smA_DefaultRequestHandler handler, smI_RequestPath path)
 	{
-		smServerTransactionManager txnManager = m_context.txnMngr;
+		handler.init(m_context);
 		
-		txnManager.setRequestHandler(new adminHandler(m_context.sessionMngr, handler), path);
+		m_context.txnMngr.setRequestHandler(new adminHandler(m_context.sessionMngr, handler), path);
 	}
 	
 	private void addTelemetryHandlers()

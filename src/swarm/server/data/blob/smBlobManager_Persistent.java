@@ -23,9 +23,11 @@ import com.google.appengine.api.datastore.Transaction;
 class smBlobManager_Persistent extends smA_BlobManager
 {
 	private final smBlobTemplateManager m_templateMngr;
+	private final smBlobTransactionManager m_blobTxnMngr;
 	
-	smBlobManager_Persistent(smBlobTemplateManager templateMngr)
+	smBlobManager_Persistent(smBlobTransactionManager blobTxnMngr, smBlobTemplateManager templateMngr)
 	{
+		m_blobTxnMngr = blobTxnMngr;
 		m_templateMngr = templateMngr;
 	}
 	
@@ -59,7 +61,7 @@ class smBlobManager_Persistent extends smA_BlobManager
 		
 		try
 		{
-			Transaction currentTransaction_canBeNull = smBlobTransactionManager.getInstance().getCurrentTransaction(datastore);
+			Transaction currentTransaction_canBeNull = m_blobTxnMngr.getCurrentTransaction(datastore);
 			
 			datastore.put(currentTransaction_canBeNull, entity);
 		}
@@ -78,7 +80,7 @@ class smBlobManager_Persistent extends smA_BlobManager
 	{
 		AsyncDatastoreService datastore = DatastoreServiceFactory.getAsyncDatastoreService();
 		
-		Transaction currentTransaction = smBlobTransactionManager.getInstance().getCurrentTransaction(datastore);
+		Transaction currentTransaction = m_blobTxnMngr.getCurrentTransaction(datastore);
 		
 		if( currentTransaction != null )
 		{
@@ -112,7 +114,7 @@ class smBlobManager_Persistent extends smA_BlobManager
 	
 		try
 		{
-			Transaction currentTransaction_canBeNull = smBlobTransactionManager.getInstance().getCurrentTransaction(datastore);
+			Transaction currentTransaction_canBeNull = m_blobTxnMngr.getCurrentTransaction(datastore);
 			
 			Entity entity = datastore.get(currentTransaction_canBeNull, keyObject);
 			
@@ -162,7 +164,7 @@ class smBlobManager_Persistent extends smA_BlobManager
 		try
 		{
 			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-			Transaction currentTransaction_canBeNull = smBlobTransactionManager.getInstance().getCurrentTransaction(datastore);
+			Transaction currentTransaction_canBeNull = m_blobTxnMngr.getCurrentTransaction(datastore);
 			Map<Key, Entity> entities = datastore.get(currentTransaction_canBeNull, keyObjects);
 			
 			if( entities != null && entities.size() > 0 )
@@ -218,7 +220,7 @@ class smBlobManager_Persistent extends smA_BlobManager
 		try
 		{
 			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-			Transaction currentTransaction_canBeNull = smBlobTransactionManager.getInstance().getCurrentTransaction(datastore);
+			Transaction currentTransaction_canBeNull = m_blobTxnMngr.getCurrentTransaction(datastore);
 			datastore.put(currentTransaction_canBeNull, entities);
 		}
 		catch(Exception e)
@@ -233,7 +235,7 @@ class smBlobManager_Persistent extends smA_BlobManager
 		List<Entity> entities = createEntitiesForPut(values);
 		
 		AsyncDatastoreService datastore = DatastoreServiceFactory.getAsyncDatastoreService();
-		Transaction currentTransaction = smBlobTransactionManager.getInstance().getCurrentTransaction(datastore);
+		Transaction currentTransaction = m_blobTxnMngr.getCurrentTransaction(datastore);
 		
 		if( currentTransaction != null )
 		{
@@ -261,7 +263,7 @@ class smBlobManager_Persistent extends smA_BlobManager
 	
 		try
 		{
-			Transaction currentTransaction_canBeNull = smBlobTransactionManager.getInstance().getCurrentTransaction(datastore);
+			Transaction currentTransaction_canBeNull = m_blobTxnMngr.getCurrentTransaction(datastore);
 			
 			datastore.delete(currentTransaction_canBeNull, keyObject);
 		}
@@ -276,7 +278,7 @@ class smBlobManager_Persistent extends smA_BlobManager
 	{
 		AsyncDatastoreService datastore = DatastoreServiceFactory.getAsyncDatastoreService();
 		
-		Transaction currentTransaction = smBlobTransactionManager.getInstance().getCurrentTransaction(datastore);
+		Transaction currentTransaction = m_blobTxnMngr.getCurrentTransaction(datastore);
 		
 		if( currentTransaction != null )
 		{
@@ -324,7 +326,7 @@ class smBlobManager_Persistent extends smA_BlobManager
 		
 		try
 		{
-			Transaction currentTransaction_canBeNull = smBlobTransactionManager.getInstance().getCurrentTransaction(datastore);
+			Transaction currentTransaction_canBeNull = m_blobTxnMngr.getCurrentTransaction(datastore);
 			
 			datastore.delete(currentTransaction_canBeNull, keys);
 		}
@@ -339,7 +341,7 @@ class smBlobManager_Persistent extends smA_BlobManager
 	{
 		AsyncDatastoreService datastore = DatastoreServiceFactory.getAsyncDatastoreService();
 		
-		Transaction currentTransaction = smBlobTransactionManager.getInstance().getCurrentTransaction(datastore);
+		Transaction currentTransaction = m_blobTxnMngr.getCurrentTransaction(datastore);
 		
 		if( currentTransaction != null )
 		{

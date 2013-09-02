@@ -14,8 +14,10 @@ import swarm.client.transaction.smI_TransactionResponseHandler;
 import swarm.client.transaction.smClientTransactionManager;
 import swarm.shared.account.smSignInCredentials;
 import swarm.shared.account.smSignInValidationResult;
+import swarm.shared.account.smSignInValidator;
 import swarm.shared.account.smSignUpCredentials;
 import swarm.shared.account.smSignUpValidationResult;
+import swarm.shared.account.smSignUpValidator;
 import swarm.shared.app.smSharedAppContext;
 import swarm.shared.debugging.smU_Debug;
 import swarm.shared.entities.smE_EditingPermission;
@@ -93,9 +95,13 @@ public class smClientAccountManager implements smI_TransactionResponseHandler
 	
 	private final smClientTransactionManager m_txnMngr;
 	private final smA_JsonFactory m_jsonFactory;
+	private final smSignInValidator m_signInValidator;
+	private final smSignUpValidator m_signUpValidator;
 	
-	public smClientAccountManager(smClientTransactionManager txnMngr, smA_JsonFactory jsonFactory)
+	public smClientAccountManager(smSignInValidator signInValidator, smSignUpValidator signUpValidator, smClientTransactionManager txnMngr, smA_JsonFactory jsonFactory)
 	{
+		m_signInValidator = signInValidator;
+		m_signUpValidator = signUpValidator;
 		m_txnMngr = txnMngr;
 		m_jsonFactory = jsonFactory;
 	}
@@ -103,6 +109,16 @@ public class smClientAccountManager implements smI_TransactionResponseHandler
 	public smAccountInfo getAccountInfo()
 	{
 		return m_accountInfo;
+	}
+	
+	public smSignInValidator getSignInValidator()
+	{
+		return m_signInValidator;
+	}
+	
+	public smSignUpValidator getSignUpValidator()
+	{
+		return m_signUpValidator;
 	}
 	
 	public boolean isSignedIn()

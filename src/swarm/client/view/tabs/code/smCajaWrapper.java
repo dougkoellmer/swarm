@@ -31,7 +31,7 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
 
-//TODO: There are a lot of references to b33hive-specific code as far as the API given to sandboxed code.
+
 public class smCajaWrapper
 {	
 	private HashMap<Element, smStaticCajaContainer> m_associations = new HashMap<Element, smStaticCajaContainer>();
@@ -53,14 +53,19 @@ public class smCajaWrapper
 		m_callback = callback;
 
 		m_cellApi = new smCellApi(viewContext);
-		m_cellApi.registerApi(apiNamespace);
 		
 		initialize_native(this, apiNamespace);
 	}
 	
+	private void createApi(String apiNamespace)
+	{
+		m_cellApi.registerApi(apiNamespace);
+		tameApi(apiNamespace);
+	}
+	
 	static native void tameApi(String apiNamespace)
 	/*-{
-		{// BH SPECIFIC
+		{
 			$wnd.caja.markReadOnlyRecord($wnd[apiNamespace]);
 			
 			$wnd.caja.markFunction($wnd[apiNamespace].snap);
@@ -79,7 +84,7 @@ public class smCajaWrapper
 			var consoleWrapper;
 			if (!"console" in window || typeof console === "undefined")
 			{
-				//TODO: Define an alternate logging facility, maybe within b33hive itself
+				//TODO: Define an alternate logging facility, maybe within swarm itself
 				consoleWrapper =
 				{
 					log:function(arg){}
@@ -124,7 +129,7 @@ public class smCajaWrapper
 				(
 					function()
 					{
-						@swarm.client.view.tabs.code.smCajaWrapper::tameApi(Ljava/lang/String;)(apiNamespace);
+						@swarm.client.view.tabs.code.smCajaWrapper::createApi(Ljava/lang/String;)(apiNamespace);
 						thisArg.@swarm.client.view.tabs.code.smCajaWrapper::caja_initialize_success()();
 					}
 				);

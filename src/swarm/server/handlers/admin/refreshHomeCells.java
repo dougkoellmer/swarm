@@ -61,7 +61,7 @@ public class refreshHomeCells extends smA_DefaultRequestHandler
 		
 		if( homeCellCreator == null )  return;
 		
-		homeCellCreator.initialize((ServletContext)context.getNativeContext());
+		homeCellCreator.initialize(m_context, (ServletContext)context.getNativeContext());
 		homeCellCreator.run(request, response, context, session, user);
 	}
 }

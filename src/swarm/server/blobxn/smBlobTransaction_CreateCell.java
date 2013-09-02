@@ -42,8 +42,9 @@ public class smBlobTransaction_CreateCell extends smA_BlobTransaction
 	private final smServerCellAddress[] m_addresses;
 	private final smGridCoordinate m_preference;
 	private final smServerCodePrivileges m_privileges;
+	private final int m_gridExpansionDelta;
 	
-	public smBlobTransaction_CreateCell(smServerCellAddress[] cellAddresses, smGridCoordinate preference, smServerCodePrivileges privileges)
+	public smBlobTransaction_CreateCell(smServerCellAddress[] cellAddresses, smGridCoordinate preference, smServerCodePrivileges privileges, int gridExpansionDelta)
 	{
 		//--- DRK > debug code
 		//preference = preference != null ? preference : new smServerGridCoordinate(0, 4);
@@ -51,6 +52,7 @@ public class smBlobTransaction_CreateCell extends smA_BlobTransaction
 		m_privileges = privileges; 
 		m_addresses = cellAddresses;
 		m_preference = preference;
+		m_gridExpansionDelta = gridExpansionDelta;
 	}
 	
 	public boolean didGridGrow()
@@ -97,7 +99,7 @@ public class smBlobTransaction_CreateCell extends smA_BlobTransaction
 	{
 		this.clear();
 		
-		smI_BlobManager blobManager = sm_s.blobMngrFactory.create(smE_BlobCacheLevel.PERSISTENT);
+		smI_BlobManager blobManager = m_blobMngrFactory.create(smE_BlobCacheLevel.PERSISTENT);
 		
 		//--- DRK > Make sure grid exists.
 		m_grid = blobManager.getBlob(smE_GridType.ACTIVE, smServerGrid.class);
@@ -113,7 +115,7 @@ public class smBlobTransaction_CreateCell extends smA_BlobTransaction
 		smServerGridCoordinate freeCoord = null;
 		try
 		{
-			freeCoord = m_grid.findFreeCoordinate(sm_s.app.getConfig().gridExpansionDelta, m_preference);
+			freeCoord = m_grid.findFreeCoordinate(m_gridExpansionDelta, m_preference);
 		}
 		catch(smServerGrid.GridException e)
 		{
@@ -152,7 +154,7 @@ public class smBlobTransaction_CreateCell extends smA_BlobTransaction
 	{
 		//TODO: Not sure the reasoning on caching cell addresses was below...commented out for now.
 		
-		smI_BlobManager blobManager = sm_s.blobMngrFactory.create(smE_BlobCacheLevel.MEMCACHE);
+		smI_BlobManager blobManager = m_blobMngrFactory.create(smE_BlobCacheLevel.MEMCACHE);
 		
 		//--- DRK > We only update the grid if it grew...we only care that a grid of appropriate size is cached,
 		//---		not a grid with accurate cell ownerships.  We only need that when we create a new user or add

@@ -90,6 +90,7 @@ public class syncCode extends smA_DefaultRequestHandler
 		mapping.readJson(null, request.getJsonArgs());
 		boolean isSandbox = isSandBox(mapping);
 		smI_BlobManager blobManager = m_context.blobMngrFactory.create(smE_BlobCacheLevel.PERSISTENT);
+		smI_BlobManager cachingBlobManager = m_context.blobMngrFactory.create(smE_BlobCacheLevel.MEMCACHE);
 		
 		if( !isSandbox )
 		{
@@ -118,7 +119,7 @@ public class syncCode extends smA_DefaultRequestHandler
 		//---			  But if it does, valid contention cases could definitely happen.
 		if( isSandbox == false)
 		{
-			smU_CellCode.saveBackCompiledCell(blobManager, mapping, persistedCell, response);
+			smU_CellCode.saveBackCompiledCell(blobManager, cachingBlobManager, mapping, persistedCell, response);
 		}
 		
 		result.writeJson(null, response.getJsonArgs());

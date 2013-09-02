@@ -85,7 +85,7 @@ public class smVisualCellManager implements smI_UIElement, smI_CellPoolDelegate
 		m_container = container;
 		m_viewContext = viewContext;
 		
-		viewContext.appContext.cellBufferMngr.getCellPool().setDelegate(this);
+		m_viewContext.appContext.cellBufferMngr.getCellPool().setDelegate(this);
 
 		m_alertDialog = new smDialog(m_viewContext.clickMngr, 256, 164, new smDialog.I_Delegate()
 		{
@@ -96,11 +96,11 @@ public class smVisualCellManager implements smI_UIElement, smI_CellPoolDelegate
 				smVisualCell visualCell = (smVisualCell) bufferCell.getVisualization();
 				visualCell.getBlocker().setContent(null);
 				
-				smAlertManager.getInstance().onHandled();
+				smVisualCellManager.this.m_viewContext.alertMngr.onHandled();
 			}
 		});
 		
-		smAlertManager.getInstance().setDelegate(new smAlertManager.I_Delegate()
+		m_viewContext.alertMngr.setDelegate(new smAlertManager.I_Delegate()
 		{
 			@Override
 			public void showAlert(String message)
@@ -421,7 +421,7 @@ public class smVisualCellManager implements smI_UIElement, smI_CellPoolDelegate
 	
 	public void clearAlerts()
 	{
-		smAlertManager.getInstance().clear();
+		m_viewContext.alertMngr.clear();
 		
 		smBufferCell bufferCell = getCurrentBufferCell();
 		

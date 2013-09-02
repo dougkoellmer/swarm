@@ -39,9 +39,13 @@ public class smServerAccountManager
 	};
 	
 	private final smAccountDatabase m_accountDb;
+	private final smSignInValidator m_signInValidator;
+	private final smSignUpValidator m_signUpValidator;
 	
-	public smServerAccountManager(smAccountDatabase database)
+	public smServerAccountManager(smSignInValidator signInValidator, smSignUpValidator signUpValidator, smAccountDatabase database)
 	{
+		m_signInValidator = signInValidator;
+		m_signUpValidator = signUpValidator;
 		m_accountDb = database;
 	}
 	
@@ -66,14 +70,14 @@ public class smServerAccountManager
 	
 	private boolean earlyOut_signIn(smSignInCredentials creds, smSignInValidationResult result_out)
 	{
-		smSignInValidator.getInstance().validate(creds, result_out);
+		m_signInValidator.validate(creds, result_out);
 		
 		return !result_out.isEverythingOk();
 	}
 	
 	private boolean earlyOut_signUp(smSignUpCredentials creds, smSignUpValidationResult result_out)
 	{
-		smSignUpValidator.getInstance().validate(creds, result_out);
+		m_signUpValidator.validate(creds, result_out);
 		
 		return !result_out.isEverythingOk();
 	}

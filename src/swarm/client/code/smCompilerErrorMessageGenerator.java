@@ -9,16 +9,9 @@ import swarm.shared.debugging.smU_Debug;
 
 public class smCompilerErrorMessageGenerator
 {
-	private static final smCompilerErrorMessageGenerator s_instance = new smCompilerErrorMessageGenerator();
-	
 	private smCompilerErrorMessageGenerator()
 	{
 		
-	}
-	
-	public static smCompilerErrorMessageGenerator getInstance()
-	{
-		return s_instance;
 	}
 	
 	public String generate(smCompilerResult result)

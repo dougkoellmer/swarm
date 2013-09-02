@@ -42,9 +42,12 @@ public class smAccountTabContent extends AbsolutePanel implements smI_TabContent
 	
 	private final smSignInOrUpPanel m_signUpOrIn;
 	private final smManageAccountPanel m_manage;
+	private final smViewContext m_viewContext;
 	
 	public smAccountTabContent(smViewContext viewContext)
 	{
+		m_viewContext = viewContext;
+		
 		this.addStyleName("sm_account_tab");
 		
 		m_signUpOrIn = new smSignInOrUpPanel(viewContext);
@@ -78,8 +81,8 @@ public class smAccountTabContent extends AbsolutePanel implements smI_TabContent
 			{
 				if( event.getState() instanceof State_AccountStatusPending )
 				{
-					smConsoleBlocker.getInstance().attachTo(this);
-					smConsoleBlocker.getInstance().setHtml("Wait a second...");
+					m_viewContext.consoleBlocker.attachTo(this);
+					m_viewContext.consoleBlocker.setHtml("Wait a second...");
 				}
 				else if( event.getState() instanceof StateMachine_Tabs )
 				{
@@ -88,7 +91,7 @@ public class smAccountTabContent extends AbsolutePanel implements smI_TabContent
 						//--- DRK > This goes along with the sleight of hand we pull below for not detaching the blocker while animating out.
 						//---		This just makes sure that the console blocker gets detached...it might be the case that it gets immediately
 						//---		reattached.
-						smConsoleBlocker.getInstance().detachFrom(this);
+						m_viewContext.consoleBlocker.detachFrom(this);
 					}
 				}
 			
@@ -124,7 +127,7 @@ public class smAccountTabContent extends AbsolutePanel implements smI_TabContent
 						//--- DRK > This should be called in the "exit" event because background event could be called for something
 						//---		like an error dialog being pushed over the topmost state in the machine.
 						//---		Other tabs needing the console blocker will simply take over if they need it anyway.
-						smConsoleBlocker.getInstance().detachFrom(this);
+						m_viewContext.consoleBlocker.detachFrom(this);
 					}
 				}
 				break;

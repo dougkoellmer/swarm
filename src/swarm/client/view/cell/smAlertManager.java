@@ -10,19 +10,12 @@ public class smAlertManager
 		void showAlert(String message);
 	}
 	
-	private static final smAlertManager s_instance = new smAlertManager();
-	
 	private final ArrayList<String> m_queue = new ArrayList<String>();
 	private I_Delegate m_delegate = null;
 	
 	private smAlertManager()
 	{
 		
-	}
-	
-	public static smAlertManager getInstance()
-	{
-		return s_instance;
 	}
 	
 	public void setDelegate(I_Delegate delegate)
