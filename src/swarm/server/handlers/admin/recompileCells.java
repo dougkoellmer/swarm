@@ -52,8 +52,8 @@ public class recompileCells extends smA_DefaultRequestHandler
 	@Override
 	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
 	{
-		smI_BlobManager blobManager = m_context.blobMngrFactory.create(smE_BlobCacheLevel.PERSISTENT);
-		smI_BlobManager cachedBlobManager = m_context.blobMngrFactory.create(smE_BlobCacheLevel.MEMCACHE);
+		smI_BlobManager blobManager = m_serverContext.blobMngrFactory.create(smE_BlobCacheLevel.PERSISTENT);
+		smI_BlobManager cachedBlobManager = m_serverContext.blobMngrFactory.create(smE_BlobCacheLevel.MEMCACHE);
 		
 		smServerGrid grid = null;
 		
@@ -115,7 +115,7 @@ public class recompileCells extends smA_DefaultRequestHandler
 			return true;
 		}
 		
-		smCompilerResult result = smU_CellCode.compileCell(m_context.codeCompiler, persistedCell, sourceCode, mapping);
+		smCompilerResult result = smU_CellCode.compileCell(m_serverContext.codeCompiler, persistedCell, sourceCode, mapping);
 		
 		if( result.getStatus() != smE_CompilationStatus.NO_ERROR )
 		{

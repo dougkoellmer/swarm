@@ -129,7 +129,7 @@ public class smInlineRequestDispatcher implements smI_SyncRequestDispatcher
 		{
 			smTransactionRequestBatch requestBatch = (smTransactionRequestBatch) request;
 			
-			smI_JsonArray responseBatch = null;//
+			smI_JsonArray responseBatch = null;
 			smTransactionRequestBatch inlineRequestBatch = null;
 			
 			int handledCount = 0;

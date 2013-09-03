@@ -254,8 +254,8 @@ public class smCellCodeManager implements smI_TransactionResponseHandler
 	
 	private void onGetCellDataSuccess(smTransactionRequest request, smTransactionResponse response)
 	{
-		m_utilCell.readJson(null, response.getJsonArgs());
-		m_utilCoord.readJson(null, request.getJsonArgs());
+		m_utilCell.readJson(this.m_appContext.jsonFactory, response.getJsonArgs());
+		m_utilCoord.readJson(this.m_appContext.jsonFactory, request.getJsonArgs());
 		m_utilCell.getCoordinate().copy(m_utilCoord);
 
 		smUserManager userManager = m_appContext.userMngr;
@@ -334,7 +334,7 @@ public class smCellCodeManager implements smI_TransactionResponseHandler
 		{
 			smUserManager userManager = m_appContext.userMngr;
 			smA_ClientUser user = userManager.getUser();
-			m_utilCoord.readJson(null, request.getJsonArgs());
+			m_utilCoord.readJson(m_appContext.jsonFactory, request.getJsonArgs());
 			
 			if( isSyncing(m_utilCoord) )
 			{
@@ -345,10 +345,8 @@ public class smCellCodeManager implements smI_TransactionResponseHandler
 			//---		totally fringe or even impossible as that may be, then we shouldn't update cell code.
 			boolean isStillCellOwner = user.isCellOwner(m_utilCoord);
 			
-			smCompilerResult result = new smCompilerResult();
-			result.readJson(null, response.getJsonArgs());
-			
-			smCode sourceCode = new smCode(request.getJsonArgs(), smE_CodeType.SOURCE);
+			smCompilerResult result = new smCompilerResult(m_appContext.jsonFactory, response.getJsonArgs());
+			smCode sourceCode = new smCode(m_appContext.jsonFactory, request.getJsonArgs(), smE_CodeType.SOURCE);
 			
 			if( result.getStatus() == smE_CompilationStatus.NO_ERROR )
 			{
@@ -459,7 +457,7 @@ public class smCellCodeManager implements smI_TransactionResponseHandler
 		int typeOrdinal = m_appContext.jsonFactory.getHelper().getInt(request.getJsonArgs(), smE_JsonKey.codeType);
 		smE_CodeType eCodeType = smE_CodeType.values()[typeOrdinal];
 		
-		m_utilCoord.readJson(null, request.getJsonArgs());
+		m_utilCoord.readJson(m_appContext.jsonFactory, request.getJsonArgs());
 
 		if( eCodeType == smE_CodeType.SOURCE )
 		{
@@ -496,7 +494,7 @@ public class smCellCodeManager implements smI_TransactionResponseHandler
 			smUserManager userManager = m_appContext.userMngr;
 			smA_ClientUser user = userManager.getUser();
 			
-			m_utilCoord.readJson(null, request.getJsonArgs());
+			m_utilCoord.readJson(m_appContext.jsonFactory, request.getJsonArgs());
 			
 			smCompilerResult result = new smCompilerResult();
 			result.onFailure(smE_CompilationStatus.RESPONSE_ERROR);

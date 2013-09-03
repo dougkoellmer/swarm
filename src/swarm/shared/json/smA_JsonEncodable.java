@@ -19,8 +19,8 @@ public abstract class smA_JsonEncodable implements smI_ReadsJson, smI_WritesJson
 	{
 	}
 	
-	public smA_JsonEncodable(smI_JsonObject json)
+	public smA_JsonEncodable(smA_JsonFactory factory, smI_JsonObject json)
 	{
-		this.readJson(null, json);
+		this.readJson(factory, json);
 	}
 }

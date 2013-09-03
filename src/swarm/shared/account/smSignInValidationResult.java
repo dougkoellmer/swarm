@@ -23,9 +23,9 @@ public class smSignInValidationResult extends smA_JsonEncodable
 		init();
 	}
 	
-	public smSignInValidationResult(smI_JsonObject json)
+	public smSignInValidationResult(smA_JsonFactory jsonFactory, smI_JsonObject json)
 	{
-		super(json);
+		super(jsonFactory, json);
 		
 		init();
 	}

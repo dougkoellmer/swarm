@@ -123,7 +123,7 @@ public class smSessionManager implements smI_TransactionScopeListener
 			{
 				smA_JsonFactory jsonFactory = m_jsonFactory;
 				smI_JsonObject json = jsonFactory.createJsonObject(cookieValueJson);
-				cookieValue = new smSessionCookieValue(json, type);
+				cookieValue = new smSessionCookieValue(jsonFactory, json, type);
 			}
 			catch(Exception e)
 			{

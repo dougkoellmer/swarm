@@ -22,14 +22,13 @@ public class getCellAddressMapping extends smA_DefaultRequestHandler
 	@Override
 	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
 	{
-		smServerCellAddress address = new smServerCellAddress();
-		address.readJson(null, request.getJsonArgs());
+		smServerCellAddress address = new smServerCellAddress(m_serverContext.jsonFactory, request.getJsonArgs());
 		smE_CellAddressParseError parseError = address.getParseError();
 		smGetCellAddressMappingResult result = new smGetCellAddressMappingResult();
 		
 		if( parseError == smE_CellAddressParseError.NO_ERROR )
 		{
-			smI_BlobManager blobManager = m_context.blobMngrFactory.create(smE_BlobCacheLevel.values());
+			smI_BlobManager blobManager = m_serverContext.blobMngrFactory.create(smE_BlobCacheLevel.values());
 			
 			smServerCellAddressMapping addressMapping = null;
 			
@@ -58,6 +57,6 @@ public class getCellAddressMapping extends smA_DefaultRequestHandler
 			result.setError(smE_GetCellAddressMappingError.ADDRESS_PARSE_ERROR);
 		}
 		
-		result.writeJson(null, response.getJsonArgs());
+		result.writeJson(m_serverContext.jsonFactory, response.getJsonArgs());
 	}
 }

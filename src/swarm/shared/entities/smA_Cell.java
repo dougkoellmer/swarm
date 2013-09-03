@@ -155,7 +155,7 @@ public abstract class smA_Cell extends smA_JsonEncodable
 	{
 		if( m_codePrivileges != null )
 		{
-			m_codePrivileges.writeJson(null, json_out);
+			m_codePrivileges.writeJson(factory, json_out);
 		}
 		
 		for( int i = 0; i < smE_CodeType.values().length; i++ )
@@ -179,7 +179,7 @@ public abstract class smA_Cell extends smA_JsonEncodable
 				m_codePrivileges = new smCodePrivileges();
 			}
 			
-			m_codePrivileges.readJson(null, json);
+			m_codePrivileges.readJson(factory, json);
 		}
 		else
 		{
@@ -194,7 +194,7 @@ public abstract class smA_Cell extends smA_JsonEncodable
 
 			if( jsonForCode != null )
 			{
-				m_code[i] = new smCode(jsonForCode, smE_CodeType.values()[i]);
+				m_code[i] = new smCode(factory, jsonForCode, smE_CodeType.values()[i]);
 			}
 			else
 			{

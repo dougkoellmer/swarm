@@ -42,7 +42,7 @@ public class deactivateUserCells extends smA_DefaultRequestHandler
 	@Override
 	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
 	{
-		Integer accountId = m_context.jsonFactory.getHelper().getInt(request.getJsonArgs(), smE_JsonKey.accountId);
+		Integer accountId = m_serverContext.jsonFactory.getHelper().getInt(request.getJsonArgs(), smE_JsonKey.accountId);
 		
 		if( accountId == null )
 		{
@@ -57,7 +57,7 @@ public class deactivateUserCells extends smA_DefaultRequestHandler
 		
 		try
 		{
-			deactivateCells.perform(m_context.blobMngrFactory, smE_BlobTransactionType.MULTI_BLOB_TYPE, 1);
+			deactivateCells.perform(m_serverContext.blobMngrFactory, smE_BlobTransactionType.MULTI_BLOB_TYPE, 1);
 		}
 		catch(smBlobException e)
 		{

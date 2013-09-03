@@ -9,6 +9,7 @@ import swarm.client.transaction.smE_ResponseSuccessControl;
 import swarm.client.transaction.smI_TransactionResponseHandler;
 import swarm.client.transaction.smClientTransactionManager;
 import swarm.shared.entities.smA_Grid;
+import swarm.shared.json.smA_JsonFactory;
 import swarm.shared.json.smI_JsonObject;
 import swarm.shared.transaction.smE_RequestPath;
 import swarm.shared.transaction.smE_ResponseError;
@@ -25,9 +26,11 @@ public class smGridManager implements smI_TransactionResponseHandler
 	private I_Listener m_listener = null;
 	private final smA_Grid m_grid;
 	private final smClientTransactionManager m_txnMngr;
+	private final smA_JsonFactory m_jsonFactory;
 	
-	public smGridManager(smClientTransactionManager txnMngr, smA_Grid grid)
+	public smGridManager(smClientTransactionManager txnMngr, smA_JsonFactory jsonFactory, smA_Grid grid)
 	{
+		m_jsonFactory = jsonFactory;
 		m_txnMngr = txnMngr;
 		m_grid = grid;
 	}
@@ -61,7 +64,7 @@ public class smGridManager implements smI_TransactionResponseHandler
 		int oldWidth = m_grid.getWidth();
 		int oldHeight = m_grid.getHeight();
 		
-		m_grid.readJson(null, json);
+		m_grid.readJson(m_jsonFactory, json);
 		
 		if( oldWidth != m_grid.getWidth() || oldHeight != m_grid.getHeight() )
 		{

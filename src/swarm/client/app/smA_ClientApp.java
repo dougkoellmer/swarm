@@ -235,7 +235,7 @@ public class smA_ClientApp extends smA_App implements smI_TimeSource
 		m_appContext.userMngr = new smUserManager(m_appContext, m_appConfig.user);
 		m_appContext.requestPathMngr = new smRequestPathManager(m_appContext.jsonFactory, m_appConfig.verboseTransactions);
 		m_appContext.txnMngr = new smClientTransactionManager(m_appContext.requestPathMngr, m_appContext.jsonFactory);
-		m_appContext.gridMngr = new smGridManager(m_appContext.txnMngr, m_appConfig.grid);
+		m_appContext.gridMngr = new smGridManager(m_appContext.txnMngr, m_appContext.jsonFactory, m_appConfig.grid);
 		m_appContext.cameraMngr = new smCameraManager(m_appContext.gridMngr, new smCamera(), m_appConfig.minSnapTime, m_appConfig.maxSnapTime);
 		m_appContext.addressMngr = new smCellAddressManager(m_appContext, m_appConfig.addressCacheSize, m_appConfig.addressCacheExpiration_seconds, this);
 		m_appContext.accountMngr = new smClientAccountManager(signInValidator, signUpValidator, m_appContext.txnMngr, m_appContext.jsonFactory);

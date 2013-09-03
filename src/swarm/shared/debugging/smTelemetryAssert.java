@@ -19,9 +19,9 @@ public class smTelemetryAssert extends smA_JsonEncodable
 		m_platform = browser;
 	}
 	
-	public smTelemetryAssert(smI_JsonObject json)
+	public smTelemetryAssert(smA_JsonFactory jsonFactory, smI_JsonObject json)
 	{
-		this.readJson(null, json);
+		this.readJson(jsonFactory, json);
 	}
 	
 	@Override

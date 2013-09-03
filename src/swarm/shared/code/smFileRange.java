@@ -17,9 +17,9 @@ public class smFileRange extends smA_JsonEncodable
 	
 	private Integer[] m_range = null;
 	
-	public smFileRange(smI_JsonObject json)
+	public smFileRange(smA_JsonFactory jsonFactory, smI_JsonObject json)
 	{
-		super(json);
+		super(jsonFactory, json);
 	}
 	
 	public smFileRange(int startLine, int startColumn, int endLine, int endColumn)

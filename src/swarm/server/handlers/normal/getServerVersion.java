@@ -31,6 +31,6 @@ public class getServerVersion extends smA_DefaultRequestHandler
 	@Override
 	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
 	{
-		m_context.jsonFactory.getHelper().putInt(response.getJsonArgs(), smE_JsonKey.serverVersion, smS_App.SERVER_VERSION);
+		m_serverContext.jsonFactory.getHelper().putInt(response.getJsonArgs(), smE_JsonKey.serverVersion, smS_App.SERVER_VERSION);
 	}
 }

@@ -11,6 +11,7 @@ import swarm.server.data.blob.smI_BlobKey;
 import swarm.server.data.blob.smU_Blob;
 import swarm.server.data.blob.smU_Serialization;
 
+import swarm.shared.json.smA_JsonFactory;
 import swarm.shared.json.smI_JsonObject;
 import swarm.shared.structs.smCellAddress;
 import swarm.shared.structs.smCodePrivileges;
@@ -20,9 +21,9 @@ public class smServerCellAddress extends smCellAddress implements Externalizable
 {
 	private static final int EXTERNAL_VERSION = 1;
 	
-	public smServerCellAddress(smI_JsonObject json)
+	public smServerCellAddress(smA_JsonFactory jsonFactory, smI_JsonObject json)
 	{
-		super(json);
+		super(jsonFactory, json);
 	}
 	
 	public smServerCellAddress(String rawAddress)

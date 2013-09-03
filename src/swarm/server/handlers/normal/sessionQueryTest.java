@@ -35,12 +35,12 @@ public class sessionQueryTest extends smA_DefaultRequestHandler
 	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
 	{
 		//--- DRK > debug handler, so just doing basic security check.
-		if( !m_context.sessionMngr.isAuthorized(request, response, smE_Role.ADMIN) )
+		if( !m_serverContext.sessionMngr.isAuthorized(request, response, smE_Role.ADMIN) )
 		{
 			return;
 		}
 		
-		smUserSession session = m_context.sessionMngr.getSession(request, response);
+		smUserSession session = m_serverContext.sessionMngr.getSession(request, response);
 		
 		int accountId = session.getAccountId();
 		

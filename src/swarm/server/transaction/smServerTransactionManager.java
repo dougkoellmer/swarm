@@ -178,7 +178,7 @@ public class smServerTransactionManager
 					public void onRequestFound(smI_JsonObject requestJson)
 					{
 						smTransactionRequest batchedRequest = new smTransactionRequest(m_jsonFactory, nativeRequest);
-						batchedRequest.readJson(null, requestJson);
+						batchedRequest.readJson(smServerTransactionManager.this.m_jsonFactory, requestJson);
 						smTransactionResponse batchedResponse = new smTransactionResponse(m_jsonFactory, nativeResponse);
 						
 						context.addTransaction(batchedRequest, batchedResponse);
@@ -282,7 +282,7 @@ public class smServerTransactionManager
 				s_logger.log(Level.SEVERE, "Response should not have been null.");
 			}
 			
-			responseToReturn.writeJson(null, responseJson_out);
+			responseToReturn.writeJson(m_jsonFactory, responseJson_out);
 			
 			m_jsonFactory.endScope();
 			

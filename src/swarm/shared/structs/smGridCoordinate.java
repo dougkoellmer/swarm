@@ -26,6 +26,11 @@ public class smGridCoordinate extends smA_JsonEncodable implements smI_JsonCompa
 		set(0, 0);
 	}
 	
+	public smGridCoordinate(smA_JsonFactory jsonFactory, smI_JsonObject json)
+	{	
+		super(jsonFactory, json);
+	}
+	
 	public smGridCoordinate(smGridCoordinate source)
 	{
 		this.copy(source);

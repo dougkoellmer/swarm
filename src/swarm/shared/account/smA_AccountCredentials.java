@@ -12,9 +12,9 @@ public abstract class smA_AccountCredentials extends smA_JsonEncodable
 	protected String[] m_credentials;
 	private boolean m_rememberMe;
 	
-	public smA_AccountCredentials(smI_JsonObject json)
+	public smA_AccountCredentials(smA_JsonFactory jsonFactory, smI_JsonObject json)
 	{
-		super(json);
+		super(jsonFactory, json);
 	}
 	
 	public smA_AccountCredentials(boolean rememberMe)

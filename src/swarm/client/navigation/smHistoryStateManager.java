@@ -18,9 +18,11 @@ public class smHistoryStateManager
 	
 	private final I_Listener m_listener;
 	private final String m_defaultPageTitle;
+	private final smA_JsonFactory m_jsonFactory;
 	
 	public smHistoryStateManager(smA_JsonFactory jsonFactory, String defaultPageTitle, I_Listener listener)
 	{
+		m_jsonFactory = jsonFactory;
 		m_defaultPageTitle = defaultPageTitle;
 		m_listener = listener;
 		
@@ -34,7 +36,7 @@ public class smHistoryStateManager
 				if( json != null )
 				{
 					state = new smHistoryState();
-					state.readJson(null, json);
+					state.readJson(m_jsonFactory, json);
 				}
 				
 				m_listener.onStateChange(path, state);
@@ -124,7 +126,7 @@ public class smHistoryStateManager
 		if( json != null )
 		{
 			smHistoryState state = new smHistoryState();
-			state.readJson(null, json);
+			state.readJson(m_jsonFactory, json);
 			
 			return state;
 		}

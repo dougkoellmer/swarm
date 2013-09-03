@@ -187,7 +187,7 @@ public class smU_InlineTransactions
 			{
 				smTransactionResponse response = transactionManager.makeInlineRequest(smE_RequestPath.getGridData);
 				grid = new smA_Grid(){};
-				grid.readJson(null, response.getJsonArgs());
+				grid.readJson(context.jsonFactory, response.getJsonArgs());
 			}
 	
 			smPoint startingPosition = new smPoint();

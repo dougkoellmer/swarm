@@ -131,7 +131,7 @@ public abstract class smA_Grid extends smA_JsonEncodable
 		{
 			m_ownership = m_ownership != null ? m_ownership : createBitArray();
 			
-			m_ownership.readJson(null, json);
+			m_ownership.readJson(factory, json);
 		}
 	}
 	
@@ -146,7 +146,7 @@ public abstract class smA_Grid extends smA_JsonEncodable
 		
 		if( m_ownership != null )
 		{
-			m_ownership.writeJson(null, json_out);
+			m_ownership.writeJson(factory, json_out);
 		}
 	}
 }

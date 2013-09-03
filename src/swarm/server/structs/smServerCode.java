@@ -8,6 +8,7 @@ import java.io.ObjectOutput;
 import swarm.server.data.blob.smU_Serialization;
 import swarm.shared.entities.smE_CodeSafetyLevel;
 import swarm.shared.entities.smE_CodeType;
+import swarm.shared.json.smA_JsonFactory;
 import swarm.shared.json.smI_JsonObject;
 import swarm.shared.structs.smCode;
 
@@ -25,9 +26,9 @@ public class smServerCode extends smCode implements Externalizable
 		super((String)null, smE_CodeType.values());
 	}
 	
-	public smServerCode(smI_JsonObject json, smE_CodeType ... standInTypes)
+	public smServerCode(smA_JsonFactory jsonFactory, smI_JsonObject json, smE_CodeType ... standInTypes)
 	{
-		super(json, standInTypes);
+		super(jsonFactory, json, standInTypes);
 	}
 	
 	public smServerCode(String rawCode, smE_CodeType ... standInTypes)

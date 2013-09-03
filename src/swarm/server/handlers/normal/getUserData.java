@@ -44,16 +44,16 @@ public class getUserData extends smA_DefaultRequestHandler
 	@Override
 	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
 	{
-		if( !m_context.sessionMngr.isAuthorized(request, response, smE_Role.USER) )
+		if( !m_serverContext.sessionMngr.isAuthorized(request, response, smE_Role.USER) )
 		{
 			return;
 		}
 		
-		smUserSession userSession = m_context.sessionMngr.getSession(request, response);
+		smUserSession userSession = m_serverContext.sessionMngr.getSession(request, response);
 
 		smServerUser user = null;
 		
-		smI_BlobManager blobManager = m_context.blobMngrFactory.create(smE_BlobCacheLevel.PERSISTENT);
+		smI_BlobManager blobManager = m_serverContext.blobMngrFactory.create(smE_BlobCacheLevel.PERSISTENT);
 
 		//--- DRK > First try to just get the user with a straight read...should be successful most of the time.
 		try
@@ -79,7 +79,7 @@ public class getUserData extends smA_DefaultRequestHandler
 			try
 			{
 				smBlobTransaction_CreateUser createUserTransaction = new smBlobTransaction_CreateUser(userSession, m_autoCreateHomeCell, m_gridExpansionDelta);
-				createUserTransaction.perform(m_context.blobMngrFactory, smE_BlobTransactionType.MULTI_BLOB_TYPE, 5);
+				createUserTransaction.perform(m_serverContext.blobMngrFactory, smE_BlobTransactionType.MULTI_BLOB_TYPE, 5);
 				
 				//--- DRK > Not a huge fan of this method of letting client know that grid size changed.
 				//---		Better would be if I could let client know through batch system, but I can't figure
@@ -97,7 +97,7 @@ public class getUserData extends smA_DefaultRequestHandler
 						}
 					};
 					
-					dummyGrid.writeJson(null, response.getJsonArgs());
+					dummyGrid.writeJson(m_serverContext.jsonFactory, response.getJsonArgs());
 				}
 				
 				user = createUserTransaction.getUser();
@@ -123,7 +123,7 @@ public class getUserData extends smA_DefaultRequestHandler
 			return;
 		}
 
-		m_context.jsonFactory.getHelper().putBoolean(response.getJsonArgs(), smE_JsonKey.createdUser, createdUser);
-		user.writeJson(null, response.getJsonArgs());
+		m_serverContext.jsonFactory.getHelper().putBoolean(response.getJsonArgs(), smE_JsonKey.createdUser, createdUser);
+		user.writeJson(m_serverContext.jsonFactory, response.getJsonArgs());
 	}
 }

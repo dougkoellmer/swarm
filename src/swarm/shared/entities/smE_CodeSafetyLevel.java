@@ -4,6 +4,9 @@ import swarm.shared.lang.smI_SerializableEnum;
 
 public enum smE_CodeSafetyLevel implements smI_SerializableEnum
 {
+	//---TODO(DRK):	At some point it will be ok to get rid of some "old names",
+	//				like if we manually update all db entities to latest versions.
+	
 	SAFE,
 	REQUIRES_STATIC_SANDBOX("REQUIRES_SANDBOX"),
 	REQUIRES_DYNAMIC_SANDBOX;

@@ -14,11 +14,11 @@ public class signOut extends smA_DefaultRequestHandler
 	@Override
 	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
 	{
-		if( !m_context.sessionMngr.isAuthorized(request, response, smE_Role.USER) )
+		if( !m_serverContext.sessionMngr.isAuthorized(request, response, smE_Role.USER) )
 		{
 			return;
 		}
 		
-		m_context.sessionMngr.endSession(request, response);
+		m_serverContext.sessionMngr.endSession(request, response);
 	}
 }

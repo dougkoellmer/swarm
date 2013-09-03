@@ -16,9 +16,9 @@ public class smSignInCredentials extends smA_AccountCredentials
 	private boolean m_isForNewPassword = false;
 	private String m_passwordChangeToken;
 	
-	public smSignInCredentials(smI_JsonObject json)
+	public smSignInCredentials(smA_JsonFactory jsonFactory, smI_JsonObject json)
 	{
-		super(json);
+		super(jsonFactory, json);
 		
 		init();
 	}

@@ -52,7 +52,7 @@ public class smGetCellAddressResult extends smA_JsonEncodable
 	{
 		if( m_address != null && m_error == smE_GetCellAddressError.NO_ERROR )
 		{
-			m_address.writeJson(null, json_out);
+			m_address.writeJson(factory, json_out);
 		}
 		
 		factory.getHelper().putEnum(json_out, smE_JsonKey.getCellAddressError, m_error);

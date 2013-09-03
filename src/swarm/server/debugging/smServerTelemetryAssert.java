@@ -2,6 +2,7 @@ package swarm.server.debugging;
 
 import swarm.server.data.sql.smI_SqlEncodable;
 import swarm.shared.debugging.smTelemetryAssert;
+import swarm.shared.json.smA_JsonFactory;
 import swarm.shared.json.smI_JsonObject;
 import swarm.shared.structs.smTuple;
 
@@ -12,9 +13,9 @@ public class smServerTelemetryAssert extends smTelemetryAssert implements smI_Sq
 	
 	private int m_progress = -1;
 	
-	public smServerTelemetryAssert(smI_JsonObject json, String ip, Integer accountId)
+	public smServerTelemetryAssert(smA_JsonFactory jsonFactory, smI_JsonObject json, String ip, Integer accountId)
 	{
-		super(json);
+		super(jsonFactory, json);
 
 		m_ip = ip;
 		m_accountId = accountId;

@@ -34,7 +34,7 @@ public class getPasswordChangeToken extends smA_DefaultRequestHandler
 	@Override
 	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
 	{
-		smSessionManager sessionManager = m_context.sessionMngr;
+		smSessionManager sessionManager = m_serverContext.sessionMngr;
 		HttpServletRequest nativeRequest = (HttpServletRequest) request.getNativeRequest();
 		
 		String passwordChangeToken = nativeRequest.getParameter(smS_ServerAccount.PASSWORD_CHANGE_TOKEN_PARAMETER_NAME);
@@ -47,9 +47,9 @@ public class getPasswordChangeToken extends smA_DefaultRequestHandler
 				sessionManager.endSession(request, response);
 			}
 			
-			if( m_context.accountMngr.isPasswordChangeTokenValid(passwordChangeToken) )
+			if( m_serverContext.accountMngr.isPasswordChangeTokenValid(passwordChangeToken) )
 			{
-				m_context.jsonFactory.getHelper().putString(response.getJsonArgs(), smE_JsonKey.passwordChangeToken, passwordChangeToken);
+				m_serverContext.jsonFactory.getHelper().putString(response.getJsonArgs(), smE_JsonKey.passwordChangeToken, passwordChangeToken);
 			}
 			else
 			{

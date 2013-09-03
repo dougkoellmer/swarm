@@ -20,9 +20,9 @@ public class smCode extends smA_JsonEncodable
 	
 	protected smE_CodeSafetyLevel m_safetyLevel;
 	
-	public smCode(smI_JsonObject json, smE_CodeType ... standInTypes)
+	public smCode(smA_JsonFactory jsonFactory, smI_JsonObject json, smE_CodeType ... standInTypes)
 	{
-		super(json);
+		super(jsonFactory, json);
 
 		init(standInTypes);
 	}

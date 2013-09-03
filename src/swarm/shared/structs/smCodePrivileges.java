@@ -26,9 +26,9 @@ public class smCodePrivileges extends smA_JsonEncodable
 		m_characterQuota = smE_CharacterQuota.FREE;
 	}
 	
-	public smCodePrivileges(smI_JsonObject json)
+	public smCodePrivileges(smA_JsonFactory jsonFactory, smI_JsonObject json)
 	{
-		super(json);
+		super(jsonFactory, json);
 	}
 	
 	public void copy(smCodePrivileges privileges)

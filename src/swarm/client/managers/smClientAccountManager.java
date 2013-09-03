@@ -337,12 +337,12 @@ public class smClientAccountManager implements smI_TransactionResponseHandler
 				
 				if( signInResponse.getError() == smE_ResponseError.NO_ERROR )
 				{
-					result.readJson(null, signInResponse.getJsonArgs());
+					result.readJson(this.m_jsonFactory, signInResponse.getJsonArgs());
 					
 					if( result.isEverythingOk() )
 					{
 						m_accountInfo = new smAccountInfo();
-						m_accountInfo.readJson(null, response.getJsonArgs());
+						m_accountInfo.readJson(this.m_jsonFactory, response.getJsonArgs());
 						
 						onResponse(E_ResponseType.SIGN_IN_SUCCESS);
 					}
@@ -363,7 +363,7 @@ public class smClientAccountManager implements smI_TransactionResponseHandler
 			{
 				m_isSignedIn = true;
 				m_accountInfo = new smAccountInfo();
-				m_accountInfo.readJson(null, response.getJsonArgs());
+				m_accountInfo.readJson(m_jsonFactory, response.getJsonArgs());
 			}
 			
 			return smE_ResponseSuccessControl.BREAK;
@@ -375,12 +375,12 @@ public class smClientAccountManager implements smI_TransactionResponseHandler
 		}
 		else if( request.getPath() == smE_RequestPath.signUp )
 		{
-			smSignUpValidationResult result = new smSignUpValidationResult(response.getJsonArgs());
+			smSignUpValidationResult result = new smSignUpValidationResult(m_jsonFactory, response.getJsonArgs());
 			
 			if( result.isEverythingOk() )
 			{
 				//--- DRK > Populate account info.
-				smSignUpCredentials	creds = new smSignUpCredentials(request.getJsonArgs());
+				smSignUpCredentials	creds = new smSignUpCredentials(m_jsonFactory, request.getJsonArgs());
 				m_accountInfo = new smAccountInfo();
 				m_accountInfo.copyCredentials(creds);
 				
@@ -453,7 +453,7 @@ public class smClientAccountManager implements smI_TransactionResponseHandler
 				
 				if( previousResponse.getError() == smE_ResponseError.NO_ERROR )
 				{
-					m_latestBadSignInResult.readJson(null, previousResponse.getJsonArgs());
+					m_latestBadSignInResult.readJson(this.m_jsonFactory, previousResponse.getJsonArgs());
 				}
 				else
 				{

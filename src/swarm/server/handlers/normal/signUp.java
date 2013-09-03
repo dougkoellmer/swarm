@@ -54,8 +54,8 @@ public class signUp extends smA_DefaultRequestHandler
 	@Override
 	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
 	{
-		smServerAccountManager accountManager = m_context.accountMngr;
-		smSignUpCredentials creds = new smSignUpCredentials(request.getJsonArgs());
+		smServerAccountManager accountManager = m_serverContext.accountMngr;
+		smSignUpCredentials creds = new smSignUpCredentials(m_serverContext.jsonFactory, request.getJsonArgs());
 		smSignUpValidationResult result = new smSignUpValidationResult();
 		String remoteAddress = ((HttpServletRequest) request.getNativeRequest()).getRemoteAddr();
 		
@@ -65,10 +65,10 @@ public class signUp extends smA_DefaultRequestHandler
 			
 			if( userSession != null )
 			{
-				m_context.sessionMngr.startSession(userSession, response, creds.rememberMe());
+				m_serverContext.sessionMngr.startSession(userSession, response, creds.rememberMe());
 			}
 		}
 		
-		result.writeJson(null, response.getJsonArgs());
+		result.writeJson(m_serverContext.jsonFactory, response.getJsonArgs());
 	}
 }

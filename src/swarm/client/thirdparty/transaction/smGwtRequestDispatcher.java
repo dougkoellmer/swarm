@@ -127,7 +127,7 @@ public class smGwtRequestDispatcher implements smI_AsyncRequestDispatcher, Reque
 		}
 		
 		smI_JsonObject responseJson = m_jsonFactory.createJsonObject(nativeResponse.getText());
-		m_reusedResponse.readJson(null, responseJson);
+		m_reusedResponse.readJson(m_jsonFactory, responseJson);
 		
 		if( !(request instanceof smTransactionRequestBatch) )
 		{

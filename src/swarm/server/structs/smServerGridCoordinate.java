@@ -8,6 +8,7 @@ import java.io.ObjectOutput;
 import swarm.server.data.blob.smI_Blob;
 import swarm.server.data.blob.smI_BlobKey;
 import swarm.server.data.blob.smU_Blob;
+import swarm.shared.json.smA_JsonFactory;
 import swarm.shared.json.smI_JsonObject;
 import swarm.shared.structs.smGridCoordinate;
 
@@ -23,6 +24,11 @@ public class smServerGridCoordinate extends smGridCoordinate implements External
 	
 	public smServerGridCoordinate()
 	{	
+	}
+	
+	public smServerGridCoordinate(smA_JsonFactory jsonFactory, smI_JsonObject json)
+	{	
+		super(jsonFactory, json);
 	}
 	
 	public smServerGridCoordinate(int m, int n)

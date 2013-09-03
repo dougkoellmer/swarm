@@ -55,27 +55,27 @@ public class smCellAddressManager implements smI_TransactionResponseHandler
 	private final smGetCellAddressMappingResult m_reusedMappingResult = new smGetCellAddressMappingResult();
 	private final smGetCellAddressResult m_reusedAddressResult = new smGetCellAddressResult();
 
-	private final smAppContext m_context;
+	private final smAppContext m_appContext;
 	
 	public smCellAddressManager(smAppContext context, int cacheSize, double cacheExpiration, smI_TimeSource timeSource)
 	{
 		m_cache = new smCellAddressCache(cacheSize, cacheExpiration, timeSource);
 
-		m_context = context;
+		m_appContext = context;
 		
 		m_query.addCondition(null);
 	}
 	
 	public void start(I_Listener listener)
 	{
-		m_context.txnMngr.addHandler(this);
+		m_appContext.txnMngr.addHandler(this);
 		
 		m_listener = listener;
 	}
 	
 	public void stop()
 	{
-		m_context.txnMngr.removeHandler(this);
+		m_appContext.txnMngr.removeHandler(this);
 		
 		m_listener = null;
 	}
@@ -84,12 +84,12 @@ public class smCellAddressManager implements smI_TransactionResponseHandler
 	{
 		m_query.setCondition(0, mapping);
 		
-		return m_context.txnMngr.containsDispatchedRequest(smE_RequestPath.getCellAddress, m_query);
+		return m_appContext.txnMngr.containsDispatchedRequest(smE_RequestPath.getCellAddress, m_query);
 	}
 	
 	public boolean isWaitingOnResponse(smCellAddress address)
 	{
-		smClientTransactionManager txnMngr = m_context.txnMngr;
+		smClientTransactionManager txnMngr = m_appContext.txnMngr;
 		m_query.setCondition(0, address);
 		
 		return txnMngr.containsDispatchedRequest(smE_RequestPath.getCellAddressMapping, m_query);
@@ -124,7 +124,7 @@ public class smCellAddressManager implements smI_TransactionResponseHandler
 		}
 		
 		//--- DRK > Try to get address from user.
-		smUserManager userManager = m_context.userMngr;
+		smUserManager userManager = m_appContext.userMngr;
 		smA_ClientUser user = userManager.getUser();
 		address = user.getCellAddress(mapping);
 		if( address != null )
@@ -146,7 +146,7 @@ public class smCellAddressManager implements smI_TransactionResponseHandler
 		//--- DRK > If all else fails, we have to contact server.
 		if( !isWaitingOnResponse(mapping) )
 		{
-			smClientTransactionManager txnMngr = m_context.txnMngr;
+			smClientTransactionManager txnMngr = m_appContext.txnMngr;
 			txnMngr.performAction(action, smE_RequestPath.getCellAddress, mapping);
 		}
 	}
@@ -173,7 +173,7 @@ public class smCellAddressManager implements smI_TransactionResponseHandler
 		}
 		
 		//--- DRK > Try to get mapping from user.
-		smUserManager userManager = m_context.userMngr;
+		smUserManager userManager = m_appContext.userMngr;
 		smA_ClientUser user = userManager.getUser();
 		mapping = user.getCellAddressMapping(address);
 		if( mapping != null )
@@ -195,7 +195,7 @@ public class smCellAddressManager implements smI_TransactionResponseHandler
 		//--- DRK > If all else fails, we must contact server.
 		if( !isWaitingOnResponse(address) )
 		{
-			smClientTransactionManager txnMngr = m_context.txnMngr;
+			smClientTransactionManager txnMngr = m_appContext.txnMngr;
 			txnMngr.performAction(action, smE_RequestPath.getCellAddressMapping, address);
 		}
 	}
@@ -204,7 +204,7 @@ public class smCellAddressManager implements smI_TransactionResponseHandler
 	
 	private smCellAddressMapping getMappingFromCellBuffer(smCellAddress address)
 	{
-		smCellBuffer displayBuffer = m_context.cellBufferMngr.getDisplayBuffer();
+		smCellBuffer displayBuffer = m_appContext.cellBufferMngr.getDisplayBuffer();
 		
 		if( displayBuffer.getSubCellCount() == 1 )
 		{
@@ -230,7 +230,7 @@ public class smCellAddressManager implements smI_TransactionResponseHandler
 	
 	private smCellAddress getAddressFromCellBuffer(smCellAddressMapping mapping)
 	{
-		smCellBuffer displayBuffer = m_context.cellBufferMngr.getDisplayBuffer();
+		smCellBuffer displayBuffer = m_appContext.cellBufferMngr.getDisplayBuffer();
 		if( displayBuffer.getSubCellCount() == 1 )
 		{
 			smBufferCell cell = displayBuffer.getCellAtAbsoluteCoord(mapping.getCoordinate());
@@ -246,7 +246,7 @@ public class smCellAddressManager implements smI_TransactionResponseHandler
 	
 	private void setBufferCellAddress(smCellAddress address, smCellAddressMapping mapping)
 	{
-		smCellBuffer displayBuffer = m_context.cellBufferMngr.getDisplayBuffer();
+		smCellBuffer displayBuffer = m_appContext.cellBufferMngr.getDisplayBuffer();
 		
 		if( displayBuffer.getSubCellCount() == 1 )
 		{
@@ -265,9 +265,9 @@ public class smCellAddressManager implements smI_TransactionResponseHandler
 		if( request.getPath() == smE_RequestPath.getCellAddress )
 		{
 			smCellAddressMapping mapping = new smCellAddressMapping();
-			mapping.readJson(null, request.getJsonArgs());
+			mapping.readJson(this.m_appContext.jsonFactory, request.getJsonArgs());
 
-			m_reusedAddressResult.readJson(null, response.getJsonArgs());
+			m_reusedAddressResult.readJson(this.m_appContext.jsonFactory, response.getJsonArgs());
 			
 			if( m_reusedAddressResult.getError() == smE_GetCellAddressError.NO_ERROR )
 			{
@@ -286,9 +286,9 @@ public class smCellAddressManager implements smI_TransactionResponseHandler
 		else if( request.getPath() == smE_RequestPath.getCellAddressMapping )
 		{
 			smCellAddress address = new smCellAddress();
-			address.readJson(null, request.getJsonArgs());
+			address.readJson(this.m_appContext.jsonFactory, request.getJsonArgs());
 
-			m_reusedMappingResult.readJson(null, response.getJsonArgs());
+			m_reusedMappingResult.readJson(this.m_appContext.jsonFactory, response.getJsonArgs());
 			
 			if( m_reusedMappingResult.getError() == smE_GetCellAddressMappingError.NO_ERROR )
 			{
@@ -316,7 +316,7 @@ public class smCellAddressManager implements smI_TransactionResponseHandler
 		if( request.getPath() == smE_RequestPath.getCellAddress )
 		{
 			smCellAddressMapping mapping = new smCellAddressMapping();
-			mapping.readJson(null, request.getJsonArgs());
+			mapping.readJson(this.m_appContext.jsonFactory, request.getJsonArgs());
 			
 			if( response.getError() == smE_ResponseError.VERSION_MISMATCH )
 			{
@@ -338,7 +338,7 @@ public class smCellAddressManager implements smI_TransactionResponseHandler
 		else if( request.getPath() == smE_RequestPath.getCellAddressMapping )
 		{
 			smCellAddress address = new smCellAddress();
-			address.readJson(null, request.getJsonArgs());
+			address.readJson(this.m_appContext.jsonFactory, request.getJsonArgs());
 			
 			if( response.getError() == smE_ResponseError.VERSION_MISMATCH )
 			{

@@ -25,7 +25,7 @@ public class getGridData extends smA_DefaultRequestHandler
 	@Override
 	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
 	{
-		smI_BlobManager blobManager = m_context.blobMngrFactory.create(smE_BlobCacheLevel.values());
+		smI_BlobManager blobManager = m_serverContext.blobMngrFactory.create(smE_BlobCacheLevel.values());
 		
 		smServerGrid grid = null;
 		
@@ -50,6 +50,6 @@ public class getGridData extends smA_DefaultRequestHandler
 			s_logger.severe("Grid came up null when it probably should have been initialized.");
 		}
 		
-		grid.writeJson(null, response.getJsonArgs());
+		grid.writeJson(m_serverContext.jsonFactory, response.getJsonArgs());
 	}
 }

@@ -43,13 +43,13 @@ public class syncCode extends smA_DefaultRequestHandler
 	
 	private boolean isAuthorized(smI_BlobManager blobManager, smServerCellAddressMapping mapping, smTransactionRequest request, smTransactionResponse response)
 	{
-		if( !m_context.sessionMngr.isAuthorized(request, response, smE_Role.USER) )
+		if( !m_serverContext.sessionMngr.isAuthorized(request, response, smE_Role.USER) )
 		{
 			return false;
 		}
 
 		//--- DRK > Have to do a further checking here to make sure user owns this cell.
-		smUserSession session = m_context.sessionMngr.getSession(request, response);
+		smUserSession session = m_serverContext.sessionMngr.getSession(request, response);
 		
 		//--- DRK > Used to have this check here...don't see why we shouldn't also
 		//---		force admins to own their own cells too.
@@ -89,8 +89,8 @@ public class syncCode extends smA_DefaultRequestHandler
 		smServerCellAddressMapping mapping = new smServerCellAddressMapping(smE_GridType.ACTIVE);
 		mapping.readJson(null, request.getJsonArgs());
 		boolean isSandbox = isSandBox(mapping);
-		smI_BlobManager blobManager = m_context.blobMngrFactory.create(smE_BlobCacheLevel.PERSISTENT);
-		smI_BlobManager cachingBlobManager = m_context.blobMngrFactory.create(smE_BlobCacheLevel.MEMCACHE);
+		smI_BlobManager blobManager = m_serverContext.blobMngrFactory.create(smE_BlobCacheLevel.PERSISTENT);
+		smI_BlobManager cachingBlobManager = m_serverContext.blobMngrFactory.create(smE_BlobCacheLevel.MEMCACHE);
 		
 		if( !isSandbox )
 		{
@@ -108,9 +108,9 @@ public class syncCode extends smA_DefaultRequestHandler
 		
 		if( persistedCell == null )  return;
 		
-		smServerCode sourceCode = new smServerCode(request.getJsonArgs(), smE_CodeType.SOURCE);
+		smServerCode sourceCode = new smServerCode(m_serverContext.jsonFactory, request.getJsonArgs(), smE_CodeType.SOURCE);
 		
-		smCompilerResult result = smU_CellCode.compileCell(m_context.codeCompiler, persistedCell, sourceCode, mapping);
+		smCompilerResult result = smU_CellCode.compileCell(m_serverContext.codeCompiler, persistedCell, sourceCode, mapping);
 		
 		//--- DRK > This write could obviously cause contention if user was saving from multiple clients,
 		//---		but if a user wants to do that for whatever reason, it's their own problem.
@@ -122,6 +122,6 @@ public class syncCode extends smA_DefaultRequestHandler
 			smU_CellCode.saveBackCompiledCell(blobManager, cachingBlobManager, mapping, persistedCell, response);
 		}
 		
-		result.writeJson(null, response.getJsonArgs());
+		result.writeJson(m_serverContext.jsonFactory, response.getJsonArgs());
 	}
 }

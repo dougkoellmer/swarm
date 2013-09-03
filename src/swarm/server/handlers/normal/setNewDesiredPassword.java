@@ -34,10 +34,10 @@ public class setNewDesiredPassword extends smA_DefaultRequestHandler
 	@Override
 	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
 	{
-		smServerAccountManager accountManager = m_context.accountMngr;
+		smServerAccountManager accountManager = m_serverContext.accountMngr;
 		
 		//--- DRK > Just a sanity check...probably meaningless.
-		smUserSession session = m_context.sessionMngr.getSession(request, response);
+		smUserSession session = m_serverContext.sessionMngr.getSession(request, response);
 		if( session != null )
 		{
 			response.setError(smE_ResponseError.BAD_STATE);
@@ -46,7 +46,7 @@ public class setNewDesiredPassword extends smA_DefaultRequestHandler
 		}
 		
 		//--- DRK > Get password change token.
-		smSignInCredentials creds = new smSignInCredentials(request.getJsonArgs());
+		smSignInCredentials creds = new smSignInCredentials(m_serverContext.jsonFactory, request.getJsonArgs());
 		creds.setIsForNewPassword(true);
 		smSignInValidationResult result = new smSignInValidationResult();
 		String changeToken = accountManager.setNewDesiredPassword(creds, result);

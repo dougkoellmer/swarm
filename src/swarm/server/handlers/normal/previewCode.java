@@ -23,7 +23,7 @@ public class previewCode extends smA_DefaultRequestHandler
 	@Override
 	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
 	{
-		if( !m_context.sessionMngr.isAuthorized(request, response, smE_Role.USER) )
+		if( !m_serverContext.sessionMngr.isAuthorized(request, response, smE_Role.USER) )
 		{
 			return;
 		}
@@ -37,18 +37,17 @@ public class previewCode extends smA_DefaultRequestHandler
 		//---		environment as a whole under a DoS attack, especially if memcache came into play, but I'm leaving
 		//---		it for now because I think the low risk of a DoS isn't worth the slower performance for well-meaning users.
 		
-		smServerGridCoordinate coordinate = new smServerGridCoordinate();
-		coordinate.readJson(null, request.getJsonArgs());
+		smServerGridCoordinate coordinate = new smServerGridCoordinate(m_serverContext.jsonFactory, request.getJsonArgs());
 		
 		//--- DRK > Obviously we're trusting the client here as to their privileges, which could easily be hacked, but it doesn't really matter.
 		//---		This handler should be completely self-contained, so there's no chance of the hacked code leaking into the database.
 		//---		This is an optimization so that we don't have to hit the database, but in the future I might just hit the database for it.
-		smCodePrivileges privileges = new smCodePrivileges(request.getJsonArgs());
+		smCodePrivileges privileges = new smCodePrivileges(m_serverContext.jsonFactory, request.getJsonArgs());
 		
-		smCode sourceCode = new smCode(request.getJsonArgs(), smE_CodeType.SOURCE);
+		smCode sourceCode = new smCode(m_serverContext.jsonFactory, request.getJsonArgs(), smE_CodeType.SOURCE);
 		
-		smCompilerResult result = m_context.codeCompiler.compile(sourceCode, privileges, coordinate.writeString());
+		smCompilerResult result = m_serverContext.codeCompiler.compile(sourceCode, privileges, coordinate.writeString());
 		
-		result.writeJson(null, response.getJsonArgs());
+		result.writeJson(m_serverContext.jsonFactory, response.getJsonArgs());
 	}
 }

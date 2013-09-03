@@ -40,11 +40,11 @@ public class smCellAddress extends smA_JsonEncodable implements smI_JsonComparab
 		init(rawAddress);
 	}
 	
-	public smCellAddress(smI_JsonObject json)
+	public smCellAddress(smA_JsonFactory jsonFactory, smI_JsonObject json)
 	{
 		init(null);
 		
-		this.readJson(null, json);
+		this.readJson(jsonFactory, json);
 	}
 	
 	public smCellAddress(smCellAddress source)

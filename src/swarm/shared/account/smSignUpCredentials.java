@@ -13,9 +13,9 @@ public class smSignUpCredentials extends smA_AccountCredentials
 {
 	private String m_captchaChallenge;
 	
-	public smSignUpCredentials(smI_JsonObject json)
+	public smSignUpCredentials(smA_JsonFactory jsonFactory, smI_JsonObject json)
 	{
-		super(json);
+		super(jsonFactory, json);
 		
 		init();
 	}

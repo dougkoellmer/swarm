@@ -35,13 +35,13 @@ public class clearCell extends smA_DefaultRequestHandler
 	@Override
 	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
 	{		
-		smServerCellAddress address = new smServerCellAddress(request.getJsonArgs());
+		smServerCellAddress address = new smServerCellAddress(m_serverContext.jsonFactory, request.getJsonArgs());
 		
 		smBlobTransaction_ClearCell transaction = new smBlobTransaction_ClearCell(address);
 		
 		try
 		{
-			transaction.perform(m_context.blobMngrFactory, smE_BlobTransactionType.MULTI_BLOB_TYPE, 1);
+			transaction.perform(m_serverContext.blobMngrFactory, smE_BlobTransactionType.MULTI_BLOB_TYPE, 1);
 		}
 		catch (smBlobException e)
 		{

@@ -49,7 +49,7 @@ public abstract class smA_User extends smA_JsonEncodable
 			try
 			{
 				mapping = new smCellAddressMapping();
-				mapping.readJson(null, jsonCells.getObject(i));
+				mapping.readJson(factory, jsonCells.getObject(i));
 				
 				this.justReadMappingFromJson(mapping);
 			}

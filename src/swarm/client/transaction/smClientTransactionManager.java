@@ -37,9 +37,9 @@ import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.rpc.RpcRequestBuilder;
 
 /**
- * TODO: Need to have stricter runtime handling of when you can cancel requests.
- *		For example, it's now possible to cancel a request inside success and error handlers.
- *		Should this be allowed in any way?  If so, how should it work?.
+ * TODO(DRK):	Need to have stricter runtime handling of when you can cancel requests.
+ *				For example, it's now possible to cancel a request inside success and error handlers.
+ *				Should this be allowed in any way?  If so, how should it work?.
  */
 public class smClientTransactionManager
 {	
@@ -232,8 +232,8 @@ public class smClientTransactionManager
 		else if( m_asyncDispatcher.dispatch(request) ){}
 		else
 		{
-			//TODO: Create a third "error" dispatcher that simply responds to requests with CLIENT_EXCEPTION (or a new error type)
-			//		The error here Is guess is that something was so fucked we couldn't even get the request out the door with the other two dispatchers.
+			//TODO(DRK): Create a third "error" dispatcher that simply responds to requests with CLIENT_EXCEPTION (or a new error type)
+			//			 The error here I guess is that something was so fucked we couldn't even get the request out the door with the other two dispatchers.
 		}
 	}
 	
@@ -297,7 +297,7 @@ public class smClientTransactionManager
 			{
 				smI_JsonObject responseJson = (smI_JsonObject) responseObject;
 				smTransactionResponse response = new smTransactionResponse(m_jsonFactory);
-				response.readJson(null, responseJson);
+				response.readJson(m_jsonFactory, responseJson);
 				
 				return response;
 			}

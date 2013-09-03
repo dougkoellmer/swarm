@@ -40,8 +40,8 @@ public class refreshHomeCells extends smA_DefaultRequestHandler
 	@Override
 	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
 	{
-		smI_BlobManager blobManager = m_context.blobMngrFactory.create(smE_BlobCacheLevel.values());
-		smUserSession session = m_context.sessionMngr.getSession(request, response);
+		smI_BlobManager blobManager = m_serverContext.blobMngrFactory.create(smE_BlobCacheLevel.values());
+		smUserSession session = m_serverContext.sessionMngr.getSession(request, response);
 		
 		smServerUser user = null;
 		try
@@ -61,7 +61,7 @@ public class refreshHomeCells extends smA_DefaultRequestHandler
 		
 		if( homeCellCreator == null )  return;
 		
-		homeCellCreator.initialize(m_context, (ServletContext)context.getNativeContext());
+		homeCellCreator.initialize(m_serverContext, (ServletContext)context.getNativeContext());
 		homeCellCreator.run(request, response, context, session, user);
 	}
 }

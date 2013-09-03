@@ -25,9 +25,9 @@ public class smCompilerMessage extends smA_JsonEncodable
 		return m_level;
 	}
 	
-	public smCompilerMessage(smI_JsonObject json)
+	public smCompilerMessage(smA_JsonFactory jsonFactory, smI_JsonObject json)
 	{
-		super(json);
+		super(jsonFactory, json);
 	}
 	
 	public String getMessage()
@@ -45,7 +45,7 @@ public class smCompilerMessage extends smA_JsonEncodable
 	{
 		factory.getHelper().putString(json_out, smE_JsonKey.compilerErrorMessage, m_message);
 		factory.getHelper().putEnum(json_out, smE_JsonKey.compilerErrorLevel, m_level);
-		m_range.writeJson(null, json_out);
+		m_range.writeJson(factory, json_out);
 	}
 
 	@Override
@@ -54,6 +54,6 @@ public class smCompilerMessage extends smA_JsonEncodable
 		m_message = factory.getHelper().getString(json, smE_JsonKey.compilerErrorMessage);
 		m_level = factory.getHelper().getEnum(json, smE_JsonKey.compilerErrorLevel, smE_CompilerMessageLevel.values());
 		
-		m_range = new smFileRange(json);
+		m_range = new smFileRange(factory, json);
 	}
 }

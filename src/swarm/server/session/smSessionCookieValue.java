@@ -42,9 +42,9 @@ class smSessionCookieValue extends smA_JsonEncodable implements smI_BlobKey
 	private String m_hashedToken;
 	private final smE_SessionType m_type;
 	
-	public smSessionCookieValue(smI_JsonObject json, smE_SessionType type)
+	public smSessionCookieValue(smA_JsonFactory jsonFactory, smI_JsonObject json, smE_SessionType type)
 	{
-		super(json);
+		super(jsonFactory, json);
 		
 		m_type = type;
 	}

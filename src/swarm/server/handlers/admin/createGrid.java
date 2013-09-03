@@ -53,9 +53,9 @@ public class createGrid extends smA_DefaultRequestHandler
 	@Override
 	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
 	{		
-		smUserSession session = m_context.sessionMngr.getSession(request, response);
+		smUserSession session = m_serverContext.sessionMngr.getSession(request, response);
 		
-		smI_BlobManager blobManager = m_context.blobMngrFactory.create(smE_BlobCacheLevel.values());
+		smI_BlobManager blobManager = m_serverContext.blobMngrFactory.create(smE_BlobCacheLevel.values());
 		
 		smServerGrid activeGrid = null;
 		

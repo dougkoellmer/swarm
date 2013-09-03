@@ -14,9 +14,9 @@ public class smResetPasswordResult extends smA_JsonEncodable
 		init();
 	}
 	
-	public smResetPasswordResult(smI_JsonObject json)
+	public smResetPasswordResult(smA_JsonFactory jsonFactory, smI_JsonObject json)
 	{
-		super(json);
+		super(jsonFactory, json);
 		
 		init();
 	}

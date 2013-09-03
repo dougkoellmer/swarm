@@ -76,7 +76,7 @@ public class getCode extends smA_DefaultRequestHandler implements smI_DeferredRe
 			return;
 		}
 		
-		smI_BlobManager blobManager = m_context.blobMngrFactory.create(smE_BlobCacheLevel.values());
+		smI_BlobManager blobManager = m_serverContext.blobMngrFactory.create(smE_BlobCacheLevel.values());
 		
 		smServerCell persistedCell = null;
 		
@@ -91,7 +91,7 @@ public class getCode extends smA_DefaultRequestHandler implements smI_DeferredRe
 			return;
 		}
 
-		smE_CodeType eCodeType = m_context.jsonFactory.getHelper().getEnum(request.getJsonArgs(), smE_JsonKey.codeType, smE_CodeType.values());
+		smE_CodeType eCodeType = m_serverContext.jsonFactory.getHelper().getEnum(request.getJsonArgs(), smE_JsonKey.codeType, smE_CodeType.values());
 		
 		writeResponse(eCodeType, persistedCell, response);
 	}
@@ -140,7 +140,7 @@ public class getCode extends smA_DefaultRequestHandler implements smI_DeferredRe
 		//---		and don't send down all the other code types that the persisted cell might have.
 		smA_Cell responseCell = new smA_Cell(privileges){};
 		responseCell.setCode(eCodeType, responseCode);
-		responseCell.writeJson(null, response.getJsonArgs());
+		responseCell.writeJson(m_serverContext.jsonFactory, response.getJsonArgs());
 		response.setError(smE_ResponseError.NO_ERROR);
 		
 		return responseCode;
@@ -156,7 +156,7 @@ public class getCode extends smA_DefaultRequestHandler implements smI_DeferredRe
 			return;
 		}
 
-		smI_BlobManager blobManager = m_context.blobMngrFactory.create(smE_BlobCacheLevel.values());
+		smI_BlobManager blobManager = m_serverContext.blobMngrFactory.create(smE_BlobCacheLevel.values());
 		
 		Map<smI_BlobKey, smI_Blob> result = null;
 		smE_ResponseError error = smE_ResponseError.NO_ERROR;
@@ -187,7 +187,7 @@ public class getCode extends smA_DefaultRequestHandler implements smI_DeferredRe
 				continue;
 			}
 			
-			smE_CodeType eCodeType = m_context.jsonFactory.getHelper().getEnum(request.getJsonArgs(), smE_JsonKey.codeType, smE_CodeType.values());
+			smE_CodeType eCodeType = m_serverContext.jsonFactory.getHelper().getEnum(request.getJsonArgs(), smE_JsonKey.codeType, smE_CodeType.values());
 
 			if( result == null )
 			{

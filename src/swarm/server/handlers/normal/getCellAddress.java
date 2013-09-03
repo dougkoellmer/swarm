@@ -23,10 +23,10 @@ public class getCellAddress extends smA_DefaultRequestHandler
 	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
 	{
 		smServerCellAddressMapping mapping = new smServerCellAddressMapping(smE_GridType.ACTIVE);
-		mapping.readJson(null, request.getJsonArgs());
+		mapping.readJson(m_serverContext.jsonFactory, request.getJsonArgs());
 		smGetCellAddressResult result = new smGetCellAddressResult();
 		
-		smI_BlobManager blobManager = m_context.blobMngrFactory.create(smE_BlobCacheLevel.values());
+		smI_BlobManager blobManager = m_serverContext.blobMngrFactory.create(smE_BlobCacheLevel.values());
 		
 		try
 		{
@@ -49,6 +49,6 @@ public class getCellAddress extends smA_DefaultRequestHandler
 			return;
 		}
 		
-		result.writeJson(null, response.getJsonArgs());
+		result.writeJson(m_serverContext.jsonFactory, response.getJsonArgs());
 	}
 }

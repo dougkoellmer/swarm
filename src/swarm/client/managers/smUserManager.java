@@ -50,22 +50,22 @@ public class smUserManager implements smI_TransactionResponseHandler, smClientAc
 	private final smLocalCodeRepositoryWrapper m_localCodeRepo = new smLocalCodeRepositoryWrapper();
 	
 	private final smA_ClientUser m_user;
-	private final smAppContext m_context;
+	private final smAppContext m_appContext;
 	
 	public smUserManager(smAppContext context, smA_ClientUser user)
 	{
-		m_context = context;
+		m_appContext = context;
 		m_user = user;
 	}
 	
 	public void start(I_Listener listener)
 	{
-		m_localCodeRepo.addSource(m_context.cellBufferMngr);
-		m_localCodeRepo.addSource(m_context.codeCache);
+		m_localCodeRepo.addSource(m_appContext.cellBufferMngr);
+		m_localCodeRepo.addSource(m_appContext.codeCache);
 		
-		m_context.txnMngr.addHandler(this);
-		m_context.txnMngr.addBatchListener(this);
-		m_context.accountMngr.addDelegate(this);
+		m_appContext.txnMngr.addHandler(this);
+		m_appContext.txnMngr.addBatchListener(this);
+		m_appContext.accountMngr.addDelegate(this);
 		
 		m_listener = listener;
 	}
@@ -74,9 +74,9 @@ public class smUserManager implements smI_TransactionResponseHandler, smClientAc
 	{
 		m_listener = null;
 		
-		m_context.accountMngr.removeDelegate(this);
-		m_context.txnMngr.removeBatchListener(this);
-		m_context.txnMngr.removeHandler(this);
+		m_appContext.accountMngr.removeDelegate(this);
+		m_appContext.txnMngr.removeBatchListener(this);
+		m_appContext.txnMngr.removeHandler(this);
 		
 		m_localCodeRepo.removeAllSources();
 	}
@@ -88,19 +88,19 @@ public class smUserManager implements smI_TransactionResponseHandler, smClientAc
 	
 	public void getPosition(smE_TransactionAction action)
 	{
-		m_context.txnMngr.performAction(action, smE_RequestPath.getStartingPosition);
+		m_appContext.txnMngr.performAction(action, smE_RequestPath.getStartingPosition);
 	}
 	
 	public void populateUser(smE_TransactionAction action)
 	{
-		m_context.txnMngr.performAction(action, smE_RequestPath.getUserData);
+		m_appContext.txnMngr.performAction(action, smE_RequestPath.getUserData);
 	}
 	
 	private void onGetUserDataSuccess(smTransactionResponse response)
 	{
 		smA_ClientUser user = m_user;
-		user.readJson(null, response.getJsonArgs());
-		Boolean createdUser = m_context.jsonFactory.getHelper().getBoolean(response.getJsonArgs(), smE_JsonKey.createdUser);
+		user.readJson(m_appContext.jsonFactory, response.getJsonArgs());
+		Boolean createdUser = m_appContext.jsonFactory.getHelper().getBoolean(response.getJsonArgs(), smE_JsonKey.createdUser);
 		createdUser = createdUser != null ? createdUser : false; // can be null when reading inline transaction from the page and the user is already created.
 		
 		Iterator<? extends smUserCell> cellIterator = user.getCells();
@@ -113,7 +113,7 @@ public class smUserManager implements smI_TransactionResponseHandler, smClientAc
 			
 			if( firstIteration )
 			{
-				smAccountInfo info = m_context.accountMngr.getAccountInfo();
+				smAccountInfo info = m_appContext.accountMngr.getAccountInfo();
 				userCell.setAddress(new smCellAddress(info.get(smAccountInfo.Type.USERNAME)));
 				
 				firstIteration = false;
@@ -127,13 +127,13 @@ public class smUserManager implements smI_TransactionResponseHandler, smClientAc
 				//---		make sure everything's house-cleaned before the user moves in.
 				//---		Note that this code will have to be placed elsewhere if/when cells are taken
 				//---		manually in the future, and not implicitly when creating the user.
-				smCellCodeManager codeManager = m_context.codeMngr;
+				smCellCodeManager codeManager = m_appContext.codeMngr;
 				codeManager.nukeFromOrbit(userCell.getCoordinate(), smE_CellNuke.EVERYTHING);
 				userCell.setCode(smE_CodeType.SOURCE, new smCode("", smE_CodeType.SOURCE));
 				userCell.setCode(smE_CodeType.SPLASH, new smCode("", smE_CodeType.SPLASH));
 				userCell.setCode(smE_CodeType.COMPILED, new smCode("", smE_CodeType.COMPILED));
 				
-				smCellBuffer buffer = m_context.cellBufferMngr.getDisplayBuffer();
+				smCellBuffer buffer = m_appContext.cellBufferMngr.getDisplayBuffer();
 				smGridCoordinate coord = userCell.getCoordinate();
 				
 				if( buffer.getSubCellCount() == 1 )
@@ -147,7 +147,7 @@ public class smUserManager implements smI_TransactionResponseHandler, smClientAc
 				
 				//--- DRK > This will just loop back into the user to find the cell address that we now know,
 				//---		and then instantly let the View know about it. No transaction should go out.
-				smCellAddressManager addressManager = m_context.addressMngr;
+				smCellAddressManager addressManager = m_appContext.addressMngr;
 				addressManager.getCellAddress(userCell.getCoordinate(), smE_TransactionAction.MAKE_REQUEST);
 			}
 			else
@@ -170,7 +170,7 @@ public class smUserManager implements smI_TransactionResponseHandler, smClientAc
 		if( request.getPath() == smE_RequestPath.getStartingPosition )
 		{
 			smPoint startingPosition = new smPoint();
-			startingPosition.readJson(null, response.getJsonArgs());
+			startingPosition.readJson(m_appContext.jsonFactory, response.getJsonArgs());
 			
 			m_user.getLastPosition().copy(startingPosition);
 			
@@ -214,7 +214,7 @@ public class smUserManager implements smI_TransactionResponseHandler, smClientAc
 			}
 			else
 			{
-				if( m_authenticatedInBatch || m_context.accountMngr.isSignedIn() )
+				if( m_authenticatedInBatch || m_appContext.accountMngr.isSignedIn() )
 				{
 					m_listener.onGetUserFailed();
 					
@@ -242,7 +242,7 @@ public class smUserManager implements smI_TransactionResponseHandler, smClientAc
 			case SIGN_UP_SUCCESS:
 			case PASSWORD_CONFIRM_SUCCESS:
 			{
-				if( m_context.txnMngr.isInBatch() )
+				if( m_appContext.txnMngr.isInBatch() )
 				{
 					m_authenticatedInBatch = true;
 				}
@@ -254,7 +254,7 @@ public class smUserManager implements smI_TransactionResponseHandler, smClientAc
 			case SIGN_UP_FAILURE:
 			case PASSWORD_CONFIRM_FAILURE:
 			{
-				if( m_context.txnMngr.isInBatch() )
+				if( m_appContext.txnMngr.isInBatch() )
 				{
 					m_failedToAuthenticateInBatch = true;
 				}
@@ -270,13 +270,13 @@ public class smUserManager implements smI_TransactionResponseHandler, smClientAc
 		
 		if( user.isPopulated() )
 		{
-			m_context.txnMngr.cancelRequestsByPath(smE_RequestPath.getUserData);
+			m_appContext.txnMngr.cancelRequestsByPath(smE_RequestPath.getUserData);
 			
 			user.clearAllLocalChanges();
 			
 			Iterator<? extends smUserCell> cellIterator = user.getCells();
 			
-			smCellBuffer buffer = m_context.cellBufferMngr.getDisplayBuffer();
+			smCellBuffer buffer = m_appContext.cellBufferMngr.getDisplayBuffer();
 			
 			while( cellIterator.hasNext() )
 			{
@@ -314,7 +314,7 @@ public class smUserManager implements smI_TransactionResponseHandler, smClientAc
 				
 				//--- DRK > Just dumping all we can into other local code repositories
 				//---		because it won't be available in user object anymore.
-				m_context.codeCache.cacheCell(userCell);
+				m_appContext.codeCache.cacheCell(userCell);
 			}
 			
 			user.onSignOut();

@@ -27,6 +27,11 @@ public class smCompilerResult extends smA_JsonEncodable
 		m_status = null;
 	}
 	
+	public smCompilerResult(smA_JsonFactory factory, smI_JsonObject json)
+	{
+		super(factory, json);
+	}
+	
 	private void initCell()
 	{
 		m_codeCell = new smCompilerCell();
@@ -119,7 +124,7 @@ public class smCompilerResult extends smA_JsonEncodable
 	{
 		if( m_codeCell != null )
 		{
-			m_codeCell.writeJson(null, json_out);
+			m_codeCell.writeJson(factory, json_out);
 		}
 		
 		if( m_compilerMessages != null )
@@ -146,7 +151,7 @@ public class smCompilerResult extends smA_JsonEncodable
 	{
 		initCell();
 		
-		m_codeCell.readJson(null, json);
+		m_codeCell.readJson(factory, json);
 		
 		m_status = factory.getHelper().getEnum(json, smE_JsonKey.compilationStatusCode, smE_CompilationStatus.values());
 		
@@ -159,7 +164,7 @@ public class smCompilerResult extends smA_JsonEncodable
 			for( int i = 0; i < compilerMessageJsonArray.getSize(); i++ )
 			{
 				smI_JsonObject compilerErrorJson = compilerMessageJsonArray.getObject(i);
-				smCompilerMessage error = new smCompilerMessage(compilerErrorJson);
+				smCompilerMessage error = new smCompilerMessage(factory, compilerErrorJson);
 				
 				m_compilerMessages.add(error);
 			}

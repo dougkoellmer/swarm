@@ -28,13 +28,13 @@ public class logAssert extends smA_DefaultRequestHandler
 	@Override
 	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
 	{
-		smUserSession session = m_context.sessionMngr.getSession(request, response);
+		smUserSession session = m_serverContext.sessionMngr.getSession(request, response);
 		
 		int accountId = session != null ? session.getAccountId() : -1;
 		String ip = ((HttpServletRequest) request.getNativeRequest()).getRemoteAddr();
 		
-		smServerTelemetryAssert telemetryAssert = new smServerTelemetryAssert(request.getJsonArgs(), ip, accountId);
+		smServerTelemetryAssert telemetryAssert = new smServerTelemetryAssert(m_serverContext.jsonFactory, request.getJsonArgs(), ip, accountId);
 		
-		m_context.telemetryDb.put(telemetryAssert);
+		m_serverContext.telemetryDb.put(telemetryAssert);
 	}
 }
