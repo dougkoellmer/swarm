@@ -92,8 +92,8 @@ public class smU_InlineTransactions
 				getAddressMapping = false;
 			}
 			
-			smTransactionRequest dummyRequest = new smTransactionRequest(nativeRequest);
-			smTransactionResponse dummyResponse = new smTransactionResponse(nativeResponse);
+			smTransactionRequest dummyRequest = new smTransactionRequest(context.jsonFactory, nativeRequest);
+			smTransactionResponse dummyResponse = new smTransactionResponse(context.jsonFactory, nativeResponse);
 			smUserSession session = context.sessionMngr.getSession(dummyRequest, dummyResponse);
 			boolean isSessionActive = session != null;
 			

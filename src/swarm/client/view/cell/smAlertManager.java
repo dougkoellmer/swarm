@@ -13,7 +13,7 @@ public class smAlertManager
 	private final ArrayList<String> m_queue = new ArrayList<String>();
 	private I_Delegate m_delegate = null;
 	
-	private smAlertManager()
+	public smAlertManager()
 	{
 		
 	}

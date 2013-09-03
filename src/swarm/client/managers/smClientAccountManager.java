@@ -231,10 +231,7 @@ public class smClientAccountManager implements smI_TransactionResponseHandler
 			return;
 		}
 		
-		smTransactionRequest request = new smTransactionRequest(smE_RequestPath.signUp);
-		credentials.writeJson(null, request.getJsonArgs());
-		
-		m_txnMngr.performAction(action, request);
+		m_txnMngr.performAction(action, smE_RequestPath.signUp, credentials);
 	}
 	
 	public void init(smI_Callback callback)
@@ -273,15 +270,12 @@ public class smClientAccountManager implements smI_TransactionResponseHandler
 			return;
 		}
 		
-		smTransactionRequest request = new smTransactionRequest(smE_RequestPath.signIn);
-		credentials.writeJson(null, request.getJsonArgs());
-		
 		if( m_passwordChangeToken != null )
 		{
-			m_jsonFactory.getHelper().putString(request.getJsonArgs(), smE_JsonKey.passwordChangeToken, m_passwordChangeToken);
+			credentials.setPasswordChangeToken(m_passwordChangeToken);
 		}
 		
-		m_txnMngr.performAction(smE_TransactionAction.QUEUE_REQUEST, request);
+		m_txnMngr.performAction(smE_TransactionAction.QUEUE_REQUEST, smE_RequestPath.signIn, credentials);
 		
 		action = action == smE_TransactionAction.MAKE_REQUEST ? smE_TransactionAction.QUEUE_REQUEST_AND_FLUSH : action;
 		m_txnMngr.performAction(action, smE_RequestPath.getAccountInfo);
@@ -296,9 +290,7 @@ public class smClientAccountManager implements smI_TransactionResponseHandler
 			return;
 		}
 		
-		smTransactionRequest request = new smTransactionRequest(smE_RequestPath.signOut);
-
-		m_txnMngr.makeRequest(request);
+		m_txnMngr.makeRequest(smE_RequestPath.signOut);
 	}
 	
 	public boolean isWaitingOnServer()

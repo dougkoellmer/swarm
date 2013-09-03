@@ -68,13 +68,15 @@ public abstract class smA_ServerApp extends smA_App
 	private static smA_ServerApp s_instance;
 	
 	private smServerAppConfig m_appConfig;
-	private final smServerContext m_context = new smServerContext();
+	protected smServerContext m_context;
 	
 	protected smA_ServerApp()
 	{
 		super(smE_AppEnvironment.SERVER);
 		
 		s_instance = this;
+		
+		m_context = new smServerContext();
 	}
 	
 	public static smA_ServerApp getInstance()

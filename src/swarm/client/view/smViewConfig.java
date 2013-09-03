@@ -8,7 +8,6 @@ public class smViewConfig
 	public double magFadeInTime_seconds;
 	public int magnifierTickCount;
 	public String defaultPageTitle;
-	public smI_StateEventListener stateEventListener;
 	
 	public smI_Tab[] tabs;
 }

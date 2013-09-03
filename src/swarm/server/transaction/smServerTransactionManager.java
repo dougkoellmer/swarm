@@ -104,7 +104,7 @@ public class smServerTransactionManager
 	
 	private smTransactionResponse createEarlyOutResponse(smE_ResponseError responseError)
 	{
-		smTransactionResponse responseToReturn = new smTransactionResponse();
+		smTransactionResponse responseToReturn = new smTransactionResponse(m_jsonFactory);
 		responseToReturn.setError(responseError);
 		
 		return responseToReturn;
@@ -133,8 +133,8 @@ public class smServerTransactionManager
 			}
 			
 			//--- DRK > Create a wrapper around the native request and see if there's a server version mismatch.
-			smTransactionRequest wrappedRequest = new smTransactionRequest(nativeRequest);
-			wrappedRequest.readJson(null, requestJson);
+			smTransactionRequest wrappedRequest = new smTransactionRequest(m_jsonFactory, nativeRequest);
+			wrappedRequest.readJson(m_jsonFactory, requestJson);
 			Integer serverVersionAsFarAsClientKnows = wrappedRequest.getServerVersion();
 			boolean serverVersionMismatch = false;
 			
@@ -177,9 +177,9 @@ public class smServerTransactionManager
 					@Override
 					public void onRequestFound(smI_JsonObject requestJson)
 					{
-						smTransactionRequest batchedRequest = new smTransactionRequest(nativeRequest);
+						smTransactionRequest batchedRequest = new smTransactionRequest(m_jsonFactory, nativeRequest);
 						batchedRequest.readJson(null, requestJson);
-						smTransactionResponse batchedResponse = new smTransactionResponse(nativeResponse);
+						smTransactionResponse batchedResponse = new smTransactionResponse(m_jsonFactory, nativeResponse);
 						
 						context.addTransaction(batchedRequest, batchedResponse);
 					}
@@ -252,7 +252,7 @@ public class smServerTransactionManager
 			}
 			else
 			{
-				responseToReturn = new smTransactionResponse(nativeResponse);
+				responseToReturn = new smTransactionResponse(m_jsonFactory, nativeResponse);
 				
 				context.addTransaction(wrappedRequest, responseToReturn);
 				
@@ -276,7 +276,7 @@ public class smServerTransactionManager
 		{
 			if( responseToReturn == null )
 			{
-				responseToReturn = new smTransactionResponse();
+				responseToReturn = new smTransactionResponse(m_jsonFactory);
 				responseToReturn.setError(smE_ResponseError.SERVER_EXCEPTION);
 				
 				s_logger.log(Level.SEVERE, "Response should not have been null.");
@@ -300,7 +300,7 @@ public class smServerTransactionManager
 	 */
 	public void callRequestHandler(smTransactionRequest request)
 	{
-		this.callRequestHandler(new smTransactionContext(false, null), request, new smTransactionResponse());
+		this.callRequestHandler(new smTransactionContext(false, null), request, new smTransactionResponse(m_jsonFactory));
 	}
 	
 	public void callRequestHandler(smTransactionRequest request, smTransactionResponse response)

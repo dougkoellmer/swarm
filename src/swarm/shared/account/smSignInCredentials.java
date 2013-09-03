@@ -14,12 +14,18 @@ import swarm.shared.json.smJsonHelper;
 public class smSignInCredentials extends smA_AccountCredentials
 {
 	private boolean m_isForNewPassword = false;
+	private String m_passwordChangeToken;
 	
 	public smSignInCredentials(smI_JsonObject json)
 	{
 		super(json);
 		
 		init();
+	}
+	
+	public void setPasswordChangeToken(String token)
+	{
+		m_passwordChangeToken = token;
 	}
 	
 	public smSignInCredentials(boolean rememberMe, String... args)
@@ -77,6 +83,11 @@ public class smSignInCredentials extends smA_AccountCredentials
 		}
 		
 		factory.getHelper().putJsonArray(json_out, smE_JsonKey.signInCredentials, creds);
+		
+		if( m_passwordChangeToken != null )
+		{
+			factory.getHelper().putString(json_out, smE_JsonKey.passwordChangeToken, m_passwordChangeToken);
+		}
 	}
 
 	@Override

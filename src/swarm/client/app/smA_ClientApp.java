@@ -61,6 +61,7 @@ import swarm.shared.debugging.smTelemetryAssert;
 import swarm.shared.debugging.smU_Debug;
 import swarm.shared.statemachine.smA_State;
 import swarm.shared.statemachine.smA_StateMachine;
+import swarm.shared.statemachine.smI_StateEventListener;
 import swarm.shared.statemachine.smStateContext;
 import swarm.shared.time.smI_TimeSource;
 import swarm.shared.transaction.smE_RequestPath;
@@ -87,6 +88,8 @@ public class smA_ClientApp extends smA_App implements smI_TimeSource
 		m_viewConfig = viewConfig;
 		m_appContext = new smAppContext();
 		m_viewContext = new smViewContext();
+		
+		m_viewContext.appContext = m_appContext;
 	}
 	
 	protected void startUp(smE_StartUpStage stage)
@@ -120,7 +123,7 @@ public class smA_ClientApp extends smA_App implements smI_TimeSource
 			
 			case REGISTER_STATES:
 			{
-				stage_registerStateMachine();		break;
+				stage_registerStateMachine(null);	break;
 			}
 			
 			case ESTABLISH_TIMING:
@@ -231,7 +234,7 @@ public class smA_ClientApp extends smA_App implements smI_TimeSource
 		m_appContext.codeCache = new smCellCodeCache(m_appConfig.codeCacheSize, m_appConfig.codeCacheExpiration_seconds, this);
 		m_appContext.userMngr = new smUserManager(m_appContext, m_appConfig.user);
 		m_appContext.requestPathMngr = new smRequestPathManager(m_appContext.jsonFactory, m_appConfig.verboseTransactions);
-		m_appContext.txnMngr = new smClientTransactionManager(m_appContext.requestPathMngr);
+		m_appContext.txnMngr = new smClientTransactionManager(m_appContext.requestPathMngr, m_appContext.jsonFactory);
 		m_appContext.gridMngr = new smGridManager(m_appContext.txnMngr, m_appConfig.grid);
 		m_appContext.cameraMngr = new smCameraManager(m_appContext.gridMngr, new smCamera(), m_appConfig.minSnapTime, m_appConfig.maxSnapTime);
 		m_appContext.addressMngr = new smCellAddressManager(m_appContext, m_appConfig.addressCacheSize, m_appConfig.addressCacheExpiration_seconds, this);
@@ -257,10 +260,11 @@ public class smA_ClientApp extends smA_App implements smI_TimeSource
 		m_viewContext.toolTipMngr.setDefaultPadding(smS_UI.TOOl_TIP_PADDING);
 	}
 	
-	protected void stage_registerStateMachine()
+	protected void stage_registerStateMachine(smI_StateEventListener stateEventListener)
 	{
-		m_stateContext = new smStateContext(new StateMachine_Base(m_appContext), m_viewConfig.stateEventListener);
+		stateEventListener = stateEventListener != null ? stateEventListener : new smViewController(m_viewContext, m_viewConfig, m_appConfig);
 		
+		m_stateContext = m_viewContext.stateContext = new smStateContext(new StateMachine_Base(m_appContext), stateEventListener);
 		{
 			m_stateContext.registerState(new State_Initializing(m_appContext));
 			

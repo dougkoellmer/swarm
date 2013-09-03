@@ -17,9 +17,14 @@ public class smTransactionResponse extends smA_TransactionObject
 	
 	private smCachePolicy m_cachePolicy = null;
 	
-	public smTransactionResponse() 
+	public smTransactionResponse(smA_JsonFactory jsonFactory) 
 	{
-		super(null);
+		super(jsonFactory);
+	}
+	
+	public smTransactionResponse(smA_JsonFactory jsonFactory, Object nativeResponse) 
+	{
+		super(jsonFactory, nativeResponse);
 	}
 	
 	public Object getNativeResponse()
@@ -27,16 +32,11 @@ public class smTransactionResponse extends smA_TransactionObject
 		return m_nativeObject;
 	}
 	
-	public void reset()
+	public void clear()
 	{
 		m_error = smE_ResponseError.NO_ERROR;
 		m_cachePolicy = null;
-		resetJson();
-	}
-	
-	public smTransactionResponse(Object nativeResponse) 
-	{
-		super(nativeResponse);
+		clearJsonArgs();
 	}
 	
 	public void setCachePolicy(smCachePolicy policy)

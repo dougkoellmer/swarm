@@ -15,13 +15,10 @@ import swarm.shared.transaction.smTransactionResponse;
 class smTransactionResponseBatch extends smTransactionResponse
 {
 	private final ArrayList<smTransactionResponse> m_responses = new ArrayList<smTransactionResponse>();
-	private final smA_JsonFactory m_jsonFactory;
 	
 	smTransactionResponseBatch(smA_JsonFactory jsonFactory)
 	{
-		super();
-		
-		m_jsonFactory = jsonFactory;
+		super(jsonFactory);
 	}
 	
 	public void addResponse(smTransactionResponse response)

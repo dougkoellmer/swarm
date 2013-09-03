@@ -31,6 +31,8 @@ import swarm.shared.structs.smPoint;
 import swarm.shared.transaction.smE_ResponseError;
 import swarm.shared.json.smA_JsonFactory;
 import swarm.shared.json.smE_JsonKey;
+import swarm.shared.json.smI_JsonObject;
+import swarm.shared.json.smI_WritesJson;
 import swarm.shared.json.smMutableJsonQuery;
 import swarm.shared.json.smJsonHelper;
 import swarm.shared.transaction.smE_RequestPath;
@@ -137,12 +139,8 @@ public class smCellCodeManager implements smI_TransactionResponseHandler
 	public void syncCell(smBufferCell cell, smCode sourceCode)
 	{
 		smGridCoordinate coord = cell.getCoordinate();
-		
-		smTransactionRequest request = new smTransactionRequest(smE_RequestPath.syncCode);
-		sourceCode.writeJson(null, request.getJsonArgs());
-		coord.writeJson(null, request.getJsonArgs());
 
-		m_appContext.txnMngr.makeRequest(request);
+		m_appContext.txnMngr.makeRequest(smE_RequestPath.syncCode, sourceCode, coord);
 
 		smCode compiledCode = new smCode(sourceCode.getRawCode(), smE_CodeType.COMPILED);
 		compiledCode.setSafetyLevel(smE_CodeSafetyLevel.REQUIRES_DYNAMIC_SANDBOX);
@@ -174,7 +172,7 @@ public class smCellCodeManager implements smI_TransactionResponseHandler
 		return txnMngr.containsDispatchedRequest(smE_RequestPath.syncCode, m_postQuery);
 	}
 	
-	public void populateCell(smBufferCell cell, smI_LocalCodeRepository localHtmlSource, int cellSize, boolean recycled, boolean communicateWithServer, smE_CodeType eType)
+	public void populateCell(smBufferCell cell, smI_LocalCodeRepository localHtmlSource, int cellSize, boolean recycled, boolean communicateWithServer, final smE_CodeType eType)
 	{
 		smClientTransactionManager txnMngr = m_appContext.txnMngr;
 		
@@ -228,13 +226,17 @@ public class smCellCodeManager implements smI_TransactionResponseHandler
 						//---		(6) Cell gets its status set correctly to WAITING_ON_CODE without another transaction going out.
 						prepareGetQuery(cell.getCoordinate(), eType);
 						if( !txnMngr.containsDispatchedRequest(smE_RequestPath.getCode, m_getQuery) )
-						{
-							smTransactionRequest request = new smTransactionRequest(smE_RequestPath.getCode);
+						{							
+							smI_WritesJson codeTypeWrapper = new smI_WritesJson()
+							{
+								@Override
+								public void writeJson(smA_JsonFactory factory, smI_JsonObject json_out)
+								{
+									factory.getHelper().putInt(json_out, smE_JsonKey.codeType, eType.ordinal());
+								}
+							};
 							
-							cell.getCoordinate().writeJson(null, request.getJsonArgs());
-							m_appContext.jsonFactory.getHelper().putInt(request.getJsonArgs(), smE_JsonKey.codeType, eType.ordinal());
-							
-							txnMngr.queueRequest(request);
+							txnMngr.queueRequest(smE_RequestPath.getCode, cell.getCoordinate(), codeTypeWrapper);
 						}
 					
 						cell.onServerRequest(eType);

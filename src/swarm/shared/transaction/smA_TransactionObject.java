@@ -13,24 +13,22 @@ public abstract class smA_TransactionObject extends smA_JsonEncodable
 	private smI_JsonObject m_jsonArgs = null;
 
 	protected Object m_nativeObject;
+	protected final smA_JsonFactory m_jsonFactory;
 	
-	protected smA_TransactionObject()
+	protected smA_TransactionObject(smA_JsonFactory jsonFactory)
 	{
+		m_jsonFactory = jsonFactory;
 		m_nativeObject = null;
 		m_jsonArgs = null;
 	}
 	
-	protected smA_TransactionObject(Object nativeObject)
+	protected smA_TransactionObject(smA_JsonFactory jsonFactory, Object nativeObject)
 	{
+		m_jsonFactory = jsonFactory;
 		m_nativeObject = nativeObject;
 	}
 	
-	protected smA_TransactionObject(smI_JsonObject jsonArgs)
-	{
-		m_jsonArgs = jsonArgs;
-	}
-	
-	public void resetJson()
+	public void clearJsonArgs()
 	{
 		m_jsonArgs = null;
 	}
@@ -39,7 +37,7 @@ public abstract class smA_TransactionObject extends smA_JsonEncodable
 	{
 		if ( m_jsonArgs == null )
 		{
-			smA_JsonFactory jsonFactory = smSharedAppContext.jsonFactory;
+			smA_JsonFactory jsonFactory = m_jsonFactory;
 			m_jsonArgs = jsonFactory.createJsonObject();
 		}
 		

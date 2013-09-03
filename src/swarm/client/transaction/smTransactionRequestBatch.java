@@ -26,14 +26,14 @@ public class smTransactionRequestBatch extends smTransactionRequest
 {	
 	private final ArrayList<smTransactionRequest> m_requestList = new ArrayList<smTransactionRequest>();
 	
-	public smTransactionRequestBatch()
+	public smTransactionRequestBatch(smA_JsonFactory jsonFactory)
 	{
-		super(smE_ReservedRequestPath.batch);
+		super(jsonFactory, smE_ReservedRequestPath.batch);
 	}
 	
-	public smTransactionRequestBatch(Object nativeRequest)
+	public smTransactionRequestBatch(smA_JsonFactory jsonFactory,Object nativeRequest)
 	{
-		super(smE_ReservedRequestPath.batch, nativeRequest);
+		super(jsonFactory, smE_ReservedRequestPath.batch, nativeRequest);
 	}
 	
 	public int getSize()
@@ -118,11 +118,15 @@ public class smTransactionRequestBatch extends smTransactionRequest
 	}
 	
 	@Override
-	public void onDispatch(long timeInMilliseconds)
+	public void onDispatch(long timeInMilliseconds, int serverVersion)
 	{
+		super.onDispatch(timeInMilliseconds, serverVersion);
+		
 		for( int i = 0; i < m_requestList.size(); i++ )
 		{
-			m_requestList.get(i).onDispatch(timeInMilliseconds);
+			smTransactionRequest ithRequest = m_requestList.get(i);
+			
+			ithRequest.onDispatch(timeInMilliseconds);
 		}
 	}
 	

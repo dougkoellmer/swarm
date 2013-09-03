@@ -38,7 +38,7 @@ public class smGwtRequestDispatcher implements smI_AsyncRequestDispatcher, Reque
 	
 	final HashMap<Request, smTransactionRequest> m_nativeRequestMap = new HashMap<Request, smTransactionRequest>();
 	
-	private final smTransactionResponse m_reusedResponse = new smTransactionResponse();
+	private final smTransactionResponse m_reusedResponse;
 	
 	private smI_ResponseCallbacks m_callbacks = null;
 	private int m_maxGetUrlLength;
@@ -47,6 +47,7 @@ public class smGwtRequestDispatcher implements smI_AsyncRequestDispatcher, Reque
 	public smGwtRequestDispatcher(smA_JsonFactory jsonFactory)
 	{
 		m_jsonFactory = jsonFactory;
+		m_reusedResponse = new smTransactionResponse(m_jsonFactory);
 	}
 	
 	@Override
@@ -75,8 +76,7 @@ public class smGwtRequestDispatcher implements smI_AsyncRequestDispatcher, Reque
 			url = URL.encode(url);
 			
 			//--- DRK > Fringe case precaution that we don't exceed practical URL length restrictions.
-			//---		This could happen if someone had a huge monitor I guess, and was scrolling through tons
-			//---		of cells at one time.  In this case, we change the request to a post.
+			//---		In this case, we change the request to a post.
 			if( url.length() >= m_maxGetUrlLength )
 			{
 				url = URL.encode(baseUrl);
@@ -113,7 +113,7 @@ public class smGwtRequestDispatcher implements smI_AsyncRequestDispatcher, Reque
 	public void onResponseReceived(Request nativeRequest, Response nativeResponse)
 	{
 		smTransactionRequest request = this.getDispatchedRequest(nativeRequest);
-		m_reusedResponse.reset();
+		m_reusedResponse.clear();
 		int statusCode = nativeResponse.getStatusCode();
 		
 		if( statusCode != Response.SC_OK )
@@ -161,7 +161,7 @@ public class smGwtRequestDispatcher implements smI_AsyncRequestDispatcher, Reque
 	{
 		smTransactionRequest request = this.getDispatchedRequest(nativeRequest);
 		
-		m_reusedResponse.reset();
+		m_reusedResponse.clear();
 		m_reusedResponse.setError(smE_ResponseError.CLIENT_ERROR);
 		
 		onError(nativeRequest, request, m_reusedResponse);

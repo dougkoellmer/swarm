@@ -4,11 +4,13 @@ import java.util.ArrayList;
 
 import swarm.client.app.smClientAppConfig;
 import swarm.client.app.smAppContext;
+import swarm.client.input.smClickManager;
 import swarm.client.input.smMouse;
 import swarm.client.navigation.smBrowserNavigator;
 import swarm.client.navigation.smMouseNavigator;
 import swarm.client.states.StateContainer_Base;
 import swarm.client.states.StateMachine_Base;
+import swarm.client.view.cell.smAlertManager;
 import swarm.client.view.cell.smVisualCellContainer;
 import swarm.client.view.cell.smVisualCellFocuser;
 import swarm.client.view.cell.smVisualCellHud;
@@ -32,9 +34,10 @@ import com.google.gwt.user.client.ui.RootPanel;
 public class smViewController extends Object implements smI_StateEventListener
 {	
 	private final ArrayList<smI_StateEventListener> m_listeners = new ArrayList<smI_StateEventListener>();
-	private final smViewConfig m_viewConfig;
-	private final smClientAppConfig m_appConfig;
-	private final smViewContext m_viewContext;
+	
+	protected final smViewConfig m_viewConfig;
+	protected final smClientAppConfig m_appConfig;
+	protected final smViewContext m_viewContext;
 	
 	public smViewController(smViewContext viewContext, smViewConfig config, smClientAppConfig appConfig)
 	{
@@ -64,21 +67,24 @@ public class smViewController extends Object implements smI_StateEventListener
 		m_viewContext.mouseNavigator = new smMouseNavigator(m_viewContext.stateContext, m_viewContext.appContext.gridMngr, m_viewContext.appContext.cameraMngr, mouse);
 		m_viewContext.browserNavigator = new smBrowserNavigator(m_viewContext.stateContext, m_viewContext.appContext.cameraMngr, m_viewContext.appContext.jsonFactory, m_viewConfig.defaultPageTitle, m_appConfig.floatingHistoryUpdateFreq_seconds);
 		smVisualCellFocuser focuser = new smVisualCellFocuser(m_viewContext.stateContext, m_viewContext.appContext);
+		m_viewContext.cellMngr = new smVisualCellManager(m_viewContext, cellContainer.getCellContainerInner());
+		m_viewContext.alertMngr = new smAlertManager();
+		m_viewContext.clickMngr = new smClickManager();
+		m_viewContext.consoleBlocker = new smConsoleBlocker();
 		//smVisualCellHighlight highlighter = new smVisualCellHighlight(appContext, config, appConfig);
 		
-		cellContainer.getCellContainerInner().add(focuser);
-		//cellContainer.getCellContainerInner().add(highlighter);
 		
-		// TODO: Clean this up so that all this crap doesn't add itself to parent containers in constructors.
 		m_listeners.add(m_viewContext.mouseNavigator);
 		m_listeners.add(m_viewContext.browserNavigator);
-		m_listeners.add(m_viewContext.cellMngr = new smVisualCellManager(m_viewContext, cellContainer.getCellContainerInner()));
+		m_listeners.add(m_viewContext.cellMngr);
 		m_listeners.add(m_viewContext.splitPanel);
 		//m_listeners.add(highlighter);
 		m_listeners.add(focuser);
 		//m_listeners.add(new smVisualCellHud((Panel)cellContainer, m_appConfig));
 		
 		RootLayoutPanel.get().add(m_viewContext.splitPanel);
+		cellContainer.getCellContainerInner().add(focuser);
+		//cellContainer.getCellContainerInner().add(highlighter);
 	}
 	
 	protected void addStateListener(smI_UIElement listener)

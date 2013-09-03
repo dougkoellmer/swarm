@@ -21,38 +21,39 @@ public class smTransactionRequest extends smA_TransactionObject
 	private int m_retryCount = 0;
 	protected smE_HttpMethod m_method;
 	private boolean m_isCancelled = false;
-
 	protected Integer m_serverVersion = null;
 	
-	public smTransactionRequest(smI_RequestPath path) 
+	private smRequestPathManager m_requestPathMngr = null;
+	
+	public smTransactionRequest(smA_JsonFactory jsonFactory, smI_RequestPath path) 
 	{
-		super(null);
+		super(jsonFactory);
 
 		initPath(path);
 	}
 	
-	public smTransactionRequest(smI_RequestPath path, smI_JsonObject jsonArgs) 
+	public smTransactionRequest(smA_JsonFactory jsonFactory, smI_RequestPath path, Object nativeRequest)
 	{
-		super(jsonArgs);
-
-		initPath(path);
-	}
-	
-	public smTransactionRequest(smI_RequestPath path, Object nativeRequest)
-	{
-		super(nativeRequest);
+		super(jsonFactory, nativeRequest);
 		
 		initPath(path);
 	}
 	
-	public smTransactionRequest(Object nativeRequest)
+	public smTransactionRequest(smA_JsonFactory jsonFactory, Object nativeRequest)
 	{
-		super(nativeRequest);
+		super(jsonFactory, nativeRequest);
 	}
 	
-	public smTransactionRequest()
+	public smTransactionRequest(smA_JsonFactory jsonFactory, smRequestPathManager requestPathMngr, Object nativeRequest)
 	{
-		super(null);
+		super(jsonFactory, nativeRequest);
+		
+		m_requestPathMngr = requestPathMngr;
+	}
+	
+	public smTransactionRequest(smA_JsonFactory jsonFactory)
+	{
+		super(jsonFactory);
 	}
 	
 	public long getDispatchTime()
@@ -69,11 +70,6 @@ public class smTransactionRequest extends smA_TransactionObject
 	public Object getNativeRequest()
 	{
 		return m_nativeObject;
-	}
-	
-	public void setNativeRequest(Object nativeRequest)
-	{
-		m_nativeObject = nativeRequest;
 	}
 	
 	public boolean isCancelled()
@@ -96,11 +92,6 @@ public class smTransactionRequest extends smA_TransactionObject
 		return m_method;
 	}
 	
-	public void setPath(smI_RequestPath path)
-	{
-		m_path = path;
-	}
-	
 	public smI_RequestPath getPath()
 	{
 		return m_path;
@@ -109,10 +100,12 @@ public class smTransactionRequest extends smA_TransactionObject
 	public void onDispatch(long timeInMilliseconds)
 	{
 		m_dispatchTime = timeInMilliseconds;
+		m_serverVersion = null;
 	}
 	
-	public void setServerVersion(int serverVersion)
+	public void onDispatch(long timeInMilliseconds, int serverVersion)
 	{
+		m_dispatchTime = timeInMilliseconds;
 		m_serverVersion = serverVersion;
 	}
 	
@@ -135,7 +128,7 @@ public class smTransactionRequest extends smA_TransactionObject
 	{
 		super.writeJson(factory, json_out);
 		
-		smSharedAppContext.requestPathMngr.putToJson(json_out, m_path);
+		m_requestPathMngr.putToJson(json_out, m_path);
 		
 		if( m_serverVersion != null )
 		{
@@ -148,7 +141,7 @@ public class smTransactionRequest extends smA_TransactionObject
 	{
 		super.readJson(factory, json);
 		
-		m_path = smSharedAppContext.requestPathMngr.getFromJson(json);
+		m_path = m_requestPathMngr.getFromJson(json);
 		
 		Integer serverVersion = factory.getHelper().getInt(json, smE_JsonKey.serverVersion);
 		

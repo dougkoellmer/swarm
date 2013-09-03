@@ -17,7 +17,7 @@ import com.google.gwt.user.client.ui.Panel;
  */
 public class smConsoleBlocker extends smUIBlocker
 {	
-	private smConsoleBlocker()
+	smConsoleBlocker()
 	{
 		smE_ZIndex.CONSOLE_BLOCKER.assignTo(this);
 	}

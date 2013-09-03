@@ -136,7 +136,7 @@ public class smSessionManager implements smI_TransactionScopeListener
 	
 	public void startSession(smUserSession userSession, Object nativeResponse, boolean rememberMe)
 	{
-		this.startSession(userSession, new smTransactionResponse(nativeResponse), rememberMe);
+		this.startSession(userSession, new smTransactionResponse(m_jsonFactory, nativeResponse), rememberMe);
 	}
 	
 	public void startSession(smUserSession userSession, smTransactionResponse response, boolean rememberMe)
@@ -289,7 +289,7 @@ public class smSessionManager implements smI_TransactionScopeListener
 	
 	public void endSession(Object nativeRequest, Object nativeResponse)
 	{
-		this.endSession(new smTransactionRequest(nativeRequest), new smTransactionResponse(nativeResponse));
+		this.endSession(new smTransactionRequest(m_jsonFactory, nativeRequest), new smTransactionResponse(m_jsonFactory, nativeResponse));
 	}
 	
 	public void endSession(smTransactionRequest request, smTransactionResponse response)
@@ -347,7 +347,7 @@ public class smSessionManager implements smI_TransactionScopeListener
 	public boolean isAuthorized(Object nativeRequest, Object nativeResponse, smE_Role requiredRole)
 	{
 		//--- DRK > Just creating dummy request/response wrappers here because caller obviously doesn't care about response.
-		return isAuthorized(new smTransactionRequest(nativeRequest), new smTransactionResponse(nativeResponse), requiredRole);
+		return isAuthorized(new smTransactionRequest(m_jsonFactory, nativeRequest), new smTransactionResponse(m_jsonFactory, nativeResponse), requiredRole);
 	}
 	
 	public boolean isAuthenticated(Object nativeRequest, Object nativeResponse)

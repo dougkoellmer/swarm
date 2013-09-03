@@ -113,10 +113,8 @@ public class smInlineTransactionManager
 	
 	public smTransactionResponse makeInlineRequest(smE_RequestPath path, smI_WritesJson writesJson) throws IOException
 	{
-		smTransactionRequest request = new smTransactionRequest(m_context.get().m_nativeRequest);
-		smTransactionResponse response = new smTransactionResponse(m_context.get().m_nativeResponse);
-		
-		request.setPath(path);
+		smTransactionRequest request = new smTransactionRequest(m_jsonFactory, path, m_context.get().m_nativeRequest);
+		smTransactionResponse response = new smTransactionResponse(m_jsonFactory, m_context.get().m_nativeResponse);
 		
 		if( writesJson != null )
 		{
@@ -130,10 +128,9 @@ public class smInlineTransactionManager
 	
 	public void makeInlineRequestWithResponse(smE_RequestPath path, smI_WritesJson requestJsonEncodable, smI_WritesJson responseJsonEncodable) throws IOException
 	{
-		smTransactionRequest request = new smTransactionRequest(m_context.get().m_nativeRequest);
-		smTransactionResponse response = new smTransactionResponse(m_context.get().m_nativeResponse);
+		smTransactionRequest request = new smTransactionRequest(m_jsonFactory, path, m_context.get().m_nativeRequest);
+		smTransactionResponse response = new smTransactionResponse(m_jsonFactory, m_context.get().m_nativeResponse);
 		
-		request.setPath(path);
 		if( requestJsonEncodable != null )
 		{
 			requestJsonEncodable.writeJson(m_jsonFactory, request.getJsonArgs());

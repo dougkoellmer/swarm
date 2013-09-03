@@ -59,8 +59,8 @@ public class smInlineRequestDispatcher implements smI_SyncRequestDispatcher
 		{
 			JsArrayString entry = (JsArrayString) batch.get(i);
 			
-			smTransactionRequest request = new smTransactionRequest();
-			smTransactionResponse response = new smTransactionResponse();
+			smTransactionRequest request = new smTransactionRequest(m_jsonFactory);
+			smTransactionResponse response = new smTransactionResponse(m_jsonFactory);
 			
 			String requestJsonString = entry.get(0);
 			String responseJsonString = entry.get(1);
@@ -141,7 +141,7 @@ public class smInlineRequestDispatcher implements smI_SyncRequestDispatcher
 				if( transaction != null )
 				{
 					responseBatch = responseBatch == null ? m_jsonFactory.createJsonArray() : responseBatch;
-					inlineRequestBatch = inlineRequestBatch == null ? new smTransactionRequestBatch() : inlineRequestBatch;
+					inlineRequestBatch = inlineRequestBatch == null ? new smTransactionRequestBatch(m_jsonFactory) : inlineRequestBatch;
 					
 					inlineRequestBatch.addRequest(transaction.m_request);
 					smI_JsonObject responseJson = m_jsonFactory.createJsonObject();

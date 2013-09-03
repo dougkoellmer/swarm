@@ -53,7 +53,7 @@ public class smClientTransactionManager
 	private smI_SyncRequestDispatcher m_syncDispatcher = null;
 	private smI_AsyncRequestDispatcher m_asyncDispatcher = null;
 	
-	private final smTransactionResponse m_reusedResponse = new smTransactionResponse();
+	private final smTransactionResponse m_reusedResponse;
 	
 	private boolean m_isInsideBatch = false;
 	
@@ -85,9 +85,15 @@ public class smClientTransactionManager
 		}
 	};
 	
-	public smClientTransactionManager(smRequestPathManager requestPathMngr) 
+	private smRequestPathManager m_requestPathMngr;
+	private smA_JsonFactory m_jsonFactory;
+	
+	public smClientTransactionManager(smRequestPathManager requestPathMngr, smA_JsonFactory jsonFactory) 
 	{
-		requestPathMngr.register(smE_ReservedRequestPath.values());
+		m_jsonFactory = jsonFactory;
+		m_requestPathMngr = requestPathMngr;
+		m_requestPathMngr.register(smE_ReservedRequestPath.values());
+		m_reusedResponse = new smTransactionResponse(m_jsonFactory);
 	}
 	
 	public void setSyncRequestDispatcher(smI_SyncRequestDispatcher dispatcher)
@@ -153,24 +159,29 @@ public class smClientTransactionManager
 		return m_isInsideBatch;
 	}
 	
-	public void queueRequest(smE_RequestPath path, smI_WritesJson writesJson)
+	public void queueRequest(smE_RequestPath path, smI_WritesJson ... writesJson)
 	{
-		smTransactionRequest request = new smTransactionRequest(path);
-		writesJson.writeJson(null, request.getJsonArgs());
-		queueRequest(request);
+		smTransactionRequest request = new smTransactionRequest(m_jsonFactory, path);
+		
+		for( int i = 0; i < writesJson.length; i++ )
+		{
+			writesJson[i].writeJson(m_jsonFactory, request.getJsonArgs());
+		}
+
+		queueRequest_private(request);
 	}
 	
 	public void queueRequest(smE_RequestPath requestPath)
 	{
-		smTransactionRequest request = new smTransactionRequest(requestPath);
-		queueRequest(request);
+		smTransactionRequest request = new smTransactionRequest(m_jsonFactory, requestPath);
+		queueRequest_private(request);
 	}
 	
-	public void queueRequest(smTransactionRequest request)
+	private void queueRequest_private(smTransactionRequest request)
 	{
 		if( m_transactionRequestBatch == null )
 		{
-			m_transactionRequestBatch = new smTransactionRequestBatch();
+			m_transactionRequestBatch = new smTransactionRequestBatch(m_jsonFactory);
 		}
 		
 		m_transactionRequestBatch.addRequest(request);
@@ -182,7 +193,7 @@ public class smClientTransactionManager
 		
 		//trace("flushing " + m_requestQueue.length + " transactions");
 		
-		this.makeRequest(m_transactionRequestBatch);
+		this.makeRequest_private(m_transactionRequestBatch);
 		
 		m_transactionRequestBatch = null;
 	}
@@ -195,74 +206,27 @@ public class smClientTransactionManager
 		}
 	}
 	
-	public void makeRequest(smI_RequestPath path, smI_JsonObject jsonArgs)
+	public void makeRequest(smI_RequestPath path, smI_WritesJson ... writesJson)
 	{
-		smTransactionRequest request = new smTransactionRequest(path, jsonArgs);
-		makeRequest(request);
-	}
-	
-	public void makeRequest(smI_RequestPath path, smI_WritesJson writesJson)
-	{
-		smTransactionRequest request = new smTransactionRequest(path);
-		writesJson.writeJson(null, request.getJsonArgs());
-		makeRequest(request);
+		smTransactionRequest request = new smTransactionRequest(m_jsonFactory, path);
+		for( int i = 0; i < writesJson.length; i++ )
+		{
+			writesJson[i].writeJson(m_jsonFactory, request.getJsonArgs());
+		}
+		
+		makeRequest_private(request);
 	}
 	
 	public void makeRequest(smI_RequestPath path)
 	{
-		smTransactionRequest request = new smTransactionRequest(path);
-		makeRequest(request);
+		smTransactionRequest request = new smTransactionRequest(m_jsonFactory, path);
+		makeRequest_private(request);
 	}
 	
-	public void performAction(smE_TransactionAction action, smE_RequestPath requestPath)
+	private void makeRequest_private(smTransactionRequest request)
 	{
-		smTransactionRequest request = new smTransactionRequest(requestPath);
-		performAction(action, request);
-	}
-	
-	public void performAction(smE_TransactionAction action, smE_RequestPath requestPath, smI_WritesJson writesJson)
-	{
-		smTransactionRequest request = new smTransactionRequest(requestPath);
-		writesJson.writeJson(null, request.getJsonArgs());
-		performAction(action, request);
-	}
-	
-	/**
-	 * This allows other classes (mainly various managers) to delegate how
-	 * they send their transactions to the caller of the manager's methods.
-	 */
-	public void performAction(smE_TransactionAction action, smTransactionRequest request)
-	{
-		switch(action)
-		{
-			case MAKE_REQUEST:
-			{
-				this.makeRequest(request);
-				
-				break;
-			}
-			
-			case QUEUE_REQUEST:
-			{
-				this.queueRequest(request);
-				
-				break;
-			}
-			
-			case QUEUE_REQUEST_AND_FLUSH:
-			{
-				this.queueRequest(request);
-				this.flushRequestQueue();
-				
-				break;
-			}
-		}
-	}
-	
-	public void makeRequest(smTransactionRequest request)
-	{
-		request.setServerVersion(smS_App.SERVER_VERSION);
-		request.onDispatch(smU_Time.getMilliseconds());
+		request.onDispatch(smU_Time.getMilliseconds(), smS_App.SERVER_VERSION);
+		//request.init(m_requestPathMngr);
 		
 		if( m_syncDispatcher.dispatch(request) ){}
 		else if( m_asyncDispatcher.dispatch(request) ){}
@@ -270,6 +234,52 @@ public class smClientTransactionManager
 		{
 			//TODO: Create a third "error" dispatcher that simply responds to requests with CLIENT_EXCEPTION (or a new error type)
 			//		The error here Is guess is that something was so fucked we couldn't even get the request out the door with the other two dispatchers.
+		}
+	}
+	
+	public void performAction(smE_TransactionAction action, smE_RequestPath requestPath)
+	{
+		smTransactionRequest request = new smTransactionRequest(m_jsonFactory, requestPath);
+		performAction_private(action, request);
+	}
+	
+	public void performAction(smE_TransactionAction action, smE_RequestPath requestPath, smI_WritesJson writesJson)
+	{
+		smTransactionRequest request = new smTransactionRequest(m_jsonFactory, requestPath);
+		writesJson.writeJson(m_jsonFactory, request.getJsonArgs());
+		
+		performAction_private(action, request);
+	}
+	
+	/**
+	 * This allows other classes (mainly various managers) to delegate how
+	 * they send their transactions to the caller of the manager's methods.
+	 */
+	private void performAction_private(smE_TransactionAction action, smTransactionRequest request)
+	{
+		switch(action)
+		{
+			case MAKE_REQUEST:
+			{
+				this.makeRequest_private(request);
+				
+				break;
+			}
+			
+			case QUEUE_REQUEST:
+			{
+				this.queueRequest_private(request);
+				
+				break;
+			}
+			
+			case QUEUE_REQUEST_AND_FLUSH:
+			{
+				this.queueRequest_private(request);
+				this.flushRequestQueue();
+				
+				break;
+			}
 		}
 	}
 	
@@ -286,7 +296,7 @@ public class smClientTransactionManager
 			else
 			{
 				smI_JsonObject responseJson = (smI_JsonObject) responseObject;
-				smTransactionResponse response = new smTransactionResponse();
+				smTransactionResponse response = new smTransactionResponse(m_jsonFactory);
 				response.readJson(null, responseJson);
 				
 				return response;
@@ -444,7 +454,7 @@ public class smClientTransactionManager
 			
 			smI_JsonObject jsonObject = jsonResponseBatch.getObject(i);
 			
-			m_reusedResponse.reset();
+			m_reusedResponse.clear();
 			
 			m_reusedResponse.readJson(null, jsonObject);
 			
