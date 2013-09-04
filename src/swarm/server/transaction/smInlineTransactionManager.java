@@ -15,6 +15,7 @@ import swarm.shared.json.smI_JsonObject;
 import swarm.shared.json.smI_ReadsJson;
 import swarm.shared.json.smI_WritesJson;
 import swarm.shared.transaction.smE_RequestPath;
+import swarm.shared.transaction.smRequestPathManager;
 import swarm.shared.transaction.smTransactionRequest;
 import swarm.shared.transaction.smTransactionResponse;
 
@@ -42,10 +43,12 @@ public class smInlineTransactionManager
 	private final boolean m_verboseTransactions;
 	private final String m_appId;
 	private final smServerTransactionManager m_txnMngr;
+	private final smRequestPathManager m_requestPathMngr;
 	
-	public smInlineTransactionManager(smServerTransactionManager txnMngr, smA_ServerJsonFactory jsonFactory, String appId, boolean verboseTransactions)
+	public smInlineTransactionManager(smServerTransactionManager txnMngr, smRequestPathManager requestPathMngr, smA_ServerJsonFactory jsonFactory, String appId, boolean verboseTransactions)
 	{
 		m_txnMngr = txnMngr;
+		m_requestPathMngr = requestPathMngr;
 		m_appId = appId;
 		m_jsonFactory = jsonFactory;
 		m_verboseTransactions = verboseTransactions;
@@ -89,7 +92,7 @@ public class smInlineTransactionManager
 		smI_JsonObject requestJson = m_jsonFactory.createJsonObject();
 		smI_JsonObject responseJson = m_jsonFactory.createJsonObject();
 		
-		request.writeJson(m_jsonFactory, requestJson);
+		request.writeJson(m_jsonFactory, m_requestPathMngr, requestJson);
 		response.writeJson(m_jsonFactory, responseJson);
 		
 		String requestJsonString = requestJson.writeString();

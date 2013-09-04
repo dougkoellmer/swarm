@@ -171,7 +171,6 @@ public abstract class smA_StateMachine extends smA_State
 		stateToEnter.m_parent = this;
 		
 		this.m_currentState = stateToEnter;
-		this.m_currentState.m_context = this.m_context;
 
 		this.m_currentState.didEnter_internal(constructor);
 		this.m_currentState.didForeground_internal(null, null);
@@ -186,7 +185,6 @@ public abstract class smA_StateMachine extends smA_State
 		
 		stateToExit.willExit_internal();
 		
-		stateToExit.m_context = null;
 		stateToExit.m_parent = null;
 		stateToExit.m_stateBeneath = null;
 		stateToExit.m_previousState = null;

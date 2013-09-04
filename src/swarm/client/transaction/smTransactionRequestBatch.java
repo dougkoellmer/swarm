@@ -14,6 +14,7 @@ import swarm.shared.transaction.smE_HttpMethod;
 import swarm.shared.transaction.smE_RequestPath;
 import swarm.shared.transaction.smE_ReservedRequestPath;
 import swarm.shared.transaction.smI_RequestPath;
+import swarm.shared.transaction.smRequestPathManager;
 import swarm.shared.transaction.smTransactionRequest;
 import com.google.gwt.http.client.RequestBuilder;
 
@@ -31,7 +32,7 @@ public class smTransactionRequestBatch extends smTransactionRequest
 		super(jsonFactory, smE_ReservedRequestPath.batch);
 	}
 	
-	public smTransactionRequestBatch(smA_JsonFactory jsonFactory,Object nativeRequest)
+	public smTransactionRequestBatch(smA_JsonFactory jsonFactory, Object nativeRequest)
 	{
 		super(jsonFactory, smE_ReservedRequestPath.batch, nativeRequest);
 	}
@@ -131,7 +132,7 @@ public class smTransactionRequestBatch extends smTransactionRequest
 	}
 	
 	@Override
-	public void writeJson(smA_JsonFactory factory, smI_JsonObject json_out)
+	public void writeJson(smA_JsonFactory factory, smRequestPathManager requestPathMngr, smI_JsonObject json_out)
 	{
 		super.writeJson(factory, json_out);
 		
@@ -145,7 +146,7 @@ public class smTransactionRequestBatch extends smTransactionRequest
 			if( !ithRequest.isCancelled() )
 			{
 				smI_JsonObject requestJson = factory.createJsonObject();
-				ithRequest.writeJson(factory, requestJson);
+				ithRequest.writeJson(factory, requestPathMngr, requestJson);
 				requestList.addObject(requestJson);
 			}
 		}

@@ -16,7 +16,7 @@ public class smGwtJsonFactory extends smA_JsonFactory
 		@Override
 		public smI_JsonObject newInstance()
 		{
-			return new smGwtJsonObject();
+			return new smGwtJsonObject(smGwtJsonFactory.this);
 		}
 	};
 	
@@ -25,7 +25,7 @@ public class smGwtJsonFactory extends smA_JsonFactory
 		@Override
 		public smI_JsonArray newInstance()
 		{
-			return new smGwtJsonArray();
+			return new smGwtJsonArray(smGwtJsonFactory.this);
 		}
 	};
 	
@@ -46,14 +46,14 @@ public class smGwtJsonFactory extends smA_JsonFactory
 	public smI_JsonObject createJsonObject(String data)
 	{
 		JSONObject jsonObject = (JSONObject)JSONParser.parseStrict(data);
-		return new smGwtJsonObject(jsonObject);
+		return new smGwtJsonObject(this, jsonObject);
 	}
 	
 	@Override
 	public smI_JsonArray createJsonArray(String data)
 	{
 		JSONArray jsonArray = (JSONArray)JSONParser.parseStrict(data);
-		return new smGwtJsonArray(jsonArray);
+		return new smGwtJsonArray(this, jsonArray);
 	}
 
 	@Override

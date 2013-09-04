@@ -17,10 +17,4 @@ public class Action_Base_HideSupplementState extends smA_Action
 	{
 		return getContext().isForegrounded(StateMachine_Tabs.class);
 	}
-	
-	@Override
-	public Class<? extends smA_State> getStateAssociation()
-	{
-		return StateContainer_Base.class;
-	}
 }

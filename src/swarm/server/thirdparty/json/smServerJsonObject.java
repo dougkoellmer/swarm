@@ -3,6 +3,7 @@ package swarm.server.thirdparty.json;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import swarm.shared.json.smA_JsonFactory;
 import swarm.shared.json.smA_JsonObject;
 import swarm.shared.json.smI_JsonArray;
 import swarm.shared.json.smI_JsonObject;
@@ -10,20 +11,29 @@ import swarm.shared.json.smI_JsonObject;
 public class smServerJsonObject extends smA_JsonObject implements smI_JsonObject
 {
 	private JSONObject m_object = null;
+	private final smA_JsonFactory m_factory;
 	
-	public smServerJsonObject()
+	public smServerJsonObject(smA_JsonFactory factory)
 	{
+		m_factory = factory;
 		m_object = new JSONObject();
 	}
 	
-	public smServerJsonObject(String data) throws JSONException
+	public smServerJsonObject(smA_JsonFactory factory, String data) throws JSONException
 	{
+		m_factory = factory;
 		m_object = new JSONObject(data);
 	}
 	
-	smServerJsonObject(JSONObject source)
+	smServerJsonObject(smA_JsonFactory factory, JSONObject source)
 	{
+		m_factory = factory;
 		m_object = source;
+	}
+	
+	public smA_JsonFactory getFactory()
+	{
+		return m_factory;
 	}
 	
 	public JSONObject getNative()
@@ -81,7 +91,7 @@ public class smServerJsonObject extends smA_JsonObject implements smI_JsonObject
 	{
 		try
 		{
-			return new smServerJsonArray(m_object.getJSONArray(key));
+			return new smServerJsonArray(m_factory, m_object.getJSONArray(key));
 		}
 		catch (JSONException e)
 		{
@@ -96,7 +106,7 @@ public class smServerJsonObject extends smA_JsonObject implements smI_JsonObject
 	{
 		try
 		{
-			return new smServerJsonObject(m_object.getJSONObject(key));
+			return new smServerJsonObject(m_factory, m_object.getJSONObject(key));
 		}
 		catch (JSONException e)
 		{

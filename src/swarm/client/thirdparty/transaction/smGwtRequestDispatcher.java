@@ -20,6 +20,7 @@ import swarm.shared.json.smJsonHelper;
 import swarm.shared.transaction.smE_HttpMethod;
 import swarm.shared.transaction.smE_ResponseError;
 import swarm.shared.transaction.smI_RequestPath;
+import swarm.shared.transaction.smRequestPathManager;
 import swarm.shared.transaction.smS_Transaction;
 import swarm.shared.transaction.smTransactionRequest;
 import swarm.shared.transaction.smTransactionResponse;
@@ -43,10 +44,12 @@ public class smGwtRequestDispatcher implements smI_AsyncRequestDispatcher, Reque
 	private smI_ResponseCallbacks m_callbacks = null;
 	private int m_maxGetUrlLength;
 	private final smA_JsonFactory m_jsonFactory;
+	private final smRequestPathManager m_requestPathMngr;
 	
-	public smGwtRequestDispatcher(smA_JsonFactory jsonFactory)
+	public smGwtRequestDispatcher(smA_JsonFactory jsonFactory, smRequestPathManager requestPathMngr)
 	{
 		m_jsonFactory = jsonFactory;
+		m_requestPathMngr = requestPathMngr;
 		m_reusedResponse = new smTransactionResponse(m_jsonFactory);
 	}
 	
@@ -63,7 +66,7 @@ public class smGwtRequestDispatcher implements smI_AsyncRequestDispatcher, Reque
 		String baseUrl = "/r.t";
 		String url = baseUrl;
 		smI_JsonObject requestJson = m_jsonFactory.createJsonObject();
-		request.writeJson(m_jsonFactory, requestJson);
+		request.writeJson(m_jsonFactory, m_requestPathMngr, requestJson);
 		String jsonString = requestJson.toString();
 		
 		RequestBuilder.Method method = request.getMethod() == smE_HttpMethod.GET ? RequestBuilder.GET  : RequestBuilder.POST;

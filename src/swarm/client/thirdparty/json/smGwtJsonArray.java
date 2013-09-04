@@ -1,5 +1,6 @@
 package swarm.client.thirdparty.json;
 
+import swarm.shared.json.smA_JsonFactory;
 import swarm.shared.json.smI_JsonArray;
 import swarm.shared.json.smI_JsonObject;
 import com.google.gwt.json.client.JSONArray;
@@ -10,20 +11,23 @@ import com.google.gwt.json.client.JSONString;
 public class smGwtJsonArray extends Object implements smI_JsonArray
 {
 	private JSONArray m_object = null;
+	private final smA_JsonFactory m_factory;
 	
-	public smGwtJsonArray()
+	public smGwtJsonArray(smA_JsonFactory factory)
 	{
+		m_factory = factory;
 		m_object = new JSONArray();
+	}
+	
+	smGwtJsonArray(smA_JsonFactory factory, JSONArray source)
+	{
+		m_factory = factory;
+		m_object = source;
 	}
 	
 	JSONArray getNative()
 	{
 		return m_object;
-	}
-	
-	smGwtJsonArray(JSONArray source)
-	{
-		m_object = source;
 	}
 	
 	@Override
@@ -53,13 +57,13 @@ public class smGwtJsonArray extends Object implements smI_JsonArray
 	@Override
 	public smI_JsonArray getArray(int index)
 	{
-		return new smGwtJsonArray(m_object.get(index).isArray());
+		return new smGwtJsonArray(m_factory, m_object.get(index).isArray());
 	}
 
 	@Override
 	public smI_JsonObject getObject(int index)
 	{
-		return new smGwtJsonObject( m_object.get(index).isObject());
+		return new smGwtJsonObject(m_factory, m_object.get(index).isObject());
 	}
 
 	@Override

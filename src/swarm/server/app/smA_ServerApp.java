@@ -125,7 +125,7 @@ public abstract class smA_ServerApp extends smA_App
 		m_context.codeCompiler = new smServerCodeCompiler();
 		m_context.requestPathMngr = new smRequestPathManager(m_context.jsonFactory, appConfig.verboseTransactions);
 		m_context.txnMngr = new smServerTransactionManager((smA_ServerJsonFactory) m_context.jsonFactory, m_context.requestPathMngr, appConfig.verboseTransactions);
-		m_context.inlineTxnMngr = new smInlineTransactionManager(m_context.txnMngr, (smA_ServerJsonFactory) m_context.jsonFactory, appConfig.appId, appConfig.verboseTransactions);
+		m_context.inlineTxnMngr = new smInlineTransactionManager(m_context.txnMngr, m_context.requestPathMngr, (smA_ServerJsonFactory) m_context.jsonFactory, appConfig.appId, appConfig.verboseTransactions);
 		m_context.blobMngrFactory = new smBlobManagerFactory();
 		m_context.sessionMngr = new smSessionManager(m_context.blobMngrFactory, m_context.jsonFactory);
 		m_context.accountMngr = new smServerAccountManager(signInValidator, signUpValidator, accountDatabase);
@@ -178,11 +178,14 @@ public abstract class smA_ServerApp extends smA_App
 		m_context.txnMngr.addDeferredHandler(getCodeHandler);
 	}
 	
-	private void setNormalHandler(smA_DefaultRequestHandler handler, smI_RequestPath path)
+	protected void setNormalHandler(smA_DefaultRequestHandler handler_nullable, smI_RequestPath path)
 	{
-		handler.init(m_context);
+		if( handler_nullable != null )
+		{
+			handler_nullable.init(m_context);
+		}
 		
-		m_context.txnMngr.setRequestHandler(handler, path);
+		m_context.txnMngr.setRequestHandler(handler_nullable, path);
 	}
 	
 	private void addAdminHandlers(Class<? extends smI_HomeCellCreator> T_homeCellCreator)
@@ -196,11 +199,20 @@ public abstract class smA_ServerApp extends smA_App
 		setAdminHandler(new recompileCells(),									smE_AdminRequestPath.recompileCells);
 	}
 	
-	protected void setAdminHandler(smA_DefaultRequestHandler handler, smI_RequestPath path)
+	protected void setAdminHandler(smA_DefaultRequestHandler handler_nullable, smI_RequestPath path)
 	{
-		handler.init(m_context);
-		
-		m_context.txnMngr.setRequestHandler(new adminHandler(m_context.sessionMngr, handler), path);
+		if( handler_nullable != null )
+		{
+			handler_nullable.init(m_context);
+			
+			adminHandler adminWrapper = new adminHandler(m_context.sessionMngr, handler_nullable);
+			
+			m_context.txnMngr.setRequestHandler(adminWrapper, path);
+		}
+		else
+		{
+			m_context.txnMngr.setRequestHandler(null, path);
+		}
 	}
 	
 	private void addTelemetryHandlers()

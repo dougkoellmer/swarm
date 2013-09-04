@@ -31,7 +31,7 @@ class smTransactionResponseBatch extends smTransactionResponse
 	{
 		super.writeJson(factory, json_out);
 		
-		final smI_JsonArray responsesJson = m_jsonFactory.createJsonArray();
+		final smI_JsonArray responsesJson = factory.createJsonArray();
 		
 		for ( int i = 0; i < m_responses.size(); i++ )
 		{
@@ -42,6 +42,6 @@ class smTransactionResponseBatch extends smTransactionResponse
 			responsesJson.addObject(jsonObject);
 		}
 		
-		m_jsonFactory.getHelper().putJsonArray(json_out, smE_JsonKey.responseList, responsesJson);
+		factory.getHelper().putJsonArray(json_out, smE_JsonKey.responseList, responsesJson);
 	}
 }

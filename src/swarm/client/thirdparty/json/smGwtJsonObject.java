@@ -1,5 +1,6 @@
 package swarm.client.thirdparty.json;
 
+import swarm.shared.json.smA_JsonFactory;
 import swarm.shared.json.smA_JsonObject;
 import swarm.shared.json.smI_JsonArray;
 import swarm.shared.json.smI_JsonObject;
@@ -13,20 +14,29 @@ import com.google.gwt.json.client.JSONValue;
 public class smGwtJsonObject extends smA_JsonObject implements smI_JsonObject
 {
 	private JSONObject m_object = null;
+	private final smA_JsonFactory m_factory;
 	
-	public smGwtJsonObject()
+	public smGwtJsonObject(smA_JsonFactory factory)
 	{
+		m_factory = factory;
 		m_object = new JSONObject();
 	}
 	
-	public smGwtJsonObject(JavaScriptObject nativeJson)
+	public smGwtJsonObject(smA_JsonFactory factory, JavaScriptObject nativeJson)
 	{
+		m_factory = factory;
 		m_object = new JSONObject(nativeJson);
 	}
 	
-	smGwtJsonObject(JSONObject source)
+	smGwtJsonObject(smA_JsonFactory factory, JSONObject source)
 	{
+		m_factory = factory;
 		m_object = source;
+	}
+	
+	public smA_JsonFactory getFactory()
+	{
+		return m_factory;
 	}
 	
 	public JSONObject getNative()
@@ -56,13 +66,13 @@ public class smGwtJsonObject extends smA_JsonObject implements smI_JsonObject
 	@Override
 	public smI_JsonArray getArray(String key)
 	{
-		return new smGwtJsonArray(m_object.get(key).isArray());
+		return new smGwtJsonArray(m_factory, m_object.get(key).isArray());
 	}
 
 	@Override
 	public smI_JsonObject getJsonObject(String key)
 	{
-		return new smGwtJsonObject(m_object.get(key).isObject());
+		return new smGwtJsonObject(m_factory, m_object.get(key).isObject());
 	}
 
 	@Override

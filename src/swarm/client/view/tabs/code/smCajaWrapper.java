@@ -129,7 +129,7 @@ public class smCajaWrapper
 				(
 					function()
 					{
-						@swarm.client.view.tabs.code.smCajaWrapper::createApi(Ljava/lang/String;)(apiNamespace);
+						thisArg.@swarm.client.view.tabs.code.smCajaWrapper::createApi(Ljava/lang/String;)(apiNamespace);
 						thisArg.@swarm.client.view.tabs.code.smCajaWrapper::caja_initialize_success()();
 					}
 				);

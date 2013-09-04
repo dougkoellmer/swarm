@@ -8,12 +8,12 @@ import swarm.shared.json.smI_JsonObject;
 import swarm.shared.json.smJsonHelper;
 
 
-public abstract class smA_TransactionObject extends smA_JsonEncodable
+public abstract class smA_TransactionObject
 {
 	private smI_JsonObject m_jsonArgs = null;
 
 	protected Object m_nativeObject;
-	protected final smA_JsonFactory m_jsonFactory;
+	private final smA_JsonFactory m_jsonFactory;
 	
 	protected smA_TransactionObject(smA_JsonFactory jsonFactory)
 	{
@@ -62,7 +62,6 @@ public abstract class smA_TransactionObject extends smA_JsonEncodable
 		return false;
 	}
 	
-	@Override
 	public void writeJson(smA_JsonFactory factory, smI_JsonObject json_out)
 	{
 		if( m_jsonArgs != null )
@@ -71,7 +70,6 @@ public abstract class smA_TransactionObject extends smA_JsonEncodable
 		}
 	}
 	
-	@Override
 	public void readJson(smA_JsonFactory factory, smI_JsonObject json)
 	{
 		m_jsonArgs = factory.getHelper().getJsonObject(json, smE_JsonKey.requestArgs);

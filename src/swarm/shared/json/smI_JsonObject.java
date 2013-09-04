@@ -2,6 +2,8 @@ package swarm.shared.json;
 
 public interface smI_JsonObject
 {
+	smA_JsonFactory getFactory();
+	
 	boolean containsKey(String key);
 	
 	

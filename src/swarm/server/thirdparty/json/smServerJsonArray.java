@@ -2,6 +2,8 @@ package swarm.server.thirdparty.json;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+
+import swarm.shared.json.smA_JsonFactory;
 import swarm.shared.json.smI_JsonArray;
 import swarm.shared.json.smI_JsonObject;
 
@@ -10,19 +12,23 @@ public class smServerJsonArray extends Object implements smI_JsonArray
 	private int m_currentIndex = 0;
 	
 	private JSONArray m_object = null;
+	private final smA_JsonFactory m_factory;
 	
-	public smServerJsonArray()
+	public smServerJsonArray(smA_JsonFactory factory)
 	{
+		m_factory = factory;
 		m_object = new JSONArray();
 	}
 	
-	smServerJsonArray(JSONArray source)
+	smServerJsonArray(smA_JsonFactory factory, JSONArray source)
 	{
+		m_factory = factory;
 		m_object = source;
 	}
 	
-	public smServerJsonArray(String data) throws JSONException
+	public smServerJsonArray(smA_JsonFactory factory, String data) throws JSONException
 	{
+		m_factory = factory;
 		m_object = new JSONArray(data);
 	}
 	
@@ -90,7 +96,7 @@ public class smServerJsonArray extends Object implements smI_JsonArray
 	{
 		try
 		{
-			return new smServerJsonArray(m_object.getJSONArray(index));
+			return new smServerJsonArray(m_factory, m_object.getJSONArray(index));
 		}
 		catch (JSONException e)
 		{
@@ -106,7 +112,7 @@ public class smServerJsonArray extends Object implements smI_JsonArray
 	{
 		try
 		{
-			return new smServerJsonObject(m_object.getJSONObject(index));
+			return new smServerJsonObject(m_factory, m_object.getJSONObject(index));
 		}
 		catch (JSONException e)
 		{

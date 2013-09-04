@@ -74,7 +74,6 @@ public abstract class smA_StateContainer extends smA_State
 		m_children.put(T, newState);
 		
 		newState.m_parent = this;
-		newState.m_context = this.m_context;
 		newState.didEnter_internal(constructor);
 		
 		m_childrenForegrounded.put(T, false);
@@ -140,7 +139,6 @@ public abstract class smA_StateContainer extends smA_State
 		state.willExit_internal();
 		
 		state.m_parent = null;
-		state.m_context = null;
 		
 		m_children.remove(T);
 		m_childrenForegrounded.remove(T);

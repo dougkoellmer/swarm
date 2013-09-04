@@ -456,7 +456,7 @@ public class smClientTransactionManager
 			
 			m_reusedResponse.clear();
 			
-			m_reusedResponse.readJson(null, jsonObject);
+			m_reusedResponse.readJson(m_jsonFactory, jsonObject);
 			
 			if( m_reusedResponse.getError() == smE_ResponseError.NO_ERROR )
 			{

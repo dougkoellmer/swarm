@@ -23,9 +23,7 @@ public class smTransactionRequest extends smA_TransactionObject
 	private boolean m_isCancelled = false;
 	protected Integer m_serverVersion = null;
 	
-	private smRequestPathManager m_requestPathMngr = null;
-	
-	public smTransactionRequest(smA_JsonFactory jsonFactory, smI_RequestPath path) 
+	public smTransactionRequest(smA_JsonFactory jsonFactory, smI_RequestPath path)
 	{
 		super(jsonFactory);
 
@@ -42,13 +40,6 @@ public class smTransactionRequest extends smA_TransactionObject
 	public smTransactionRequest(smA_JsonFactory jsonFactory, Object nativeRequest)
 	{
 		super(jsonFactory, nativeRequest);
-	}
-	
-	public smTransactionRequest(smA_JsonFactory jsonFactory, smRequestPathManager requestPathMngr, Object nativeRequest)
-	{
-		super(jsonFactory, nativeRequest);
-		
-		m_requestPathMngr = requestPathMngr;
 	}
 	
 	public smTransactionRequest(smA_JsonFactory jsonFactory)
@@ -123,12 +114,11 @@ public class smTransactionRequest extends smA_TransactionObject
 		return super.isEqualTo(otherObject);
 	}
 	
-	@Override
-	public void writeJson(smA_JsonFactory factory, smI_JsonObject json_out)
+	public void writeJson(smA_JsonFactory factory, smRequestPathManager requestPathMngr, smI_JsonObject json_out)
 	{
 		super.writeJson(factory, json_out);
 		
-		m_requestPathMngr.putToJson(json_out, m_path);
+		requestPathMngr.putToJson(json_out, m_path);
 		
 		if( m_serverVersion != null )
 		{
@@ -136,12 +126,11 @@ public class smTransactionRequest extends smA_TransactionObject
 		}
 	}
 	
-	@Override
-	public void readJson(smA_JsonFactory factory, smI_JsonObject json)
+	public void readJson(smA_JsonFactory factory, smRequestPathManager requestPathMngr, smI_JsonObject json)
 	{
 		super.readJson(factory, json);
 		
-		m_path = m_requestPathMngr.getFromJson(json);
+		m_path = requestPathMngr.getFromJson(json);
 		
 		Integer serverVersion = factory.getHelper().getInt(json, smE_JsonKey.serverVersion);
 		

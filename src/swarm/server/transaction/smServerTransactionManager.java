@@ -67,14 +67,15 @@ public class smServerTransactionManager
 	private final ArrayList<smI_TransactionScopeListener> m_scopeListeners = new ArrayList<smI_TransactionScopeListener>();
 	private final smA_ServerJsonFactory m_jsonFactory;
 	private final boolean m_verboseJson;
+	private final smRequestPathManager m_requestPathMngr;
 	
 	public smServerTransactionManager(smA_ServerJsonFactory jsonFactory, smRequestPathManager requestPathMngr, boolean verboseTransactions)
 	{
 		m_jsonFactory = jsonFactory;
-		
-		requestPathMngr.register(smE_ReservedRequestPath.values());
-		
+		m_requestPathMngr = requestPathMngr;		
 		m_verboseJson = verboseTransactions;
+		
+		m_requestPathMngr.register(smE_ReservedRequestPath.values());
 	}
 	
 	public smI_RequestHandler getRequestHandler(smI_RequestPath path)
@@ -134,7 +135,7 @@ public class smServerTransactionManager
 			
 			//--- DRK > Create a wrapper around the native request and see if there's a server version mismatch.
 			smTransactionRequest wrappedRequest = new smTransactionRequest(m_jsonFactory, nativeRequest);
-			wrappedRequest.readJson(m_jsonFactory, requestJson);
+			wrappedRequest.readJson(m_jsonFactory, m_requestPathMngr, requestJson);
 			Integer serverVersionAsFarAsClientKnows = wrappedRequest.getServerVersion();
 			boolean serverVersionMismatch = false;
 			
@@ -178,7 +179,7 @@ public class smServerTransactionManager
 					public void onRequestFound(smI_JsonObject requestJson)
 					{
 						smTransactionRequest batchedRequest = new smTransactionRequest(m_jsonFactory, nativeRequest);
-						batchedRequest.readJson(smServerTransactionManager.this.m_jsonFactory, requestJson);
+						batchedRequest.readJson(smServerTransactionManager.this.m_jsonFactory, m_requestPathMngr, requestJson);
 						smTransactionResponse batchedResponse = new smTransactionResponse(m_jsonFactory, nativeResponse);
 						
 						context.addTransaction(batchedRequest, batchedResponse);

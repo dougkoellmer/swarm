@@ -27,7 +27,7 @@ public class smBrowserHistoryManager
 			
 			if( data != null )
 			{
-				json = new smGwtJsonObject(data);
+				json = new smGwtJsonObject(smBrowserHistoryManager.this.m_jsonFactory, data);
 			}
 			
 			m_listener.onStateChange(path, json);
@@ -82,7 +82,7 @@ public class smBrowserHistoryManager
 		}
 		else
 		{
-			return new smGwtJsonObject(nativeJson);
+			return new smGwtJsonObject(m_jsonFactory, nativeJson);
 		}
 	}
 	

@@ -8,6 +8,7 @@ import swarm.shared.debugging.smU_Debug;
 import swarm.shared.json.smA_JsonFactory;
 import swarm.shared.json.smI_JsonArray;
 import swarm.shared.json.smI_JsonObject;
+import swarm.shared.transaction.smRequestPathManager;
 import swarm.shared.transaction.smTransactionRequest;
 import swarm.shared.transaction.smTransactionResponse;
 import com.google.gwt.core.client.JsArray;
@@ -46,12 +47,14 @@ public class smInlineRequestDispatcher implements smI_SyncRequestDispatcher
 	
 	private final String m_appId;
 	
+	private final smRequestPathManager m_requestPathMngr;
 	private final smA_JsonFactory m_jsonFactory;
 	
-	public smInlineRequestDispatcher(smA_JsonFactory jsonFactory, String appId)
+	public smInlineRequestDispatcher(smA_JsonFactory jsonFactory, smRequestPathManager requestPathMngr, String appId)
 	{
 		m_appId = appId;
 		m_jsonFactory = jsonFactory;
+		m_requestPathMngr = requestPathMngr;
 		
 		JsArray batch = smU_Native.getGlobalArray(m_appId+"_rl");
 		
@@ -70,7 +73,7 @@ public class smInlineRequestDispatcher implements smI_SyncRequestDispatcher
 				smI_JsonObject requestJson = m_jsonFactory.createJsonObject(requestJsonString);
 				smI_JsonObject responseJson = m_jsonFactory.createJsonObject(responseJsonString);
 				
-				request.readJson(m_jsonFactory, requestJson);
+				request.readJson(m_jsonFactory, m_requestPathMngr, requestJson);
 				response.readJson(m_jsonFactory, responseJson);
 				
 				m_inlineTransactions.add(new InlineTransaction(request, response));

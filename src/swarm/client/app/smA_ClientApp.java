@@ -14,6 +14,8 @@ import swarm.client.entities.smCamera;
 import swarm.client.input.smClickManager;
 import swarm.client.managers.smCameraManager;
 import swarm.client.managers.smCellAddressManager;
+import swarm.client.managers.smCellBufferManager;
+import swarm.client.managers.smCellCodeManager;
 import swarm.client.managers.smClientAccountManager;
 import swarm.client.managers.smGridManager;
 import swarm.client.managers.smUserManager;
@@ -148,7 +150,7 @@ public class smA_ClientApp extends smA_App implements smI_TimeSource
 	protected void stage_configureLogging()
 	{
 		//--- DRK > Format console logging messages.
-		Logger.getLogger("b33hive.shared.statemachine").setLevel(Level.OFF);
+		Logger.getLogger("swarm.shared.statemachine").setLevel(Level.OFF);
 		Handler[] handlers = Logger.getLogger("").getHandlers();
 		for (Handler h : handlers)
 		{
@@ -239,11 +241,13 @@ public class smA_ClientApp extends smA_App implements smI_TimeSource
 		m_appContext.cameraMngr = new smCameraManager(m_appContext.gridMngr, new smCamera(), m_appConfig.minSnapTime, m_appConfig.maxSnapTime);
 		m_appContext.addressMngr = new smCellAddressManager(m_appContext, m_appConfig.addressCacheSize, m_appConfig.addressCacheExpiration_seconds, this);
 		m_appContext.accountMngr = new smClientAccountManager(signInValidator, signUpValidator, m_appContext.txnMngr, m_appContext.jsonFactory);
+		m_appContext.codeMngr = new smCellCodeManager(m_appContext);
+		m_appContext.cellBufferMngr = new smCellBufferManager(m_appContext.codeMngr);
 		
 		//--- DRK > Configure transaction stuff.
 		m_appContext.requestPathMngr.register(smE_RequestPath.values());
-		m_appContext.txnMngr.setSyncRequestDispatcher(new smInlineRequestDispatcher(m_appContext.jsonFactory, m_appConfig.appId));
-		m_appContext.txnMngr.setAsyncRequestDispatcher(new smGwtRequestDispatcher(m_appContext.jsonFactory));
+		m_appContext.txnMngr.setSyncRequestDispatcher(new smInlineRequestDispatcher(m_appContext.jsonFactory, m_appContext.requestPathMngr, m_appConfig.appId));
+		m_appContext.txnMngr.setAsyncRequestDispatcher(new smGwtRequestDispatcher(m_appContext.jsonFactory, m_appContext.requestPathMngr));
 	}
 	
 	protected void stage_startViewManagers()

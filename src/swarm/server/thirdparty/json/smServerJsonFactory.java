@@ -39,7 +39,7 @@ public class smServerJsonFactory extends smA_ServerJsonFactory
 		@Override
 		public smI_JsonObject newInstance()
 		{
-			return new smServerJsonObject();
+			return new smServerJsonObject(smServerJsonFactory.this);
 		}
 	};
 	
@@ -48,7 +48,7 @@ public class smServerJsonFactory extends smA_ServerJsonFactory
 		@Override
 		public smI_JsonArray newInstance()
 		{
-			return new smServerJsonArray();
+			return new smServerJsonArray(smServerJsonFactory.this);
 		}
 	};
 	
@@ -69,7 +69,7 @@ public class smServerJsonFactory extends smA_ServerJsonFactory
 	{
 		try
 		{
-			return new smServerJsonObject(data);
+			return new smServerJsonObject(this, data);
 		}
 		catch (JSONException e)
 		{
@@ -85,7 +85,7 @@ public class smServerJsonFactory extends smA_ServerJsonFactory
 	{
 		try
 		{
-			return new smServerJsonArray(data);
+			return new smServerJsonArray(this, data);
 		}
 		catch (JSONException e)
 		{

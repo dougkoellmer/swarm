@@ -33,11 +33,11 @@ public class State_Initializing extends smA_State implements smI_TransactionResp
 	
 	private int m_requiredSuccessCount = 0;
 	
-	private final smAppContext m_context;
+	private final smAppContext m_appContext;
 	
-	public State_Initializing(smAppContext context)
+	public State_Initializing(smAppContext appContext)
 	{
-		m_context = context;
+		m_appContext = appContext;
 	}
 	
 	@Override
@@ -70,10 +70,10 @@ public class State_Initializing extends smA_State implements smI_TransactionResp
 	@Override
 	protected void didEnter(smA_StateConstructor constructor)
 	{
-		final smClientAccountManager accountManager = m_context.accountMngr;
-		final smUserManager userManager = m_context.userMngr;
-		final smGridManager gridManager = m_context.gridMngr;
-		final smClientTransactionManager transactionManager = m_context.txnMngr;
+		final smClientAccountManager accountManager = m_appContext.accountMngr;
+		final smUserManager userManager = m_appContext.userMngr;
+		final smGridManager gridManager = m_appContext.gridMngr;
+		final smClientTransactionManager transactionManager = m_appContext.txnMngr;
 		
 		//--- DRK > Do an initial transaction to see if user is signed in...this is synchronous.
 		accountManager.init(new smI_Callback()
@@ -105,7 +105,7 @@ public class State_Initializing extends smA_State implements smI_TransactionResp
 	protected void didForeground(Class<? extends smA_State> revealingState, Object[] argsFromRevealingState)
 	{
 		if( revealingState != null )
-		{			
+		{
 			tryEnteringApp();
 			
 			return;
@@ -120,7 +120,7 @@ public class State_Initializing extends smA_State implements smI_TransactionResp
 			
 			StateMachine_Base baseController = getContext().getEnteredState(StateMachine_Base.class);
 			
-			smClientAccountManager accountManager = m_context.accountMngr;
+			smClientAccountManager accountManager = m_appContext.accountMngr;
 			smClientAccountManager.E_PasswordChangeTokenState resetTokenState = accountManager.getPasswordChangeTokenState();
 			
 			if( resetTokenState == smClientAccountManager.E_PasswordChangeTokenState.INVALID )
@@ -168,7 +168,7 @@ public class State_Initializing extends smA_State implements smI_TransactionResp
 	@Override
 	protected void willExit()
 	{
-		final smClientTransactionManager transactionManager = m_context.txnMngr;
+		final smClientTransactionManager transactionManager = m_appContext.txnMngr;
 		transactionManager.removeHandler(this);
 		
 		m_successCount = 0;

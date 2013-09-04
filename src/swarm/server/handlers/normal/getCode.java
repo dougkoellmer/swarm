@@ -63,7 +63,7 @@ public class getCode extends smA_DefaultRequestHandler implements smI_DeferredRe
 		//smU_Servlet.simulateException(true);
 		
 		smServerCellAddressMapping mapping = new smServerCellAddressMapping(smE_GridType.ACTIVE);
-		mapping.readJson(null, request.getJsonArgs());
+		mapping.readJson(m_serverContext.jsonFactory, request.getJsonArgs());
 		
 		if( context.getRequestCount(smE_RequestPath.getCode) > 1 )
 		{
@@ -197,7 +197,7 @@ public class getCode extends smA_DefaultRequestHandler implements smI_DeferredRe
 			}
 			
 			smServerCellAddressMapping mapping = new smServerCellAddressMapping(smE_GridType.ACTIVE);
-			mapping.readJson(null, request.getJsonArgs());
+			mapping.readJson(m_serverContext.jsonFactory, request.getJsonArgs());
 			
 			smServerCell persistedCell = (smServerCell) result.get(mapping);
 			
