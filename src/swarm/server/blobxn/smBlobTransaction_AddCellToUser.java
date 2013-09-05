@@ -104,7 +104,7 @@ private static final Logger s_logger = Logger.getLogger(smBlobTransaction_AddCel
 			throw new smBlobException("Address already taken.");
 		}
 		
-		m_createCellTransaction.performOperations();
+		performNested(m_createCellTransaction);
 		
 		//--- DRK > Add coordinate and pop user back into database.
 		smServerCellAddressMapping mapping = m_createCellTransaction.getMapping();

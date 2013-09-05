@@ -23,7 +23,7 @@
  */
 
 var caja = (function () {
-  var cajaBuildVersion = '5470m';
+  var cajaBuildVersion = '%VERSION%';
   var defaultServer = 'https://caja.appspot.com/';
   var defaultFrameGroup;
   var readyQueue = [];
@@ -443,18 +443,26 @@ var caja = (function () {
           'DEFINING_READ_ONLY_PROTO_FAILS_SILENTLY': { 'permit': true },
 
           // we don't use partly-unmodifiable arrays, and the repair for push
-          // is too slow
+          // is too slow to use unless necessary (i.e. PUSH_IGNORES_FROZEN)
           'PUSH_IGNORES_SEALED': { 'permit': true, 'doNotRepair': true },
-          'PUSH_IGNORES_FROZEN': { 'doNotRepair': true },
+          'UNSHIFT_IGNORES_SEALED': { 'permit': true },
+          'SPLICE_IGNORES_SEALED': { 'permit': true },
+          'SHIFT_IGNORES_SEALED': { 'permit': true },
           'PUSH_DOES_NOT_THROW_ON_FROZEN_ARRAY':
               { 'permit': true, 'doNotRepair': true },
           'ARRAYS_DELETE_NONCONFIGURABLE': { 'permit': true },
           'ARRAYS_MODIFY_READONLY': { 'permit': true },
 
           // safe given that we use exactly one SES frame
-          'FREEZE_IS_FRAME_DEPENDENT': { 'permit': true }
+          'FREEZE_IS_FRAME_DEPENDENT': { 'permit': true },
+          'SYNTAX_ERRORS_ARENT_ALWAYS_EARLY': { 'permit': true }
         };
       }
+      ses['mitigateSrcGotchas'] = function() {
+        throw new EvalError('This function is a placeholder that should ' +
+                            'have been replaced by the real ' +
+                            'ses.mitigateSrcGotchas.');
+      };
     }
 
     var sesMaker = makeFrameMaker(config, 'ses-single-frame', frameInit);
@@ -581,48 +589,23 @@ var caja = (function () {
     }
   }
 
-  function prepareContainerDiv(div, feralWin, domOpts) {
-    if (div && feralWin['document'] !== div.ownerDocument) {
-      throw '<div> provided for ES5 frame must be in main document';
-    }
+  /**
+   * opt_container may be absent, an element, or a Document. If absent
+   * then no DOM or related APIs are given to the guest.
+   */
+  function prepareContainerDiv(opt_container, feralWin, domOpts) {
     domOpts = domOpts || {};
     var opt_idClass = domOpts ? domOpts['idClass'] : void 0;
     var idClass = opt_idClass || ('caja-guest-' + nextId++ + '___');
-    var inner = null;
-    var outer = null;
-    if (div) {
-      // Class-name hooks: The host page can
-      // * match all elements between its content and the guest content as
-      //   .caja-vdoc-wrapper
-      // * match the outermost such element using .caja-vdoc-outer
-      // * match the innermost such element using .caja-vdoc-inner
-      // This scheme has been chosen to be potentially forward-compatible in the
-      // event that we switch to more or less than 2 wrappers.
-
-      inner = div.ownerDocument.createElement('div');
-      inner.className = 'caja-vdoc-inner caja-vdoc-wrapper';
-      inner.style.display = 'block';
-      inner.style.position = 'relative';
-
-      outer = div.ownerDocument.createElement('div');
-      outer.className = 'caja-vdoc-outer caja-vdoc-wrapper';
-      outer.style.position = 'relative';
-      outer.style.overflow = 'hidden';
-      outer.style.display = 'block';
-      outer.style.margin = '0';
-      outer.style.padding = '0';
-      // Move existing children (like static HTML produced by the cajoler)
-      // into the inner container.
-      while (div.firstChild) {
-        inner.appendChild(div.firstChild);
-      }
-      outer.appendChild(inner);
-      div.appendChild(outer);
+    if (opt_container && opt_container.nodeType === 9 /* Document */) {
+      caja['console']['warn']('Warning: Using a document, rather than an ' +
+          'element, as a Caja virtual document container is an experimental ' +
+          'feature and may not operate correctly or support all features.');
+      initFeralFrame(opt_container.defaultView);
     }
     return {
       'idClass': idClass,
-      'inner': inner,
-      'outer': outer
+      'opt_div': opt_container
     };
   }
 

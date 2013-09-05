@@ -11,9 +11,16 @@ public abstract class smA_BlobTransaction
 {
 	protected smBlobManagerFactory m_blobMngrFactory;
 	
+	
 	protected abstract void performOperations() throws smBlobException;
 	
 	protected abstract void onSuccess();
+	
+	protected void performNested(smA_BlobTransaction blobTxn) throws smBlobException
+	{
+		blobTxn.m_blobMngrFactory = m_blobMngrFactory;
+		blobTxn.performOperations();
+	}
 	
 	public void perform(smBlobManagerFactory blobMngrFactory, smE_BlobTransactionType transactionType, int maxTryCount) throws smBlobException
 	{

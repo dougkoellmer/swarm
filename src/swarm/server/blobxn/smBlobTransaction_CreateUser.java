@@ -53,7 +53,7 @@ public class smBlobTransaction_CreateUser extends smA_BlobTransaction
 		{
 			try
 			{
-				createCellTxn.performOperations();
+				performNested(createCellTxn);
 			}
 			catch(smBlobException e )
 			{
