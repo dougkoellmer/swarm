@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DIR=../../src/b33hive/client/js
+DIR=../../src/swarm/client/js
 CM_DIR="$DIR/codemirror/"
 CAJA_DIR="$DIR/caja/"
 HISTORY_DIR="$DIR/history/"

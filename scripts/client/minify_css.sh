@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DIR=../../src/b33hive/shared/css/
+DIR=../../src/swarm/shared/css/
 OUT_DIR=../../bin/
 
 

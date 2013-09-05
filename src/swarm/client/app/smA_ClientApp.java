@@ -7,7 +7,6 @@ import java.util.logging.Logger;
 
 import com.google.gwt.logging.client.TextLogFormatter;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.ui.RootPanel;
 
 import swarm.client.code.smClientCodeCompiler;
 import swarm.client.entities.smCamera;

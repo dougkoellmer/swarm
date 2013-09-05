@@ -35,12 +35,12 @@ public class smAppContext extends smSharedAppContext
 	public smCellBufferManager cellBufferMngr;
 	public smCompilerErrorMessageGenerator compilerErrorMsgGenerator;
 	
-	private final ArrayList<smCellBufferManager> m_registeredInstances = new ArrayList<smCellBufferManager>();
-	private final smCellBufferManager.Iterator m_iterator = new smCellBufferManager.Iterator(m_registeredInstances);
+	private final ArrayList<smCellBufferManager> m_registeredBuffers = new ArrayList<smCellBufferManager>();
+	private final smCellBufferManager.Iterator m_iterator = new smCellBufferManager.Iterator(m_registeredBuffers);
 	
 	public void registerBufferMngr(smCellBufferManager instance)
 	{
-		m_registeredInstances.add(instance);
+		m_registeredBuffers.add(instance);
 	}
 	
 	public smCellBufferManager.Iterator getRegisteredBufferMngrs()
@@ -52,11 +52,11 @@ public class smAppContext extends smSharedAppContext
 	
 	public void unregisterBufferMngr(smCellBufferManager instance)
 	{
-		for( int i = m_registeredInstances.size()-1; i >= 0; i-- )
+		for( int i = m_registeredBuffers.size()-1; i >= 0; i-- )
 		{
-			if( m_registeredInstances.get(i) == instance )
+			if( m_registeredBuffers.get(i) == instance )
 			{
-				m_registeredInstances.remove(i);
+				m_registeredBuffers.remove(i);
 				
 				return;
 			}

@@ -308,7 +308,7 @@ public class smCellBufferManager implements smI_LocalCodeRepository
 		{
 			outCell.setCode(eType, toReturn);
 			
-			if( eType == smE_CodeType.SOURCE || toReturn.getSafetyLevel() == smE_CodeSafetyLevel.REQUIRES_DYNAMIC_SANDBOX )
+			if( eType == smE_CodeType.SOURCE || toReturn.getSafetyLevel() == smE_CodeSafetyLevel.REQUIRES_VIRTUAL_SANDBOX )
 			{
 				outCell.getCodePrivileges().copy(thisCell.getCodePrivileges());
 			}

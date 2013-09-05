@@ -63,7 +63,7 @@ public class smCellAddressMapping extends smA_JsonEncodable implements smI_JsonC
 	@Override
 	public void readJson(smA_JsonFactory factory, smI_JsonObject json)
 	{
-		m_coordinate.readJson(null, json);
+		m_coordinate.readJson(factory, json);
 	}
 	
 	@Override

@@ -9,7 +9,8 @@ public enum smE_CodeSafetyLevel implements smI_SerializableEnum
 	
 	SAFE,
 	REQUIRES_STATIC_SANDBOX("REQUIRES_SANDBOX"),
-	REQUIRES_DYNAMIC_SANDBOX;
+	REQUIRES_VIRTUAL_SANDBOX("REQUIRES_DYNAMIC_SANDBOX"),
+	REQUIRES_FULL_SANDBOX;
 	
 	private String m_oldNames[];
 	

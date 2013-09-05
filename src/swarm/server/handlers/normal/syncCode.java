@@ -87,7 +87,7 @@ public class syncCode extends smA_DefaultRequestHandler
 	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
 	{
 		smServerCellAddressMapping mapping = new smServerCellAddressMapping(smE_GridType.ACTIVE);
-		mapping.readJson(null, request.getJsonArgs());
+		mapping.readJson(m_serverContext.jsonFactory, request.getJsonArgs());
 		boolean isSandbox = isSandBox(mapping);
 		smI_BlobManager blobManager = m_serverContext.blobMngrFactory.create(smE_BlobCacheLevel.PERSISTENT);
 		smI_BlobManager cachingBlobManager = m_serverContext.blobMngrFactory.create(smE_BlobCacheLevel.MEMCACHE);

@@ -8,7 +8,7 @@ JS_MIN_OUT=min.js
 JSP=$(realpath ./war/index.jsp)
 MODULE=$(realpath ./war/r.app)
 
-BH_SCRIPTS="./lib/b33hive/scripts/client"
+BH_SCRIPTS="./lib/swarm/scripts/client"
 
 cd $BH_SCRIPTS
 sh build_js.sh $APP_JS $JS_MIN_OUT $JSP $MODULE

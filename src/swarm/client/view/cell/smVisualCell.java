@@ -317,7 +317,7 @@ public class smVisualCell extends AbsolutePanel implements smI_BufferCellListene
 			
 			m_sandbox.insertStaticHtml(m_contentPanel.getElement(), code.getRawCode(), idClass);
 		}
-		else if( code.getSafetyLevel() == smE_CodeSafetyLevel.REQUIRES_DYNAMIC_SANDBOX )
+		else if( code.getSafetyLevel() == smE_CodeSafetyLevel.REQUIRES_VIRTUAL_SANDBOX )
 		{
 			//--- DRK > The sandbox, using server-cajoled code, can take a second or two to start up,
 			//---		so loading used to be shown to let the user know that something is going on.

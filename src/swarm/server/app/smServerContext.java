@@ -13,12 +13,10 @@ import swarm.shared.json.smA_JsonFactory;
 
 public class smServerContext extends smSharedAppContext
 {
-	public smA_JsonFactory jsonFactory;
 	public smBlobManagerFactory blobMngrFactory;
 	public smSessionManager sessionMngr;
 	public smServerAccountManager accountMngr;
 	public smTelemetryDatabase telemetryDb;
-	public smServerCodeCompiler compiler;
 	public smInlineTransactionManager inlineTxnMngr;
 	public smServletRedirector redirector;
 	public smServerTransactionManager txnMngr;

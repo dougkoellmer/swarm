@@ -168,6 +168,7 @@ public class StateMachine_Camera extends smA_StateMachine implements smI_StateEv
 		
 		smA_ClientUser user = m_appContext.userMngr.getUser();
 		m_appContext.cameraMngr.setCameraPosition(user.getLastPosition(), false);
+		m_appContext.registerBufferMngr(m_appContext.cellBufferMngr);
 
 		smCellCodeManager codeMngr = m_appContext.codeMngr;
 
@@ -289,6 +290,8 @@ public class StateMachine_Camera extends smA_StateMachine implements smI_StateEv
 	
 	protected void willExit()
 	{
+		m_appContext.unregisterBufferMngr(m_appContext.cellBufferMngr);
+		
 		m_appContext.addressMngr.stop();
 		
 		m_appContext.codeMngr.stop();

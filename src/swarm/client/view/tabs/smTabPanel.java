@@ -72,7 +72,7 @@ public class smTabPanel extends AbsolutePanel implements smI_UIElement
 		m_tabContainerWrapper.addStyleName("sm_tab_container_wrapper");
 		m_tabContainer.addStyleName("sm_tab_container");
 		m_contentContainer.addStyleName("sm_tab_content_container");
-		this.addStyleName("tab_panel");
+		this.addStyleName("sm_tab_panel");
 		
 		m_tabContainer.setVerticalAlignment(HasVerticalAlignment.ALIGN_BOTTOM);
 		

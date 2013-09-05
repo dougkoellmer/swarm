@@ -109,10 +109,10 @@ public class smServerCodeCompiler extends smA_CodeCompiler
 		{
 			SimpleMessageQueue cacheMq = new SimpleMessageQueue();
 			URI elSrc = URI.create(
-					"resource:///b33hive/server/code/"
+					"resource:///swarm/server/code/"
 							+ "htmlall-elements.json");
 			URI attrSrc = URI.create(
-					"resource:///b33hive/server/code/"
+					"resource:///swarm/server/code/"
 							+ "htmlall-attributes.json");
 			try
 			{
@@ -246,7 +246,7 @@ public class smServerCodeCompiler extends smA_CodeCompiler
 			else
 			{				
 				compiledCode = new smServerCode(sourceCode.getRawCode(), smE_CodeType.COMPILED);
-				compiledCode.setSafetyLevel(smE_CodeSafetyLevel.REQUIRES_DYNAMIC_SANDBOX);
+				compiledCode.setSafetyLevel(smE_CodeSafetyLevel.REQUIRES_VIRTUAL_SANDBOX);
 			}
 			
 			return result.onSuccess(splashCode, compiledCode);
@@ -266,7 +266,7 @@ public class smServerCodeCompiler extends smA_CodeCompiler
 				splashCode.setSafetyLevel(smE_CodeSafetyLevel.REQUIRES_STATIC_SANDBOX);
 				
 				smServerCode compiledCode = new smServerCode(sourceCode.getRawCode(), smE_CodeType.COMPILED);
-				compiledCode.setSafetyLevel(smE_CodeSafetyLevel.REQUIRES_DYNAMIC_SANDBOX);
+				compiledCode.setSafetyLevel(smE_CodeSafetyLevel.REQUIRES_VIRTUAL_SANDBOX);
 				
 				//TODO: May minify compiled code in future, maybe as an optional step.
 				

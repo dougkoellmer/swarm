@@ -1,5 +1,10 @@
 /* BASICS */
 
+.code_mirror /* a hack to make code mirror still update when panel is minimized */
+{
+	min-width: 1px;
+}
+
 .CodeMirror {
   /* Set height, width, borders, and global font properties here */
   font-family: monospace;

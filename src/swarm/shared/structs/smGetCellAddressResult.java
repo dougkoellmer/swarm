@@ -67,7 +67,7 @@ public class smGetCellAddressResult extends smA_JsonEncodable
 		{
 			m_address = new smCellAddress();
 			
-			m_address.readJson(null, json);
+			m_address.readJson(factory, json);
 		}
 		else
 		{

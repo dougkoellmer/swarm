@@ -134,7 +134,7 @@ public class smTransactionRequestBatch extends smTransactionRequest
 	@Override
 	public void writeJson(smA_JsonFactory factory, smRequestPathManager requestPathMngr, smI_JsonObject json_out)
 	{
-		super.writeJson(factory, json_out);
+		super.writeJson(factory, requestPathMngr, json_out);
 		
 		final smI_JsonArray requestList = factory.createJsonArray();
 		

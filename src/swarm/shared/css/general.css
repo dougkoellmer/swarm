@@ -66,11 +66,6 @@ body, html, .sm_cell_container, .sm_tab_content_container,
 	font-size: 14px;
 }
 
-.code_mirror /* a hack to make code mirror still update when panel is minimized */
-{
-	min-width: 1px;
-}
-
 .sm_tab_container
 {
 	height:100%;
@@ -89,7 +84,7 @@ body, html, .sm_cell_container, .sm_tab_content_container,
 	user-select: none;
 }
 
-.tab_panel, .html_editor_tab,
+.sm_tab_panel, .html_editor_tab,
 {
 	width:100%;
 }

@@ -54,7 +54,9 @@ public class smCajaWrapper
 
 		m_cellApi = new smCellApi(viewContext);
 		
-		initialize_native(this, apiNamespace);
+		callback.onStartUpComplete(true); return;
+		
+		//initialize_native(this, apiNamespace);
 	}
 	
 	private void createApi(String apiNamespace)
