@@ -1,7 +1,7 @@
 package swarm.server.structs;
 
 import swarm.shared.structs.smBitArray;
-import swarm.shared.utils.smU_BitTricks;
+import swarm.shared.utils.smU_Bits;
 import swarm.shared.debugging.smU_Debug;
 
 import java.io.Externalizable;

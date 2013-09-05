@@ -12,7 +12,7 @@ import swarm.client.view.tabs.code.smCellSandbox;
 import swarm.client.view.tabs.code.smI_CodeLoadListener;
 import swarm.client.view.widget.smUIBlocker;
 import swarm.shared.app.smS_App;
-import swarm.shared.utils.smU_BitTricks;
+import swarm.shared.utils.smU_Bits;
 import swarm.shared.debugging.smU_Debug;
 import swarm.shared.entities.smE_CodeSafetyLevel;
 import swarm.shared.entities.smE_CodeType;
@@ -185,7 +185,7 @@ public class smVisualCell extends AbsolutePanel implements smI_BufferCellListene
 			{
 				//m_backgroundPanel.getElement().getStyle().clearBackgroundColor();
 				
-				m_currentImageIndex = smU_BitTricks.calcBitPosition(m_subCellDimension);
+				m_currentImageIndex = smU_Bits.calcBitPosition(m_subCellDimension);
 				//m_backgroundImages.get(m_currentImageIndex).getElement().getStyle().setDisplay(Display.BLOCK);
 			}
 			

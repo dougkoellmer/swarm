@@ -7,7 +7,7 @@ import java.util.HashMap;
 import swarm.client.entities.smBufferCell;
 import swarm.client.structs.smCellPool;
 import swarm.client.structs.smI_LocalCodeRepository;
-import swarm.shared.utils.smU_BitTricks;
+import swarm.shared.utils.smU_Bits;
 import swarm.shared.debugging.smU_Debug;
 import swarm.shared.entities.smA_Grid;
 import swarm.shared.entities.smE_CodeType;
@@ -47,7 +47,7 @@ public class smCellBuffer
 	
 	void setCellSize(int size)
 	{
-		if ( !smU_BitTricks.isPowerOfTwo(size) )
+		if ( !smU_Bits.isPowerOfTwo(size) )
 		{
 			smU_Debug.ASSERT(false, "setCellSize1");
 			return;

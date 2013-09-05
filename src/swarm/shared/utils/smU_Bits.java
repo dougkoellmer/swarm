@@ -1,6 +1,6 @@
 package swarm.shared.utils;
 
-public final class smU_BitTricks
+public final class smU_Bits
 {
 	public static boolean isPowerOfTwo(int bits)
 	{

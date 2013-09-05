@@ -27,7 +27,7 @@ public class smTransactionBatch
 		
 	}
 	
-	public void add(smTransactionRequest request, smTransactionResponse response)
+	void add(smTransactionRequest request, smTransactionResponse response)
 	{
 		m_queue.add(new Transaction(request, response));
 	}

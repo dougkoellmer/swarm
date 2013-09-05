@@ -97,6 +97,7 @@ public abstract class smA_ServerApp extends smA_App
 	protected void entryPoint(smServerAppConfig appConfig)
 	{
 		m_appConfig = appConfig;
+		m_context.config = m_appConfig;
 		
 		smU_Debug.setDelegate(new smI_AssertionDelegate()
 		{

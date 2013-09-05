@@ -9,8 +9,6 @@ import swarm.shared.json.smI_JsonObject;
 
 public class smServerJsonArray extends Object implements smI_JsonArray
 {
-	private int m_currentIndex = 0;
-	
 	private JSONArray m_object = null;
 	private final smA_JsonFactory m_factory;
 	

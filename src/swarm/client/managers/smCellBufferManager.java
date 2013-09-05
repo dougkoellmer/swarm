@@ -9,7 +9,7 @@ import swarm.client.entities.smE_CodeStatus;
 import swarm.client.structs.smCellPool;
 import swarm.client.structs.smI_LocalCodeRepository;
 import swarm.shared.app.smS_App;
-import swarm.shared.utils.smU_BitTricks;
+import swarm.shared.utils.smU_Bits;
 import swarm.shared.debugging.smU_Debug;
 import swarm.shared.entities.smA_Cell;
 import swarm.shared.entities.smA_Grid;

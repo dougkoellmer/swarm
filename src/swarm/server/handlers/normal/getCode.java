@@ -26,7 +26,7 @@ import swarm.server.transaction.smI_RequestHandler;
 import swarm.server.transaction.smServerTransactionManager;
 import swarm.server.transaction.smTransactionBatch;
 import swarm.server.transaction.smTransactionContext;
-import swarm.shared.utils.smU_BitTricks;
+import swarm.shared.utils.smU_Bits;
 import swarm.shared.entities.smA_Cell;
 import swarm.shared.entities.smE_CodeSafetyLevel;
 import swarm.shared.entities.smE_CodeType;
@@ -212,7 +212,7 @@ public class getCode extends smA_DefaultRequestHandler implements smI_DeferredRe
 			
 			if( typesAlreadyReturnedForCoord != null )
 			{
-				int typeBit = smU_BitTricks.calcOrdinalBit(eCodeType.ordinal());
+				int typeBit = smU_Bits.calcOrdinalBit(eCodeType.ordinal());
 				if( (typesAlreadyReturnedForCoord & typeBit) != 0 )
 				{
 					response.setError(smE_ResponseError.REDUNDANT);

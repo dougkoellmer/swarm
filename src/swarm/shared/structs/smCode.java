@@ -1,6 +1,6 @@
 package swarm.shared.structs;
 
-import swarm.shared.utils.smU_BitTricks;
+import swarm.shared.utils.smU_Bits;
 import swarm.shared.app.smSharedAppContext;
 import swarm.shared.debugging.smU_Debug;
 import swarm.shared.entities.smE_CodeSafetyLevel;
@@ -44,9 +44,9 @@ public class smCode extends smA_JsonEncodable
 		return m_safetyLevel;
 	}
 	
-	private void initWithStandInType(smE_CodeType standInType)
+	private void addStandInType(smE_CodeType standInType)
 	{
-		m_standInFlags |= smU_BitTricks.calcOrdinalBit(standInType.ordinal());
+		m_standInFlags |= smU_Bits.calcOrdinalBit(standInType.ordinal());
 	}
 	
 	private void init(smE_CodeType[] standInTypes)
@@ -60,7 +60,7 @@ public class smCode extends smA_JsonEncodable
 		
 		for( int i = 0; i < standInTypes.length; i++ )
 		{
-			initWithStandInType(standInTypes[i]);
+			addStandInType(standInTypes[i]);
 		}
 	}
 	
@@ -71,12 +71,7 @@ public class smCode extends smA_JsonEncodable
 	
 	public boolean isStandInFor(smE_CodeType type)
 	{
-		if( (smU_BitTricks.calcOrdinalBit(type.ordinal()) & m_standInFlags) != 0 )
-		{
-			return true;
-		}
-		
-		return false;
+		return (smU_Bits.calcOrdinalBit(type.ordinal()) & m_standInFlags) != 0;
 	}
 	
 	public int getStandInFlags()
@@ -91,12 +86,7 @@ public class smCode extends smA_JsonEncodable
 	
 	public int getRawCodeLength()
 	{
-		if( isEmpty() )
-		{
-			return 0;
-		}
-		
-		return m_rawCode.length();
+		return isEmpty() ? 0 : m_rawCode.length();
 	}
 
 	@Override

@@ -20,4 +20,6 @@ public class smServerContext extends smSharedAppContext
 	public smInlineTransactionManager inlineTxnMngr;
 	public smServletRedirector redirector;
 	public smServerTransactionManager txnMngr;
+	
+	public smServerAppConfig config;
 }

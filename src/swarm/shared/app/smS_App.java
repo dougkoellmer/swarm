@@ -1,6 +1,6 @@
 package swarm.shared.app;
 
-import swarm.shared.utils.smU_BitTricks;
+import swarm.shared.utils.smU_Bits;
 
 public class smS_App
 {
@@ -18,7 +18,7 @@ public class smS_App
 	
 	public static final int MAX_IMAGED_CELL_SIZE = 128;
 	
-	public static final int MAX_CELL_IMAGES = smU_BitTricks.calcBitPosition(MAX_IMAGED_CELL_SIZE);
+	public static final int MAX_CELL_IMAGES = smU_Bits.calcBitPosition(MAX_IMAGED_CELL_SIZE);
 	
 	public static final int MAX_CELL_ADDRESS_PARTS = 12; //TODO: arbitrary...
 }

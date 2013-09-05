@@ -1,6 +1,6 @@
 package swarm.shared.structs;
 
-import swarm.shared.utils.smU_BitTricks;
+import swarm.shared.utils.smU_Bits;
 import swarm.shared.app.smSharedAppContext;
 import swarm.shared.debugging.smU_Debug;
 import swarm.shared.json.smA_JsonEncodable;
@@ -135,7 +135,7 @@ public class smBitArray extends smA_JsonEncodable
 				//--- DRK > Strip off first part of the current old block.
 				if( oldStartBitIndexIntoBlock > 0 )
 				{
-					int mask = smU_BitTricks.calcMaskBeforeBit(oldStartBitIndexIntoBlock);
+					int mask = smU_Bits.calcMaskBeforeBit(oldStartBitIndexIntoBlock);
 					oldDoubleBlock &= ~mask;
 				}
 				
@@ -144,7 +144,7 @@ public class smBitArray extends smA_JsonEncodable
 				{
 					if( oldEndBitIndexIntoBlock < (BLOCK_SIZE_LONG-1) )
 					{
-						int mask = smU_BitTricks.calcMaskAfterBit(oldEndBitIndexIntoBlock);
+						int mask = smU_Bits.calcMaskAfterBit(oldEndBitIndexIntoBlock);
 						oldDoubleBlock &= ~mask;
 						oldDoubleBlock &= BLOCK_MASK_SHIFTED_NOT;
 					}
@@ -173,7 +173,7 @@ public class smBitArray extends smA_JsonEncodable
 					
 						long oldDoubleBlockEnd = oldBlocks[col_oldBlocks+1];
 						oldDoubleBlock |= (oldDoubleBlockEnd<<BLOCK_SIZE_LONG);
-						long mask = smU_BitTricks.calcMaskAfterBit(maskStart);
+						long mask = smU_Bits.calcMaskAfterBit(maskStart);
 						oldDoubleBlock &= ~(mask<<BLOCK_SIZE_LONG);
 					}
 				}
@@ -213,7 +213,7 @@ public class smBitArray extends smA_JsonEncodable
 		int bitIndexIntoBlock = calcBitIndexModBlock(bitIndex);
 		int blockIndex = calcBlockIndex(bitIndex, bitIndexIntoBlock);
 		int block = m_blocks[blockIndex];
-		int blockBit = smU_BitTricks.calcOrdinalBit(bitIndexIntoBlock);
+		int blockBit = smU_Bits.calcOrdinalBit(bitIndexIntoBlock);
 		
 		if( value )
 		{
@@ -232,7 +232,7 @@ public class smBitArray extends smA_JsonEncodable
 		int bitIndexIntoBlock = calcBitIndexModBlock(bitIndex);
 		int blockIndex = calcBlockIndex(bitIndex, bitIndexIntoBlock);
 		int block = m_blocks[blockIndex];
-		int blockBit = smU_BitTricks.calcOrdinalBit(bitIndexIntoBlock);
+		int blockBit = smU_Bits.calcOrdinalBit(bitIndexIntoBlock);
 		
 		if( (block & blockBit) != 0 )
 		{

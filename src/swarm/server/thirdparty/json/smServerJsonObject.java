@@ -31,11 +31,6 @@ public class smServerJsonObject extends smA_JsonObject implements smI_JsonObject
 		m_object = source;
 	}
 	
-	public smA_JsonFactory getFactory()
-	{
-		return m_factory;
-	}
-	
 	public JSONObject getNative()
 	{
 		return m_object;
