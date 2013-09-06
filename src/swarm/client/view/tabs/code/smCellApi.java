@@ -42,7 +42,12 @@ public class smCellApi
 		m_viewContext = viewContext;
 	}
 	
-	native void registerApi(String namespace)
+	void registerApi(String apiNamespace)
+	{
+		registerApi_private(this, apiNamespace);
+	}
+	
+	native void registerApi_private(smCellApi thisArg, String namespace)
 	/*-{
 		function isInt(value)
 		{ 
@@ -121,7 +126,7 @@ public class smCellApi
 				return true;
 			}
 			
-			this.@swarm.client.view.tabs.code.smCellApi::logError(Ljava/lang/String;)("Expected string value.");
+			thisArg.@swarm.client.view.tabs.code.smCellApi::logError(Ljava/lang/String;)("Expected string value.");
 			return false;
 		}
 		
@@ -135,19 +140,19 @@ public class smCellApi
 				{
 					if( isString(arguments[0]) )
 					{
-						this.@swarm.client.view.tabs.code.smCellApi::snapToAddress(Ljava/lang/String;)(arguments[0]);
+						thisArg.@swarm.client.view.tabs.code.smCellApi::snapToAddress(Ljava/lang/String;)(arguments[0]);
 					}
 					else if( isInt(arguments[0]) )
 					{
-						this.@swarm.client.view.tabs.code.smCellApi::snapToHistory(D)(arguments[0]);
+						thisArg.@swarm.client.view.tabs.code.smCellApi::snapToHistory(D)(arguments[0]);
 					}
 					else if( isCoordinate(arguments[0]) )
 					{
-						this.@swarm.client.view.tabs.code.smCellApi::snapToCoordinate(DD)(arguments[0].m, arguments[0].n);
+						thisArg.@swarm.client.view.tabs.code.smCellApi::snapToCoordinate(DD)(arguments[0].m, arguments[0].n);
 					}
 					else if( isPoint(arguments[0]) )
 					{
-						this.@swarm.client.view.tabs.code.smCellApi::snapToPoint(DDD)(arguments[0].x, arguments[0].y, arguments[0].z);
+						thisArg.@swarm.client.view.tabs.code.smCellApi::snapToPoint(DDD)(arguments[0].x, arguments[0].y, arguments[0].z);
 					}
 				}
 				else if( argumentsLength == 2 )
@@ -155,11 +160,11 @@ public class smCellApi
 					var args_modified = [arguments[0], arguments[1]];
 					if( isCoordinate.apply(null, args_modified) )
 					{
-						this.@swarm.client.view.tabs.code.smCellApi::snapToCoordinate(DD)(arguments[0], arguments[1]);
+						thisArg.@swarm.client.view.tabs.code.smCellApi::snapToCoordinate(DD)(arguments[0], arguments[1]);
 					}
 					else if( isPoint.apply(null, args_modified) )
 					{
-						this.@swarm.client.view.tabs.code.smCellApi::snapToPoint(DDD)(arguments[0], arguments[1], 0.0);
+						thisArg.@swarm.client.view.tabs.code.smCellApi::snapToPoint(DDD)(arguments[0], arguments[1], 0.0);
 					}
 				}
 				else if( argumentsLength == 3 )
@@ -167,7 +172,7 @@ public class smCellApi
 					var args_modified = [arguments[0], arguments[1], arguments[2]];
 					if( isPoint.apply(null, args_modified) )
 					{
-						this.@swarm.client.view.tabs.code.smCellApi::snapToPoint(DDD)(arguments[0], arguments[1], arguments[2]);
+						thisArg.@swarm.client.view.tabs.code.smCellApi::snapToPoint(DDD)(arguments[0], arguments[1], arguments[2]);
 					}
 				}
 			},			
@@ -175,8 +180,8 @@ public class smCellApi
 			{
 				//--- DRK > Have to do it like this because of weird jsni behavior with
 				//---		passing js objects across the interface.
-				var m = this.@swarm.client.view.tabs.code.smCellApi::getCoordinateM()();
-				var n = this.@swarm.client.view.tabs.code.smCellApi::getCoordinateN()();
+				var m = thisArg.@swarm.client.view.tabs.code.smCellApi::getCoordinateM()();
+				var n = thisArg.@swarm.client.view.tabs.code.smCellApi::getCoordinateN()();
 				
 				var coord = {m:m, n:n, toString:function(){return "{m:"+this.m+", n:"+this.n+"}"}};
 				
@@ -184,7 +189,7 @@ public class smCellApi
 			},
 			getAddress:function()
 			{
-				var address = this.@swarm.client.view.tabs.code.smCellApi::getAddress()();
+				var address = thisArg.@swarm.client.view.tabs.code.smCellApi::getAddress()();
 				
 				return address;
 			},
@@ -192,9 +197,9 @@ public class smCellApi
 			{
 				//--- DRK > Have to do it like this because of weird jsni behavior with
 				//---		passing js objects across the interface.
-				var x = this.@swarm.client.view.tabs.code.smCellApi::getPositionX()();
-				var y = this.@swarm.client.view.tabs.code.smCellApi::getPositionY()();
-				var z = this.@swarm.client.view.tabs.code.smCellApi::getPositionZ()();
+				var x = thisArg.@swarm.client.view.tabs.code.smCellApi::getPositionX()();
+				var y = thisArg.@swarm.client.view.tabs.code.smCellApi::getPositionY()();
+				var z = thisArg.@swarm.client.view.tabs.code.smCellApi::getPositionZ()();
 				
 				var point = {x:x, y:y, z:z};
 				
@@ -202,19 +207,19 @@ public class smCellApi
 			},
 			getUsername:function()
 			{
-				var username = this.@swarm.client.view.tabs.code.smCellApi::getUsername()();
+				var username = thisArg.@swarm.client.view.tabs.code.smCellApi::getUsername()();
 				
 				return username;
 			},
 			getGridWidth:function()
 			{
-				var width = this.@swarm.client.view.tabs.code.smCellApi::getGridWidth()();
+				var width = thisArg.@swarm.client.view.tabs.code.smCellApi::getGridWidth()();
 				
 				return width;
 			},
 			getGridHeight:function()
 			{
-				var height = this.@swarm.client.view.tabs.code.smCellApi::getGridHeight()();
+				var height = thisArg.@swarm.client.view.tabs.code.smCellApi::getGridHeight()();
 				
 				return height;
 			}
@@ -224,10 +229,9 @@ public class smCellApi
 		{
 			if( string_contract(message) )
 			{
-				this.@swarm.client.view.tabs.code.smCellApi::alert(Ljava/lang/String;)(message);
+				thisArg.@swarm.client.view.tabs.code.smCellApi::alert(Ljava/lang/String;)(message);
 			}
 		}
-		
 	}-*/;
 	
 	private void snapToHistory(double delta)

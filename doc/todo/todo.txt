@@ -1,8 +1,3 @@
-- fix default nul argument for all writeJson and readJson calls
-
-- give request handlers default json factory, maybe other stuff, depending
-
-
 
 
 
@@ -19,8 +14,6 @@
 - make sure cell buffer isn't getting updated twice while dragging
 
 - test performance improvement if removing loading animation
-
-- get new caja version...might require api changes...using "frame" instead of caja instance for taming.
 
 - handle "unlimited character case", at least in code editor UI, for number of characters left...actually, elsewhere too
 
