@@ -46,7 +46,7 @@ public class previewCode extends smA_DefaultRequestHandler
 		
 		smCode sourceCode = new smCode(m_serverContext.jsonFactory, request.getJsonArgs(), smE_CodeType.SOURCE);
 		
-		smCompilerResult result = m_serverContext.codeCompiler.compile(sourceCode, privileges, coordinate.writeString());
+		smCompilerResult result = m_serverContext.codeCompiler.compile(sourceCode, privileges, coordinate.writeString(), m_serverContext.config.appId);
 		
 		result.writeJson(m_serverContext.jsonFactory, response.getJsonArgs());
 	}

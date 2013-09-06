@@ -54,7 +54,7 @@ public class State_EditingCode extends smA_State
 		smA_ClientUser user = m_appContext.userMngr.getUser();
 		smCode sourceCode = user.getCode(coord, smE_CodeType.SOURCE);
 		
-		smCompilerResult compilerResult = m_appContext.codeCompiler.compile(sourceCode, viewedCell.getCodePrivileges(), /*namespace=*/null);
+		smCompilerResult compilerResult = m_appContext.codeCompiler.compile(sourceCode, viewedCell.getCodePrivileges(), /*cellNamespace=*/null, /*apiNamespace=*/null);
 		
 		if( compilerResult.getStatus() == smE_CompilationStatus.NO_ERROR )
 		{

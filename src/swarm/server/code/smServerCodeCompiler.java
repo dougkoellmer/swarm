@@ -153,11 +153,11 @@ public class smServerCodeCompiler extends smA_CodeCompiler
 	}
 	
 	@Override
-	public smCompilerResult compile(smCode sourceCode, smCodePrivileges privileges, String namespace)
+	public smCompilerResult compile(smCode sourceCode, smCodePrivileges privileges, String cellNamespace, String apiNamespace)
 	{
-		namespace += smS_Caja.CAJA_NAMESPACE_SUFFIX;
+		cellNamespace += smS_Caja.CAJA_NAMESPACE_SUFFIX;
 		
-		smCompilerResult result = (smCompilerResult) super.compile(sourceCode, privileges, namespace);
+		smCompilerResult result = (smCompilerResult) super.compile(sourceCode, privileges, cellNamespace, apiNamespace);
 		
 		if( result.getStatus() != smE_CompilationStatus.NO_ERROR )
 		{
@@ -173,10 +173,10 @@ public class smServerCodeCompiler extends smA_CodeCompiler
 			 }
 		};
 		
-		smUriPolicy uriPolicy = new smUriPolicy(privileges.getNetworkPrivilege());
+		smUriPolicy uriPolicy = new smUriPolicy(privileges.getNetworkPrivilege(), apiNamespace);
 		
 		PluginMeta meta = new PluginMeta(fetcher, uriPolicy);
-		meta.setIdClass(namespace);
+		meta.setIdClass(cellNamespace);
 		//meta.setPrecajoleMinify(true); // not sure what it does, but sounds like extra CPU to minify, which we don't care about
 		MessageQueue messageQueue = new SimpleMessageQueue();
 
@@ -217,7 +217,7 @@ public class smServerCodeCompiler extends smA_CodeCompiler
 		Node staticHtmlDocument = compiler.getStaticHtml();
 		if( !hasJavaScript && staticHtmlDocument != null && foundB33hivePath )
 		{
-			transformDom(staticHtmlDocument);
+			transformDom(staticHtmlDocument, apiNamespace);
 		}
 		
 		String staticHtml = staticHtmlDocument != null ? Nodes.render(staticHtmlDocument) : "";
@@ -478,7 +478,7 @@ public class smServerCodeCompiler extends smA_CodeCompiler
 		node.getParentNode().replaceChild(element, node);
 	}*/
 	
-	private static void transformDom(Node node)
+	private static void transformDom(Node node, String apiNamespace)
 	{
 		if( node.getNodeName().equals("a") )
 		{
@@ -494,7 +494,7 @@ public class smServerCodeCompiler extends smA_CodeCompiler
 				if( address.getParseError() == smE_CellAddressParseError.NO_ERROR )
 				{
 					String rawAddress = address.getRawAddress();
-					href.setNodeValue(smU_Code.transformPathToJavascript(rawAddress));
+					href.setNodeValue(smU_Code.transformPathToJavascript(apiNamespace, rawAddress));
 					
 					setTarget = false;
 				}
@@ -515,7 +515,7 @@ public class smServerCodeCompiler extends smA_CodeCompiler
 		Node sibling = node.getFirstChild();
 		for (; sibling != null; sibling = sibling.getNextSibling())
 		{
-			transformDom(sibling);
+			transformDom(sibling, apiNamespace);
 		}
 	}
 	

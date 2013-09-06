@@ -110,7 +110,7 @@ public class syncCode extends smA_DefaultRequestHandler
 		
 		smServerCode sourceCode = new smServerCode(m_serverContext.jsonFactory, request.getJsonArgs(), smE_CodeType.SOURCE);
 		
-		smCompilerResult result = smU_CellCode.compileCell(m_serverContext.codeCompiler, persistedCell, sourceCode, mapping);
+		smCompilerResult result = smU_CellCode.compileCell(m_serverContext.codeCompiler, persistedCell, sourceCode, mapping, m_serverContext.config.appId);
 		
 		//--- DRK > This write could obviously cause contention if user was saving from multiple clients,
 		//---		but if a user wants to do that for whatever reason, it's their own problem.

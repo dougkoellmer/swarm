@@ -218,10 +218,7 @@ public abstract class smA_ServerApp extends smA_App
 	
 	private void addTelemetryHandlers()
 	{
-		smServerTransactionManager txnManager = m_context.txnMngr;
-		m_context.requestPathMngr.register(smE_TelemetryRequestPath.values());
-		
-		txnManager.setRequestHandler(new logAssert(),	smE_TelemetryRequestPath.logAssert);
+		setNormalHandler(new logAssert(),	smE_TelemetryRequestPath.logAssert);
 	}
 	
 	private void addDebugHandlers()

@@ -110,11 +110,11 @@ public final class smU_CellCode
 		return persistedCell;
 	}
 	
-	public static smCompilerResult compileCell(smA_CodeCompiler compiler, smServerCell cell, smCode sourceCode, smCellAddressMapping mapping)
+	public static smCompilerResult compileCell(smA_CodeCompiler compiler, smServerCell cell, smCode sourceCode, smCellAddressMapping mapping, String apiNamespace)
 	{
 		cell.setCode(smE_CodeType.SOURCE, sourceCode); // DRK > may be redundant.
 		
-		smCompilerResult result = compiler.compile(sourceCode, cell.getCodePrivileges(), mapping.writeString());
+		smCompilerResult result = compiler.compile(sourceCode, cell.getCodePrivileges(), mapping.writeString(), apiNamespace);
 		
 		if( result.getStatus() == smE_CompilationStatus.NO_ERROR )
 		{

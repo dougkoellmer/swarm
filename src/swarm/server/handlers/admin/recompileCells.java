@@ -115,7 +115,7 @@ public class recompileCells extends smA_DefaultRequestHandler
 			return true;
 		}
 		
-		smCompilerResult result = smU_CellCode.compileCell(m_serverContext.codeCompiler, persistedCell, sourceCode, mapping);
+		smCompilerResult result = smU_CellCode.compileCell(m_serverContext.codeCompiler, persistedCell, sourceCode, mapping, m_serverContext.config.appId);
 		
 		if( result.getStatus() != smE_CompilationStatus.NO_ERROR )
 		{

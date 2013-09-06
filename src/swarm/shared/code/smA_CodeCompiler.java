@@ -17,7 +17,7 @@ public abstract class smA_CodeCompiler
 	
 	protected abstract smCompilerResult createResult();
 	
-	public smCompilerResult compile(smCode sourceCode, smCodePrivileges privileges, String namespace /*?????*/)
+	public smCompilerResult compile(smCode sourceCode, smCodePrivileges privileges, String cellNamespace, String apiNamespace)
 	{
 		smCompilerResult result = this.createResult();
 		

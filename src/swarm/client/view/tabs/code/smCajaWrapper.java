@@ -54,9 +54,9 @@ public class smCajaWrapper
 
 		m_cellApi = new smCellApi(viewContext);
 		
-		callback.onStartUpComplete(true); return;
+		//callback.onStartUpComplete(true); return;
 		
-		//initialize_native(this, apiNamespace);
+		initialize_native(this, apiNamespace);
 	}
 	
 	private void createApi(String apiNamespace)
@@ -140,7 +140,7 @@ public class smCajaWrapper
 			$wnd.caja.initialize
 			(
 				{
-					cajaServer:				'/r.js/caja/2/',
+					server:					'/r.js/caja/2/',
 					resources:				'/r.js/caja/2/',
 					es5Mode :				true,
 					debug:					false,
@@ -247,8 +247,8 @@ public class smCajaWrapper
 			
 			privileges = new smCodePrivileges();
 		}
-		
-		String newUri = smU_UriPolicy.rewriteUri(privileges.getNetworkPrivilege(), m_utilUriData, null);
+
+		String newUri = smU_UriPolicy.rewriteUri(privileges.getNetworkPrivilege(), m_utilUriData, m_apiNamespace, null);
 		
 		return newUri;
 	}

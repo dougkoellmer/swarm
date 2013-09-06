@@ -89,6 +89,7 @@ public class smA_ClientApp extends smA_App implements smI_TimeSource
 		m_viewConfig = viewConfig;
 		m_appContext = new smAppContext();
 		m_viewContext = new smViewContext();
+		m_viewContext.appConfig = m_appConfig;
 		
 		m_viewContext.appContext = m_appContext;
 	}

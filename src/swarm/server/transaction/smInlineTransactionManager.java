@@ -61,7 +61,6 @@ public class smInlineTransactionManager
 	
 	public void beginBatch(Writer out, HttpServletRequest request, HttpServletResponse response) throws IOException
 	{
-		//TODO: Shouldn't be b33hive specific here...need to get application prefix from elsewhere.
 		out.write("var "+m_appId+"_rl = [];");
 		m_context.set(new Context(out, request, response));
 		

@@ -55,7 +55,7 @@ public final class smU_UriPolicy
 		return scheme != null && scheme.equals("data") && isOpaque;
 	}
 	
-	public static String rewriteUri(smE_NetworkPrivilege privilege, smUriData uriData, smBoolean foundB33hivePath_out_nullable)
+	public static String rewriteUri(smE_NetworkPrivilege privilege, smUriData uriData, String apiNamespace, smBoolean foundB33hivePath_out_nullable)
 	{
 		if( foundB33hivePath_out_nullable != null )
 		{
@@ -89,7 +89,7 @@ public final class smU_UriPolicy
 				
 				if( uriData.client )
 				{
-					return smU_Code.transformPathToJavascript(b33hivePath);
+					return smU_Code.transformPathToJavascript(apiNamespace, b33hivePath);
 				}
 				else
 				{

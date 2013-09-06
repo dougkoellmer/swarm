@@ -1,6 +1,7 @@
 package swarm.client.view;
 
 import swarm.client.app.smAppContext;
+import swarm.client.app.smClientAppConfig;
 import swarm.client.input.smClickManager;
 import swarm.client.navigation.smBrowserNavigator;
 import swarm.client.navigation.smMouseNavigator;
@@ -14,6 +15,8 @@ public class smViewContext
 {
 	public smAppContext appContext;
 	public smStateContext stateContext;
+	
+	public smClientAppConfig appConfig;
 	
 	public smSplitPanel splitPanel;
 	public smVisualCellManager cellMngr;

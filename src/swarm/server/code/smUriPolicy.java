@@ -19,6 +19,8 @@ import swarm.shared.code.smUriData;
 import swarm.shared.structs.smCellAddress;
 import swarm.shared.structs.smE_CellAddressParseError;
 import swarm.shared.structs.smE_NetworkPrivilege;
+
+import com.google.api.server.spi.config.ApiNamespace;
 import com.google.caja.lexer.ExternalReference;
 import com.google.caja.plugin.LoaderType;
 import com.google.caja.plugin.UriEffect;
@@ -38,11 +40,13 @@ public class smUriPolicy implements UriPolicy
 	
 	private final smE_NetworkPrivilege m_networkPrivilege;
 	private smBoolean m_foundB33hivePath = new smBoolean();
+	private final String m_apiNamespace;
 	
-	public smUriPolicy(smE_NetworkPrivilege networkPrivilege)
+	public smUriPolicy(smE_NetworkPrivilege networkPrivilege, String apiNamespace)
 	{
 		m_foundB33hivePath.value = false;
 		m_networkPrivilege = networkPrivilege;
+		m_apiNamespace = apiNamespace;
 	}
 	
 	public boolean foundB33hivePath()
@@ -73,7 +77,7 @@ public class smUriPolicy implements UriPolicy
 		//uriData.schemeSpecificPart = u.getUri().getSchemeSpecificPart();
 		
 		smBoolean bool_out = m_foundB33hivePath.value == true ? null : m_foundB33hivePath;
-		String toReturn = smU_UriPolicy.rewriteUri(m_networkPrivilege, uriData, bool_out);
+		String toReturn = smU_UriPolicy.rewriteUri(m_networkPrivilege, uriData, m_apiNamespace, bool_out);
 		
 		return toReturn;
 	}

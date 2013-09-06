@@ -118,7 +118,7 @@ public class smManageAccountPanel extends FlowPanel implements smI_StateEventLis
 					smAccountInfo info = m_viewContext.appContext.accountMngr.getAccountInfo();
 					String username = info.get(smAccountInfo.Type.USERNAME);
 					String welcomeText = "Welcome, " + username + ".";
-					String href = smU_Code.transformPathToJavascript(username);
+					String href = smU_Code.transformPathToJavascript(m_viewContext.appConfig.appId, username);
 					welcomeText += "<br><br><a href=\""+href+"\">Click here</a> to visit your cell.";
 					m_welcomeLabel.getElement().setInnerHTML(welcomeText);
 				}
