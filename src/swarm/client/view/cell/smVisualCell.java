@@ -8,7 +8,7 @@ import swarm.client.entities.smI_BufferCellListener;
 import swarm.client.view.smE_ZIndex;
 import swarm.client.view.smS_UI;
 import swarm.client.view.smU_UI;
-import swarm.client.view.tabs.code.smCellSandbox;
+import swarm.client.view.sandbox.smCellSandbox;
 import swarm.client.view.tabs.code.smI_CodeLoadListener;
 import swarm.client.view.widget.smUIBlocker;
 import swarm.shared.app.smS_App;
@@ -303,36 +303,16 @@ public class smVisualCell extends AbsolutePanel implements smI_BufferCellListene
 	}
 
 	@Override
-	public void setCode(smCode code, String idClass)
+	public void setCode(smCode code, String cellNamespace)
 	{
 		this.setStatusHtml(null, false);
 		
-		if( code.getSafetyLevel() == smE_CodeSafetyLevel.SAFE )
+		if( m_sandbox.isRunning() )
 		{
-			this.insertSafeHtml(code.getRawCode());
+			m_sandbox.stop();
 		}
-		else if( code.getSafetyLevel() == smE_CodeSafetyLevel.REQUIRES_STATIC_SANDBOX )
-		{
-			this.setStatusHtml(null, false);
-			
-			m_sandbox.insertStaticHtml(m_contentPanel.getElement(), code.getRawCode(), idClass);
-		}
-		else if( code.getSafetyLevel() == smE_CodeSafetyLevel.REQUIRES_VIRTUAL_SANDBOX )
-		{
-			//--- DRK > The sandbox, using server-cajoled code, can take a second or two to start up,
-			//---		so loading used to be shown to let the user know that something is going on.
-			//---		Client-side es5mode has been fast enough so far that this text flashes in and out
-			//---		and is more annoying than anything...maybe we'll put it back if code exceeds some
-			//---		character count or something.
-			//this.setStatusText("Initializing...", true);
-			
-			if( m_sandbox.isRunning() )
-			{
-				m_sandbox.stop();
-			}
-			
-			m_sandbox.start(m_contentPanel.getElement(), code.getRawCode(), null, idClass, m_codeLoadListener);
-		}
+		
+		m_sandbox.start(m_contentPanel.getElement(), code, cellNamespace, m_codeLoadListener);
 	}
 	
 	private void insertSafeHtml(String html)

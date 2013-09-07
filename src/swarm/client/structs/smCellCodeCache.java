@@ -107,7 +107,7 @@ public class smCellCodeCache implements smI_LocalCodeRepository
 		
 		if( foundCode )
 		{
-			if( eType == smE_CodeType.SOURCE || code.getSafetyLevel() == smE_CodeSafetyLevel.REQUIRES_VIRTUAL_SANDBOX )
+			if( eType == smE_CodeType.SOURCE || code.getSafetyLevel() == smE_CodeSafetyLevel.VIRTUAL_DYNAMIC_SANDBOX )
 			{
 				outCell.getCodePrivileges().copy(cachedCell.getCodePrivileges());
 			}

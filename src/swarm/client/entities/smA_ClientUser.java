@@ -161,7 +161,7 @@ public class smA_ClientUser extends smA_User implements smI_LocalCodeRepository
 			
 			if( toReturn != null )
 			{
-				if( eType == smE_CodeType.SOURCE || toReturn.getSafetyLevel() == smE_CodeSafetyLevel.REQUIRES_VIRTUAL_SANDBOX )
+				if( eType == smE_CodeType.SOURCE || toReturn.getSafetyLevel() == smE_CodeSafetyLevel.VIRTUAL_DYNAMIC_SANDBOX )
 				{
 					outCell.getCodePrivileges().copy(thisCell.getCodePrivileges());
 				}

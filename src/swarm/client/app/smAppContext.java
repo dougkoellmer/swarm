@@ -16,7 +16,7 @@ import swarm.client.managers.smUserManager;
 import swarm.client.structs.smCellCodeCache;
 import swarm.client.thirdparty.captcha.smRecaptchaWrapper;
 import swarm.client.transaction.smClientTransactionManager;
-import swarm.client.view.tabs.code.smCellSandbox;
+import swarm.client.view.sandbox.smCellSandbox;
 import swarm.client.view.tooltip.smToolTipManager;
 import swarm.shared.app.smSharedAppContext;
 

@@ -51,7 +51,7 @@ public class smCode extends smA_JsonEncodable
 	
 	private void init(smE_CodeType[] standInTypes)
 	{
-		m_safetyLevel = m_safetyLevel == null? smE_CodeSafetyLevel.SAFE : m_safetyLevel;
+		m_safetyLevel = m_safetyLevel == null? smE_CodeSafetyLevel.NO_SANDBOX : m_safetyLevel;
 		
 		if( standInTypes.length == 0 )
 		{

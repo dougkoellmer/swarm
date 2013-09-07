@@ -7,10 +7,11 @@ public enum smE_CodeSafetyLevel implements smI_SerializableEnum
 	//---TODO(DRK):	At some point it will be ok to get rid of some "old names",
 	//				like if we manually update all db entities to latest versions.
 	
-	SAFE,
-	REQUIRES_STATIC_SANDBOX("REQUIRES_SANDBOX"),
-	REQUIRES_VIRTUAL_SANDBOX("REQUIRES_DYNAMIC_SANDBOX"),
-	REQUIRES_FULL_SANDBOX;
+	NO_SANDBOX("SAFE"),
+	VIRTUAL_STATIC_SANDBOX("REQUIRES_STATIC_SANDBOX", "REQUIRES_SANDBOX"),
+	VIRTUAL_DYNAMIC_SANDBOX("REQUIRES_VIRTUAL_SANDBOX", "REQUIRES_DYNAMIC_SANDBOX"),
+	LOCAL_SANDBOX,
+	REMOTE_SANDBOX;
 	
 	private String m_oldNames[];
 	

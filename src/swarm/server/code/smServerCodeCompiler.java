@@ -234,19 +234,19 @@ public class smServerCodeCompiler extends smA_CodeCompiler
 			Node noScriptHtmlDocument = noScriptCompiler.getStaticHtml();
 			String noScriptHtml = noScriptHtmlDocument != null ? Nodes.render(noScriptHtmlDocument) : "";
 			smServerCode splashCode = new smServerCode(noScriptHtml, smE_CodeType.SPLASH);
-			splashCode.setSafetyLevel(smE_CodeSafetyLevel.REQUIRES_STATIC_SANDBOX);
+			splashCode.setSafetyLevel(smE_CodeSafetyLevel.VIRTUAL_STATIC_SANDBOX);
 			
 			smServerCode compiledCode;
 			
 			if( !hasJavaScript)
 			{
 				compiledCode = new smServerCode(staticHtml, smE_CodeType.COMPILED);
-				compiledCode.setSafetyLevel(smE_CodeSafetyLevel.REQUIRES_STATIC_SANDBOX);
+				compiledCode.setSafetyLevel(smE_CodeSafetyLevel.VIRTUAL_STATIC_SANDBOX);
 			}
 			else
 			{				
 				compiledCode = new smServerCode(sourceCode.getRawCode(), smE_CodeType.COMPILED);
-				compiledCode.setSafetyLevel(smE_CodeSafetyLevel.REQUIRES_VIRTUAL_SANDBOX);
+				compiledCode.setSafetyLevel(smE_CodeSafetyLevel.VIRTUAL_DYNAMIC_SANDBOX);
 			}
 			
 			return result.onSuccess(splashCode, compiledCode);
@@ -256,17 +256,17 @@ public class smServerCodeCompiler extends smA_CodeCompiler
 			if( !hasJavaScript)
 			{
 				smServerCode splashCode = new smServerCode(staticHtml, smE_CodeType.SPLASH, smE_CodeType.COMPILED);
-				splashCode.setSafetyLevel(smE_CodeSafetyLevel.REQUIRES_STATIC_SANDBOX);
+				splashCode.setSafetyLevel(smE_CodeSafetyLevel.VIRTUAL_STATIC_SANDBOX);
 				
 				return result.onSuccess(splashCode);
 			}
 			else
 			{
 				smServerCode splashCode = new smServerCode(staticHtml, smE_CodeType.SPLASH);
-				splashCode.setSafetyLevel(smE_CodeSafetyLevel.REQUIRES_STATIC_SANDBOX);
+				splashCode.setSafetyLevel(smE_CodeSafetyLevel.VIRTUAL_STATIC_SANDBOX);
 				
 				smServerCode compiledCode = new smServerCode(sourceCode.getRawCode(), smE_CodeType.COMPILED);
-				compiledCode.setSafetyLevel(smE_CodeSafetyLevel.REQUIRES_VIRTUAL_SANDBOX);
+				compiledCode.setSafetyLevel(smE_CodeSafetyLevel.VIRTUAL_DYNAMIC_SANDBOX);
 				
 				//TODO: May minify compiled code in future, maybe as an optional step.
 				

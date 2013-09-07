@@ -1,4 +1,4 @@
-package swarm.client.view.tabs.code;
+package swarm.client.view.sandbox;
 
 import java.util.logging.Logger;
 

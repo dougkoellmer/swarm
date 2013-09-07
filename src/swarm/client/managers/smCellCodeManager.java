@@ -143,7 +143,7 @@ public class smCellCodeManager implements smI_TransactionResponseHandler
 		m_appContext.txnMngr.makeRequest(smE_RequestPath.syncCode, sourceCode, coord);
 
 		smCode compiledCode = new smCode(sourceCode.getRawCode(), smE_CodeType.COMPILED);
-		compiledCode.setSafetyLevel(smE_CodeSafetyLevel.REQUIRES_VIRTUAL_SANDBOX);
+		compiledCode.setSafetyLevel(smE_CodeSafetyLevel.VIRTUAL_DYNAMIC_SANDBOX);
 		cell.onSyncStart(sourceCode, compiledCode);
 		
 		smUserManager userManager = m_appContext.userMngr;
@@ -160,7 +160,7 @@ public class smCellCodeManager implements smI_TransactionResponseHandler
 		//---		just route things directly back to the cell.
 		//syncOrPreviewCell(cell, sourceCode, false);
 		smCode previewCode = new smCode(sourceCode.getRawCode(), smE_CodeType.COMPILED);
-		previewCode.setSafetyLevel(smE_CodeSafetyLevel.REQUIRES_VIRTUAL_SANDBOX);
+		previewCode.setSafetyLevel(smE_CodeSafetyLevel.VIRTUAL_DYNAMIC_SANDBOX);
 		cell.onPreviewSuccess(previewCode);
 	}
 	
@@ -271,7 +271,7 @@ public class smCellCodeManager implements smI_TransactionResponseHandler
 			final String OPEN_CELL_CODE = "<div style='width:100%; height:100%; background-color:#BBBBBB;'></div>";
 			
 			code = new smCode(OPEN_CELL_CODE, smE_CodeType.values());
-			code.setSafetyLevel(smE_CodeSafetyLevel.SAFE);
+			code.setSafetyLevel(smE_CodeSafetyLevel.NO_SANDBOX);
 			m_utilCell.setCode(eCodeType, code);
 		}
 		

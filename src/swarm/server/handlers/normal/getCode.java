@@ -123,7 +123,7 @@ public class getCode extends smA_DefaultRequestHandler implements smI_DeferredRe
 		//---		Just piggy-backing here cause it will be needed anyway for source.
 		//---		If this turns out to be null, no privileges information is sent down.
 		smCodePrivileges privileges = null;
-		if( responseCode!= null && (responseCode.isStandInFor(smE_CodeType.SOURCE) || responseCode.getSafetyLevel() == smE_CodeSafetyLevel.REQUIRES_VIRTUAL_SANDBOX) )
+		if( responseCode!= null && (responseCode.isStandInFor(smE_CodeType.SOURCE) || responseCode.getSafetyLevel() == smE_CodeSafetyLevel.VIRTUAL_DYNAMIC_SANDBOX) )
 		{
 			if( persistedCell == null )
 			{

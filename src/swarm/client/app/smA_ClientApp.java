@@ -48,7 +48,7 @@ import swarm.client.view.smS_UI;
 import swarm.client.view.smViewConfig;
 import swarm.client.view.smViewContext;
 import swarm.client.view.smViewController;
-import swarm.client.view.tabs.code.smCellSandbox;
+import swarm.client.view.sandbox.smCellSandbox;
 import swarm.client.view.tooltip.smE_ToolTipType;
 import swarm.client.view.tooltip.smToolTipManager;
 import swarm.shared.smE_AppEnvironment;

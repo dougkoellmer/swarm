@@ -75,7 +75,7 @@ public abstract class smA_Cell extends smA_JsonEncodable
 			{
 				this.setCode(type, from.m_code[i]);
 				
-				if( type == smE_CodeType.SOURCE || from.m_code[i].getSafetyLevel() == smE_CodeSafetyLevel.REQUIRES_VIRTUAL_SANDBOX )
+				if( type == smE_CodeType.SOURCE || from.m_code[i].getSafetyLevel() == smE_CodeSafetyLevel.VIRTUAL_DYNAMIC_SANDBOX )
 				{
 					if( from.getCodePrivileges() != null && this.getCodePrivileges() != null )
 					{

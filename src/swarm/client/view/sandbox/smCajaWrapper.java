@@ -1,4 +1,4 @@
-package swarm.client.view.tabs.code;
+package swarm.client.view.sandbox;
 
 import java.util.HashMap;
 
@@ -8,7 +8,8 @@ import swarm.client.entities.smBufferCell;
 import swarm.client.states.camera.StateMachine_Camera;
 import swarm.client.states.camera.State_ViewingCell;
 import swarm.client.view.smViewContext;
-import swarm.client.view.tabs.code.smCellSandbox.I_StartUpCallback;
+import swarm.client.view.sandbox.smCellSandbox.I_StartUpCallback;
+import swarm.client.view.tabs.code.smI_CodeLoadListener;
 import swarm.shared.code.smU_UriPolicy;
 import swarm.shared.code.smUriData;
 import swarm.shared.debugging.smU_Debug;
@@ -17,6 +18,7 @@ import swarm.shared.reflection.smI_Class;
 import swarm.shared.statemachine.smA_Action;
 import swarm.shared.statemachine.smA_State;
 import swarm.shared.structs.smCellAddress;
+import swarm.shared.structs.smCode;
 import swarm.shared.structs.smCodePrivileges;
 import swarm.shared.structs.smE_CellAddressParseError;
 import swarm.shared.structs.smE_NetworkPrivilege;
@@ -44,24 +46,26 @@ public class smCajaWrapper
 	
 	private final smUriData m_utilUriData = new smUriData();
 	
+	private boolean m_isRunning = false;
+	
 	private final smCellApi m_cellApi;
 	
-	smCajaWrapper(smViewContext viewContext, I_StartUpCallback callback, String apiNamespace)
+	smCajaWrapper(smCellApi cellApi, I_StartUpCallback callback, String apiNamespace)
 	{
+		m_cellApi = cellApi;
 		m_apiNamespace = apiNamespace;
-		
 		m_callback = callback;
-
-		m_cellApi = new smCellApi(viewContext);
-		
-		//callback.onStartUpComplete(true); return;
 		
 		initialize_native(this, apiNamespace);
 	}
 	
+	boolean isRunning()
+	{
+		return m_isRunning;
+	}
+	
 	private void createApi(String apiNamespace)
 	{
-		m_cellApi.registerApi(apiNamespace);
 		tameApi(apiNamespace);
 	}
 	
@@ -131,8 +135,8 @@ public class smCajaWrapper
 				(
 					function()
 					{
-						thisArg.@swarm.client.view.tabs.code.smCajaWrapper::createApi(Ljava/lang/String;)(apiNamespace);
-						thisArg.@swarm.client.view.tabs.code.smCajaWrapper::caja_initialize_success()();
+						thisArg.@swarm.client.view.sandbox.smCajaWrapper::createApi(Ljava/lang/String;)(apiNamespace);
+						thisArg.@swarm.client.view.sandbox.smCajaWrapper::caja_initialize_success()();
 					}
 				);
 			}
@@ -152,7 +156,7 @@ public class smCajaWrapper
 				},
 				function() // on failure
 				{
-					thisArg.@swarm.client.view.tabs.code.smCajaWrapper::caja_initialize_failure()();
+					thisArg.@swarm.client.view.sandbox.smCajaWrapper::caja_initialize_failure()();
 				}
 			);
 	}-*/;
@@ -187,27 +191,29 @@ public class smCajaWrapper
 		cajaContainer.allowScrolling(yesOrNo);
 	}
 	
-	public void insertStaticHtml(Element element, String compiledHtml, String cellNamespace)
+	void start_virtualStatic(Element host, String rawCode, String cellNamespace, smI_CodeLoadListener listener)
 	{
-		smStaticCajaContainer cajaContainer = getContainer(element);
+		smStaticCajaContainer cajaContainer = getContainer(host);
 		
 		cellNamespace += smS_Caja.CAJA_NAMESPACE_SUFFIX;
 		
 		cajaContainer.setCellNamespace(cellNamespace);
 		
-		cajaContainer.setInnerHtml(compiledHtml);
+		cajaContainer.setInnerHtml(rawCode);
+		
+		listener.onCodeLoad();
 	}
 	
-	public void start(Element hostElement, String compiledHtml, String compiledJs, String cellNamespace, smI_CodeLoadListener listener)
+	void start_virtualDynamic(Element host, String rawCode, String cellNamespace, smI_CodeLoadListener listener)
 	{
 		if( m_currentHostElement != null )
 		{
 			this.stop();
 		}
 		
-		m_currentHostElement = hostElement;
+		m_currentHostElement = host;
 		
-		smStaticCajaContainer cajaContainer = getContainer(hostElement);
+		smStaticCajaContainer cajaContainer = getContainer(host);
 		
 		if( cajaContainer != null )
 		{
@@ -219,7 +225,9 @@ public class smCajaWrapper
 		//		much just a bandaid workaround...behind the scenes, user code may still try to access non-existent elements.
 		cellNamespace = "d_" + cellNamespace + smS_Caja.CAJA_NAMESPACE_SUFFIX;
 		
-		native_start(this, hostElement, compiledHtml, compiledJs, cellNamespace, listener, m_apiNamespace);
+		start_virtualDynamic_native(this, host, rawCode, cellNamespace, listener, m_apiNamespace);
+		
+		m_isRunning = true;
 	}
 	
 	private String rewriteUri(String fullUri, String scheme, String authority, String attribute, String path)
@@ -253,7 +261,7 @@ public class smCajaWrapper
 		return newUri;
 	}
 	
-	private native void native_start(smCajaWrapper thisArg, Element element, String compiledHtml, String compiledJs, String cellNamespace, smI_CodeLoadListener listener, String apiNamespace)
+	private native void start_virtualDynamic_native(smCajaWrapper thisArg, Element element, String rawCode, String cellNamespace, smI_CodeLoadListener listener, String apiNamespace)
 	/*-{
 			function uriPolicyHelper(uri)
 			{
@@ -263,7 +271,7 @@ public class smCajaWrapper
 				var scheme = uri.scheme_;
 				var fullUri = uri.toString();
 				
-				var rewrittenUri = thisArg.@swarm.client.view.tabs.code.smCajaWrapper::rewriteUri(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)(fullUri, scheme, authority, attribute, path);
+				var rewrittenUri = thisArg.@swarm.client.view.sandbox.smCajaWrapper::rewriteUri(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)(fullUri, scheme, authority, attribute, path);
 				
 				return rewrittenUri;
 			}
@@ -320,7 +328,7 @@ public class smCajaWrapper
 				
 				function(frame)
 				{
-					thisArg.@swarm.client.view.tabs.code.smCajaWrapper::onFrameLoad(Lcom/google/gwt/core/client/JavaScriptObject;)(frame);
+					thisArg.@swarm.client.view.sandbox.smCajaWrapper::onFrameLoad(Lcom/google/gwt/core/client/JavaScriptObject;)(frame);
 
 	   				frame.code('', 'text/html', compiledHtml)
 	   					 .api(makeApi())
@@ -337,7 +345,7 @@ public class smCajaWrapper
 			);
 	}-*/;
 	
-	public void stop()
+	void stop()
 	{
 		if( m_currentHostElement != null )
 		{
@@ -350,5 +358,7 @@ public class smCajaWrapper
 			
 			m_currentHostElement = null;
 		}
+		
+		m_isRunning = false;
 	}
 }
