@@ -221,7 +221,7 @@ public class smServerCodeCompiler extends smA_CodeCompiler
 		}
 		
 		String staticHtml = staticHtmlDocument != null ? Nodes.render(staticHtmlDocument) : "";
-		
+		s
 		if( hasNoscriptContent )
 		{
 			preProcessor.injectNoscriptTag();
@@ -244,7 +244,8 @@ public class smServerCodeCompiler extends smA_CodeCompiler
 				compiledCode.setSafetyLevel(smE_CodeSafetyLevel.VIRTUAL_STATIC_SANDBOX);
 			}
 			else
-			{				
+			{
+				//TODO: Splash element is included here and filtered out client-side...no need to include it.
 				compiledCode = new smServerCode(sourceCode.getRawCode(), smE_CodeType.COMPILED);
 				compiledCode.setSafetyLevel(smE_CodeSafetyLevel.VIRTUAL_DYNAMIC_SANDBOX);
 			}

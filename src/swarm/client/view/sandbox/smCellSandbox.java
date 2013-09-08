@@ -3,6 +3,7 @@ package swarm.client.view.sandbox;
 import swarm.client.view.smViewContext;
 import swarm.client.view.tabs.code.smI_CodeLoadListener;
 import swarm.shared.debugging.smU_Debug;
+import swarm.shared.entities.smE_CodeSafetyLevel;
 import swarm.shared.structs.smCode;
 
 import com.google.gwt.user.client.Element;
@@ -42,11 +43,20 @@ public class smCellSandbox
 			return;
 		}
 		
-		switch(code.getSafetyLevel())
+		m_iframeSandbox.stop();
+		m_cajaWrapper.stop(host);
+		
+		smE_CodeSafetyLevel codeLevel = code.getSafetyLevel();
+		codeLevel = codeLevel == smE_CodeSafetyLevel.VIRTUAL_DYNAMIC_SANDBOX ? smE_CodeSafetyLevel.LOCAL_SANDBOX : codeLevel;
+		
+		switch(codeLevel)
 		{
 			case NO_SANDBOX:
 			{
-				host.setInnerHTML(code.getRawCode());  break;
+				host.setInnerHTML(code.getRawCode());
+				listener.onCodeLoad();
+				
+				break;
 			}
 			case LOCAL_SANDBOX:
 			{
@@ -72,7 +82,7 @@ public class smCellSandbox
 		return m_cajaWrapper.isRunning() || m_iframeSandbox.isRunning();
 	}
 	
-	public void stop()
+	public void stop(Element host)
 	{
 		if( !isRunning() )
 		{
@@ -82,7 +92,7 @@ public class smCellSandbox
 		
 		if( m_cajaWrapper.isRunning() )
 		{
-			m_cajaWrapper.stop();
+			m_cajaWrapper.stop(host);
 		}
 		else if( m_iframeSandbox.isRunning() )
 		{

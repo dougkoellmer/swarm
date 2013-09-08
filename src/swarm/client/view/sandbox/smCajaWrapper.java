@@ -208,7 +208,7 @@ public class smCajaWrapper
 	{
 		if( m_currentHostElement != null )
 		{
-			this.stop();
+			this.stop(host);
 		}
 		
 		m_currentHostElement = host;
@@ -345,8 +345,15 @@ public class smCajaWrapper
 			);
 	}-*/;
 	
-	void stop()
+	void stop(Element host)
 	{
+		smStaticCajaContainer cajaContainer = getContainer(host);
+		
+		if( cajaContainer != null )
+		{
+			cajaContainer.detachIfNecessary();
+		}
+		
 		if( m_currentHostElement != null )
 		{
 			Node child = m_currentHostElement.getChild(0);

@@ -17,6 +17,8 @@ import swarm.shared.debugging.smU_Debug;
 import swarm.shared.entities.smE_CodeSafetyLevel;
 import swarm.shared.entities.smE_CodeType;
 import swarm.shared.structs.smCode;
+import swarm.shared.structs.smMutableCode;
+
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.dom.client.Style.Position;
@@ -55,6 +57,7 @@ public class smVisualCell extends AbsolutePanel implements smI_BufferCellListene
 	private final smUIBlocker	m_statusPanel = new smUIBlocker();
 	private final AbsolutePanel m_glassPanel = new AbsolutePanel();
 	private final smCellSpinner m_spinner	= new smCellSpinner(smS_UI.SPINNER_ROTATION_RATE);
+	private final smMutableCode m_utilCode = new smMutableCode(smE_CodeType.values());
 	
 	//private final ArrayList<Image> //m_backgroundImages = new ArrayList<Image>();
 	private int m_currentImageIndex = -1;
@@ -247,7 +250,7 @@ public class smVisualCell extends AbsolutePanel implements smI_BufferCellListene
 		
 		if( m_sandbox.isRunning() )
 		{
-			m_sandbox.stop();
+			m_sandbox.stop(m_contentPanel.getElement());
 		}
 		
 		m_sandbox.allowScrolling(m_contentPanel.getElement(), false);
@@ -309,7 +312,7 @@ public class smVisualCell extends AbsolutePanel implements smI_BufferCellListene
 		
 		if( m_sandbox.isRunning() )
 		{
-			m_sandbox.stop();
+			m_sandbox.stop(m_contentPanel.getElement());
 		}
 		
 		m_sandbox.start(m_contentPanel.getElement(), code, cellNamespace, m_codeLoadListener);
@@ -317,7 +320,10 @@ public class smVisualCell extends AbsolutePanel implements smI_BufferCellListene
 	
 	private void insertSafeHtml(String html)
 	{
-		m_contentPanel.getElement().setInnerHTML(html);
+		m_utilCode.setRawCode(html);
+		m_utilCode.setSafetyLevel(smE_CodeSafetyLevel.NO_SANDBOX);
+
+		m_sandbox.start(m_contentPanel.getElement(), m_utilCode, null, m_codeLoadListener);
 	}
 	
 	smUIBlocker getBlocker()

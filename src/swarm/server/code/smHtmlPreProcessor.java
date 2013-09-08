@@ -30,6 +30,11 @@ public class smHtmlPreProcessor
 
 		m_schema = schema;
 		this.visit(htmlDom.getValue());
+		
+		if( m_noscriptNode != null )
+		{
+			m_noscriptNode.getParentNode().removeChild(m_noscriptNode);
+		}
 	}
 	
 	public boolean hasNoscriptContent()
