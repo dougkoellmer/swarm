@@ -48,7 +48,7 @@ import swarm.client.view.smS_UI;
 import swarm.client.view.smViewConfig;
 import swarm.client.view.smViewContext;
 import swarm.client.view.smViewController;
-import swarm.client.view.sandbox.smCellSandbox;
+import swarm.client.view.sandbox.smSandboxManager;
 import swarm.client.view.tooltip.smE_ToolTipType;
 import swarm.client.view.tooltip.smToolTipManager;
 import swarm.shared.smE_AppEnvironment;
@@ -185,7 +185,7 @@ public class smA_ClientApp extends smA_App implements smI_TimeSource
 	
 	protected void stage_browserSupportCheck()
 	{
-		m_appContext.cellSandbox = new smCellSandbox(m_viewContext, new smCellSandbox.I_StartUpCallback()
+		m_appContext.cellSandbox = new smSandboxManager(m_viewContext, new smSandboxManager.I_StartUpCallback()
 		{
 			public void onStartUpComplete(boolean success)
 			{

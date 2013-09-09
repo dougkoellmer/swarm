@@ -16,7 +16,7 @@ import swarm.client.managers.smUserManager;
 import swarm.client.structs.smCellCodeCache;
 import swarm.client.thirdparty.captcha.smRecaptchaWrapper;
 import swarm.client.transaction.smClientTransactionManager;
-import swarm.client.view.sandbox.smCellSandbox;
+import swarm.client.view.sandbox.smSandboxManager;
 import swarm.client.view.tooltip.smToolTipManager;
 import swarm.shared.app.smSharedAppContext;
 
@@ -29,7 +29,7 @@ public class smAppContext extends smSharedAppContext
 	public smClientTransactionManager txnMngr;
 	public smCellCodeManager codeMngr;
 	public smGridManager gridMngr;
-	public smCellSandbox cellSandbox;
+	public smSandboxManager cellSandbox;
 	public smCameraManager cameraMngr;
 	public smCellCodeCache codeCache;
 	public smCellBufferManager cellBufferMngr;

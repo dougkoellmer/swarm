@@ -23,9 +23,12 @@ public class smHtmlPreProcessor
 	private Node m_bodyNode = null;
 	private Node m_noscriptNode = null;
 	private int m_noScriptDepth = 0;
+	private final Dom m_dom;
 	
 	public smHtmlPreProcessor(Dom htmlDom, smHtmlSchema schema)
 	{
+		m_dom = htmlDom;
+		
 		ElementNSImpl node;
 
 		m_schema = schema;
@@ -35,6 +38,11 @@ public class smHtmlPreProcessor
 		{
 			m_noscriptNode.getParentNode().removeChild(m_noscriptNode);
 		}
+	}
+	
+	public String renderHtml()
+	{
+		return m_dom.toString();
 	}
 	
 	public boolean hasNoscriptContent()

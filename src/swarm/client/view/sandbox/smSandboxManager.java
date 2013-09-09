@@ -8,30 +8,30 @@ import swarm.shared.structs.smCode;
 
 import com.google.gwt.user.client.Element;
 
-public class smCellSandbox
+public class smSandboxManager
 {
 	public interface I_StartUpCallback
 	{
 		void onStartUpComplete(boolean success);
 	}
 	
-	private final smCajaWrapper m_cajaWrapper;
-	private final smInlineFrameSandbox m_iframeSandbox;
+	private final smCajaSandboxManager m_cajaSandboxMngr;
+	private final smInlineFrameSandboxManager m_iframeSandboxMngr;
 	
 	private final smCellApi m_cellApi;
 	
-	public smCellSandbox(smViewContext viewContext, I_StartUpCallback callback, String apiNamespace)
+	public smSandboxManager(smViewContext viewContext, I_StartUpCallback callback, String apiNamespace)
 	{
 		m_cellApi = new smCellApi(viewContext);
 		m_cellApi.registerApi(apiNamespace);
 		
-		m_cajaWrapper = new smCajaWrapper(m_cellApi, callback, apiNamespace);
-		m_iframeSandbox = new smInlineFrameSandbox();
+		m_cajaSandboxMngr = new smCajaSandboxManager(m_cellApi, callback, apiNamespace);
+		m_iframeSandboxMngr = new smInlineFrameSandboxManager();
 	}
 	
 	public void allowScrolling(Element element, boolean yesOrNo)
 	{
-		m_cajaWrapper.allowScrolling(element, yesOrNo);
+		m_cajaSandboxMngr.allowScrolling(element, yesOrNo);
 	}
 	
 	public void start(Element host, smCode code, String cellNamespace, smI_CodeLoadListener listener)
@@ -43,8 +43,8 @@ public class smCellSandbox
 			return;
 		}
 		
-		m_iframeSandbox.stop();
-		m_cajaWrapper.stop(host);
+		m_iframeSandboxMngr.stop();
+		m_cajaSandboxMngr.stop(host);
 		
 		smE_CodeSafetyLevel codeLevel = code.getSafetyLevel();
 		codeLevel = codeLevel == smE_CodeSafetyLevel.VIRTUAL_DYNAMIC_SANDBOX ? smE_CodeSafetyLevel.LOCAL_SANDBOX : codeLevel;
@@ -60,26 +60,26 @@ public class smCellSandbox
 			}
 			case LOCAL_SANDBOX:
 			{
-				m_iframeSandbox.start_local(host, code.getRawCode(), listener);  break;
+				m_iframeSandboxMngr.start_local(host, code.getRawCode(), listener);  break;
 			}
 			case REMOTE_SANDBOX:
 			{
-				m_iframeSandbox.start_remote(host, code.getRawCode(), listener);  break;
+				m_iframeSandboxMngr.start_remote(host, code.getRawCode(), listener);  break;
 			}
 			case VIRTUAL_DYNAMIC_SANDBOX:
 			{
-				m_cajaWrapper.start_virtualDynamic(host, code.getRawCode(), cellNamespace, listener);  break;
+				m_cajaSandboxMngr.start_dynamic(host, code.getRawCode(), cellNamespace, listener);  break;
 			}
 			case VIRTUAL_STATIC_SANDBOX:
 			{
-				m_cajaWrapper.start_virtualStatic(host, code.getRawCode(), cellNamespace, listener);  break;
+				m_cajaSandboxMngr.start_static(host, code.getRawCode(), cellNamespace, listener);  break;
 			}
 		}
 	}
 	
 	public boolean isRunning()
 	{
-		return m_cajaWrapper.isRunning() || m_iframeSandbox.isRunning();
+		return m_cajaSandboxMngr.isRunning() || m_iframeSandboxMngr.isRunning();
 	}
 	
 	public void stop(Element host)
@@ -90,13 +90,13 @@ public class smCellSandbox
 			return;
 		}
 		
-		if( m_cajaWrapper.isRunning() )
+		if( m_cajaSandboxMngr.isRunning() )
 		{
-			m_cajaWrapper.stop(host);
+			m_cajaSandboxMngr.stop(host);
 		}
-		else if( m_iframeSandbox.isRunning() )
+		else if( m_iframeSandboxMngr.isRunning() )
 		{
-			m_iframeSandbox.stop();
+			m_iframeSandboxMngr.stop();
 		}
 	}
 }

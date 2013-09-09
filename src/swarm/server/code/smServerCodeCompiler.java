@@ -200,9 +200,9 @@ public class smServerCodeCompiler extends smA_CodeCompiler
 		smHtmlSchema schema = new smHtmlSchema(this.getHtmlSchema());
 		smHtmlPreProcessor preProcessor = new smHtmlPreProcessor(htmlDom, schema);
 		
-		boolean hasNoscriptContent = preProcessor.hasNoscriptContent();
+		boolean hasSplashOnlyContent = preProcessor.hasNoscriptContent();
 		Dom noScriptHtmlDom = htmlDom;
-		if( hasNoscriptContent )
+		if( hasSplashOnlyContent )
 		{
 			htmlDom = htmlDom.clone();
 		}
@@ -221,19 +221,21 @@ public class smServerCodeCompiler extends smA_CodeCompiler
 		}
 		
 		String staticHtml = staticHtmlDocument != null ? Nodes.render(staticHtmlDocument) : "";
-		s
-		if( hasNoscriptContent )
+		
+		if( hasSplashOnlyContent )
 		{
+			String virtualDynamicCode = !hasJavaScript ? null : preProcessor.renderHtml();
+			
 			preProcessor.injectNoscriptTag();
 			schema.setToNoScriptMode();
-			PluginCompiler noScriptCompiler = compile(noScriptHtmlDom, result, meta, schema, messageQueue);
+			PluginCompiler splashCompiler = compile(noScriptHtmlDom, result, meta, schema, messageQueue);
 			
-			if( noScriptCompiler == null )  return result;
+			if( splashCompiler == null )  return result;
 			
 			//--- DRK > Create splash code.
-			Node noScriptHtmlDocument = noScriptCompiler.getStaticHtml();
-			String noScriptHtml = noScriptHtmlDocument != null ? Nodes.render(noScriptHtmlDocument) : "";
-			smServerCode splashCode = new smServerCode(noScriptHtml, smE_CodeType.SPLASH);
+			Node splashHtmlDocument = splashCompiler.getStaticHtml();
+			String splashHtml = splashHtmlDocument != null ? Nodes.render(splashHtmlDocument) : "";
+			smServerCode splashCode = new smServerCode(splashHtml, smE_CodeType.SPLASH);
 			splashCode.setSafetyLevel(smE_CodeSafetyLevel.VIRTUAL_STATIC_SANDBOX);
 			
 			smServerCode compiledCode;
@@ -245,8 +247,7 @@ public class smServerCodeCompiler extends smA_CodeCompiler
 			}
 			else
 			{
-				//TODO: Splash element is included here and filtered out client-side...no need to include it.
-				compiledCode = new smServerCode(sourceCode.getRawCode(), smE_CodeType.COMPILED);
+				compiledCode = new smServerCode(virtualDynamicCode, smE_CodeType.COMPILED);
 				compiledCode.setSafetyLevel(smE_CodeSafetyLevel.VIRTUAL_DYNAMIC_SANDBOX);
 			}
 			

@@ -2,26 +2,26 @@ package swarm.client.view.sandbox;
 
 import java.util.logging.Logger;
 
+import swarm.client.view.tabs.code.smI_CodeLoadListener;
+
 import com.google.gwt.dom.client.Style.Overflow;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 
-public class smStaticCajaContainer
+public class smStaticCajaSandbox implements smI_CellSandbox
 {
-	private static final Logger s_logger = Logger.getLogger(smStaticCajaContainer.class.getName());
+	private static final Logger s_logger = Logger.getLogger(smStaticCajaSandbox.class.getName());
 	
 	private static final String OUTER_CONTAINER_STYLE = "position: relative; overflow: hidden; display: block; margin: 0px; padding: 0px;";
 	private static final String OUTER_CONTAINER_CLASS = "caja-vdoc-outer caja-vdoc-wrapper";
 	private static final String INNER_CONTAINER_STYLE = "display: block; position: relative;";
 	private static final String INNER_CONTAINER_CLASS = "static-caja-vdoc caja-vdoc-inner caja-vdoc-wrapper vdoc-container___";
 
-
-	private final Element m_host;
 	private final Element m_outerCaja;
 	private final Element m_innerCaja;
-	private String m_idClass = null;
+	private String m_lastCellNamespace = null;
 	
-	smStaticCajaContainer(Element host)
+	smStaticCajaSandbox()
 	{
 		m_outerCaja = DOM.createElement("div");
 		m_outerCaja.setAttribute("style", OUTER_CONTAINER_STYLE);
@@ -32,16 +32,14 @@ public class smStaticCajaContainer
 
 		m_outerCaja.appendChild(m_innerCaja);
 		
-		m_host = host;
-		
 		allowScrolling(false);
 	}
 	
-	void detachIfNecessary()
+	private void detachIfNecessary(Element host)
 	{
-		if( m_outerCaja.getParentElement() == m_host )
+		if( m_outerCaja.getParentElement() == host )
 		{
-			m_host.removeChild(m_outerCaja);
+			host.removeChild(m_outerCaja);
 		}
 	}
 	
@@ -59,11 +57,11 @@ public class smStaticCajaContainer
 		}
 	}
 	
-	private void ensureHostAttachment()
+	private void ensureHostAttachment(Element host)
 	{
-		if( m_outerCaja.getParentElement() != m_host )
+		if( m_outerCaja.getParentElement() != host )
 		{
-			com.google.gwt.dom.client.Element child = m_host.getFirstChildElement();
+			com.google.gwt.dom.client.Element child = host.getFirstChildElement();
 			while( child != null )
 			{
 				com.google.gwt.dom.client.Element nextChild = child.getNextSiblingElement();
@@ -71,7 +69,7 @@ public class smStaticCajaContainer
 				child = nextChild;
 			}
 			
-			m_host.appendChild(m_outerCaja);
+			host.appendChild(m_outerCaja);
 		}
 		
 		//--- DRK > Somehow, in IE-only, the inner container gets implicitly detached somewhere,
@@ -82,23 +80,33 @@ public class smStaticCajaContainer
 		}
 	}
 	
-	void setInnerHtml(String html)
+	private void setCellNamespace(String cellNamespace)
 	{
-		ensureHostAttachment();
-		
-		m_innerCaja.setInnerHTML(html);
-	}
-	
-	void setCellNamespace(String idClass)
-	{
-		if( m_idClass != null )
+		if( m_lastCellNamespace != null )
 		{
-			if( idClass.equals(m_idClass) )  return;
+			if( cellNamespace.equals(m_lastCellNamespace) )  return;
 			
-			m_innerCaja.removeClassName(m_idClass);
+			m_innerCaja.removeClassName(m_lastCellNamespace);
 		}
 		
-		m_idClass = idClass;
-		m_innerCaja.addClassName(idClass);
+		m_innerCaja.addClassName(cellNamespace);
+		
+		m_lastCellNamespace = cellNamespace;
+	}
+
+	@Override
+	public void start(Element host, String rawCode, String cellNamespace, smI_CodeLoadListener listener)
+	{
+		ensureHostAttachment(host);
+		setCellNamespace(cellNamespace);
+		m_innerCaja.setInnerHTML(rawCode);
+		
+		listener.onCodeLoad();
+	}
+
+	@Override
+	public void stop(Element host) 
+	{
+		detachIfNecessary(host);
 	}
 }
