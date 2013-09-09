@@ -26,7 +26,7 @@ public class smSandboxManager
 		m_cellApi.registerApi(apiNamespace);
 		
 		m_cajaSandboxMngr = new smCajaSandboxManager(m_cellApi, callback, apiNamespace);
-		m_iframeSandboxMngr = new smInlineFrameSandboxManager();
+		m_iframeSandboxMngr = new smInlineFrameSandboxManager(apiNamespace);
 	}
 	
 	public void allowScrolling(Element element, boolean yesOrNo)
@@ -35,24 +35,17 @@ public class smSandboxManager
 	}
 	
 	public void start(Element host, smCode code, String cellNamespace, smI_CodeLoadListener listener)
-	{
-		if( isRunning() )
-		{
-			smU_Debug.ASSERT(false, "smHtmlSandbox::start1");
-			
-			return;
-		}
-		
-		m_iframeSandboxMngr.stop();
-		m_cajaSandboxMngr.stop(host);
-		
+	{		
 		smE_CodeSafetyLevel codeLevel = code.getSafetyLevel();
-		codeLevel = codeLevel == smE_CodeSafetyLevel.VIRTUAL_DYNAMIC_SANDBOX ? smE_CodeSafetyLevel.LOCAL_SANDBOX : codeLevel;
+		//codeLevel = codeLevel == smE_CodeSafetyLevel.VIRTUAL_DYNAMIC_SANDBOX ? smE_CodeSafetyLevel.LOCAL_SANDBOX : codeLevel;
 		
 		switch(codeLevel)
 		{
 			case NO_SANDBOX:
 			{
+				m_cajaSandboxMngr.stop(host);
+				m_iframeSandboxMngr.stop(host);
+				
 				host.setInnerHTML(code.getRawCode());
 				listener.onCodeLoad();
 				
@@ -60,43 +53,35 @@ public class smSandboxManager
 			}
 			case LOCAL_SANDBOX:
 			{
+				m_cajaSandboxMngr.stop(host);
 				m_iframeSandboxMngr.start_local(host, code.getRawCode(), listener);  break;
 			}
 			case REMOTE_SANDBOX:
 			{
+				m_cajaSandboxMngr.stop(host);
 				m_iframeSandboxMngr.start_remote(host, code.getRawCode(), listener);  break;
 			}
 			case VIRTUAL_DYNAMIC_SANDBOX:
 			{
+				m_iframeSandboxMngr.stop(host);
 				m_cajaSandboxMngr.start_dynamic(host, code.getRawCode(), cellNamespace, listener);  break;
 			}
 			case VIRTUAL_STATIC_SANDBOX:
 			{
+				m_iframeSandboxMngr.stop(host);
 				m_cajaSandboxMngr.start_static(host, code.getRawCode(), cellNamespace, listener);  break;
 			}
 		}
 	}
 	
-	public boolean isRunning()
+	/*public boolean isRunning()
 	{
 		return m_cajaSandboxMngr.isRunning() || m_iframeSandboxMngr.isRunning();
-	}
+	}*/
 	
 	public void stop(Element host)
 	{
-		if( !isRunning() )
-		{
-			smU_Debug.ASSERT(false, "smHtmlSandbox::stop1");
-			return;
-		}
-		
-		if( m_cajaSandboxMngr.isRunning() )
-		{
-			m_cajaSandboxMngr.stop(host);
-		}
-		else if( m_iframeSandboxMngr.isRunning() )
-		{
-			m_iframeSandboxMngr.stop();
-		}
+		m_cajaSandboxMngr.stop(host);
+		m_iframeSandboxMngr.stop(host);
 	}
 }

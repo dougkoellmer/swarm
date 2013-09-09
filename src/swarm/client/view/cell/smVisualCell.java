@@ -74,11 +74,11 @@ public class smVisualCell extends AbsolutePanel implements smI_BufferCellListene
 	
 	private final CodeLoadListener m_codeLoadListener = new CodeLoadListener(this);
 	
-	private final smSandboxManager m_sandbox;
+	private final smSandboxManager m_sandboxMngr;
 	
-	public smVisualCell(smSandboxManager sandbox)
+	public smVisualCell(smSandboxManager sandboxMngr)
 	{
-		m_sandbox = sandbox;
+		m_sandboxMngr = sandboxMngr;
 		m_id = s_currentId; s_currentId++;
 		
 		this.addStyleName("visual_cell");
@@ -236,7 +236,7 @@ public class smVisualCell extends AbsolutePanel implements smI_BufferCellListene
 
 		this.allowUserSelect(true);
 		
-		m_sandbox.allowScrolling(m_contentPanel.getElement(), true);
+		m_sandboxMngr.allowScrolling(m_contentPanel.getElement(), true);
 	}
 	
 	@Override
@@ -248,12 +248,12 @@ public class smVisualCell extends AbsolutePanel implements smI_BufferCellListene
 		
 		this.allowUserSelect(false);
 		
-		if( m_sandbox.isRunning() )
+		/*if( m_sandboxMngr.isRunning() )
 		{
-			m_sandbox.stop(m_contentPanel.getElement());
-		}
+			m_sandboxMngr.stop(m_contentPanel.getElement());
+		}*/
 		
-		m_sandbox.allowScrolling(m_contentPanel.getElement(), false);
+		m_sandboxMngr.allowScrolling(m_contentPanel.getElement(), false);
 	}
 	
 	public void popUp()
@@ -310,12 +310,12 @@ public class smVisualCell extends AbsolutePanel implements smI_BufferCellListene
 	{
 		this.setStatusHtml(null, false);
 		
-		if( m_sandbox.isRunning() )
+		/*if( m_sandboxMngr.isRunning() )
 		{
-			m_sandbox.stop(m_contentPanel.getElement());
-		}
+			m_sandboxMngr.stop(m_contentPanel.getElement());
+		}*/
 		
-		m_sandbox.start(m_contentPanel.getElement(), code, cellNamespace, m_codeLoadListener);
+		m_sandboxMngr.start(m_contentPanel.getElement(), code, cellNamespace, m_codeLoadListener);
 	}
 	
 	private void insertSafeHtml(String html)
@@ -323,7 +323,7 @@ public class smVisualCell extends AbsolutePanel implements smI_BufferCellListene
 		m_utilCode.setRawCode(html);
 		m_utilCode.setSafetyLevel(smE_CodeSafetyLevel.NO_SANDBOX);
 
-		m_sandbox.start(m_contentPanel.getElement(), m_utilCode, null, m_codeLoadListener);
+		m_sandboxMngr.start(m_contentPanel.getElement(), m_utilCode, null, m_codeLoadListener);
 	}
 	
 	smUIBlocker getBlocker()

@@ -202,9 +202,12 @@ public class smCajaSandboxManager
 		}
 		else
 		{
-			m_dynamicSandboxPool.deallocate((smDynamicCajaSandbox) currentSandbox);
+			if( currentSandbox != null )
+			{
+				this.deallocate(host, currentSandbox);
+			}
 			
-			currentSandbox = m_staticSandboxPool.allocate();
+			currentSandbox = this.allocate(host, smStaticCajaSandbox.class);
 			currentSandbox.start(host, rawCode, cellNamespace, listener);
 		}
 	}
@@ -261,7 +264,10 @@ public class smCajaSandboxManager
 		}
 		else
 		{
-			this.deallocate(host, currentSandbox);
+			if( currentSandbox != null )
+			{
+				this.deallocate(host, currentSandbox);
+			}
 			
 			currentSandbox = this.allocate(host, smDynamicCajaSandbox.class);
 			currentSandbox.start(host, rawCode, cellNamespace, listener);

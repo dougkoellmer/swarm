@@ -68,7 +68,7 @@ public class smDynamicCajaSandbox implements smI_CellSandbox
 		//m_cajaFrameObjects.push(cajaFrameObject);
 	}
 	
-	private native void start_native(Element host, String rawCode, String cellNamespace, smI_CodeLoadListener listener)
+	private native void start_native(Element host, String rawCode, String cellNamespace, String apiNamespace, smI_CodeLoadListener listener)
 	/*-{
 			var thisArg = this;
 			
@@ -139,7 +139,7 @@ public class smDynamicCajaSandbox implements smI_CellSandbox
 				{
 					thisArg.@swarm.client.view.sandbox.smDynamicCajaSandbox::onFrameLoad(Lcom/google/gwt/core/client/JavaScriptObject;)(frame);
 
-	   				frame.code('', 'text/html', compiledHtml)
+	   				frame.code('', 'text/html', rawCode)
 	   					 .api(makeApi())
 	   					 .run();
 	   				
@@ -157,12 +157,18 @@ public class smDynamicCajaSandbox implements smI_CellSandbox
 	@Override
 	public void start(Element host, String rawCode, String cellNamespace, smI_CodeLoadListener listener)
 	{
-		start_native(host, rawCode, cellNamespace, listener);
+		start_native(host, rawCode, cellNamespace, m_apiNamespace, listener);
 	}
 
 	@Override
 	public void stop(Element host)
 	{
-		
+		com.google.gwt.dom.client.Element child = host.getFirstChildElement();
+		while( child != null )
+		{
+			com.google.gwt.dom.client.Element nextChild = child.getNextSiblingElement();
+			child.removeFromParent();
+			child = nextChild;
+		}
 	}
 }

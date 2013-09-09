@@ -13,6 +13,7 @@ import swarm.shared.structs.smE_CellAddressParseError;
 import com.google.caja.parser.html.AttribKey;
 import com.google.caja.parser.html.Dom;
 import com.google.caja.parser.html.ElKey;
+import com.google.caja.parser.html.Nodes;
 
 public class smHtmlPreProcessor
 {
@@ -22,27 +23,21 @@ public class smHtmlPreProcessor
 	private final smHtmlSchema m_schema;
 	private Node m_bodyNode = null;
 	private Node m_noscriptNode = null;
+	
 	private int m_noScriptDepth = 0;
 	private final Dom m_dom;
 	
 	public smHtmlPreProcessor(Dom htmlDom, smHtmlSchema schema)
 	{
 		m_dom = htmlDom;
-		
-		ElementNSImpl node;
 
 		m_schema = schema;
-		this.visit(htmlDom.getValue());
-		
-		if( m_noscriptNode != null )
-		{
-			m_noscriptNode.getParentNode().removeChild(m_noscriptNode);
-		}
+		this.visit(m_dom.getValue(), null);
 	}
 	
 	public String renderHtml()
 	{
-		return m_dom.toString();
+		return Nodes.render(m_dom.getValue());
 	}
 	
 	public boolean hasNoscriptContent()
@@ -58,7 +53,8 @@ public class smHtmlPreProcessor
 			{
 				while(m_bodyNode.getFirstChild() != null )
 				{
-					m_bodyNode.removeChild(m_bodyNode.getFirstChild());
+					Node firstChild = m_bodyNode.getFirstChild();
+					m_bodyNode.removeChild(firstChild);
 				}
 				m_bodyNode.appendChild(m_noscriptNode);
 				
@@ -86,8 +82,8 @@ public class smHtmlPreProcessor
 		return m_foundJs;
 	}
 	
-	private boolean visit(Node node)
-	{
+	private boolean visit(Node node, Node parentNode)
+	{		
 		ElKey elKey = null;
 		boolean isNoScriptNode = false;
 		
@@ -111,7 +107,6 @@ public class smHtmlPreProcessor
 		{
 			if( m_noscriptNode == null )
 			{
-				//--- DRK > Can't change node name, so wrap it and override instead.
 				m_noscriptNode = node;
 			}
 
@@ -151,10 +146,11 @@ public class smHtmlPreProcessor
 		}
 		
 		Node child = node.getFirstChild();
+	
 		while( child != null )
 		{
 			Node next = child.getNextSibling();
-			if( !visit(child) )
+			if( !visit(child, node) )
 			{
 				node.removeChild(child);
 			}
