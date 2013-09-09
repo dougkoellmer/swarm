@@ -200,7 +200,7 @@ public class smServerCodeCompiler extends smA_CodeCompiler
 		smHtmlSchema schema = new smHtmlSchema(this.getHtmlSchema());
 		smHtmlPreProcessor preProcessor = new smHtmlPreProcessor(htmlDom, schema);
 		
-		boolean hasSplashOnlyContent = preProcessor.hasNoscriptContent();
+		boolean hasSplashOnlyContent = preProcessor.hasSplashTag();
 		Dom noScriptHtmlDom = htmlDom;
 		if( hasSplashOnlyContent )
 		{
@@ -226,7 +226,7 @@ public class smServerCodeCompiler extends smA_CodeCompiler
 		{
 			String virtualDynamicCode = !hasJavaScript ? null : preProcessor.renderHtml();
 			
-			preProcessor.injectNoscriptTag();
+			preProcessor.injectSplashTag();
 			schema.setToNoScriptMode();
 			PluginCompiler splashCompiler = compile(noScriptHtmlDom, result, meta, schema, messageQueue);
 			

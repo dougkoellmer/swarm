@@ -1,6 +1,7 @@
 package swarm.shared.transaction;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.logging.Logger;
 
 import swarm.shared.app.smSharedAppContext;
@@ -23,6 +24,21 @@ public class smRequestPathManager
 	{
 		m_jsonFactory = jsonFactory;
 		m_verboseRequestPaths = verboseRequestPaths;
+	}
+	
+	public Iterator<String> getPaths()
+	{
+		return m_nameToPath.keySet().iterator();
+	}
+	
+	public smI_RequestPath getPath(String path)
+	{
+		return m_nameToPath.get(path);
+	}
+	
+	public smI_RequestPath getPath(Integer id)
+	{
+		return m_intToPath.get(id);
 	}
 	
 	public void register(smI_RequestPath path)

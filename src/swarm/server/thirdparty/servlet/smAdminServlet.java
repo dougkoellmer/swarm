@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.net.URLDecoder;
+import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -25,6 +26,7 @@ import swarm.shared.app.smSharedAppContext;
 import swarm.shared.app.smS_App;
 import swarm.shared.json.smA_JsonFactory;
 import swarm.shared.json.smI_JsonObject;
+import swarm.shared.transaction.smI_RequestPath;
 import swarm.shared.transaction.smS_Transaction;
 import swarm.shared.transaction.smTransactionRequest;
 import swarm.shared.transaction.smTransactionResponse;
@@ -68,20 +70,37 @@ public class smAdminServlet extends smA_BaseServlet
 			nativeResponse.setContentType("text/html");
 			
 			smI_JsonObject requestJson = null;
-			String requestJsonString = "";
+			
+			String requestPathString = "";
 			
 			if( !isGet )
 			{
-				requestJsonString = nativeRequest.getParameter("json");
-				requestJson = requestJsonString == null ? null : context.jsonFactory.createJsonObject(requestJsonString);
+				requestPathString = nativeRequest.getParameter("requestPath");
+				smI_RequestPath requestPath = context.requestPathMngr.getPath(requestPathString);
+				requestJson = context.jsonFactory.createJsonObject();
+				context.requestPathMngr.putToJson(requestJson, requestPath);
 			}
 			
 			PrintWriter writer = nativeResponse.getWriter();
 			
-			writer.write("<form method='POST'>");
-			writer.write("<textarea style='width:400px; height:200px;' name='json'>"+requestJsonString+"</textarea>");
+			writer.write("<html><head></head><body onKeyPress=\"if(event.keyCode==13){document.forms['the_form'].submit();}\"><form name='the_form' method='POST'>");
+			
+			String selectTag = "<select name='requestPath'>";
+			{
+				Iterator<String> pathIterator = context.requestPathMngr.getPaths();
+				while( pathIterator.hasNext() )
+				{
+					String path = pathIterator.next();
+					String selected = path.equals(requestPathString) ? "selected" : "";
+					selectTag += "<option "+selected+">"+path+"</option>";
+				}
+			}
+			selectTag += "</select>";
+			
+			writer.write(selectTag);
+			//writer.write("<textarea style='width:400px; height:200px;' name='json'>"+requestJsonString+"</textarea>");
 			writer.write("<input type='submit' value='Submit'>");
-			writer.write("</form>");
+			writer.write("</form></body></html>");
 			
 			if( !isGet )
 			{

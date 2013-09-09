@@ -22,9 +22,9 @@ public class smHtmlPreProcessor
 	private boolean m_foundJs = false;
 	private final smHtmlSchema m_schema;
 	private Node m_bodyNode = null;
-	private Node m_noscriptNode = null;
+	private Node m_splashNode = null;
 	
-	private int m_noScriptDepth = 0;
+	private int m_splashNodeDepth = 0;
 	private final Dom m_dom;
 	
 	public smHtmlPreProcessor(Dom htmlDom, smHtmlSchema schema)
@@ -40,14 +40,14 @@ public class smHtmlPreProcessor
 		return Nodes.render(m_dom.getValue());
 	}
 	
-	public boolean hasNoscriptContent()
+	public boolean hasSplashTag()
 	{
-		return m_noscriptNode != null && m_bodyNode != null;
+		return m_splashNode != null && m_bodyNode != null;
 	}
 	
-	public boolean injectNoscriptTag()
+	public boolean injectSplashTag()
 	{
-		if( m_noscriptNode != null )
+		if( m_splashNode != null )
 		{
 			if( m_bodyNode != null )
 			{
@@ -56,7 +56,7 @@ public class smHtmlPreProcessor
 					Node firstChild = m_bodyNode.getFirstChild();
 					m_bodyNode.removeChild(firstChild);
 				}
-				m_bodyNode.appendChild(m_noscriptNode);
+				m_bodyNode.appendChild(m_splashNode);
 				
 				return true;
 			}
@@ -71,7 +71,7 @@ public class smHtmlPreProcessor
 	
 	private void onFoundJs()
 	{
-		if( m_noScriptDepth == 0 )
+		if( m_splashNodeDepth == 0 )
 		{
 			m_foundJs = true;
 		}
@@ -85,7 +85,7 @@ public class smHtmlPreProcessor
 	private boolean visit(Node node, Node parentNode)
 	{		
 		ElKey elKey = null;
-		boolean isNoScriptNode = false;
+		boolean isSplashNode = false;
 		
 		if( node.getNodeName().equalsIgnoreCase("script") )
 		{
@@ -105,13 +105,13 @@ public class smHtmlPreProcessor
 		}
 		else if( node.getNodeName().equalsIgnoreCase("splash") )
 		{
-			if( m_noscriptNode == null )
+			if( m_splashNode == null )
 			{
-				m_noscriptNode = node;
+				m_splashNode = node;
 			}
 
-			isNoScriptNode = true;
-			m_noScriptDepth++;
+			isSplashNode = true;
+			m_splashNodeDepth++;
 		}
 		else if( node.getNodeName().equalsIgnoreCase("body") )
 		{
@@ -158,11 +158,11 @@ public class smHtmlPreProcessor
 			child = next;
 		}
 		
-		if( isNoScriptNode )
+		if( isSplashNode )
 		{
-			m_noScriptDepth--;
+			m_splashNodeDepth--;
 		}
 		
-		return isNoScriptNode ? false : true;
+		return isSplashNode ? false : true;
 	}
 }
