@@ -2,6 +2,7 @@ package swarm.client.managers;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Logger;
 
 
 import swarm.client.entities.smBufferCell;
@@ -20,6 +21,8 @@ import swarm.shared.structs.smGridCoordinate;
  */
 public class smCellBuffer
 {
+	private static final Logger s_logger = Logger.getLogger(smCellBuffer.class.getName());
+	
 	private static final smGridCoordinate s_utilCoord1 = new smGridCoordinate();
 	private static final smGridCoordinate s_utilCoord2 = new smGridCoordinate();
 	private static final smGridCoordinate s_utilCoord3 = new smGridCoordinate();
@@ -171,7 +174,7 @@ public class smCellBuffer
 	}
 	
 	void imposeBuffer(smA_Grid grid, smCellBuffer otherBuffer, smI_LocalCodeRepository localCodeSource, int options__extends__smF_BufferUpdateOption)
-	{
+	{		
 		boolean createVisualizations = (options__extends__smF_BufferUpdateOption & smF_BufferUpdateOption.CREATE_VISUALIZATIONS) != 0;
 		boolean communicateWithServer = (options__extends__smF_BufferUpdateOption & smF_BufferUpdateOption.COMMUNICATE_WITH_SERVER) != 0;
 		boolean flushPopulator = (options__extends__smF_BufferUpdateOption & smF_BufferUpdateOption.FLUSH_CELL_POPULATOR) != 0;

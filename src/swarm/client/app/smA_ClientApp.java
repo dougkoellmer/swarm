@@ -202,7 +202,7 @@ public class smA_ClientApp extends smA_App implements smI_TimeSource
 					showUnsupportedBrowserError();
 				}
 			}
-		}, m_appConfig.appId);
+		}, m_appConfig.appId, m_appConfig.useVirtualSandbox);
 	}
 	
 	protected void stage_loadSupportLibraries()

@@ -14,6 +14,8 @@ public class smClientAppConfig extends smAppConfig
 	public int framerate_milliseconds = 33;
 	public double backOffDistance;
 	
+	public boolean useVirtualSandbox = true;
+	
 	public int addressCacheSize = 1024;
 	public double addressCacheExpiration_seconds = 60 * 5;
 	

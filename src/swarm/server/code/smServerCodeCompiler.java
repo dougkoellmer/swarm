@@ -224,7 +224,7 @@ public class smServerCodeCompiler extends smA_CodeCompiler
 		
 		if( hasSplashOnlyContent )
 		{
-			String virtualDynamicCode = !hasJavaScript ? null : preProcessor.renderHtml();
+			String virtualDynamicCode = !hasJavaScript ? null : preProcessor.renderHtmlSansSplash();
 			
 			preProcessor.injectSplashTag();
 			schema.setToNoScriptMode();

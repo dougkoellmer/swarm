@@ -20,18 +20,31 @@ public class smSandboxManager
 	
 	private final smCellApi m_cellApi;
 	
-	public smSandboxManager(smViewContext viewContext, I_StartUpCallback callback, String apiNamespace)
+	public smSandboxManager(smViewContext viewContext, I_StartUpCallback callback, String apiNamespace, boolean useVirtualSandbox)
 	{
 		m_cellApi = new smCellApi(viewContext);
 		m_cellApi.registerApi(apiNamespace);
 		
-		m_cajaSandboxMngr = new smCajaSandboxManager(m_cellApi, callback, apiNamespace);
 		m_iframeSandboxMngr = new smInlineFrameSandboxManager(apiNamespace);
+		
+		if( useVirtualSandbox )
+		{
+			m_cajaSandboxMngr = new smCajaSandboxManager(m_cellApi, callback, apiNamespace);
+		}
+		else
+		{
+			m_cajaSandboxMngr = null;
+			
+			callback.onStartUpComplete(true);
+		}
 	}
 	
 	public void allowScrolling(Element element, boolean yesOrNo)
 	{
-		m_cajaSandboxMngr.allowScrolling(element, yesOrNo);
+		if( m_cajaSandboxMngr != null )
+		{
+			m_cajaSandboxMngr.allowScrolling(element, yesOrNo);
+		}
 	}
 	
 	public void start(Element host, smCode code, String cellNamespace, smI_CodeLoadListener listener)
@@ -43,7 +56,11 @@ public class smSandboxManager
 		{
 			case NO_SANDBOX:
 			{
-				m_cajaSandboxMngr.stop(host);
+				if( m_cajaSandboxMngr != null )
+				{
+					m_cajaSandboxMngr.stop(host);
+				}
+				
 				m_iframeSandboxMngr.stop(host);
 				
 				host.setInnerHTML(code.getRawCode());
@@ -53,23 +70,43 @@ public class smSandboxManager
 			}
 			case LOCAL_SANDBOX:
 			{
-				m_cajaSandboxMngr.stop(host);
+				if( m_cajaSandboxMngr != null )
+				{
+					m_cajaSandboxMngr.stop(host);
+				}
+				
 				m_iframeSandboxMngr.start_local(host, code.getRawCode(), listener);  break;
 			}
 			case REMOTE_SANDBOX:
 			{
-				m_cajaSandboxMngr.stop(host);
+				if( m_cajaSandboxMngr != null )
+				{
+					m_cajaSandboxMngr.stop(host);
+				}
+				
 				m_iframeSandboxMngr.start_remote(host, code.getRawCode(), listener);  break;
 			}
 			case VIRTUAL_DYNAMIC_SANDBOX:
 			{
 				m_iframeSandboxMngr.stop(host);
-				m_cajaSandboxMngr.start_dynamic(host, code.getRawCode(), cellNamespace, listener);  break;
+				
+				if( m_cajaSandboxMngr != null )
+				{
+					m_cajaSandboxMngr.start_dynamic(host, code.getRawCode(), cellNamespace, listener);
+				}
+				
+				break;
 			}
 			case VIRTUAL_STATIC_SANDBOX:
 			{
 				m_iframeSandboxMngr.stop(host);
-				m_cajaSandboxMngr.start_static(host, code.getRawCode(), cellNamespace, listener);  break;
+				
+				if( m_cajaSandboxMngr != null )
+				{
+					m_cajaSandboxMngr.start_static(host, code.getRawCode(), cellNamespace, listener);
+				}
+					
+				break;
 			}
 		}
 	}
@@ -81,7 +118,11 @@ public class smSandboxManager
 	
 	public void stop(Element host)
 	{
-		m_cajaSandboxMngr.stop(host);
+		if( m_cajaSandboxMngr != null )
+		{
+			m_cajaSandboxMngr.stop(host);
+		}
+		
 		m_iframeSandboxMngr.stop(host);
 	}
 }
