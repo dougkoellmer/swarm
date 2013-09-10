@@ -281,8 +281,8 @@ public class smCajaSandboxManager
 		if( currentSandbox != null )
 		{
 			currentSandbox.stop(host);
+			
+			this.deallocate(host, currentSandbox);
 		}
-		
-		this.deallocate(host, currentSandbox);
 	}
 }

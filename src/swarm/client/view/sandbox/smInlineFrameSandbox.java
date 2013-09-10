@@ -65,6 +65,8 @@ public class smInlineFrameSandbox
 			m_iframe.removeFromParent();
 		}
 		
+		m_iframe.removeAttribute("src");
+		
 		host.appendChild(m_iframe);
 	}
 	
@@ -113,6 +115,7 @@ public class smInlineFrameSandbox
 				smU_Debug.ASSERT(false, "Parent wasn't current host.");
 			}
 			
+			m_iframe.setSrc("data:text/html, ");
 			m_iframe.removeFromParent();
 		}
 	}
