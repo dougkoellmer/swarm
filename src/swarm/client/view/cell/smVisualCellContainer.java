@@ -203,9 +203,9 @@ public class smVisualCellContainer extends FlowPanel implements ResizeHandler, s
 					//--- DRK > For some reason we can't use the updateCameraViewRect method because
 					//---		offset width/height return 0...I think it's because CSS isn't applied yet.
 					//---		So kind of a hack here...would be nice if I could fix this, so...TODO(DRK).
-					double width = m_viewContext.splitPanel.getCellPanelWidth();
+					int width = (int) Math.round(m_viewContext.splitPanel.getCellPanelWidth());
 					double x = m_viewContext.splitPanel.getTabPanelWidth();
-					double height = RootPanel.get().getOffsetHeight();
+					int height = RootPanel.get().getOffsetHeight();
 					
 					m_args_SetCameraViewSize.set(width, height);
 					
@@ -320,7 +320,7 @@ public class smVisualCellContainer extends FlowPanel implements ResizeHandler, s
 	
 	private void updateCameraViewRect()
 	{
-		m_args_SetCameraViewSize.set((double)this.getOffsetWidth(), (double)this.getOffsetHeight());
+		m_args_SetCameraViewSize.set(this.getOffsetWidth(), this.getOffsetHeight());
 		m_viewContext.stateContext.performAction(Action_Camera_SetCameraViewSize.class, m_args_SetCameraViewSize);
 	}
 	

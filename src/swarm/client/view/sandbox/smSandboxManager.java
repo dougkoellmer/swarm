@@ -50,7 +50,7 @@ public class smSandboxManager
 	public void start(Element host, smCode code, String cellNamespace, smI_CodeLoadListener listener)
 	{		
 		smE_CodeSafetyLevel codeLevel = code.getSafetyLevel();
-		codeLevel = codeLevel == smE_CodeSafetyLevel.VIRTUAL_DYNAMIC_SANDBOX ? smE_CodeSafetyLevel.LOCAL_SANDBOX : codeLevel;
+		//codeLevel = codeLevel == smE_CodeSafetyLevel.VIRTUAL_DYNAMIC_SANDBOX ? smE_CodeSafetyLevel.LOCAL_SANDBOX : codeLevel;
 		
 		switch(codeLevel)
 		{
