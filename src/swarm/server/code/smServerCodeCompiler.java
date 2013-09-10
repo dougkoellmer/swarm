@@ -224,8 +224,6 @@ public class smServerCodeCompiler extends smA_CodeCompiler
 		
 		if( hasSplashOnlyContent )
 		{
-			String virtualDynamicCode = !hasJavaScript ? null : preProcessor.renderHtmlSansSplash();
-			
 			preProcessor.injectSplashTag();
 			schema.setToNoScriptMode();
 			PluginCompiler splashCompiler = compile(noScriptHtmlDom, result, meta, schema, messageQueue);
@@ -247,6 +245,14 @@ public class smServerCodeCompiler extends smA_CodeCompiler
 			}
 			else
 			{
+				//TODO: Should probably parse the raw source html here instead of regexing it to remove splash tags.
+				//		The problem is, this requires *yet another* parse of the string into a DOM, then *yet another*
+				//		traversal to remove all splash tags. We could clone the original DOM made from the source, but
+				//		then we'd always be incurring that overhead when for the majority of cases we probably don't need it,
+				//		if we consider the user having splash code to be a <50% occurrence.
+				String virtualDynamicCode = sourceCode.getRawCode();
+				virtualDynamicCode = virtualDynamicCode.replaceAll("(?s)\\<splash>.*\\</splash>", "");
+				
 				compiledCode = new smServerCode(virtualDynamicCode, smE_CodeType.COMPILED);
 				compiledCode.setSafetyLevel(smE_CodeSafetyLevel.VIRTUAL_DYNAMIC_SANDBOX);
 			}

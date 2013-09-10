@@ -18,19 +18,6 @@ import com.google.caja.parser.html.Nodes;
 
 public class smHtmlPreProcessor
 {
-	private static final class Triplet
-	{
-		public Node parent;
-		public Node nextSibling;
-		public Node node;
-		
-		Triplet(Node parent_in, Node nextSibling_in, Node node_in)
-		{
-			parent = parent_in;
-			nextSibling = nextSibling_in;
-			node = node_in;
-		}
-	}
 	private static final Logger s_logger = Logger.getLogger(smHtmlPreProcessor.class.getName());
 	
 	private boolean m_foundJs = false;
@@ -41,42 +28,12 @@ public class smHtmlPreProcessor
 	private int m_splashNodeDepth = 0;
 	private final Dom m_dom;
 	
-	private final ArrayList<Triplet> m_scriptNodes = new ArrayList<Triplet>();
-	
 	public smHtmlPreProcessor(Dom htmlDom, smHtmlSchema schema)
 	{
 		m_dom = htmlDom;
 
 		m_schema = schema;
 		this.visit(m_dom.getValue(), null);
-	}
-	
-	public String renderHtmlSansSplash()
-	{
-		for( int i = m_scriptNodes.size()-1; i >= 0 ; i-- )
-		{
-			Triplet triplet = m_scriptNodes.get(i);
-			if( triplet.nextSibling == null )
-			{
-				triplet.parent.appendChild(triplet.node);
-			}
-			else
-			{
-				triplet.parent.insertBefore(triplet.node, triplet.nextSibling);
-			}
-		}
-		
-		String htmlString = Nodes.render(m_dom.getValue());
-		
-		for( int i = m_scriptNodes.size()-1; i >= 0 ; i-- )
-		{
-			Triplet triplet = m_scriptNodes.get(i);
-			triplet.parent.removeChild(triplet.node);
-		}
-		
-		m_scriptNodes.clear();
-		
-		return htmlString;
 	}
 	
 	public boolean hasSplashTag()
@@ -190,12 +147,7 @@ public class smHtmlPreProcessor
 		{
 			Node next = child.getNextSibling();
 			if( !visit(child, node) )
-			{
-				if( child.getNodeName().equalsIgnoreCase("script") )
-				{
-					m_scriptNodes.add(new Triplet(node, child.getNextSibling(), child));
-				}
-				
+			{				
 				node.removeChild(child);
 			}
 			
