@@ -23,6 +23,16 @@ public class smCellAddressMapping extends smA_JsonEncodable implements smI_JsonC
 		m_coordinate.copy(sourceCoordinate);
 	}
 	
+	public smCellAddressMapping(smCellAddressMapping mapping)
+	{
+		this.copy(mapping);
+	}
+	
+	public void copy(smCellAddressMapping mapping)
+	{
+		this.m_coordinate.copy(mapping.getCoordinate());
+	}
+	
 	protected void initCoordinate()
 	{
 		m_coordinate = new smGridCoordinate();

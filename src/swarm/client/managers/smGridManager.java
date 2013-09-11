@@ -9,8 +9,13 @@ import swarm.client.transaction.smE_ResponseSuccessControl;
 import swarm.client.transaction.smI_TransactionResponseHandler;
 import swarm.client.transaction.smClientTransactionManager;
 import swarm.shared.entities.smA_Grid;
+import swarm.shared.entities.smA_User;
+import swarm.shared.entities.smU_User;
 import swarm.shared.json.smA_JsonFactory;
 import swarm.shared.json.smI_JsonObject;
+import swarm.shared.lang.smBoolean;
+import swarm.shared.reflection.smI_Callback;
+import swarm.shared.structs.smCellAddressMapping;
 import swarm.shared.transaction.smE_RequestPath;
 import swarm.shared.transaction.smE_ResponseError;
 import swarm.shared.transaction.smTransactionRequest;
@@ -20,8 +25,11 @@ public class smGridManager implements smI_TransactionResponseHandler
 {
 	public static interface I_Listener
 	{
-		void onGridResize();
+		void onGridUpdate();
 	}
+	
+	private static final smCellAddressMapping s_utilMapping1 = new smCellAddressMapping();
+	private static final smBoolean s_utilBool = new smBoolean();
 	
 	private I_Listener m_listener = null;
 	private final smA_Grid m_grid;
@@ -59,7 +67,7 @@ public class smGridManager implements smI_TransactionResponseHandler
 		m_txnMngr.performAction(action, smE_RequestPath.getGridData);
 	}
 	
-	void updateGridFromJson(smI_JsonObject json)
+	private boolean updateGridSizeFromJson(smI_JsonObject json)
 	{
 		int oldWidth = m_grid.getWidth();
 		int oldHeight = m_grid.getHeight();
@@ -68,8 +76,32 @@ public class smGridManager implements smI_TransactionResponseHandler
 		
 		if( oldWidth != m_grid.getWidth() || oldHeight != m_grid.getHeight() )
 		{
-			m_listener.onGridResize();
+			return true;
 		}
+		
+		return false;
+	}
+	
+	private boolean markTakenCells(smI_JsonObject json)
+	{
+		s_utilBool.value = false;
+		
+		smI_Callback callback = new smI_Callback()
+		{			
+			@Override
+			public void invoke(Object... args)
+			{
+				if( m_grid.isTaken(s_utilMapping1.getCoordinate()) )
+				{
+					m_grid.claimCoordinate(s_utilMapping1.getCoordinate());
+					s_utilBool.value = true;
+				}
+			}
+		};
+		
+		smU_User.readUserCells(m_jsonFactory, json, s_utilMapping1, callback);
+		
+		return s_utilBool.value;
 	}
 
 	@Override
@@ -77,7 +109,10 @@ public class smGridManager implements smI_TransactionResponseHandler
 	{
 		if( request.getPath() == smE_RequestPath.getGridData )
 		{
-			this.updateGridFromJson(response.getJsonArgs());
+			if( this.updateGridSizeFromJson(response.getJsonArgs()))
+			{
+				m_listener.onGridUpdate();
+			}
 			
 			return smE_ResponseSuccessControl.BREAK;
 		}
@@ -86,7 +121,16 @@ public class smGridManager implements smI_TransactionResponseHandler
 			//--- DRK > A getUserData request can implicitly also create the user as well if this is the 
 			//---		first getUserData (i.e., on signing up), or previous ones failed.  In turn, creating
 			//---		a user can implicitly expand the grid.
-			this.updateGridFromJson(response.getJsonArgs());
+			boolean resized = this.updateGridSizeFromJson(response.getJsonArgs());
+			
+			//--- DRK > The getUserData request may have actually made the user, which could create a new cell,
+			//--		so we just be safe here and mark all the user's cells as taken, even though they might be already.
+			boolean newCellTaken = this.markTakenCells(response.getJsonArgs());
+			
+			if( resized || newCellTaken )
+			{
+				m_listener.onGridUpdate();
+			}
 			
 			return smE_ResponseSuccessControl.CONTINUE;
 		}

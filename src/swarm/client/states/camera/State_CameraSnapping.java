@@ -17,7 +17,7 @@ import swarm.client.managers.smClientAccountManager;
 import swarm.client.managers.smF_BufferUpdateOption;
 import swarm.client.managers.smUserManager;
 import swarm.client.states.StateMachine_Base;
-import swarm.client.states.StateMachine_Base.OnGridResize;
+import swarm.client.states.StateMachine_Base.OnGridUpdate;
 import swarm.client.states.code.StateMachine_EditingCode;
 import swarm.client.structs.smCellCodeCache;
 import swarm.client.structs.smI_LocalCodeRepository;
@@ -338,7 +338,7 @@ public class State_CameraSnapping extends smA_State implements smI_StateEventLis
 					
 					this.updateSnapBufferManager(true);
 				}
-				else if( event.getAction() == StateMachine_Base.OnGridResize.class )
+				else if( event.getAction() == StateMachine_Base.OnGridUpdate.class )
 				{
 					this.updateSnapBufferManager(true);
 				}

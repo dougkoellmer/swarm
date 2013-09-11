@@ -21,7 +21,7 @@ import swarm.client.input.smBrowserAddressManager;
 import swarm.client.states.StateMachine_Base;
 import swarm.client.states.State_AsyncDialog;
 import swarm.client.states.State_GenericDialog;
-import swarm.client.states.StateMachine_Base.OnGridResize;
+import swarm.client.states.StateMachine_Base.OnGridUpdate;
 import swarm.client.structs.smCellCodeCache;
 import swarm.client.structs.smI_LocalCodeRepository;
 import swarm.client.structs.smLocalCodeRepositoryWrapper;
@@ -319,7 +319,7 @@ public class StateMachine_Camera extends smA_StateMachine implements smI_StateEv
 			
 			case DID_PERFORM_ACTION:
 			{
-				if( event.getAction() == StateMachine_Base.OnGridResize.class )
+				if( event.getAction() == StateMachine_Base.OnGridUpdate.class )
 				{
 					m_appContext.cameraMngr.getCamera().onGridSizeChanged();
 					

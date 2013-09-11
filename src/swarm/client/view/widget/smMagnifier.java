@@ -532,7 +532,7 @@ public class smMagnifier extends FlowPanel implements smI_StateEventListener
 				{
 					this.setDraggerPositionFromCamera();
 				}
-				else if( event.getAction()  == StateMachine_Base.OnGridResize.class )
+				else if( event.getAction()  == StateMachine_Base.OnGridUpdate.class )
 				{
 					this.setDraggerPositionFromCamera();
 				}

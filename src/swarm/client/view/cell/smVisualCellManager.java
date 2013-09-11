@@ -384,7 +384,7 @@ public class smVisualCellManager implements smI_UIElement, smI_CellPoolDelegate
 			case DID_PERFORM_ACTION:
 			{
 				if( event.getAction() == Action_Camera_SetCameraViewSize.class ||
-					event.getAction() == StateMachine_Base.OnGridResize.class )
+					event.getAction() == StateMachine_Base.OnGridUpdate.class )
 				{
 					m_needsUpdateDueToResizingOfCameraOrGrid = true;
 					

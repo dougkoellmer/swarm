@@ -75,9 +75,9 @@ public class smBitArray extends smA_JsonEncodable
 		}
 	}
 	
-	protected void init(int length)
+	protected void init(int bitCount)
 	{
-		m_bitCount = length;
+		m_bitCount = bitCount;
 		
 		int bitIndexIntoBlock = calcBitIndexModBlock(m_bitCount);
 		int blockCount = calcBlockIndex(m_bitCount, bitIndexIntoBlock);

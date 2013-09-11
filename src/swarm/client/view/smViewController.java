@@ -74,20 +74,20 @@ public class smViewController extends Object implements smI_StateEventListener
 		//smVisualCellHighlight highlighter = new smVisualCellHighlight(appContext, config, appConfig);
 		
 		
-		m_listeners.add(m_viewContext.mouseNavigator);
-		m_listeners.add(m_viewContext.browserNavigator);
-		m_listeners.add(m_viewContext.cellMngr);
-		m_listeners.add(m_viewContext.splitPanel);
-		//m_listeners.add(highlighter);
-		m_listeners.add(focuser);
-		//m_listeners.add(new smVisualCellHud((Panel)cellContainer, m_appConfig));
+		addStateListener(m_viewContext.mouseNavigator);
+		addStateListener(m_viewContext.browserNavigator);
+		addStateListener(m_viewContext.cellMngr);
+		addStateListener(m_viewContext.splitPanel);
+		//addStateListener(highlighter);
+		addStateListener(focuser);
+		//addStateListener(new smVisualCellHud((Panel)cellContainer, m_appConfig));
 		
 		RootLayoutPanel.get().add(m_viewContext.splitPanel);
 		cellContainer.getCellContainerInner().add(focuser);
 		//cellContainer.getCellContainerInner().add(highlighter);
 	}
 	
-	protected void addStateListener(smI_UIElement listener)
+	protected void addStateListener(smI_StateEventListener listener)
 	{
 		m_listeners.add(listener);
 	}

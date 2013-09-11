@@ -9,6 +9,7 @@ import swarm.shared.json.smE_JsonKey;
 import swarm.shared.json.smI_JsonArray;
 import swarm.shared.json.smI_JsonObject;
 import swarm.shared.json.smJsonHelper;
+import swarm.shared.reflection.smI_Callback;
 import swarm.shared.structs.smCellAddressMapping;
 import swarm.shared.structs.smGridCoordinate;
 import swarm.shared.structs.smPoint;
@@ -20,6 +21,8 @@ import swarm.shared.structs.smPoint;
  */
 public abstract class smA_User extends smA_JsonEncodable
 {
+	private static final smCellAddressMapping s_utilMapping1 = new smCellAddressMapping();
+	
 	private smE_EditingPermission m_editingPermission = smE_EditingPermission.OWNED_CELLS;
 	
 	public smE_EditingPermission getEditingPermission()
@@ -38,26 +41,17 @@ public abstract class smA_User extends smA_JsonEncodable
 		//--- DRK > For now not concerned with last position...not sure how it should behave.
 		//getLastPosition().readJson(json);
 		
-		smI_JsonArray jsonCells = factory.getHelper().getJsonArray(json, smE_JsonKey.ownedCoordinates);
+		m_editingPermission = factory.getHelper().getEnum(json, smE_JsonKey.editingPermission, smE_EditingPermission.values());
 		
-		factory.getHelper().putEnum(json, smE_JsonKey.editingPermission, m_editingPermission);
-		
-		for( int i = 0; i < jsonCells.getSize(); i++ )
+		smU_User.readUserCells(factory, json, s_utilMapping1, new smI_Callback()
 		{
-			smCellAddressMapping mapping = null;
-			
-			try
+			@Override
+			public void invoke(Object... args)
 			{
-				mapping = new smCellAddressMapping();
-				mapping.readJson(factory, jsonCells.getObject(i));
-				
-				this.justReadMappingFromJson(mapping);
+				smCellAddressMapping mapping = new smCellAddressMapping(s_utilMapping1);
+				smA_User.this.justReadMappingFromJson(mapping);
 			}
-			catch(Exception e)
-			{
-				e.toString();
-			}
-		}
+		});
 	}
 	
 	public abstract boolean isCellOwner(smGridCoordinate coordinate);

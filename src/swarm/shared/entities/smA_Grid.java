@@ -28,6 +28,15 @@ public abstract class smA_Grid extends smA_JsonEncodable
 	public smA_Grid()
 	{
 	}
+	
+	public void claimCoordinate(smGridCoordinate coordinate)
+	{
+		int bitIndex = coordinate.calcArrayIndex(m_width);
+		
+		m_ownership = m_ownership != null ? m_ownership : createBitArray(bitIndex+1);
+		
+		m_ownership.set(bitIndex, true);
+	}
 
 	public boolean isTaken(smGridCoordinate coordinate)
 	{
@@ -47,6 +56,11 @@ public abstract class smA_Grid extends smA_JsonEncodable
 	protected smBitArray createBitArray()
 	{
 		return new smBitArray();
+	}
+	
+	protected smBitArray createBitArray(int bitCount)
+	{
+		return new smBitArray(bitCount);
 	}
 	
 	public boolean isInBounds(smGridCoordinate coordinate)
@@ -112,6 +126,25 @@ public abstract class smA_Grid extends smA_JsonEncodable
 		return gridHeight;
 	}
 	
+	protected void expandToSize(int width, int height)
+	{
+		int oldWidth = this.getWidth();
+
+		m_width = width;
+		m_height = height;
+		
+		smBitArray oldArray = m_ownership;
+		
+		m_ownership = this.createBitArray(m_width*m_height);
+		
+		if( oldArray != null )
+		{
+			m_ownership.or(oldArray, oldWidth, m_width);
+		}
+		
+		//smT_Grid.validateExpansion(m_bitArray, oldSize, m_size);
+	}
+	
 	@Override
 	public void readJson(smA_JsonFactory factory, smI_JsonObject json)
 	{
@@ -121,8 +154,9 @@ public abstract class smA_Grid extends smA_JsonEncodable
 		Integer cellHeight = factory.getHelper().getInt(json, smE_JsonKey.gridCellHeight);
 		Integer cellPadding = factory.getHelper().getInt(json, smE_JsonKey.gridCellPadding);	
 		
-		m_width = width != null ? width : m_width;
-		m_height = height != null ? height : m_height;
+		int newWidth = width != null ? width : m_width;
+		int newHeight = height != null ? height : m_height;
+		
 		m_cellWidth = cellWidth != null ? cellWidth : m_cellWidth;
 		m_cellHeight = cellHeight != null ? cellHeight : m_cellHeight;
 		m_cellPadding = cellPadding != null ? cellPadding : m_cellPadding;
@@ -132,6 +166,13 @@ public abstract class smA_Grid extends smA_JsonEncodable
 			m_ownership = m_ownership != null ? m_ownership : createBitArray();
 			
 			m_ownership.readJson(factory, json);
+		}
+		else
+		{
+			if( newWidth > m_width || newHeight > m_height )
+			{
+				this.expandToSize(newWidth, newHeight);
+			}
 		}
 	}
 	

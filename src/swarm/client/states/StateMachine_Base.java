@@ -79,7 +79,7 @@ public class StateMachine_Base extends smA_StateMachine implements smI_Transacti
 	{
 	}
 	
-	public static class OnGridResize extends smA_EventAction
+	public static class OnGridUpdate extends smA_EventAction
 	{
 	}
 	
@@ -200,7 +200,7 @@ public class StateMachine_Base extends smA_StateMachine implements smI_Transacti
 		m_appContext = appContext;
 		
 		//smA_Action.register(new PushDialog());
-		registerAction(new OnGridResize());
+		registerAction(new OnGridUpdate());
 		registerAction(new OnAccountManagerResponse());
 		
 		registerAction(new OnUserPopulated());
@@ -292,9 +292,9 @@ public class StateMachine_Base extends smA_StateMachine implements smI_Transacti
 		gridManager.start(new smGridManager.I_Listener()
 		{
 			@Override
-			public void onGridResize()
+			public void onGridUpdate()
 			{
-				StateMachine_Base.this.performAction(StateMachine_Base.OnGridResize.class);
+				StateMachine_Base.this.performAction(StateMachine_Base.OnGridUpdate.class);
 			}
 		});
 		

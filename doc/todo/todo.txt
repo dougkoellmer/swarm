@@ -11,8 +11,6 @@
 
 - figure out what caja mitigating is.
 
-- make sure cell buffer isn't getting updated twice while dragging
-
 - test performance improvement if removing loading animation
 
 - handle "unlimited character case", at least in code editor UI, for number of characters left...actually, elsewhere too

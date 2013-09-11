@@ -197,24 +197,10 @@ public class smServerGrid extends smA_Grid implements smI_Blob
 		return new smServerBitArray();
 	}
 	
-	private void expandToSize(int width, int height)
+	@Override
+	protected smBitArray createBitArray(int bitCount)
 	{
-		int oldWidth = this.getWidth();
-		int oldHeight = this.getHeight();
-
-		m_width = width;
-		m_height = height;
-		
-		smBitArray oldArray = m_ownership;
-		
-		m_ownership = new smServerBitArray(m_width*m_height);
-		
-		if( oldArray != null )
-		{
-			m_ownership.or(oldArray, oldWidth, m_width);
-		}
-		
-		//smT_Grid.validateExpansion(m_bitArray, oldSize, m_size);
+		return new smServerBitArray(bitCount);
 	}
 
 	@Override
