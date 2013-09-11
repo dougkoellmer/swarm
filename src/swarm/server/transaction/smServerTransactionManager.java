@@ -31,7 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONException;
 
-import swarm.server.account.smAccountDatabase;
+import swarm.server.account.smSqlAccountDatabase;
 import swarm.server.app.smA_ServerJsonFactory;
 import swarm.server.data.blob.smBlobManagerFactory;
 import swarm.server.session.smSessionManager;

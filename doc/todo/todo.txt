@@ -1,3 +1,4 @@
+- have click on recaptcha image trigger a reload
 
 
 

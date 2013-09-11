@@ -200,8 +200,6 @@ public class smCellAddressManager implements smI_TransactionResponseHandler
 		}
 	}
 	
-	//private smCellAddress
-	
 	private smCellAddressMapping getMappingFromCellBuffer(smCellAddress address)
 	{
 		smCellBuffer displayBuffer = m_appContext.cellBufferMngr.getDisplayBuffer();
@@ -212,7 +210,7 @@ public class smCellAddressManager implements smI_TransactionResponseHandler
 			{
 				smBufferCell cell = displayBuffer.getCellAtIndex(i);
 				
-				if( address != null )
+				if( cell != null )
 				{
 					if( cell.getCellAddress() != null )
 					{

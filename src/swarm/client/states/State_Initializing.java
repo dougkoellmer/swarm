@@ -14,7 +14,6 @@ import swarm.client.transaction.smI_TransactionResponseHandler;
 import swarm.client.transaction.smClientTransactionManager;
 import swarm.client.transaction.smInlineRequestDispatcher;
 
-import swarm.server.account.smAccountDatabase.E_PasswordType;
 import swarm.shared.debugging.smU_Debug;
 import swarm.shared.reflection.smI_Callback;
 import swarm.shared.statemachine.smA_State;
@@ -75,11 +74,11 @@ public class State_Initializing extends smA_State implements smI_TransactionResp
 		final smGridManager gridManager = m_appContext.gridMngr;
 		final smClientTransactionManager transactionManager = m_appContext.txnMngr;
 		
-		//--- DRK > Do an initial transaction to see if user is signed in...this is synchronous.
+		//--- DRK > Do an initial transaction to see if user is signed in.
 		accountManager.init(new smI_Callback()
 		{
 			@Override
-			public void invoke()
+			public void invoke(Object ... args)
 			{
 				m_successCount = 0;
 				m_requiredSuccessCount = 2;

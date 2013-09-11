@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import swarm.server.account.smAccountDatabase;
+import swarm.server.account.smSqlAccountDatabase;
 import swarm.server.transaction.smI_TransactionScopeListener;
 
 public class smA_SqlDatabase implements smI_TransactionScopeListener

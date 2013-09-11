@@ -11,7 +11,6 @@ import java.util.logging.Logger;
 
 import org.joda.time.DateTime;
 
-import swarm.server.account.smAccountDatabase.E_PasswordType;
 import swarm.server.data.sql.smA_SqlDatabase;
 import swarm.shared.account.smE_SignInCredentialType;
 import swarm.shared.account.smE_SignInValidationError;
@@ -38,20 +37,15 @@ public class smServerAccountManager
 		"_ah" // some app engine services potentially require this as a path...not sure, but just being safe.
 	};
 	
-	private final smAccountDatabase m_accountDb;
+	private final smI_AccountDatabase m_accountDb;
 	private final smSignInValidator m_signInValidator;
 	private final smSignUpValidator m_signUpValidator;
 	
-	public smServerAccountManager(smSignInValidator signInValidator, smSignUpValidator signUpValidator, smAccountDatabase database)
+	public smServerAccountManager(smSignInValidator signInValidator, smSignUpValidator signUpValidator, smI_AccountDatabase database)
 	{
 		m_signInValidator = signInValidator;
 		m_signUpValidator = signUpValidator;
 		m_accountDb = database;
-	}
-	
-	public smA_SqlDatabase getAccountDb()
-	{
-		return m_accountDb;
 	}
 	
 	//TODO: profanity filter?
@@ -266,7 +260,7 @@ public class smServerAccountManager
 		
     	try
     	{
-	        byte[] salt = m_accountDb.getPasswordSalt(email, E_PasswordType.NEW);
+	        byte[] salt = m_accountDb.getPasswordSalt(email, smI_AccountDatabase.E_PasswordType.NEW);
 	        
 	        if( salt == null )
 	        {
@@ -307,7 +301,7 @@ public class smServerAccountManager
 	
     	try
     	{
-	        byte[] salt = m_accountDb.getPasswordSalt(email, E_PasswordType.CURRENT);
+	        byte[] salt = m_accountDb.getPasswordSalt(email, smI_AccountDatabase.E_PasswordType.CURRENT);
 	        
 	        if( salt == null )
 	        {

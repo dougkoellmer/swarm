@@ -91,7 +91,7 @@ public class smGridManager implements smI_TransactionResponseHandler
 			@Override
 			public void invoke(Object... args)
 			{
-				if( m_grid.isTaken(s_utilMapping1.getCoordinate()) )
+				if( !m_grid.isTaken(s_utilMapping1.getCoordinate()) )
 				{
 					m_grid.claimCoordinate(s_utilMapping1.getCoordinate());
 					s_utilBool.value = true;

@@ -8,7 +8,7 @@ import java.util.logging.Logger;
 import com.google.appengine.api.rdbms.AppEngineDriver;
 
 import swarm.client.app.smClientAppConfig;
-import swarm.server.account.smAccountDatabase;
+import swarm.server.account.smSqlAccountDatabase;
 import swarm.server.account.smServerAccountManager;
 
 import swarm.server.code.smServerCodeCompiler;
@@ -118,9 +118,16 @@ public abstract class smA_ServerApp extends smA_App
 		}
 		
 		boolean clientSide = false;
-		smAccountDatabase accountDatabase = new smAccountDatabase(appConfig.databaseUrl, appConfig.accountsDatabase);
-		smSignInValidator signInValidator = new smSignInValidator(clientSide);
-		smSignUpValidator signUpValidator = new smSignUpValidator(clientSide);
+		
+		smSqlAccountDatabase accountDatabase = null;
+		
+		if( m_context.accountMngr == null )
+		{
+			accountDatabase = new smSqlAccountDatabase(appConfig.databaseUrl, appConfig.accountsDatabase);
+			smSignInValidator signInValidator = new smSignInValidator(clientSide);
+			smSignUpValidator signUpValidator = new smSignUpValidator(clientSide);
+			m_context.accountMngr = new smServerAccountManager(signInValidator, signUpValidator, accountDatabase);
+		}
 		
 		m_context.jsonFactory = new smServerJsonFactory();
 		m_context.codeCompiler = new smServerCodeCompiler();
@@ -129,7 +136,7 @@ public abstract class smA_ServerApp extends smA_App
 		m_context.inlineTxnMngr = new smInlineTransactionManager(m_context.txnMngr, m_context.requestPathMngr, (smA_ServerJsonFactory) m_context.jsonFactory, appConfig.appId, appConfig.verboseTransactions);
 		m_context.blobMngrFactory = new smBlobManagerFactory();
 		m_context.sessionMngr = new smSessionManager(m_context.blobMngrFactory, m_context.jsonFactory);
-		m_context.accountMngr = new smServerAccountManager(signInValidator, signUpValidator, accountDatabase);
+		
 		m_context.telemetryDb = new smTelemetryDatabase(appConfig.databaseUrl, appConfig.telemetryDatabase);
 		m_context.redirector = new smServletRedirector(appConfig.mainPage);
 		
@@ -141,8 +148,12 @@ public abstract class smA_ServerApp extends smA_App
 		
 		addTxnScopeListener(m_context.blobMngrFactory);
 		addTxnScopeListener(m_context.sessionMngr);
-		addTxnScopeListener(m_context.accountMngr.getAccountDb());
 		addTxnScopeListener(m_context.telemetryDb);
+		
+		if( accountDatabase != null )
+		{
+			addTxnScopeListener(accountDatabase);
+		}
 	}
 	
 	private void addTxnScopeListener(smI_TransactionScopeListener listener)

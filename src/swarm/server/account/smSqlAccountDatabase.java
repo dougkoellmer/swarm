@@ -22,16 +22,11 @@ import com.google.appengine.api.rdbms.AppEngineDriver;
 /**
  * Abstraction for dealing with the account database.
  */
-public class smAccountDatabase extends smA_SqlDatabase
+public class smSqlAccountDatabase extends smA_SqlDatabase implements smI_AccountDatabase
 {
-	public static enum E_PasswordType
-	{
-		CURRENT, NEW;
-	}
+	private final static Logger s_logger = Logger.getLogger(smSqlAccountDatabase.class.getName());
 
-	private final static Logger s_logger = Logger.getLogger(smAccountDatabase.class.getName());
-
-	public smAccountDatabase(String databaseUrl, String databaseName)
+	public smSqlAccountDatabase(String databaseUrl, String databaseName)
 	{
 		super(databaseUrl, databaseName);
 	}

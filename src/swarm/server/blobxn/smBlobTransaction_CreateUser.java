@@ -58,9 +58,9 @@ public class smBlobTransaction_CreateUser extends smA_BlobTransaction
 			catch(smBlobException e )
 			{
 				s_logger.severe("Couldn't claim cell due to: " + e);
+				
+				throw e;
 			}
-			
-			createCellTxn = null;
 		}
 		
 		smI_BlobManager blobManager = m_blobMngrFactory.create(smE_BlobCacheLevel.PERSISTENT);

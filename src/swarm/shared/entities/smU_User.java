@@ -15,8 +15,6 @@ public class smU_User
 		smI_JsonArray jsonCells = factory.getHelper().getJsonArray(json, smE_JsonKey.ownedCoordinates);
 		for( int i = 0; i < jsonCells.getSize(); i++ )
 		{
-			smCellAddressMapping mapping = null;
-			
 			try
 			{
 				mapping_out.readJson(factory, jsonCells.getObject(i));
