@@ -252,7 +252,13 @@ public class smCellAddressManager implements smI_TransactionResponseHandler
 			{
 				smBufferCell cell = displayBuffer.getCellAtAbsoluteCoord(mapping.getCoordinate());
 				
-				cell.onAddressFound(address);
+				//--- DRK > At least one case where this is validly null...when user cell is created when user is created.
+				//---		The user is populated, and calls into a method that eventually reaches here...but, the grid/buffer
+				//---		hasn't had a chance to update yet and actually create the cell.
+				if( cell != null )
+				{
+					cell.onAddressFound(address);
+				}
 			}
 		}
 	}

@@ -270,29 +270,35 @@ public class smCellBuffer
 					relThisCoord.set(m, n);
 					
 					this.relativeToAbsolute(relThisCoord, absCoord);
+					otherBuffer.absoluteToRelative(absCoord, relOtherCoord);
 					
 					if( !grid.isTaken(absCoord) )
 					{
 						continue;
 					}
 					
-					otherBuffer.absoluteToRelative(absCoord, relOtherCoord);
-					
 					cellRecycled = false;
 					
 					smBufferCell otherCell = null;
 					
 					if ( otherBuffer.isTouching(absCoord) )
-					{						
-						//--- DRK > Splice the still-visible cell from the other buffer into this buffer.
+					{
 						otherCell = otherBuffer.getCellAtRelativeCoord(relOtherCoord);
+						
+						//--- DRK > Can be null when a cell is created between buffer imposings (e.g. a new account is created
+						//---		in b33hive). In this case, the grid coordinate is marked as taken, but there's no cell there
+						//---		yet, so, we make one.
+						//---		There used to be an assert inside here, to catch algorithmic problems...so those problems could
+						//---		still theoretically still exist, and we're just patching over them by creating a new cell...oh well.
+						if ( otherCell == null )
+						{
+							otherCell = m_cellPool.allocCell(grid, this.m_subCellDimension, createVisualizations);
+						}
+						
+						//--- DRK > Splice the still-visible cell from the other buffer into this buffer.
 						otherBuffer.setCell(relOtherCoord.getM(), relOtherCoord.getN(), null);
 						this.setCell(m, n, otherCell);
 						
-						if ( otherCell == null )
-						{
-							smU_Debug.ASSERT(false, "imposeBuffer1");
-						}
 						
 						//--- DRK > If possible, fill in the gap that is left in the other buffer with the cell
 						//---		from the other buffer at the same m, n location that was skipped.

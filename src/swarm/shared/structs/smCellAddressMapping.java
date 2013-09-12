@@ -25,6 +25,8 @@ public class smCellAddressMapping extends smA_JsonEncodable implements smI_JsonC
 	
 	public smCellAddressMapping(smCellAddressMapping mapping)
 	{
+		initCoordinate();
+		
 		this.copy(mapping);
 	}
 	

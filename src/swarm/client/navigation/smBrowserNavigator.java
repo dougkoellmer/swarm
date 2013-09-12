@@ -421,14 +421,17 @@ public class smBrowserNavigator implements smI_StateEventListener
 				{
 					Event_Camera_OnAddressResponse.Args args = event.getActionArgs();
 					
-					if( m_stateContext.isEntered(State_CameraSnapping.class) )
+					if( event.getContext().isEntered(State_CameraSnapping.class) )
 					{
 						m_args_OnAddressResponse = args;
 					}
-					else if( m_stateContext.isEntered(State_ViewingCell.class) )
+					else if( event.getContext().isEntered(State_ViewingCell.class) )
 					{
 						m_args_OnAddressResponse = null;
 						
+						State_ViewingCell viewingState = event.getContext().getEnteredState(State_ViewingCell.class);
+
+						if( viewingState.getCell().getCoordinate().isEqualTo(args.getMapping().getCoordinate()) )
 						if( args.getType() == Event_Camera_OnAddressResponse.E_Type.ON_FOUND )
 						{
 							m_historyManager.setState(args.getAddress(), args.getMapping());

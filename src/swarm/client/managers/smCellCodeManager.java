@@ -130,7 +130,11 @@ public class smCellCodeManager implements smI_TransactionResponseHandler
 				if( buffer.isInBoundsAbsolute(coord) )
 				{
 					smBufferCell cell = buffer.getCellAtAbsoluteCoord(coord);
-					cell.nuke(nukeType);
+					
+					if( cell != null )
+					{
+						cell.nuke(nukeType);
+					}
 				}
 			}
 		}

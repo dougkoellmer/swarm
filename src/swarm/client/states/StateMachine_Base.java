@@ -262,6 +262,15 @@ public class StateMachine_Base extends smA_StateMachine implements smI_Transacti
 		
 		accountManager.start();
 		
+		gridManager.start(new smGridManager.I_Listener()
+		{
+			@Override
+			public void onGridUpdate()
+			{
+				StateMachine_Base.this.performAction(StateMachine_Base.OnGridUpdate.class);
+			}
+		});
+		
 		userManager.start(new smUserManager.I_Listener()
 		{
 			@Override
@@ -289,15 +298,6 @@ public class StateMachine_Base extends smA_StateMachine implements smI_Transacti
 			}
 		});
 		
-		gridManager.start(new smGridManager.I_Listener()
-		{
-			@Override
-			public void onGridUpdate()
-			{
-				StateMachine_Base.this.performAction(StateMachine_Base.OnGridUpdate.class);
-			}
-		});
-		
 		accountManager.addDelegate(m_accountManagerDelegate);
 	}
 	
@@ -311,9 +311,9 @@ public class StateMachine_Base extends smA_StateMachine implements smI_Transacti
 		
 		accountManager.removeDelegate(m_accountManagerDelegate);
 		
-		gridManager.stop();
-		
 		userManager.stop();
+		
+		gridManager.stop();
 		
 		accountManager.stop();
 		

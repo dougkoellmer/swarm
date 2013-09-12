@@ -3,6 +3,7 @@ package swarm.shared.entities;
 import swarm.server.structs.smServerBitArray;
 import swarm.shared.app.smSharedAppContext;
 import swarm.shared.app.smS_App;
+import swarm.shared.debugging.smU_Debug;
 import swarm.shared.json.smA_JsonEncodable;
 import swarm.shared.json.smA_JsonFactory;
 import swarm.shared.json.smE_JsonKey;
@@ -33,7 +34,17 @@ public abstract class smA_Grid extends smA_JsonEncodable
 	{
 		int bitIndex = coordinate.calcArrayIndex(m_width);
 		
-		m_ownership = m_ownership != null ? m_ownership : createBitArray(bitIndex+1);
+		if( m_ownership == null )
+		{
+			m_ownership = createBitArray(bitIndex+1);
+		}
+		else
+		{
+			if( !this.isInBounds(coordinate) )
+			{
+				expandToCoordinate(coordinate);
+			}
+		}
 		
 		m_ownership.set(bitIndex, true);
 	}
@@ -126,8 +137,30 @@ public abstract class smA_Grid extends smA_JsonEncodable
 		return gridHeight;
 	}
 	
+	private void expandToCoordinate(smGridCoordinate coordinate)
+	{
+		int newWidth = coordinate.getM() + 1;
+		int newHeight = coordinate.getM() + 1;
+		
+		newWidth = newWidth < getWidth() ? getWidth() : newWidth;
+		newHeight = newHeight < getWidth() ? getHeight() : newHeight;
+		
+		expandToSize(newWidth, newHeight);
+	}
+	
 	protected void expandToSize(int width, int height)
 	{
+		if( m_width > width || m_height > height )
+		{
+			smU_Debug.ASSERT(false, "expected larger dimensions");
+			
+			return;
+		}
+		else if( m_width == width && m_height == height )
+		{
+			return;
+		}
+		
 		int oldWidth = this.getWidth();
 
 		m_width = width;

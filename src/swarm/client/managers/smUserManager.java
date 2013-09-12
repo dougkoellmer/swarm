@@ -133,7 +133,12 @@ public class smUserManager implements smI_TransactionResponseHandler, smClientAc
 				userCell.setCode(smE_CodeType.SPLASH, new smCode("", smE_CodeType.SPLASH));
 				userCell.setCode(smE_CodeType.COMPILED, new smCode("", smE_CodeType.COMPILED));
 				
-				smCellBuffer buffer = m_appContext.cellBufferMngr.getDisplayBuffer();
+				//--- DRK > This block is now handled implicitly by the grid manager.
+				//---		Grid manager listens for this request success, and updates
+				//---		the grid if a cell is created, firing an event that eventually
+				//---		causes the cell buffer to update, which fills the empty buffer cell
+				//---		with the code in the user cell created above...phew.
+				/*smCellBuffer buffer = m_appContext.cellBufferMngr.getDisplayBuffer();
 				smGridCoordinate coord = userCell.getCoordinate();
 				
 				if( buffer.getSubCellCount() == 1 )
@@ -143,10 +148,13 @@ public class smUserManager implements smI_TransactionResponseHandler, smClientAc
 						smBufferCell bufferCell = buffer.getCellAtAbsoluteCoord(coord);
 						bufferCell.copy(userCell);
 					}
-				}
+				}*/
 				
 				//--- DRK > This will just loop back into the user to find the cell address that we now know,
 				//---		and then instantly let the View know about it. No transaction should go out.
+				//---		The View cares about this in one situation...when the user is focused on the cell that
+				//---		they just took ownership of...this is/should-be impossible with e.g. b33hive, where the
+				//---		cells don't appear until they are actually owned.
 				smCellAddressManager addressManager = m_appContext.addressMngr;
 				addressManager.getCellAddress(userCell.getCoordinate(), smE_TransactionAction.MAKE_REQUEST);
 			}
@@ -180,7 +188,7 @@ public class smUserManager implements smI_TransactionResponseHandler, smClientAc
 		{
 			this.onGetUserDataSuccess(response);
 			
-			return smE_ResponseSuccessControl.BREAK;
+			return smE_ResponseSuccessControl.CONTINUE;
 		}
 		
 		return smE_ResponseSuccessControl.CONTINUE;
@@ -288,6 +296,9 @@ public class smUserManager implements smI_TransactionResponseHandler, smClientAc
 					if( buffer.isInBoundsAbsolute(coord) )
 					{
 						smBufferCell bufferCell = buffer.getCellAtAbsoluteCoord(coord);
+						
+						if( bufferCell == null )  continue;
+						
 						smCode sourceCode = userCell.getCode(smE_CodeType.SOURCE);
 						
 						if( sourceCode != null )
