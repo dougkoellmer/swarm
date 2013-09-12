@@ -16,7 +16,7 @@ import swarm.shared.structs.smCode;
 
 public class smCompilerResult extends smA_JsonEncodable
 {
-	private smCompilerCell m_codeCell = null;
+	private smCompilerCell m_codeCell;
 	
 	private smE_CompilationStatus m_status;
 	
