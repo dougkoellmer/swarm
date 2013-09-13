@@ -47,7 +47,7 @@ public class smCajaSandboxManager
 	private final smObjectPool<smStaticCajaSandbox> m_staticSandboxPool;
 	private final smObjectPool<smDynamicCajaSandbox> m_dynamicSandboxPool;
 	
-	smCajaSandboxManager(final smCellApi cellApi, I_StartUpCallback callback, final String apiNamespace)
+	smCajaSandboxManager(final smCellApi cellApi, I_StartUpCallback callback, final String apiNamespace, boolean useDynamicSandbox)
 	{
 		m_cellApi = cellApi;
 		m_apiNamespace = apiNamespace;
@@ -62,16 +62,25 @@ public class smCajaSandboxManager
 			}
 		});
 		
-		m_dynamicSandboxPool = new smObjectPool<smDynamicCajaSandbox>(new smI_Class<smDynamicCajaSandbox>()
+		if( useDynamicSandbox )
 		{
-			@Override
-			public smDynamicCajaSandbox newInstance()
+			m_dynamicSandboxPool = new smObjectPool<smDynamicCajaSandbox>(new smI_Class<smDynamicCajaSandbox>()
 			{
-				return new smDynamicCajaSandbox(cellApi, apiNamespace);
-			}
-		});
-		
-		initialize_native(this, apiNamespace);
+				@Override
+				public smDynamicCajaSandbox newInstance()
+				{
+					return new smDynamicCajaSandbox(cellApi, apiNamespace);
+				}
+			});
+			
+			initialize_native(this, apiNamespace);
+		}
+		else
+		{
+			m_dynamicSandboxPool = null;
+			
+			m_callback.onStartUpComplete(true);
+		}
 	}
 	
 	private void createApi(String apiNamespace)
@@ -246,6 +255,12 @@ public class smCajaSandboxManager
 	
 	void start_dynamic(Element host, String rawCode, String cellNamespace, smI_CodeLoadListener listener)
 	{
+		if( m_dynamicSandboxPool == null )
+		{
+			this.start_static(host, "Dynamic sandbox not available.", cellNamespace, listener);
+			return;
+		}
+		
 		smI_CellSandbox currentSandbox = this.getSandbox(host);
 		
 		if( currentSandbox != null )

@@ -26,17 +26,7 @@ public class smSandboxManager
 		m_cellApi.registerApi(apiNamespace);
 		
 		m_iframeSandboxMngr = new smInlineFrameSandboxManager(apiNamespace);
-		
-		if( useVirtualSandbox )
-		{
-			m_cajaSandboxMngr = new smCajaSandboxManager(m_cellApi, callback, apiNamespace);
-		}
-		else
-		{
-			m_cajaSandboxMngr = null;
-			
-			callback.onStartUpComplete(true);
-		}
+		m_cajaSandboxMngr = new smCajaSandboxManager(m_cellApi, callback, apiNamespace, useVirtualSandbox);
 	}
 	
 	public void allowScrolling(Element element, boolean yesOrNo)
@@ -48,7 +38,7 @@ public class smSandboxManager
 	}
 	
 	public void start(Element host, smCode code, String cellNamespace, smI_CodeLoadListener listener)
-	{		
+	{
 		smE_CodeSafetyLevel codeLevel = code.getSafetyLevel();
 		//codeLevel = codeLevel == smE_CodeSafetyLevel.VIRTUAL_DYNAMIC_SANDBOX ? smE_CodeSafetyLevel.LOCAL_SANDBOX : codeLevel;
 		
