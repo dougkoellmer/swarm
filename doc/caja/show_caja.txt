@@ -1,4 +1,4 @@
-FWIW, I got a new version of my application out, http://b33hive.net, using Caja r$$$$. Mostly under-the-hood stuff, but here are some Caja-relevant changes:
+FWIW, I got a new version of my application out, http://b33hive.net, using Caja r$$$$. Mostly under-the-hood stuff...I extracted a generic CMS from b33hive which is now powering b33hive and a few other projects in the works. Here are the Caja-relevant changes:
 
 - Now using es5Mode to render a guest application's "focused" state.
 
@@ -15,7 +15,7 @@ FWIW, I got a new version of my application out, http://b33hive.net, using Caja 
 - Got it working on all the latest browsers, even on iPad, minus some small UI/input issues.
 
 
-Anyway, just in case you ever need to bring up an amazing use case for Caja, there you go! I'm currently extracting a generic CMS from the b33hive.net codebase for use in a few other projects, so hopefully some more practical usage of Caja to come.
+Anyway, just in case you ever need to bring up an amazing use case for Caja, there you go!
 
 
 Thanks,

@@ -415,8 +415,10 @@ public class smMagnifier extends FlowPanel implements smI_StateEventListener
 	
 	private void setAlpha(double alpha)
 	{
+		//State_CameraSnapping cameraSnapping = m_viewContext.stateContext.getEnteredState(State_CameraSnapping.class);
+		//String snapProg = cameraSnapping != null ? cameraSnapping.getOverallSnapProgress()+"" : "N/A";
 		m_alpha = alpha;
-		//s_logger.severe(m_baseAlpha + "   " + m_alpha +"");
+		//s_logger.severe(m_baseAlpha + "   " + m_alpha + "   " + snapProg);
 		this.getElement().getStyle().setOpacity(m_alpha);
 	}
 

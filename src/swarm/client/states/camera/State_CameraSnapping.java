@@ -140,10 +140,10 @@ public class State_CameraSnapping extends smA_State implements smI_StateEventLis
 		
 		requestCodeForTargetCell();
 		
-		m_snapProgressBase = this.getOverallSnapProgress();
-		
 		smCameraManager manager = m_appContext.cameraMngr;
 		manager.setTargetPosition(m_utilPoint, false);
+		
+		m_snapProgressBase = this.getOverallSnapProgress();
 	}
 	
 	public double getOverallSnapProgress()
