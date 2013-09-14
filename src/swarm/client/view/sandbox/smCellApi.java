@@ -207,21 +207,27 @@ public class smCellApi
 			},
 			getUsername:function()
 			{
-				var username = thisArg.@swarm.client.view.sandbox.smCellApi::getUsername()();
-				
-				return username;
+				return thisArg.@swarm.client.view.sandbox.smCellApi::getUsername()();
 			},
 			getGridWidth:function()
 			{
-				var width = thisArg.@swarm.client.view.sandbox.smCellApi::getGridWidth()();
-				
-				return width;
+				return thisArg.@swarm.client.view.sandbox.smCellApi::getGridWidth()();
 			},
 			getGridHeight:function()
 			{
-				var height = thisArg.@swarm.client.view.sandbox.smCellApi::getGridHeight()();
-				
-				return height;
+				return thisArg.@swarm.client.view.sandbox.smCellApi::getGridHeight()();
+			},
+			getCellWidth:function()
+			{
+				return thisArg.@swarm.client.view.sandbox.smCellApi::getCellWidth()();
+			},
+			getCellHeight:function()
+			{
+				return thisArg.@swarm.client.view.sandbox.smCellApi::getCellHeight()();
+			},
+			getCellPadding:function()
+			{
+				return thisArg.@swarm.client.view.sandbox.smCellApi::getCellPadding()();
 			}
 		};
 		
@@ -366,6 +372,21 @@ public class smCellApi
 	private int getGridHeight()
 	{
 		return getCurrentCell().getGrid().getHeight();
+	}
+	
+	private int getCellWidth()
+	{
+		return getCurrentCell().getGrid().getCellWidth();
+	}
+	
+	private int getCellHeight()
+	{
+		return getCurrentCell().getGrid().getCellHeight();
+	}
+	
+	private int getCellPadding()
+	{
+		return getCurrentCell().getGrid().getCellPadding();
 	}
 	
 	State_ViewingCell getViewingState()

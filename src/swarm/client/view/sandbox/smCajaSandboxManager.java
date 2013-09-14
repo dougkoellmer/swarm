@@ -101,6 +101,9 @@ public class smCajaSandboxManager
 			$wnd.caja.markFunction($wnd[apiNamespace].getUsername);
 			$wnd.caja.markFunction($wnd[apiNamespace].getGridWidth);
 			$wnd.caja.markFunction($wnd[apiNamespace].getGridHeight);
+			$wnd.caja.markFunction($wnd[apiNamespace].getCellWidth);
+			$wnd.caja.markFunction($wnd[apiNamespace].getCellHeight);
+			$wnd.caja.markFunction($wnd[apiNamespace].getCellPadding);
 			
 			$wnd[apiNamespace+"_tamed"] = $wnd.caja.tame($wnd[apiNamespace]);
 		}
