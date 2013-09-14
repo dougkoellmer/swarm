@@ -1,6 +1,3 @@
-- have click on recaptcha image trigger a reload
-
-
 
 - decommission URI policy and API when leaving cell.
 
@@ -18,7 +15,7 @@
 
 
 
-- have an alert bring focus to the cell such that the user can press the enter button and dismiss the alert.
+- have an alert bring focus to the cell such that the user can press the enter button and dismiss the alert...maybe
 
 - account for multiple syncs coming back out of order...currently just blocks until last one is complete.
 

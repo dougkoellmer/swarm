@@ -2,7 +2,7 @@ package swarm.client.view.cell;
 
 import java.util.logging.Logger;
 
-import swarm.client.view.smU_UI;
+import swarm.client.view.smU_Css;
 
 import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.dom.client.Style.Position;

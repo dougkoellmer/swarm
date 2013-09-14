@@ -18,7 +18,7 @@ import swarm.client.states.camera.State_ViewingCell;
 import swarm.client.structs.smCellPool;
 import swarm.client.structs.smI_CellPoolDelegate;
 import swarm.client.view.smI_UIElement;
-import swarm.client.view.smU_UI;
+import swarm.client.view.smU_Css;
 import swarm.client.view.smViewContext;
 import swarm.client.view.cell.smAlertManager.I_Delegate;
 import swarm.client.view.dialog.smDialog;
@@ -154,6 +154,7 @@ public class smVisualCellManager implements smI_UIElement, smI_CellPoolDelegate
 	public smI_BufferCellListener createVisualization(int width, int height, int padding, int subCellDim)
 	{
 		smVisualCell newVisualCell = m_pool.allocate();
+		newVisualCell.setVisible(true);
 		
 		//s_logger.severe("Creating: " + newVisualCell.getId() + " at " + smCellBufferManager.getInstance().getUpdateCount());
 		
@@ -185,6 +186,7 @@ public class smVisualCellManager implements smI_UIElement, smI_CellPoolDelegate
 			//smU_Debug.ASSERT(false, "destroyVisualization1....bad parent: " + visualCell.getParent());
 		}
 		
+		visualCell.setVisible(false);
 		m_queuedRemovals.add(visualCell);
 	}
 	
@@ -199,6 +201,8 @@ public class smVisualCellManager implements smI_UIElement, smI_CellPoolDelegate
 		
 		if( m_viewContext.appContext.cameraMngr.isCameraAtRest() )
 		{
+			processRemovals();
+			
 			if( !m_needsUpdateDueToResizingOfCameraOrGrid )
 			{
 				return false;
@@ -254,23 +258,22 @@ public class smVisualCellManager implements smI_UIElement, smI_CellPoolDelegate
 		
 		boolean use3dTransforms = m_viewContext.appContext.platformInfo.has3dTransforms();
 	
-		String scaleProperty = scaling < NO_SCALING ? smU_UI.createScaleTransform(scaling, use3dTransforms) : null;
+		String scaleProperty = scaling < NO_SCALING ? smU_Css.createScaleTransform(scaling, use3dTransforms) : null;
 		
 		
 		
 		//--- DRK > NOTE: ALL DOM-manipulation related to cells should occur within this block.
-		//---		This is why removal of visual cells is queued until this point.  This might be an
-		//---		extraneous optimization in some browsers if they themselves have intelligent DOM-change batching,
-		//---		but we must assume that most browsers are retarded.
+		//---		This might be an extraneous optimization in some browsers if they themselves have
+		//---		intelligent DOM-change batching, but we must assume that most browsers are retarded.
 		//--	NOTE: Well, not ALL manipulation is in here, there are a few odds and ends done outside this...but most should be here.
 		m_container.getElement().getStyle().setDisplay(Display.NONE);
 		{
-			processRemovals();
-			
 			//--- DRK > Serious malfunction here if hit.
 			//--- NOTE: Now cell buffer can have null cells (i.e. if they aren't owned).
 			//---		So this assert is now invalid...keeping for historical reference.
 			//smU_Debug.ASSERT(cellBuffer.getCellCount() == m_pool.getAllocCount(), "smVisualCellManager::update1");
+			
+			//processRemovals();
 			
 			for ( int i = 0; i < bufferSize; i++ )
 			{
@@ -290,7 +293,7 @@ public class smVisualCellManager implements smI_UIElement, smI_CellPoolDelegate
 				
 				double translateX = basePoint.getX() + offsetX;
 				double translateY = basePoint.getY() + offsetY;
-				String translateProperty = smU_UI.createTranslateTransform(translateX, translateY, use3dTransforms);
+				String translateProperty = smU_Css.createTranslateTransform(translateX, translateY, use3dTransforms);
 				String transform = scaleProperty != null ? translateProperty + " " + scaleProperty : translateProperty;
 				String transformProperty = m_viewContext.appContext.platformInfo.getTransformProperty();
 				ithVisualCell.getElement().getStyle().setProperty(transformProperty, transform);

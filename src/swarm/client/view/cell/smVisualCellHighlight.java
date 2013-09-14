@@ -11,7 +11,7 @@ import swarm.client.states.camera.StateMachine_Camera;
 import swarm.client.view.smE_ZIndex;
 import swarm.client.view.smI_UIElement;
 import swarm.client.view.smS_UI;
-import swarm.client.view.smU_UI;
+import swarm.client.view.smU_Css;
 import swarm.client.view.smViewContext;
 import swarm.shared.app.smS_App;
 import swarm.shared.debugging.smU_Debug;
@@ -124,7 +124,7 @@ public class smVisualCellHighlight extends FlowPanel implements smI_UIElement
 			int shadowSize = (int) (((double)smS_UI.HIGHLIGHT_MAX_SIZE) * (scale));
 			shadowSize = shadowSize < smS_UI.HIGHLIGHT_MIN_SIZE ? smS_UI.HIGHLIGHT_MIN_SIZE : shadowSize;
 			
-			smU_UI.setBoxShadow(this.getElement(), "0 0 "+shadowSize+"px " + smS_UI.HIGHLIGHT_COLOR);
+			smU_Css.setBoxShadow(this.getElement(), "0 0 "+shadowSize+"px " + smS_UI.HIGHLIGHT_COLOR);
 		}
 		
 		m_lastScaling = highlightScaling;

@@ -11,7 +11,7 @@ import com.google.gwt.user.client.Element;
  * @author Doug
  *
  */
-public class smU_UI
+public class smU_Css
 {
 	private static final String[] TRANSFORM_PROPERTIES = 
 	{
@@ -31,7 +31,7 @@ public class smU_UI
 		"MozTransformOrigin"
 	};
 	
-	private smU_UI()
+	private smU_Css()
 	{
 		
 	}

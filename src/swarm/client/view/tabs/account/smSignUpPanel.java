@@ -146,9 +146,17 @@ public class smSignUpPanel extends VerticalPanel implements smI_StateEventListen
 			@Override
 			public void onClick()
 			{
-				m_errorFields[smE_SignUpCredentialType.CAPTCHA_RESPONSE.ordinal()].reset();
-				recaptchaImageElement.getFirstChildElement().getStyle().setVisibility(Visibility.HIDDEN);
-				recaptchaImageElement.getFirstChildElement().setAttribute("alt", "");
+				onRecaptchaClicked();
+			}
+		});
+		
+		m_viewContext.clickMngr.addClickHandler(m_captchaImageContainer, new smI_ClickHandler()
+		{			
+			@Override
+			public void onClick()
+			{
+				m_viewContext.recaptchaWrapper.loadNewImage();
+				onRecaptchaClicked();
 			}
 		});
 		
@@ -294,6 +302,13 @@ public class smSignUpPanel extends VerticalPanel implements smI_StateEventListen
 		this.add(m_panel);
 		
 		this.setCellHorizontalAlignment(header, HasHorizontalAlignment.ALIGN_CENTER);
+	}
+	
+	private void onRecaptchaClicked()
+	{
+		m_errorFields[smE_SignUpCredentialType.CAPTCHA_RESPONSE.ordinal()].reset();
+		m_captchaImageContainer.getElement().getFirstChildElement().getStyle().setVisibility(Visibility.HIDDEN);
+		m_captchaImageContainer.getElement().getFirstChildElement().setAttribute("alt", "");
 	}
 	
 	private void submit(int focusedFieldIndex)
