@@ -38,15 +38,13 @@
 
 - optimize cell_size_1 drop shadow to use tiled css sprite images...lump with icon sprites
 
-- implement some kind of visual scroll arrow when auto-panning., etc.
-
 - the magnifier slider bar is disconnected when the whole magnifier is disabled, i.e. while page is loading.
 
 - if you mousedown on a tooltipped element, then drag to another element, then mouse up, tool tip will never come up on that other element until you mouse out then back in...really fringe i guess
 
 - bookmark system
 
-- try to quickly make it so split panel glass can be given resize cursor
+- try to quickly make it so split panel glass can be given resize cursor when dragging
 
 - probably give magnifier dragger a glass similar to split panel...or just use some global one maybe
 

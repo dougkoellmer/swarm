@@ -1,6 +1,6 @@
 - make it so that thread local blob cache remembers null results.
 
-- optimize cell parse algorithm, test that it's faster, and pull some things out into a utility method to avoid heap allocation in some situations.
+- optimize cell address parse algorithm, test that it's faster, and pull some things out into a utility method to avoid heap allocation in some situations.
 
 - find some way to share splash error message between noscript and caja init failure
 

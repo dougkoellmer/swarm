@@ -1,3 +1,1 @@
 - get css pipeline working, including app specific css
-
-- move b33hive_lib to sibling directory of leveraging projects, and sym link...git submodules are too annoying at this point

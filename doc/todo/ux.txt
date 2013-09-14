@@ -19,6 +19,4 @@
 
 - have suggestion drop down for email for sign in, and maybe for sign up too, depending on how it actually works.
 
-- on the first snap, cell shifts to the left for some reason
-
 - if there's a connection error on sign up, the recaptcha field is emptied, but still says "Good (maybe)"
