@@ -44,31 +44,17 @@ import com.google.gwt.user.client.ui.Panel;
  * ...
  * @author 
  */
-public class smVisualCellManager implements smI_UIElement, smI_CellPoolDelegate
+public class smVisualCellManager implements smI_UIElement
 {
 	private static final double NO_SCALING = .99999;
 	private static final Logger s_logger = Logger.getLogger(smVisualCellManager.class.getName());
-	
-	private final smI_Class<smVisualCell> m_visualCellClass = new smI_Class<smVisualCell>()
-	{
-		@Override
-		public smVisualCell newInstance()
-		{
-			return new smVisualCell(smVisualCellManager.this.m_viewContext.appContext.cellSandbox);
-		}
-	};
 	
 	private Panel m_container = null;
 	
 	private final smPoint m_utilPoint1 = new smPoint();
 	private final smPoint m_utilPoint2 = new smPoint();
-	private final smGridCoordinate m_utilCoord = new smGridCoordinate();
 	
 	private final smPoint m_lastBasePoint = new smPoint();
-	
-	private final smObjectPool<smVisualCell> m_pool = new smObjectPool<smVisualCell>(m_visualCellClass);
-	
-	private final ArrayList<smVisualCell> m_queuedRemovals = new ArrayList<smVisualCell>();
 	
 	private boolean m_needsUpdateDueToResizingOfCameraOrGrid = false;
 	
@@ -80,12 +66,17 @@ public class smVisualCellManager implements smI_UIElement, smI_CellPoolDelegate
 	
 	private final smViewContext m_viewContext;
 	
+	private final smVisualCellPool m_cellPool;
+	
+	private final int m_cellDestroyLimitWhileMoving = 1;
+	
 	public smVisualCellManager(smViewContext viewContext, Panel container) 
 	{
 		m_container = container;
 		m_viewContext = viewContext;
+		m_cellPool = new smVisualCellPool(viewContext.appContext.cellSandbox, m_container);
 		
-		m_viewContext.appContext.cellBufferMngr.getCellPool().setDelegate(this);
+		m_viewContext.appContext.cellBufferMngr.getCellPool().setDelegate(m_cellPool);
 
 		m_alertDialog = new smDialog(m_viewContext.clickMngr, 256, 164, new smDialog.I_Delegate()
 		{
@@ -132,65 +123,7 @@ public class smVisualCellManager implements smI_UIElement, smI_CellPoolDelegate
 		});
 	}
 	
-	private void processRemovals()
-	{
-		for( int i = m_queuedRemovals.size()-1; i >= 0; i-- )
-		{
-			smVisualCell ithCell = m_queuedRemovals.get(i);
-			
-			if( ithCell.getParent() != null )
-			{
-				smU_Debug.ASSERT(ithCell.getParent() == m_container, "processRemovals1");
-				
-				ithCell.removeFromParent();
-			}
-			ithCell.onDestroy();
-			m_pool.deallocate(ithCell);
-		}
-		
-		m_queuedRemovals.clear();
-	}
-	
-	public smI_BufferCellListener createVisualization(int width, int height, int padding, int subCellDim)
-	{
-		smVisualCell newVisualCell = m_pool.allocate();
-		newVisualCell.setVisible(true);
-		
-		//s_logger.severe("Creating: " + newVisualCell.getId() + " at " + smCellBufferManager.getInstance().getUpdateCount());
-		
-		if( newVisualCell.getParent() != null )
-		{
-			smU_Debug.ASSERT(false, "createVisualization1");
-		}
-		
-		newVisualCell.onCreate(width, height, padding, subCellDim);
-		
-		return newVisualCell;
-	}
-	
-	public void destroyVisualization(smI_BufferCellListener visualization)
-	{
-		smVisualCell visualCell = (smVisualCell) visualization;
-		
-		//s_logger.severe("Destroying: " + visualCell.getId() + " at " + smCellBufferManager.getInstance().getUpdateCount());
-		
-		if( visualCell.getParent() != m_container )
-		{
-			//--- DRK > Fringe case can hit this assert, so it's removed...
-			//---		You flick the camera so it comes to rest right at the edge of a new cell, creating the visualization.
-			//---		Then inside the same update loop, you do a mouse press which, probably due to numerical error, 
-			//---		takes the new cell out of view. Currently, in the state machine implementation, that mouse press
-			//---		forces a refresh of the cell buffer in the same update loop, right after the refresh that caused the 
-			//---		visualization to get created. Because this manager lazily adds/removes cells, the cell didn't have a
-			//---		chance to get a parent.
-			//smU_Debug.ASSERT(false, "destroyVisualization1....bad parent: " + visualCell.getParent());
-		}
-		
-		visualCell.setVisible(false);
-		m_queuedRemovals.add(visualCell);
-	}
-	
-	private boolean updateCellTransforms(double timeStep)
+	private boolean updateCellTransforms(double timeStep, boolean flushDestroyQueueIfMoving)
 	{
 		if( m_cameraController == null )
 		{
@@ -201,7 +134,7 @@ public class smVisualCellManager implements smI_UIElement, smI_CellPoolDelegate
 		
 		if( m_viewContext.appContext.cameraMngr.isCameraAtRest() )
 		{
-			processRemovals();
+			m_cellPool.cleanPool();
 			
 			if( !m_needsUpdateDueToResizingOfCameraOrGrid )
 			{
@@ -216,7 +149,6 @@ public class smVisualCellManager implements smI_UIElement, smI_CellPoolDelegate
 		
 		int bufferSize = cellBuffer.getCellCount();
 		int bufferWidth = cellBuffer.getWidth();
-		int bufferHeight = cellBuffer.getHeight();
 		
 		smCamera camera = m_viewContext.appContext.cameraMngr.getCamera();
 		
@@ -273,7 +205,10 @@ public class smVisualCellManager implements smI_UIElement, smI_CellPoolDelegate
 			//---		So this assert is now invalid...keeping for historical reference.
 			//smU_Debug.ASSERT(cellBuffer.getCellCount() == m_pool.getAllocCount(), "smVisualCellManager::update1");
 			
-			//processRemovals();
+			if( flushDestroyQueueIfMoving )
+			{
+				//m_cellPool.flushDestroyQueue(m_cellDestroyLimitWhileMoving);
+			}
 			
 			for ( int i = 0; i < bufferSize; i++ )
 			{
@@ -351,7 +286,9 @@ public class smVisualCellManager implements smI_UIElement, smI_CellPoolDelegate
 			{
 				if( event.getState().getParent() instanceof StateMachine_Camera )
 				{
-					if( !this.updateCellTransforms(event.getState().getLastTimeStep()) )
+					boolean flushDestroyQueueIfMoving = (event.getState().getUpdateCount() % 8) == 0;
+					
+					if( !this.updateCellTransforms(event.getState().getLastTimeStep(), flushDestroyQueueIfMoving) )
 					{
 						this.updateCellsIndividually(event.getState().getLastTimeStep());
 					}
@@ -396,7 +333,8 @@ public class smVisualCellManager implements smI_UIElement, smI_CellPoolDelegate
 					//---		ghosting of the cell visualizations with certain rapid resizes of the UI console.
 					//---		Also, if the camera is still and the grid resizes, visual cells won't appear until
 					//---		we move.
-					this.updateCellTransforms(0);
+					boolean flushDestroyQueueIfMoving = true;
+					this.updateCellTransforms(0, flushDestroyQueueIfMoving);
 				}
 				else if( event.getAction() == Action_ViewingCell_Refresh.class )
 				{

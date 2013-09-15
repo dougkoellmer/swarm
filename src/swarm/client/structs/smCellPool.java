@@ -72,7 +72,7 @@ public class smCellPool
 			m_delegate.destroyVisualization(cell.getVisualization());
 		}
 		
-		cell.clear(); // allow gc to do it's thing
+		cell.onCellDestroyed(); // allow gc to do it's thing
 
 		m_pool.deallocate(cell);
 	}

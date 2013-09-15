@@ -44,7 +44,8 @@ public class smSandboxManager
 		
 		switch(codeLevel)
 		{
-			case NO_SANDBOX:
+			case NO_SANDBOX_STATIC:
+			case NO_SANDBOX_DYNAMIC:
 			{
 				if( m_cajaSandboxMngr != null )
 				{

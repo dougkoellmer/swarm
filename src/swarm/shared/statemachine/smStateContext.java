@@ -370,6 +370,8 @@ public class smStateContext
 				event.m_listenerIndex = m_listeners.size()-1;
 			}
 			
+		//	s_logger.severe(event.getType() + " " + event.getState());
+			
 			while( event.m_listenerIndex >= 0 )
 			{
 				int listenerIndex = event.m_listenerIndex;

@@ -76,6 +76,8 @@ public class smVisualCell extends AbsolutePanel implements smI_BufferCellListene
 	
 	private final smSandboxManager m_sandboxMngr;
 	
+	private smE_CodeSafetyLevel m_codeSafetyLevel;
+	
 	public smVisualCell(smSandboxManager sandboxMngr)
 	{
 		m_sandboxMngr = sandboxMngr;
@@ -223,7 +225,12 @@ public class smVisualCell extends AbsolutePanel implements smI_BufferCellListene
 			//m_backgroundImages.get(m_currentImageIndex).getElement().getStyle().setDisplay(Display.NONE);
 		}
 
-		this.insertSafeHtml("");
+		if( !smE_CodeSafetyLevel.isStatic(m_codeSafetyLevel) )
+		{
+			this.insertSafeHtml("");
+		}
+		
+		m_codeSafetyLevel = null;
 		
 		this.pushDown();
 	}
@@ -315,15 +322,22 @@ public class smVisualCell extends AbsolutePanel implements smI_BufferCellListene
 			m_sandboxMngr.stop(m_contentPanel.getElement());
 		}*/
 		
+		m_codeSafetyLevel = code.getSafetyLevel();
+		
 		m_sandboxMngr.start(m_contentPanel.getElement(), code, cellNamespace, m_codeLoadListener);
+	}
+	
+	public smE_CodeSafetyLevel getCodeSafetyLevel()
+	{
+		return m_codeSafetyLevel;
 	}
 	
 	private void insertSafeHtml(String html)
 	{
 		m_utilCode.setRawCode(html);
-		m_utilCode.setSafetyLevel(smE_CodeSafetyLevel.NO_SANDBOX);
-
-		m_sandboxMngr.start(m_contentPanel.getElement(), m_utilCode, null, m_codeLoadListener);
+		m_utilCode.setSafetyLevel(smE_CodeSafetyLevel.NO_SANDBOX_STATIC);
+		
+		this.setCode(m_utilCode, "");
 	}
 	
 	smUIBlocker getBlocker()

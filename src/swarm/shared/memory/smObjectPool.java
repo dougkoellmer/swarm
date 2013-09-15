@@ -7,7 +7,7 @@ import swarm.shared.reflection.smI_Class;
 
 public class smObjectPool<T>
 {
-	private final ArrayList<T> m_instances = new ArrayList<T>();
+	protected final ArrayList<T> m_instances = new ArrayList<T>();
 	
 	private int m_logicalSize = 0;
 	

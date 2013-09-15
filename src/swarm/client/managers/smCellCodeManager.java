@@ -275,7 +275,7 @@ public class smCellCodeManager implements smI_TransactionResponseHandler
 			final String OPEN_CELL_CODE = "<div style='width:100%; height:100%; background-color:#BBBBBB;'></div>";
 			
 			code = new smCode(OPEN_CELL_CODE, smE_CodeType.values());
-			code.setSafetyLevel(smE_CodeSafetyLevel.NO_SANDBOX);
+			code.setSafetyLevel(smE_CodeSafetyLevel.NO_SANDBOX_STATIC);
 			m_utilCell.setCode(eCodeType, code);
 		}
 		

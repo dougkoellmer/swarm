@@ -444,7 +444,7 @@ public class smBufferCell extends smA_Cell
 		m_hasBeenPreviewed = false;
 	}
 	
-	public void clear()
+	public void onCellDestroyed()
 	{
 		this.clear_private();
 		
