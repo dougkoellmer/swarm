@@ -55,6 +55,8 @@ public class smStateContext
 	
 	void registerAction(Class<? extends smA_State> association, smA_Action action)
 	{
+		if( m_actionRegistry.containsKey(action.getClass()) )  return;
+		
 		m_actionRegistry.put(action.getClass(), action);
 		
 		action.m_context = this;
@@ -102,6 +104,8 @@ public class smStateContext
 	public boolean performAction(Class<? extends smA_Action> T, smA_ActionArgs args)
 	{
 		smA_State state = getEnteredStateForAction(T);
+		
+		if( state == null )  return false;
 		
 		return state.performAction(T, args);
 	}

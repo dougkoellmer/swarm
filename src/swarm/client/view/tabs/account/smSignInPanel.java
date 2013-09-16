@@ -91,7 +91,7 @@ public class smSignInPanel extends VerticalPanel implements smI_StateEventListen
 		
 		m_viewContext.toolTipMngr.addTip(m_button, new smToolTipConfig(smE_ToolTipType.MOUSE_OVER, "Do it!"));
 		m_viewContext.toolTipMngr.addTip(m_changePassword, new smToolTipConfig(smE_ToolTipType.MOUSE_OVER,
-				"Forgot your password? Enter a new one along with your e-mail, then click here."));
+				"Forgot your password? Enter a new one along with your e-mail or username, then click here."));
 		
 		FlowPanel passwordResetContainer = new FlowPanel();
 		m_changePassword.setHref("javascript:void(0)");
