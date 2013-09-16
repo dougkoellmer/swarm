@@ -61,7 +61,7 @@ public class smSignInPanel extends VerticalPanel implements smI_StateEventListen
 	private final smSignInOrUpErrorField m_emailErrorField = new smSignInOrUpErrorField();
 	private final smSignInOrUpErrorField m_passwordErrorField = new smSignInOrUpErrorField();
 	
-	private final smTextBoxWrapper m_emailInput = new smTextBoxWrapper(new smTextBox("Email or Username"));
+	private final smTextBoxWrapper m_emailInput = new smTextBoxWrapper(new smTextBox("Email"));
 	private final smTextBoxWrapper m_passwordInput = new smTextBoxWrapper(new smPasswordTextBox("Password"));
 	
 	private final smSignInOrUpButton m_button = new smSignInOrUpButton();

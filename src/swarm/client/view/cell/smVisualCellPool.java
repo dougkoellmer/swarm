@@ -76,7 +76,7 @@ public class smVisualCellPool implements smI_CellPoolDelegate
 		
 		if( newVisualCell.getParent() != null )
 		{
-			//--- DRK > Invalid assert...for now cells' visibility-only can be toggled.
+			//--- DRK > Invalid assert...for now cells' visibility is just toggled.
 			//smU_Debug.ASSERT(false, "createVisualization1");
 		}
 		
@@ -129,6 +129,8 @@ public class smVisualCellPool implements smI_CellPoolDelegate
 		{
 			smU_Debug.ASSERT(cell.getParent() == m_cellContainer, "processRemovals1");
 			
+			//--- DRK > No real need to remove from parent I think.
+			//---		It's just invisible, and will probably be added back eventually anyway.
 			//cell.removeFromParent();
 		}
 		

@@ -35,7 +35,7 @@ public class smSqlAccountDatabase extends smA_SqlDatabase implements smI_Account
 	{
 		Connection connection = getConnection();
 
-		PreparedStatement statement = connection.prepareStatement(smS_AccountSql.ADD_ACCOUNT);
+		PreparedStatement statement = connection.prepareStatement(smS_AccountQuery.ADD_ACCOUNT);
 
 		statement.setInt(1,		id);
 		statement.setString(2,	email);
@@ -47,17 +47,16 @@ public class smSqlAccountDatabase extends smA_SqlDatabase implements smI_Account
 		statement.executeUpdate();
 	}
 
-	public byte[] getPasswordSalt(String emailOrUsername, E_PasswordType passwordType) throws SQLException
+	public byte[] getPasswordSalt(String email, E_PasswordType passwordType) throws SQLException
 	{
 		byte[] salt = null;
 		
 		Connection connection = getConnection();
 		
-		String query = passwordType == E_PasswordType.CURRENT ? smS_AccountSql.GET_SALT : smS_AccountSql.GET_NEW_SALT;
+		String query = passwordType == E_PasswordType.CURRENT ? smS_AccountQuery.GET_SALT : smS_AccountQuery.GET_NEW_SALT;
 		
 		PreparedStatement statement = connection.prepareStatement(query);
-		statement.setString(1, emailOrUsername);
-		statement.setString(2, emailOrUsername);
+		statement.setString(1, email);
 		ResultSet result = statement.executeQuery();
 
 		if (result.next())
@@ -74,7 +73,7 @@ public class smSqlAccountDatabase extends smA_SqlDatabase implements smI_Account
 		
 		Connection connection = getConnection();
 			
-		PreparedStatement statement = connection.prepareStatement(smS_AccountSql.CONTAINS_SIGNUP);
+		PreparedStatement statement = connection.prepareStatement(smS_AccountQuery.CONTAINS_SIGNUP);
 		statement.setString(1, email);
 		statement.setString(2, username);
 		ResultSet result = statement.executeQuery();
@@ -145,43 +144,40 @@ public class smSqlAccountDatabase extends smA_SqlDatabase implements smI_Account
 		return null;
 	}
 
-	public smUserSession containsSignInCredentials(String emailOrUsername, byte[] passwordHash) throws SQLException
+	public smUserSession containsSignInCredentials(String email, byte[] passwordHash) throws SQLException
 	{
 		Connection connection = getConnection();
 		
-		PreparedStatement statement = connection.prepareStatement(smS_AccountSql.CONTAINS_SIGNIN);
-		statement.setString(1, emailOrUsername);
-		statement.setString(2, emailOrUsername);
-		statement.setBytes(3, passwordHash);
+		PreparedStatement statement = connection.prepareStatement(smS_AccountQuery.CONTAINS_SIGNIN);
+		statement.setString(1, email);
+		statement.setBytes(2, passwordHash);
 
 		return getUserSessionFromSignInQuery(statement);
 	}
 	
-	public smUserSession confirmNewPassword(String emailOrUsername, byte[] newPasswordHash, byte[] newPasswordSalt, byte[] changeToken, Timestamp expirationThreshold) throws SQLException
+	public smUserSession confirmNewPassword(String email, byte[] newPasswordHash, byte[] newPasswordSalt, byte[] changeToken, Timestamp expirationThreshold) throws SQLException
 	{
 		Connection connection = getConnection();
 		
-		PreparedStatement statement = connection.prepareStatement(smS_AccountSql.CONTAINS_NEW_SIGNIN);
-		statement.setString(1, emailOrUsername);
-		statement.setString(2, emailOrUsername);
-		statement.setBytes(3, newPasswordHash);
-		statement.setBytes(4, changeToken);
-		statement.setTimestamp(5, expirationThreshold);
+		PreparedStatement statement = connection.prepareStatement(smS_AccountQuery.CONTAINS_NEW_SIGNIN);
+		statement.setString(1, email);
+		statement.setBytes(2, newPasswordHash);
+		statement.setBytes(3, changeToken);
+		statement.setTimestamp(4, expirationThreshold);
 
 		smUserSession userSession = getUserSessionFromSignInQuery(statement);
 		
 		if( userSession != null )
 		{
-			statement = connection.prepareStatement(smS_AccountSql.SWITCH_TO_NEW_PASSWORD);
+			statement = connection.prepareStatement(smS_AccountQuery.SWITCH_TO_NEW_PASSWORD);
 			statement.setBytes(1, newPasswordHash);
 			statement.setBytes(2, newPasswordSalt);
 			statement.setBytes(3, null);
 			statement.setBytes(4, null);
 			statement.setBytes(5, null);
 			statement.setTimestamp(6, null);
-			statement.setString(7, emailOrUsername);
-			statement.setString(8, emailOrUsername);
-			statement.setBytes(9, newPasswordHash);
+			statement.setString(7, email);
+			statement.setBytes(8, newPasswordHash);
 			
 			if( !smU_Sql.isSuccessfulUpdate(statement.executeUpdate()) )
 			{
@@ -198,7 +194,7 @@ public class smSqlAccountDatabase extends smA_SqlDatabase implements smI_Account
 	{
 		Connection connection = getConnection();
 		
-		PreparedStatement statement = connection.prepareStatement(smS_AccountSql.IS_PASSWORD_CHANGE_TOKEN_VALID);
+		PreparedStatement statement = connection.prepareStatement(smS_AccountQuery.IS_PASSWORD_CHANGE_TOKEN_VALID);
 		
 		statement.setBytes(1, changeToken);
 		statement.setTimestamp(2, expirationThreshold);
@@ -215,18 +211,17 @@ public class smSqlAccountDatabase extends smA_SqlDatabase implements smI_Account
 		}
 	}
 	
-	public boolean setNewDesiredPassword(String emailOrUsername, byte[] passwordHash, byte[] passwordSalt, byte[] changeToken, Timestamp time) throws SQLException
+	public boolean setNewDesiredPassword(String email, byte[] passwordHash, byte[] passwordSalt, byte[] changeToken, Timestamp time) throws SQLException
 	{
 		Connection connection = getConnection();
 		
-		PreparedStatement statement = connection.prepareStatement(smS_AccountSql.SET_NEW_DESIRED_PASSWORD);
+		PreparedStatement statement = connection.prepareStatement(smS_AccountQuery.SET_NEW_DESIRED_PASSWORD);
 		
 		statement.setBytes(1, passwordHash);
 		statement.setBytes(2, passwordSalt);
 		statement.setBytes(3, changeToken);
 		statement.setTimestamp(4, time);
-		statement.setString(5, emailOrUsername);
-		statement.setString(6, emailOrUsername);
+		statement.setString(5, email);
 
 		return smU_Sql.isSuccessfulUpdate(statement.executeUpdate());
 	}
