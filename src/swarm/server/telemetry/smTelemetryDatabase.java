@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import swarm.server.account.smS_AccountQuery;
 import swarm.server.data.sql.smA_SqlDatabase;
 import swarm.server.data.sql.smI_SqlEncodable;
 import swarm.shared.structs.smTuple;

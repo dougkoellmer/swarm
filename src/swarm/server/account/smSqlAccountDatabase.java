@@ -35,7 +35,7 @@ public class smSqlAccountDatabase extends smA_SqlDatabase implements smI_Account
 	{
 		Connection connection = getConnection();
 
-		PreparedStatement statement = connection.prepareStatement(smS_AccountQuery.ADD_ACCOUNT);
+		PreparedStatement statement = connection.prepareStatement(smS_AccountSql.ADD_ACCOUNT);
 
 		statement.setInt(1,		id);
 		statement.setString(2,	email);
@@ -53,7 +53,7 @@ public class smSqlAccountDatabase extends smA_SqlDatabase implements smI_Account
 		
 		Connection connection = getConnection();
 		
-		String query = passwordType == E_PasswordType.CURRENT ? smS_AccountQuery.GET_SALT : smS_AccountQuery.GET_NEW_SALT;
+		String query = passwordType == E_PasswordType.CURRENT ? smS_AccountSql.GET_SALT : smS_AccountSql.GET_NEW_SALT;
 		
 		PreparedStatement statement = connection.prepareStatement(query);
 		statement.setString(1, email);
@@ -73,7 +73,7 @@ public class smSqlAccountDatabase extends smA_SqlDatabase implements smI_Account
 		
 		Connection connection = getConnection();
 			
-		PreparedStatement statement = connection.prepareStatement(smS_AccountQuery.CONTAINS_SIGNUP);
+		PreparedStatement statement = connection.prepareStatement(smS_AccountSql.CONTAINS_SIGNUP);
 		statement.setString(1, email);
 		statement.setString(2, username);
 		ResultSet result = statement.executeQuery();
@@ -109,7 +109,7 @@ public class smSqlAccountDatabase extends smA_SqlDatabase implements smI_Account
 		smUserSession userSession = null;
 		connection = getConnection();
 		
-		PreparedStatement statement = connection.prepareStatement(smS_AccountQuery.CONTAINS_ACCOUNT_ID);
+		PreparedStatement statement = connection.prepareStatement(smS_AccountSql.CONTAINS_ACCOUNT_ID);
 		statement.setInt(1, accountId);
 
 		ResultSet result = statement.executeQuery();
@@ -148,7 +148,7 @@ public class smSqlAccountDatabase extends smA_SqlDatabase implements smI_Account
 	{
 		Connection connection = getConnection();
 		
-		PreparedStatement statement = connection.prepareStatement(smS_AccountQuery.CONTAINS_SIGNIN);
+		PreparedStatement statement = connection.prepareStatement(smS_AccountSql.CONTAINS_SIGNIN);
 		statement.setString(1, email);
 		statement.setBytes(2, passwordHash);
 
@@ -159,7 +159,7 @@ public class smSqlAccountDatabase extends smA_SqlDatabase implements smI_Account
 	{
 		Connection connection = getConnection();
 		
-		PreparedStatement statement = connection.prepareStatement(smS_AccountQuery.CONTAINS_NEW_SIGNIN);
+		PreparedStatement statement = connection.prepareStatement(smS_AccountSql.CONTAINS_NEW_SIGNIN);
 		statement.setString(1, email);
 		statement.setBytes(2, newPasswordHash);
 		statement.setBytes(3, changeToken);
@@ -169,7 +169,7 @@ public class smSqlAccountDatabase extends smA_SqlDatabase implements smI_Account
 		
 		if( userSession != null )
 		{
-			statement = connection.prepareStatement(smS_AccountQuery.SWITCH_TO_NEW_PASSWORD);
+			statement = connection.prepareStatement(smS_AccountSql.SWITCH_TO_NEW_PASSWORD);
 			statement.setBytes(1, newPasswordHash);
 			statement.setBytes(2, newPasswordSalt);
 			statement.setBytes(3, null);
@@ -194,7 +194,7 @@ public class smSqlAccountDatabase extends smA_SqlDatabase implements smI_Account
 	{
 		Connection connection = getConnection();
 		
-		PreparedStatement statement = connection.prepareStatement(smS_AccountQuery.IS_PASSWORD_CHANGE_TOKEN_VALID);
+		PreparedStatement statement = connection.prepareStatement(smS_AccountSql.IS_PASSWORD_CHANGE_TOKEN_VALID);
 		
 		statement.setBytes(1, changeToken);
 		statement.setTimestamp(2, expirationThreshold);
@@ -215,7 +215,7 @@ public class smSqlAccountDatabase extends smA_SqlDatabase implements smI_Account
 	{
 		Connection connection = getConnection();
 		
-		PreparedStatement statement = connection.prepareStatement(smS_AccountQuery.SET_NEW_DESIRED_PASSWORD);
+		PreparedStatement statement = connection.prepareStatement(smS_AccountSql.SET_NEW_DESIRED_PASSWORD);
 		
 		statement.setBytes(1, passwordHash);
 		statement.setBytes(2, passwordSalt);
