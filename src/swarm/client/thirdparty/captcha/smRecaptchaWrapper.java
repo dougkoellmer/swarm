@@ -9,7 +9,7 @@ public class smRecaptchaWrapper
 	{
 		
 	}
-	
+
 	public native String getResponse()
 	/*-{
 			return $wnd.Recaptcha.get_response();

@@ -54,9 +54,14 @@ import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -229,6 +234,17 @@ public class smSignUpPanel extends VerticalPanel implements smI_StateEventListen
 		bottomDock.setCellHorizontalAlignment(wrapper, HasHorizontalAlignment.ALIGN_LEFT);
 		
 		m_stack.add(bottomDock);
+		
+		/*this.sinkEvents(Event.KEYEVENTS);
+		
+		this.addDomHandler(new KeyDownHandler()
+		{
+			@Override
+			public void onKeyDown(KeyDownEvent event)
+			{
+				s_logger.severe("ERERERER");
+			}
+		}, KeyDownEvent.getType());*/
 		
 		/*final Label legal = new Label();
 		String termsHref = smU_Code.transformPathToJavascript("b33hive/terms");

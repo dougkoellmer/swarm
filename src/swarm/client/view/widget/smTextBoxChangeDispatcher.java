@@ -31,6 +31,8 @@ public class smTextBoxChangeDispatcher
 				{
 					dispatchTextChangeDeferred();
 				}
+				
+				event.preventDefault();
 			}
 		});
 		

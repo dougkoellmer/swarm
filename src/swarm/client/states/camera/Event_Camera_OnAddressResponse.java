@@ -15,11 +15,21 @@ public class Event_Camera_OnAddressResponse extends smA_EventAction
 	
 	public static class Args extends smA_ActionArgs
 	{
-		private final smCellAddress m_address;
-		private final smCellAddressMapping m_mapping;
-		private final Event_Camera_OnAddressResponse.E_Type m_responseType;
+		private smCellAddress m_address;
+		private smCellAddressMapping m_mapping;
+		private Event_Camera_OnAddressResponse.E_Type m_responseType;
 		
-		Args(Event_Camera_OnAddressResponse.E_Type responseType, smCellAddress address, smCellAddressMapping mapping )
+		Args()
+		{
+			init(null, null, null);
+		}
+		
+		Args(Event_Camera_OnAddressResponse.E_Type responseType, smCellAddress address, smCellAddressMapping mapping)
+		{
+			init(responseType, address, mapping);
+		}
+		
+		public void init(Event_Camera_OnAddressResponse.E_Type responseType, smCellAddress address, smCellAddressMapping mapping)
 		{
 			m_responseType = responseType;
 			m_address = address;

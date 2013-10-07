@@ -98,7 +98,7 @@ public class smBrowserNavigator implements smI_StateEventListener
 				
 				if( state.getMapping() != null )
 				{
-					m_args_SnapToCoordinate.setCoordinate(state.getMapping().getCoordinate());
+					m_args_SnapToCoordinate.init(state.getMapping().getCoordinate());
 					
 					if( !m_stateContext.isActionPerformable(Action_Camera_SnapToCoordinate.class, m_args_SnapToCoordinate) )
 					{

@@ -10,6 +10,9 @@ class smCellAddressManagerListener implements smCellAddressManager.I_Listener
 {
 	private final StateMachine_Camera m_machine;
 	
+	private final Event_Camera_OnAddressResponse.Args m_onAddressResponseArgs = new Event_Camera_OnAddressResponse.Args();
+	private final Action_Camera_SnapToCoordinate.Args m_snapToCoordArgs = new Action_Camera_SnapToCoordinate.Args();
+	
 	smCellAddressManagerListener(StateMachine_Camera machine)
 	{
 		m_machine = machine;
@@ -62,9 +65,8 @@ class smCellAddressManagerListener implements smCellAddressManager.I_Listener
 		
 		if( dispatch )
 		{
-			Event_Camera_OnAddressResponse.Args args = new Event_Camera_OnAddressResponse.Args(type, address, mapping);
-			
-			m_machine.performAction(Event_Camera_OnAddressResponse.class, args);
+			m_onAddressResponseArgs.init(type, address, mapping);
+			m_machine.performAction(Event_Camera_OnAddressResponse.class, m_onAddressResponseArgs);
 		}
 	}
 	
@@ -73,7 +75,8 @@ class smCellAddressManagerListener implements smCellAddressManager.I_Listener
 	{
 		if( dispatchGotMappingEvent(Event_GettingMapping_OnResponse.E_Type.ON_FOUND, address, mapping) )
 		{
-			m_machine.snapToCoordinate(address, mapping.getCoordinate());
+			m_snapToCoordArgs.init(address, mapping.getCoordinate());
+			m_machine.performAction(Action_Camera_SnapToCoordinate.class, m_snapToCoordArgs);
 		}
 	}
 

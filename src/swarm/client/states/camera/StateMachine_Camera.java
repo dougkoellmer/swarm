@@ -34,7 +34,6 @@ import swarm.shared.debugging.smU_Debug;
 import swarm.shared.entities.smE_CodeType;
 import swarm.shared.json.smI_JsonObject;
 import swarm.shared.statemachine.smA_Action;
-
 import swarm.shared.statemachine.smA_State;
 import swarm.shared.statemachine.smA_StateMachine;
 import swarm.shared.statemachine.smI_StateEventListener;
@@ -72,6 +71,7 @@ public class StateMachine_Camera extends smA_StateMachine implements smI_StateEv
 	private final smLocalCodeRepositoryWrapper m_codeRepo = new smLocalCodeRepositoryWrapper();
 	
 	private final smCellAddressManagerListener m_addressManagerListener = new smCellAddressManagerListener(this);
+	private final Action_Camera_SnapToCoordinate.Args m_snapToCoordArgs = new Action_Camera_SnapToCoordinate.Args();
 	
 	private final smAppContext m_appContext;
 	
@@ -234,7 +234,7 @@ public class StateMachine_Camera extends smA_StateMachine implements smI_StateEv
 		
 		if( m_pendingSnap != null )
 		{
-			this.snapToCoordinate(m_pendingSnap.m_address, m_pendingSnap.m_coordinate);
+			m_snapToCoordArgs.init(m_pendingSnap.m_address, m_pendingSnap.m_coordinate);
 			
 			m_pendingSnap = null;
 		}

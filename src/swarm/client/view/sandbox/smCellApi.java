@@ -297,7 +297,7 @@ public class smCellApi
 			return;
 		}
 		
-		m_snapCoordArgs.setCoordinate(coordinate);
+		m_snapCoordArgs.init(coordinate);
 		m_viewContext.stateContext.performAction(Action_Camera_SnapToCoordinate.class, m_snapCoordArgs);
 	}
 	
