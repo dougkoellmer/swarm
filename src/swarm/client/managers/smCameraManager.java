@@ -103,13 +103,27 @@ public class smCameraManager
 		m_camera.update();
 	}
 	
+	private void constrainPoint(smPoint point_out)
+	{
+		double maxZ = m_camera.calcMaxZ();
+		
+		//--- DRK < Constrain Z position.
+		if( point_out.getZ() > maxZ )
+		{
+			point_out.setZ(maxZ);
+		}
+		else if( point_out.getZ() < 0 )
+		{
+			point_out.setZ(0);
+		}
+	}
+	
 	public void setTargetPosition(smPoint point, boolean instant)
 	{
 		smA_Grid grid = m_gridMngr.getGrid();
 		
 		smPoint oldTargetPosition = m_utilPoint;
 		oldTargetPosition.copy(m_targetPosition);
-		double maxZ = m_camera.calcMaxZ();
 		
 		//--- DRK > This is here so that given target points can selectively choose which
 		//---		components they want to update. For example a zoom action might set x
@@ -123,15 +137,7 @@ public class smCameraManager
 			}
 		}
 		
-		//--- DRK < Constrain Z position.
-		if( m_targetPosition.getZ() > maxZ )
-		{
-			m_targetPosition.setZ(maxZ);
-		}
-		else if( m_targetPosition.getZ() < 0 )
-		{
-			m_targetPosition.setZ(0);
-		}
+		this.constrainPoint(m_targetPosition);
 		
 		if( instant )
 		{
@@ -214,16 +220,7 @@ public class smCameraManager
 		
 		if( enforceZConstraints )
 		{
-			double maxZ = m_camera.calcMaxZ();
-			
-			if( m_targetPosition.getZ() > maxZ )
-			{
-				m_targetPosition.setZ(maxZ);
-			}
-			else if( m_targetPosition.getZ() < 0 )
-			{
-				m_targetPosition.setZ(0);
-			}
+			constrainPoint(m_targetPosition);
 		}
 		
 		m_camera.getPosition().copy(m_targetPosition);

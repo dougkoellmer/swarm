@@ -6,7 +6,7 @@ import swarm.shared.statemachine.smA_ActionArgs;
 import swarm.shared.statemachine.smA_State;
 import swarm.shared.structs.smPoint;
 
-public class Action_Camera_SetCameraTarget extends smA_CameraAction
+public class Action_Camera_SnapToPoint extends smA_CameraAction
 {
 	public static class Args extends smA_ActionArgs
 	{
@@ -44,7 +44,7 @@ public class Action_Camera_SetCameraTarget extends smA_CameraAction
 	
 	private final smCameraManager m_cameraMngr;
 	
-	public Action_Camera_SetCameraTarget(smCameraManager cameraMngr)
+	public Action_Camera_SnapToPoint(smCameraManager cameraMngr)
 	{
 		m_cameraMngr = cameraMngr;
 	}

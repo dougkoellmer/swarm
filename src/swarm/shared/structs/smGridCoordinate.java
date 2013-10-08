@@ -163,11 +163,11 @@ public class smGridCoordinate extends smA_JsonEncodable implements smI_JsonCompa
 	}
 	
 	public void calcCenterPoint(smPoint outPoint, double cellWidth, double cellHeight, int cellPadding, int subCellCount)
-	{
+	{		
+		calcPoint(outPoint, cellWidth, cellHeight, cellPadding, subCellCount);
+		
 		cellWidth = cellWidth * subCellCount;
 		cellHeight = cellHeight * subCellCount;
-		
-		calcPoint(outPoint, cellWidth, cellHeight, cellPadding, subCellCount);
 		
 		outPoint.inc(cellWidth/2.0, cellHeight/2.0, 0.0);
 	}

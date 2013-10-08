@@ -11,6 +11,7 @@ import swarm.shared.json.smI_JsonObject;
 import swarm.shared.json.smJsonHelper;
 import swarm.shared.structs.smBitArray;
 import swarm.shared.structs.smGridCoordinate;
+import swarm.shared.structs.smPoint;
 
 /**
  * ...
@@ -28,6 +29,28 @@ public abstract class smA_Grid extends smA_JsonEncodable
 	
 	public smA_Grid()
 	{
+	}
+	
+	public void calcCoordTopLeftPoint(smGridCoordinate coordinate, int subCellDimension, smPoint point_out)
+	{
+		m_cellWidth = m_cellWidth * subCellDimension;
+		m_cellHeight = m_cellHeight * subCellDimension;
+		m_cellPadding = m_cellPadding * subCellDimension;
+		double x = coordinate.getM() * m_cellWidth + (coordinate.getM() * m_cellPadding);
+		double y = coordinate.getN() * m_cellHeight + (coordinate.getN() * m_cellPadding);
+		
+		point_out.set(x, y, 0.0);
+	}
+	
+	public void calcCoordCenterPoint(smGridCoordinate coordinate, int subCellDimension, smPoint point_out)
+	{
+		calcCoordTopLeftPoint(coordinate, subCellDimension, point_out);
+		
+		//--- TODO(DRK): Probably needs to take into account padding for higher sub-cell dimensions.
+		double cellWidth = m_cellWidth * subCellDimension;
+		double cellHeight = m_cellHeight * subCellDimension;
+		
+		point_out.inc(cellWidth/2.0, cellHeight/2.0, 0.0);
 	}
 	
 	public void claimCoordinate(smGridCoordinate coordinate)

@@ -7,7 +7,7 @@ import swarm.client.entities.smA_ClientUser;
 import swarm.client.managers.smClientAccountManager;
 import swarm.client.managers.smUserManager;
 import swarm.client.navigation.smBrowserNavigator;
-import swarm.client.states.camera.Action_Camera_SetCameraTarget;
+import swarm.client.states.camera.Action_Camera_SnapToPoint;
 import swarm.client.states.camera.Action_Camera_SnapToAddress;
 import swarm.client.states.camera.Action_Camera_SnapToCoordinate;
 import swarm.client.states.camera.Action_ViewingCell_Refresh;
@@ -33,7 +33,7 @@ public class smCellApi
 {
 	private static final Action_Camera_SnapToCoordinate.Args m_snapCoordArgs = new Action_Camera_SnapToCoordinate.Args();
 	private static final Action_Camera_SnapToAddress.Args m_snapAddressArgs = new Action_Camera_SnapToAddress.Args();
-	private static final Action_Camera_SetCameraTarget.Args m_snapPointArgs = new Action_Camera_SetCameraTarget.Args();
+	private static final Action_Camera_SnapToPoint.Args m_snapPointArgs = new Action_Camera_SnapToPoint.Args();
 	
 	private final smViewContext m_viewContext;
 	
@@ -275,7 +275,7 @@ public class smCellApi
 		smPoint point = new smPoint(x, y, z);
 
 		m_snapPointArgs.init(point, false);
-		m_viewContext.stateContext.performAction(Action_Camera_SetCameraTarget.class, m_snapPointArgs);
+		m_viewContext.stateContext.performAction(Action_Camera_SnapToPoint.class, m_snapPointArgs);
 	}
 	
 	/*private static void snapToRelativePoint(double x, double y, double z)

@@ -8,7 +8,7 @@ import swarm.client.entities.smE_CodeStatus;
 import swarm.client.input.smClickManager;
 import swarm.client.input.smI_ClickHandler;
 import swarm.client.navigation.smBrowserNavigator;
-import swarm.client.states.camera.Action_Camera_SetCameraTarget;
+import swarm.client.states.camera.Action_Camera_SnapToPoint;
 import swarm.client.states.camera.Action_Camera_SetCameraViewSize;
 import swarm.client.states.camera.Action_Camera_SnapToAddress;
 import swarm.client.states.camera.Action_Camera_SnapToCoordinate;
@@ -72,7 +72,7 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 	
 	private final smClientAppConfig m_appConfig;
 	
-	private final Action_Camera_SetCameraTarget.Args m_args_SetCameraTarget = new Action_Camera_SetCameraTarget.Args();
+	private final Action_Camera_SnapToPoint.Args m_args_SetCameraTarget = new Action_Camera_SnapToPoint.Args();
 	
 	public smVisualCellHud(smViewContext viewContext, smClientAppConfig appConfig)
 	{
@@ -158,7 +158,7 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 				s_utilPoint1.incZ(m_appConfig.backOffDistance);
 				
 				m_args_SetCameraTarget.init(s_utilPoint1, false);
-				m_viewContext.stateContext.performAction(Action_Camera_SetCameraTarget.class, m_args_SetCameraTarget);
+				m_viewContext.stateContext.performAction(Action_Camera_SnapToPoint.class, m_args_SetCameraTarget);
 			}
 		});
 		

@@ -8,7 +8,7 @@ import swarm.client.entities.smCamera;
 import swarm.client.input.smBrowserHistoryManager;
 import swarm.client.input.smBrowserAddressManager;
 import swarm.client.managers.smCameraManager;
-import swarm.client.states.camera.Action_Camera_SetCameraTarget;
+import swarm.client.states.camera.Action_Camera_SnapToPoint;
 import swarm.client.states.camera.Action_Camera_SetInitialPosition;
 import swarm.client.states.camera.Action_Camera_SnapToAddress;
 import swarm.client.states.camera.Action_Camera_SnapToCoordinate;
@@ -54,7 +54,7 @@ public class smBrowserNavigator implements smI_StateEventListener
 
 	private Event_Camera_OnAddressResponse.Args 		m_args_OnAddressResponse	= null;
 	private Event_GettingMapping_OnResponse.Args	 	m_args_OnMappingResponse	= null;
-	private final Action_Camera_SetCameraTarget.Args	m_args_SetCameraTarget		= new Action_Camera_SetCameraTarget.Args();
+	private final Action_Camera_SnapToPoint.Args	m_args_SetCameraTarget		= new Action_Camera_SnapToPoint.Args();
 	private final Action_Camera_SetInitialPosition.Args	m_args_SetInitialPosition 	= new Action_Camera_SetInitialPosition.Args();
 	private final Action_Camera_SnapToAddress.Args 		m_args_SnapToAddress		= new Action_Camera_SnapToAddress.Args();
 	private final Action_Camera_SnapToCoordinate.Args 	m_args_SnapToCoordinate		= new Action_Camera_SnapToCoordinate.Args();
@@ -111,7 +111,7 @@ public class smBrowserNavigator implements smI_StateEventListener
 				}
 				else if( state.getPoint() != null )
 				{
-					if( !m_stateContext.isActionPerformable(Action_Camera_SetCameraTarget.class) )
+					if( !m_stateContext.isActionPerformable(Action_Camera_SnapToPoint.class) )
 					{
 						m_historyManager./*re*/pushState(path, state.getPoint());
 					}
@@ -127,7 +127,7 @@ public class smBrowserNavigator implements smI_StateEventListener
 						else
 						{
 							m_args_SetCameraTarget.init(state.getPoint(), false);
-							m_stateContext.performAction(Action_Camera_SetCameraTarget.class, m_args_SetCameraTarget);
+							m_stateContext.performAction(Action_Camera_SnapToPoint.class, m_args_SetCameraTarget);
 							
 							//s_logger.info("SETTING TARGET POINT: " + state.getPoint());
 						}
@@ -494,7 +494,7 @@ public class smBrowserNavigator implements smI_StateEventListener
 					
 					m_lastSnapAction = event.getAction();
 				}
-				else if( event.getAction() == Action_Camera_SetCameraTarget.class )
+				else if( event.getAction() == Action_Camera_SnapToPoint.class )
 				{
 					State_CameraFloating floatingState = m_stateContext.getEnteredState(State_CameraFloating.class);
 					
@@ -502,7 +502,7 @@ public class smBrowserNavigator implements smI_StateEventListener
 					
 					if( floatingState != null )
 					{
-						Action_Camera_SetCameraTarget.Args args = event.getActionArgs();
+						Action_Camera_SnapToPoint.Args args = event.getActionArgs();
 						
 						if( args != null )
 						{

@@ -8,7 +8,7 @@ import swarm.client.input.smClickManager;
 import swarm.client.input.smI_ClickHandler;
 import swarm.client.managers.smCameraManager;
 import swarm.client.states.StateMachine_Base;
-import swarm.client.states.camera.Action_Camera_SetCameraTarget;
+import swarm.client.states.camera.Action_Camera_SnapToPoint;
 import swarm.client.states.camera.Action_Camera_SetCameraViewSize;
 import swarm.client.states.camera.Action_Camera_SetInitialPosition;
 import swarm.client.states.camera.StateMachine_Camera;
@@ -89,7 +89,7 @@ public class smMagnifier extends FlowPanel implements smI_StateEventListener
 	
 	private final smPoint m_utilPoint = new smPoint();
 	
-	private final Action_Camera_SetCameraTarget.Args m_args_SetCameraTarget = new Action_Camera_SetCameraTarget.Args();
+	private final Action_Camera_SnapToPoint.Args m_args_SetCameraTarget = new Action_Camera_SnapToPoint.Args();
 	
 	private final double m_tickRatio;
 	private final double m_fadeInTime_seconds;
@@ -400,7 +400,7 @@ public class smMagnifier extends FlowPanel implements smI_StateEventListener
 			if ( setTarget )
 			{
 				m_args_SetCameraTarget.init(m_utilPoint, false);
-				m_viewContext.stateContext.performAction(Action_Camera_SetCameraTarget.class, m_args_SetCameraTarget);
+				m_viewContext.stateContext.performAction(Action_Camera_SnapToPoint.class, m_args_SetCameraTarget);
 			}
 		}
 		
@@ -512,7 +512,7 @@ public class smMagnifier extends FlowPanel implements smI_StateEventListener
 			
 			case DID_PERFORM_ACTION:
 			{
-				if( event.getAction() == Action_Camera_SetCameraTarget.class )
+				if( event.getAction() == Action_Camera_SnapToPoint.class )
 				{
 					if( event.getActionArgs() != null )
 					{

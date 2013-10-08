@@ -84,8 +84,8 @@ public class State_CameraSnapping extends smA_State implements smI_StateEventLis
 	
 	public State_CameraSnapping(smAppContext appContext, double cellHudHeight)
 	{
-		m_cellHudHeight = cellHudHeight;
 		m_appContext = appContext;
+		m_cellHudHeight = cellHudHeight;
 		
 		m_snapBufferManager = new smCellBufferManager(m_appContext.codeMngr);
 		
@@ -104,46 +104,65 @@ public class State_CameraSnapping extends smA_State implements smI_StateEventLis
 	void updateGridCoordinate(smGridCoordinate targetCoordinate, smCellAddress targetAddress_nullable)
 	{
 		smA_Grid grid = m_appContext.gridMngr.getGrid();
+		smCamera camera = m_appContext.cameraMngr.getCamera();
+		StateMachine_Camera machine = this.getParent();
 		
 		m_targetAddress = targetAddress_nullable;
 		
-		if( m_targetGridCoordinate.isEqualTo(targetCoordinate) )
-		{
-			return;
-		}
+		boolean sameCoordinateAsLastTime = m_targetGridCoordinate.isEqualTo(targetCoordinate);
 		
 		m_targetGridCoordinate.copy(targetCoordinate);
-		m_targetGridCoordinate.calcCenterPoint(m_utilPoint, grid.getCellWidth(), grid.getCellHeight(), grid.getCellPadding(), 1);
-		m_utilPoint.incY(-m_cellHudHeight/2);
+		
+		machine.calcViewWindowCenter(grid, m_targetGridCoordinate, m_utilPoint);
+		
+		double viewWidth = camera.getViewWidth();
+		double viewHeight = camera.getViewHeight();
+		double cellWidth = machine.calcViewWindowWidth(grid);
+		double cellHeight = machine.calcViewWindowHeight(grid);
+		
+		if( viewWidth < cellWidth )
+		{
+			m_utilPoint.incX(-((cellWidth - viewWidth)/2));
+		}
+		if( viewHeight < cellHeight )
+		{
+			m_utilPoint.incY(-((cellHeight - viewHeight)/2));
+		}
 		
 		m_snapCamera.getPosition().copy(m_utilPoint);
 		
-		//--- This "nuke" used to get rid of everything, but that sort of broke the UI experience,
-		//--- and most of the time resulted in too much network traffic, so now only errors are cleared.
-		//--- User can still get guaranteed fresh version from server using refresh button.
-		smE_CellNuke nukeType = smE_CellNuke.ERRORS_ONLY;
-		m_appContext.codeMngr.nukeFromOrbit(targetCoordinate, nukeType);
-		
-		//--- DRK > Not flushing populator here because requestCodeForTargetCell() will do it for us.
-		this.updateSnapBufferManager(false);
-		
-		this.m_hasRequestedSourceCode = false;
-		this.m_hasRequestedCompiledCode = false;
-		
-		if( m_targetAddress == null )
+		if( !sameCoordinateAsLastTime )
 		{
-			//--- DRK > Try to get address ourselves...could turn up null.
-			smCellAddressMapping mapping = new smCellAddressMapping(m_targetGridCoordinate);
-			smCellAddressManager addyManager = m_appContext.addressMngr;
-			addyManager.getCellAddress(mapping, smE_TransactionAction.QUEUE_REQUEST);
+			//--- This "nuke" used to get rid of everything, but that sort of broke the UI experience,
+			//--- and most of the time resulted in too much network traffic, so now only errors are cleared.
+			//--- User can still get guaranteed fresh version from server using refresh button.
+			smE_CellNuke nukeType = smE_CellNuke.ERRORS_ONLY;
+			m_appContext.codeMngr.nukeFromOrbit(targetCoordinate, nukeType);
+			
+			//--- DRK > Not flushing populator here because requestCodeForTargetCell() will do it for us.
+			this.updateSnapBufferManager(false);
+			
+			this.m_hasRequestedSourceCode = false;
+			this.m_hasRequestedCompiledCode = false;
+			
+			if( m_targetAddress == null )
+			{
+				//--- DRK > Try to get address ourselves...could turn up null.
+				smCellAddressMapping mapping = new smCellAddressMapping(m_targetGridCoordinate);
+				smCellAddressManager addyManager = m_appContext.addressMngr;
+				addyManager.getCellAddress(mapping, smE_TransactionAction.QUEUE_REQUEST);
+			}
+			
+			requestCodeForTargetCell();
 		}
-		
-		requestCodeForTargetCell();
 		
 		smCameraManager manager = m_appContext.cameraMngr;
 		manager.setTargetPosition(m_utilPoint, false);
 		
-		m_snapProgressBase = this.getOverallSnapProgress();
+		if( !sameCoordinateAsLastTime )
+		{
+			m_snapProgressBase = this.getOverallSnapProgress();
+		}
 	}
 	
 	public double getOverallSnapProgress()
@@ -293,12 +312,6 @@ public class State_CameraSnapping extends smA_State implements smI_StateEventLis
 	}
 	
 	@Override
-	protected void willBackground(Class<? extends smA_State> blockingState)
-	{
-		
-	}
-	
-	@Override
 	protected void willExit()
 	{
 		m_targetAddress = null;
@@ -335,6 +348,10 @@ public class State_CameraSnapping extends smA_State implements smI_StateEventLis
 				{
 					smCamera camera = m_appContext.cameraMngr.getCamera();
 					m_snapCamera.setViewRect(camera.getViewWidth(), camera.getViewHeight());
+					
+					//--- DRK > Updating snap point if need be...like a view size smaller
+					//---		than the cell size will push the target point up to the upper left.
+					this.updateGridCoordinate(m_targetGridCoordinate, m_targetAddress);
 					
 					this.updateSnapBufferManager(true);
 				}

@@ -31,6 +31,8 @@ import swarm.shared.app.smS_App;
 import swarm.shared.code.smCompilerResult;
 import swarm.shared.code.smE_CompilationStatus;
 import swarm.shared.debugging.smU_Debug;
+import swarm.shared.entities.smA_Cell;
+import swarm.shared.entities.smA_Grid;
 import swarm.shared.entities.smE_CodeType;
 import swarm.shared.json.smI_JsonObject;
 import swarm.shared.statemachine.smA_Action;
@@ -41,6 +43,7 @@ import swarm.shared.statemachine.smA_StateConstructor;
 import swarm.shared.statemachine.smStateEvent;
 import swarm.shared.structs.smCellAddress;
 import swarm.shared.structs.smGridCoordinate;
+import swarm.shared.structs.smPoint;
 import swarm.shared.structs.smTolerance;
 import swarm.shared.structs.smVector;
 
@@ -75,20 +78,52 @@ public class StateMachine_Camera extends smA_StateMachine implements smI_StateEv
 	
 	private final smAppContext m_appContext;
 	
-	public StateMachine_Camera(smAppContext appContext)
+	private final double m_cellHudHeight;
+	
+	public StateMachine_Camera(smAppContext appContext, double cellHudHeight)
 	{
 		m_appContext = appContext;
+		m_cellHudHeight = cellHudHeight;
 		
 		smA_ClientUser user = m_appContext.userMngr.getUser();
 		m_codeRepo.addSource(user);
 		m_codeRepo.addSource(m_appContext.codeCache);
 		
-		registerAction(new Action_Camera_SetCameraViewSize(m_appContext.cameraMngr));
+		registerAction(new Action_Camera_SetCameraViewSize(m_appContext.cameraMngr, cellHudHeight));
 		registerAction(new Action_Camera_SnapToAddress(m_appContext.addressMngr));
 		registerAction(new Action_Camera_SnapToCoordinate(m_appContext.gridMngr));
 		registerAction(new Event_Camera_OnAddressResponse());
-		registerAction(new Action_Camera_SetCameraTarget(m_appContext.cameraMngr));
+		registerAction(new Action_Camera_SnapToPoint(m_appContext.cameraMngr));
 		registerAction(new Action_Camera_SetInitialPosition(m_appContext.cameraMngr));
+	}
+	
+	double calcViewWindowWidth(smA_Grid grid)
+	{
+		return grid.getCellWidth() + grid.getCellPadding()*2;
+	}
+	
+	double calcViewWindowHeight(smA_Grid grid)
+	{
+		if( m_cellHudHeight > 0 )
+		{
+			return grid.getCellHeight() + m_cellHudHeight + grid.getCellPadding()*3;
+		}
+		else
+		{
+			return grid.getCellHeight() + m_cellHudHeight + grid.getCellPadding()*2;
+		}
+	}
+	
+	void calcViewWindowCenter(smA_Grid grid, smGridCoordinate coord, smPoint point_out)
+	{		
+		grid.calcCoordCenterPoint(coord, 1, point_out);
+		
+		if( m_cellHudHeight > 0 )
+		{
+			double offsetY = (grid.getCellPadding() + m_cellHudHeight)/2;
+			
+			point_out.incY(-offsetY);
+		}
 	}
 	
 	void snapToCellAddress(smCellAddress address)

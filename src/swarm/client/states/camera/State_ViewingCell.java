@@ -6,6 +6,7 @@ import swarm.client.managers.smUserManager;
 import swarm.client.app.smAppContext;
 import swarm.client.entities.smBufferCell;
 import swarm.client.entities.smA_ClientUser;
+import swarm.client.entities.smCamera;
 import swarm.client.entities.smE_CellNuke;
 import swarm.client.entities.smE_CodeStatus;
 import swarm.client.states.code.StateMachine_EditingCode;
@@ -16,7 +17,6 @@ import swarm.shared.app.smS_App;
 import swarm.shared.debugging.smU_Debug;
 import swarm.shared.entities.smE_CodeType;
 import swarm.shared.statemachine.smA_Action;
-
 import swarm.shared.statemachine.smA_State;
 import swarm.shared.statemachine.smI_StateEventListener;
 import swarm.shared.statemachine.smA_StateConstructor;
@@ -48,12 +48,15 @@ public class State_ViewingCell extends smA_State implements smI_StateEventListen
 	
 	private boolean m_hasRequestedSourceCode = false;
 	private final smAppContext m_appContext;
+	private final double m_cellHudHeight;
 	
-	public State_ViewingCell(smAppContext appContext)
+	public State_ViewingCell(smAppContext appContext, double cellHudHeight)
 	{
 		m_appContext = appContext;
+		m_cellHudHeight = cellHudHeight;
 		
 		registerAction(new Action_ViewingCell_Refresh());
+		registerAction(new Action_ViewingCell_SnapToPoint(appContext.cameraMngr, cellHudHeight));
 	}
 	
 	void refreshCell()
@@ -160,6 +163,16 @@ public class State_ViewingCell extends smA_State implements smI_StateEventListen
 						
 						this.requestSourceHtmlForTargetCell();
 					}
+				}
+				
+				break;
+			}
+			
+			case DID_PERFORM_ACTION:
+			{
+				if( event.getAction() == Action_Camera_SetCameraViewSize.class )
+				{
+					
 				}
 				
 				break;
