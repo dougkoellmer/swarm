@@ -157,7 +157,7 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 				coord.calcCenterPoint(s_utilPoint1, grid.getCellWidth(), grid.getCellHeight(), grid.getCellPadding(), 1);
 				s_utilPoint1.incZ(m_appConfig.backOffDistance);
 				
-				m_args_SetCameraTarget.init(s_utilPoint1, false);
+				m_args_SetCameraTarget.init(s_utilPoint1, false, true);
 				m_viewContext.stateContext.performAction(Action_Camera_SnapToPoint.class, m_args_SetCameraTarget);
 			}
 		});
@@ -187,16 +187,19 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 	
 	private void updatePosition(State_ViewingCell state)
 	{
+		int scrollX = this.getParent().getParent().getElement().getScrollLeft();
+		int scrollY = this.getParent().getParent().getElement().getScrollTop();
+		
 		smCamera camera = m_viewContext.appContext.cameraMngr.getCamera();
 		smBufferCell cell = ((State_ViewingCell)state).getCell();
 		smA_Grid grid = cell.getGrid();
 		smGridCoordinate coord = cell.getCoordinate();
 		coord.calcPoint(s_utilPoint1, grid.getCellWidth(), grid.getCellHeight(), grid.getCellPadding(), 1);
 		camera.calcScreenPoint(s_utilPoint1, s_utilPoint2);
-		this.getElement().getStyle().setLeft(s_utilPoint2.getX(), Unit.PX);
+		this.getElement().getStyle().setLeft(s_utilPoint2.getX() + scrollX, Unit.PX);
 		double y = s_utilPoint2.getY()-m_appConfig.cellHudHeight-grid.getCellPadding();
 		y -= 3; // account for margin...sigh
-		this.getElement().getStyle().setTop(y, Unit.PX);
+		this.getElement().getStyle().setTop(y + scrollY, Unit.PX);
 	}
 	
 	private void toggleButtons()

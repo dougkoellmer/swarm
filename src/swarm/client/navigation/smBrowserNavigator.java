@@ -126,7 +126,7 @@ public class smBrowserNavigator implements smI_StateEventListener
 						}
 						else
 						{
-							m_args_SetCameraTarget.init(state.getPoint(), false);
+							m_args_SetCameraTarget.init(state.getPoint(), false, true);
 							m_stateContext.performAction(Action_Camera_SnapToPoint.class, m_args_SetCameraTarget);
 							
 							//s_logger.info("SETTING TARGET POINT: " + state.getPoint());

@@ -3,6 +3,15 @@ package swarm.client.view.cell;
 import java.util.logging.Logger;
 
 
+
+
+
+
+
+
+
+
+
 import swarm.client.view.*;
 import swarm.client.view.alignment.smAlignmentDefinition;
 import swarm.client.view.alignment.smAlignmentRect;
@@ -27,13 +36,22 @@ import swarm.client.entities.smCamera;
 import swarm.client.managers.smCellBufferManager;
 import swarm.client.navigation.smMouseNavigator;
 import swarm.shared.app.smS_App;
+import swarm.shared.entities.smA_Cell;
 import swarm.shared.entities.smA_Grid;
+import swarm.shared.lang.smBoolean;
 import swarm.shared.statemachine.smA_Action;
 import swarm.shared.statemachine.smA_State;
+import swarm.shared.statemachine.smStateContext;
 import swarm.shared.statemachine.smStateEvent;
 import swarm.shared.structs.smPoint;
+import swarm.shared.utils.smU_Math;
+
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.dom.client.Style.Overflow;
+import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.logical.shared.ResizeEvent;
@@ -57,6 +75,7 @@ public class smVisualCellContainer extends FlowPanel implements ResizeHandler, s
 	
 	private final FlowPanel m_cellContainerInner = new FlowPanel();
 	private final FlowPanel m_splashGlass = new FlowPanel();
+	private final FlowPanel m_scrollContainer = new FlowPanel();
 	
 	private final smVisualCellCropper[] m_cropper = new smVisualCellCropper[2];
 	
@@ -74,6 +93,10 @@ public class smVisualCellContainer extends FlowPanel implements ResizeHandler, s
 	public smVisualCellContainer(smViewContext viewContext, smViewConfig config)
 	{
 		m_viewContext = viewContext;
+		
+		m_scrollContainer.addStyleName("sm_cell_scroll_container");
+		
+		this.updateScrolling(null);
 		
 		m_magnifier = new smMagnifier(viewContext, config.magnifierTickCount, config.magFadeInTime_seconds);
 		
@@ -100,8 +123,10 @@ public class smVisualCellContainer extends FlowPanel implements ResizeHandler, s
 		}
 		
 		this.add(magnifierContainer);
-		this.add(m_cellContainerInner);
-		this.add(m_splashGlass);
+		m_scrollContainer.add(m_cellContainerInner);
+		m_scrollContainer.add(m_splashGlass);
+		
+		this.add(m_scrollContainer);
 
 		m_statusAlignment.setPosition(smE_AlignmentType.MASTER_ANCHOR_HORIZONTAL, smE_AlignmentPosition.RIGHT_OR_BOTTOM);
 		m_statusAlignment.setPosition(smE_AlignmentType.MASTER_ANCHOR_VERTICAL, smE_AlignmentPosition.RIGHT_OR_BOTTOM);
@@ -109,6 +134,15 @@ public class smVisualCellContainer extends FlowPanel implements ResizeHandler, s
 		m_statusAlignment.setPosition(smE_AlignmentType.SLAVE_ANCHOR_VERTICAL, smE_AlignmentPosition.RIGHT_OR_BOTTOM);
 		m_statusAlignment.setPadding(smE_AlignmentType.SLAVE_ANCHOR_HORIZONTAL, smS_UI.ADDRESS_STATUS_TOOL_TIP_PADDING);
 		m_statusAlignment.setPadding(smE_AlignmentType.SLAVE_ANCHOR_VERTICAL, smS_UI.ADDRESS_STATUS_TOOL_TIP_PADDING);
+		
+		this.addDomHandler(new ScrollHandler()
+		{
+			@Override
+			public void onScroll(ScrollEvent event)
+			{
+			}
+			
+		}, ScrollEvent.getType());
 	}
 	
 	public FlowPanel getMouseEnabledLayer()
@@ -201,7 +235,7 @@ public class smVisualCellContainer extends FlowPanel implements ResizeHandler, s
 				if( event.getState() instanceof StateMachine_Camera )
 				{
 					//--- DRK > For some reason we can't use the updateCameraViewRect method because
-					//---		offset width/height return 0...I think it's because CSS isn't applied yet.
+					//---		offset width/height returns 0...I think it's because CSS isn't applied yet.
 					//---		So kind of a hack here...would be nice if I could fix this, so...TODO(DRK).
 					int width = (int) Math.round(m_viewContext.splitPanel.getCellPanelWidth());
 					double x = m_viewContext.splitPanel.getTabPanelWidth();
@@ -214,21 +248,22 @@ public class smVisualCellContainer extends FlowPanel implements ResizeHandler, s
 					//--- DRK > Because width/height of "this" is still 0/0, we temporarily
 					//---		give the tool tip an override rectangle to work with.
 					m_statusAlignment.setMasterRect(new smAlignmentRect(x, 0, width, height));
-					
-					//--- DRK > This used to be uncommented, but new set up means width/height of this container is still 0 at this point.
-					//updateCameraViewRect();
 				}
 				else if ( event.getState() instanceof State_ViewingCell )
 				{
-					//TODO: Make sure cell exits cleanly, somehow.
-					
-					//smVisualCell viewedVisualCell = (smVisualCell) m_viewedCell.getVisualization();
-					
-					//smU_UI.toggleSelectability(m_cellContainerInner.getElement(), false);
-					
-					//viewedVisualCell.getElement().blur(); // TODO: This doesn't work to clear selection of cell contents if you navigate away.
-					
-					//m_viewedCell = null;
+					updateScrolling((State_ViewingCell) event.getState());
+					this.updateCameraViewRect();
+				}
+				
+				break;
+			}
+			
+			case DID_EXIT:
+			{
+				if ( event.getState() instanceof State_ViewingCell )
+				{
+					updateScrolling((State_ViewingCell) event.getState());
+					this.updateCameraViewRect();
 				}
 				
 				break;
@@ -318,15 +353,81 @@ public class smVisualCellContainer extends FlowPanel implements ResizeHandler, s
 		m_magnifier.onStateEvent(event);
 	}
 	
+	private void updateScrolling(State_ViewingCell viewingState_nullable)
+	{
+		Style scrollerStyle = this.m_scrollContainer.getElement().getStyle();
+		Style innerStyle = this.m_cellContainerInner.getElement().getStyle();
+		
+		if( viewingState_nullable != null && viewingState_nullable.isEntered() )
+		{
+			StateMachine_Camera machine = viewingState_nullable.getParent();
+			
+			smA_Grid grid = viewingState_nullable.getCell().getGrid();
+			
+			double minViewWidth = machine.calcViewWindowWidth(grid);
+			double minViewHeight = machine.calcViewWindowHeight(grid);
+			double windowWidth = this.getElement().getClientWidth();
+			double windowHeight = this.getElement().getClientHeight();
+			smPoint cameraPoint = m_viewContext.appContext.cameraMngr.getCamera().getPosition();
+			smPoint centerPoint = s_utilPoint1;
+			machine.calcViewWindowCenter(grid, viewingState_nullable.getCell().getCoordinate(), centerPoint);
+			
+			if( windowWidth < minViewWidth )
+			{				
+				scrollerStyle.setOverflowX(Overflow.SCROLL);
+				innerStyle.setProperty("minWidth", minViewWidth+"px");
+			}
+			else
+			{
+				scrollerStyle.setOverflowX(Overflow.HIDDEN);
+				innerStyle.clearProperty("minWidth");
+				m_scrollContainer.getElement().setScrollLeft(0);
+			}
+			
+			if( windowHeight < minViewHeight )
+			{
+				scrollerStyle.setOverflowY(Overflow.SCROLL);
+				innerStyle.setProperty("minHeight", minViewHeight+"px");
+				
+				if( viewingState_nullable.getUpdateCount() == 0 )
+				{
+					double delta = (minViewHeight - windowHeight)/2;
+					double cameraPos = smU_Math.clamp(cameraPoint.getY(), centerPoint.getY()-delta, centerPoint.getY()+delta);
+					double scroll = (cameraPos - (centerPoint.getY()-delta));
+					m_scrollContainer.getElement().setScrollTop((int) Math.round(scroll));
+				}
+			}
+			else
+			{
+				scrollerStyle.setOverflowY(Overflow.HIDDEN);
+				innerStyle.clearProperty("minHeight");
+				m_scrollContainer.getElement().setScrollTop(0);
+			}
+		}
+		else
+		{
+			scrollerStyle.setOverflowX(Overflow.HIDDEN);
+			scrollerStyle.setOverflowY(Overflow.HIDDEN);
+			innerStyle.clearProperty("minWidth");
+			innerStyle.clearProperty("minHeight");
+			m_scrollContainer.getElement().setScrollLeft(0);
+			m_scrollContainer.getElement().setScrollTop(0);
+		}
+	}
+	
 	private void updateCameraViewRect()
 	{
-		m_args_SetCameraViewSize.set(this.getOffsetWidth(), this.getOffsetHeight());
+		m_args_SetCameraViewSize.set(m_scrollContainer.getElement().getClientWidth(), m_scrollContainer.getElement().getClientHeight());
 		m_viewContext.stateContext.performAction(Action_Camera_SetCameraViewSize.class, m_args_SetCameraViewSize);
 	}
 	
 	public void onResize()
 	{
-		updateCameraViewRect();
+		State_ViewingCell viewingState =  m_viewContext.stateContext.getEnteredState(State_ViewingCell.class);
+		
+		this.updateScrolling(viewingState);
+		
+		this.updateCameraViewRect();
 		
 		this.updateCroppers();
 		

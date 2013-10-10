@@ -56,7 +56,6 @@ public class State_ViewingCell extends smA_State implements smI_StateEventListen
 		m_cellHudHeight = cellHudHeight;
 		
 		registerAction(new Action_ViewingCell_Refresh());
-		registerAction(new Action_ViewingCell_SnapToPoint(appContext.cameraMngr, cellHudHeight));
 	}
 	
 	void refreshCell()

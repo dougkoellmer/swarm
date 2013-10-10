@@ -19,6 +19,7 @@ public enum smE_ZIndex
 	TAB_SELECTED, 
 	CODE_MIRROR_RELATED,
 	
+	//-- DRK > These are assigned manually to elements' styles.
 	CELL_CONTENT,
 	CELL_STATUS,
 	CELL_GLASS,

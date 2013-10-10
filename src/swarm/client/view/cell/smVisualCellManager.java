@@ -191,7 +191,8 @@ public class smVisualCellManager implements smI_UIElement
 		boolean use3dTransforms = m_viewContext.appContext.platformInfo.has3dTransforms();
 	
 		String scaleProperty = scaling < NO_SCALING ? smU_Css.createScaleTransform(scaling, use3dTransforms) : null;
-		
+		int scrollX = m_container.getParent().getElement().getScrollLeft();
+		int scrollY = m_container.getParent().getElement().getScrollTop();
 		
 		
 		//--- DRK > NOTE: ALL DOM-manipulation related to cells should occur within this block.
@@ -226,8 +227,9 @@ public class smVisualCellManager implements smI_UIElement
 				
 				ithVisualCell.validate();
 				
-				double translateX = basePoint.getX() + offsetX;
-				double translateY = basePoint.getY() + offsetY;
+				
+				double translateX = basePoint.getX() + offsetX + scrollX;
+				double translateY = basePoint.getY() + offsetY + scrollY;
 				String translateProperty = smU_Css.createTranslateTransform(translateX, translateY, use3dTransforms);
 				String transform = scaleProperty != null ? translateProperty + " " + scaleProperty : translateProperty;
 				String transformProperty = m_viewContext.appContext.platformInfo.getTransformProperty();

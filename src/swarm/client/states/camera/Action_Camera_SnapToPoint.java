@@ -12,23 +12,20 @@ public class Action_Camera_SnapToPoint extends smA_CameraAction
 	{
 		private smPoint m_point;
 		private boolean m_instant;
+		private boolean m_breakViewingState;
 		
 		public Args()
 		{
 			m_point = null;
 			m_instant = false;
+			m_breakViewingState = true;
 		}
 		
-		public Args(smPoint point)
-		{
-			m_point = point;
-			m_instant = false;
-		}
-		
-		public void init(smPoint point, boolean instant)
+		public void init(smPoint point, boolean instant, boolean breakViewingState)
 		{
 			m_point = point;
 			m_instant = instant;
+			m_breakViewingState = breakViewingState;
 		}
 		
 		public smPoint getPoint()
@@ -54,7 +51,13 @@ public class Action_Camera_SnapToPoint extends smA_CameraAction
 	{
 		StateMachine_Camera machine = this.getState();
 		
-		if( !(machine.getCurrentState() instanceof State_CameraFloating) )
+		boolean breakViewingState = args != null ? ((Args)args).m_breakViewingState : true;
+		
+		if( machine.getCurrentState() instanceof State_ViewingCell && breakViewingState )
+		{
+			machine_setState(machine, State_CameraFloating.class);
+		}
+		else if( !(machine.getCurrentState() instanceof State_CameraFloating) )
 		{
 			machine_setState(machine, State_CameraFloating.class);
 		}

@@ -41,9 +41,6 @@ public class Action_Camera_SetCameraViewSize extends smA_Action
 		{
 			State_ViewingCell viewingState = machine.getCurrentState();
 			smCamera camera = m_cameraMngr.getCamera();
-			
-			smPoint cameraPoint = camera.getPosition();
-			Action_ViewingCell_SnapToPoint.snapToPoint(cameraPoint, viewingState, m_cameraMngr, m_cellHudHeight, true);
 		}
 		
 		machine.updateBufferManager();

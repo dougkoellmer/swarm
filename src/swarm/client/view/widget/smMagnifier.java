@@ -399,7 +399,7 @@ public class smMagnifier extends FlowPanel implements smI_StateEventListener
 			
 			if ( setTarget )
 			{
-				m_args_SetCameraTarget.init(m_utilPoint, false);
+				m_args_SetCameraTarget.init(m_utilPoint, false, true);
 				m_viewContext.stateContext.performAction(Action_Camera_SnapToPoint.class, m_args_SetCameraTarget);
 			}
 		}

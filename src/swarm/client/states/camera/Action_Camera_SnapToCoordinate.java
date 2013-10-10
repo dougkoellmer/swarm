@@ -7,6 +7,7 @@ import swarm.shared.statemachine.smA_ActionArgs;
 import swarm.shared.statemachine.smA_State;
 import swarm.shared.structs.smCellAddress;
 import swarm.shared.structs.smGridCoordinate;
+import swarm.shared.structs.smPoint;
 
 public class Action_Camera_SnapToCoordinate extends smA_CameraAction
 {
@@ -14,22 +15,26 @@ public class Action_Camera_SnapToCoordinate extends smA_CameraAction
 	{
 		private smGridCoordinate m_coordinate;
 		private smCellAddress m_address;
+		private smPoint m_point = null;
 		
 		private boolean m_onlyCausedRefresh = false;
 		
 		public Args()
 		{
-			m_coordinate = null;
-		}
-		
-		public Args(smGridCoordinate coord)
-		{
-			init(coord);
+			init(null);
 		}
 		
 		public void init(smGridCoordinate coordinate)
 		{
 			m_coordinate = coordinate;
+			m_address = null;
+			m_point = null;
+		}
+		
+		public void init(smGridCoordinate coordinate, smPoint point)
+		{
+			m_coordinate = coordinate;
+			m_point = point;
 			m_address = null;
 		}
 		
@@ -37,6 +42,14 @@ public class Action_Camera_SnapToCoordinate extends smA_CameraAction
 		{
 			m_address = address;
 			m_coordinate = coordinate;
+			m_point = null;
+		}
+		
+		private void clear()
+		{
+			m_address = null;
+			m_coordinate = null;
+			m_point = null;
 		}
 		
 		public boolean onlyCausedRefresh()
@@ -56,6 +69,7 @@ public class Action_Camera_SnapToCoordinate extends smA_CameraAction
 	public void perform(smA_ActionArgs args)
 	{
 		smGridCoordinate coordinate = ((Args) args).m_coordinate;
+		smPoint point = ((Args) args).m_point;
 		StateMachine_Camera machine = this.getState();
 		smA_State currentState = machine.getCurrentState();
 		
@@ -71,7 +85,9 @@ public class Action_Camera_SnapToCoordinate extends smA_CameraAction
 		}
 		
 		((Args) args).m_onlyCausedRefresh = false;
-		((StateMachine_Camera)this.getState()).snapToCoordinate(((Args) args).m_address, coordinate);
+		((StateMachine_Camera)this.getState()).snapToCoordinate(((Args) args).m_address, coordinate, point);
+		
+		 ((Args) args).clear();
 	}
 	
 	@Override

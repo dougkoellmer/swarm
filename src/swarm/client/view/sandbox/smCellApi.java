@@ -274,7 +274,7 @@ public class smCellApi
 	{
 		smPoint point = new smPoint(x, y, z);
 
-		m_snapPointArgs.init(point, false);
+		m_snapPointArgs.init(point, false, true);
 		m_viewContext.stateContext.performAction(Action_Camera_SnapToPoint.class, m_snapPointArgs);
 	}
 	

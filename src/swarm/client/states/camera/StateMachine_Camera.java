@@ -46,6 +46,7 @@ import swarm.shared.structs.smGridCoordinate;
 import swarm.shared.structs.smPoint;
 import swarm.shared.structs.smTolerance;
 import swarm.shared.structs.smVector;
+import swarm.shared.utils.smU_Math;
 
 /**
  * ...
@@ -97,12 +98,12 @@ public class StateMachine_Camera extends smA_StateMachine implements smI_StateEv
 		registerAction(new Action_Camera_SetInitialPosition(m_appContext.cameraMngr));
 	}
 	
-	double calcViewWindowWidth(smA_Grid grid)
+	public double calcViewWindowWidth(smA_Grid grid)
 	{
 		return grid.getCellWidth() + grid.getCellPadding()*2;
 	}
 	
-	double calcViewWindowHeight(smA_Grid grid)
+	public double calcViewWindowHeight(smA_Grid grid)
 	{
 		if( m_cellHudHeight > 0 )
 		{
@@ -114,7 +115,7 @@ public class StateMachine_Camera extends smA_StateMachine implements smI_StateEv
 		}
 	}
 	
-	void calcViewWindowCenter(smA_Grid grid, smGridCoordinate coord, smPoint point_out)
+	public void calcViewWindowCenter(smA_Grid grid, smGridCoordinate coord, smPoint point_out)
 	{		
 		grid.calcCoordCenterPoint(coord, 1, point_out);
 		
@@ -123,6 +124,32 @@ public class StateMachine_Camera extends smA_StateMachine implements smI_StateEv
 			double offsetY = (grid.getCellPadding() + m_cellHudHeight)/2;
 			
 			point_out.incY(-offsetY);
+		}
+	}
+	
+	public void calcConstrainedCameraPoint(smA_Grid grid, smGridCoordinate coord, smPoint cameraPoint, smPoint point_out)
+	{
+		smCameraManager cameraMngr = this.m_appContext.cameraMngr;
+		
+		double cellWidth = this.calcViewWindowWidth(grid);
+		double cellHeight = this.calcViewWindowHeight(grid);
+		double viewWidth = cameraMngr.getCamera().getViewWidth();
+		double viewHeight = cameraMngr.getCamera().getViewHeight();
+		
+		this.calcViewWindowCenter(grid, coord, point_out);
+
+		if( viewWidth < cellWidth )
+		{
+			double diff = (cellWidth - viewWidth)/2;
+			double x = smU_Math.clamp(cameraPoint.getX(), point_out.getX() - diff, point_out.getX() + diff);
+			point_out.setX(x);
+		}
+		
+		if( viewHeight < cellHeight )
+		{
+			double diff = (cellHeight - viewHeight)/2;
+			double y = smU_Math.clamp(cameraPoint.getY(), point_out.getY() - diff, point_out.getY() + diff);
+			point_out.setY(y);
 		}
 	}
 	
@@ -155,7 +182,7 @@ public class StateMachine_Camera extends smA_StateMachine implements smI_StateEv
 	/**
 	 * Address can be null, I think..
 	 */
-	void snapToCoordinate(smCellAddress address_nullable, smGridCoordinate coord)
+	void snapToCoordinate(smCellAddress address_nullable, smGridCoordinate coord, smPoint point_nullable)
 	{
 		if( !this.isForegrounded() )
 		{
@@ -167,11 +194,11 @@ public class StateMachine_Camera extends smA_StateMachine implements smI_StateEv
 		smA_State currentState = this.getCurrentState();
 		if( currentState instanceof State_CameraSnapping )
 		{
-			((State_CameraSnapping)currentState).updateGridCoordinate(coord, address_nullable);
+			((State_CameraSnapping)currentState).updateGridCoordinate(coord, address_nullable, point_nullable);
 		}
 		else
 		{
-			State_CameraSnapping.Constructor constructor = new State_CameraSnapping.Constructor(coord, address_nullable);
+			State_CameraSnapping.Constructor constructor = new State_CameraSnapping.Constructor(coord, address_nullable, point_nullable);
 			machine_setState(this, State_CameraSnapping.class, constructor);
 		}
 	}

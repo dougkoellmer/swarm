@@ -44,20 +44,23 @@ public class State_CameraSnapping extends smA_State implements smI_StateEventLis
 	
 	public static class Constructor extends smA_StateConstructor
 	{
-		public Constructor(smGridCoordinate targetCoordinate)
+		private smGridCoordinate m_targetCoordinate;
+		private smCellAddress m_targetAddress;
+		private smPoint m_targetPoint;
+		
+		public Constructor(smGridCoordinate targetCoordinate, smCellAddress targetAddress_nullable, smPoint targetPoint_nullable)
 		{
 			m_targetCoordinate = targetCoordinate;
+			m_targetAddress = targetAddress_nullable;
+			m_targetPoint = targetPoint_nullable;
+		}
+		
+		private void clear()
+		{
+			m_targetCoordinate = null;
 			m_targetAddress = null;
+			m_targetPoint = null;
 		}
-		
-		public Constructor(smGridCoordinate targetCoordinate, smCellAddress targetAddress)
-		{
-			m_targetCoordinate = targetCoordinate;
-			m_targetAddress = targetAddress;
-		}
-		
-		private final smGridCoordinate m_targetCoordinate;
-		private final smCellAddress m_targetAddress;
 	}
 	
 	private smCellAddress m_targetAddress = null;
@@ -101,7 +104,7 @@ public class State_CameraSnapping extends smA_State implements smI_StateEventLis
 		m_internalCodeRepo.addSource(m_appContext.codeCache);
 	}
 
-	void updateGridCoordinate(smGridCoordinate targetCoordinate, smCellAddress targetAddress_nullable)
+	void updateGridCoordinate(smGridCoordinate targetCoordinate, smCellAddress targetAddress_nullable, smPoint targetPoint_nullable)
 	{
 		smA_Grid grid = m_appContext.gridMngr.getGrid();
 		smCamera camera = m_appContext.cameraMngr.getCamera();
@@ -113,23 +116,34 @@ public class State_CameraSnapping extends smA_State implements smI_StateEventLis
 		
 		m_targetGridCoordinate.copy(targetCoordinate);
 		
-		machine.calcViewWindowCenter(grid, m_targetGridCoordinate, m_utilPoint);
+		smPoint targetPoint;
 		
-		double viewWidth = camera.getViewWidth();
-		double viewHeight = camera.getViewHeight();
-		double cellWidth = machine.calcViewWindowWidth(grid);
-		double cellHeight = machine.calcViewWindowHeight(grid);
-		
-		if( viewWidth < cellWidth )
+		if( targetPoint_nullable == null )
 		{
-			m_utilPoint.incX(-((cellWidth - viewWidth)/2));
+			targetPoint = m_utilPoint;
+			
+			machine.calcViewWindowCenter(grid, m_targetGridCoordinate, targetPoint);
+			
+			double viewWidth = camera.getViewWidth();
+			double viewHeight = camera.getViewHeight();
+			double cellWidth = machine.calcViewWindowWidth(grid);
+			double cellHeight = machine.calcViewWindowHeight(grid);
+			
+			if( viewWidth < cellWidth )
+			{
+				targetPoint.incX(-((cellWidth - viewWidth)/2));
+			}
+			if( viewHeight < cellHeight )
+			{
+				targetPoint.incY(-((cellHeight - viewHeight)/2));
+			}
 		}
-		if( viewHeight < cellHeight )
+		else
 		{
-			m_utilPoint.incY(-((cellHeight - viewHeight)/2));
+			targetPoint = targetPoint_nullable;
 		}
 		
-		m_snapCamera.getPosition().copy(m_utilPoint);
+		m_snapCamera.getPosition().copy(targetPoint);
 		
 		if( !sameCoordinateAsLastTime )
 		{
@@ -157,7 +171,7 @@ public class State_CameraSnapping extends smA_State implements smI_StateEventLis
 		}
 		
 		smCameraManager manager = m_appContext.cameraMngr;
-		manager.setTargetPosition(m_utilPoint, false);
+		manager.setTargetPosition(targetPoint, false);
 		
 		if( !sameCoordinateAsLastTime )
 		{
@@ -263,7 +277,7 @@ public class State_CameraSnapping extends smA_State implements smI_StateEventLis
 	{
 		StateMachine_Camera machine = getParent();
 		
-		Constructor castConstructor = (Constructor) constructor;
+		Constructor constructor_cast = (Constructor) constructor;
 		
 		m_appContext.registerBufferMngr(m_snapBufferManager);
 		
@@ -278,7 +292,9 @@ public class State_CameraSnapping extends smA_State implements smI_StateEventLis
 		
 		m_snapProgressBase = 0;
 
-		updateGridCoordinate(castConstructor.m_targetCoordinate, castConstructor.m_targetAddress);
+		updateGridCoordinate(constructor_cast.m_targetCoordinate, constructor_cast.m_targetAddress, constructor_cast.m_targetPoint);
+		
+		constructor_cast.clear();
 	}
 	
 	@Override
@@ -351,7 +367,7 @@ public class State_CameraSnapping extends smA_State implements smI_StateEventLis
 					
 					//--- DRK > Updating snap point if need be...like a view size smaller
 					//---		than the cell size will push the target point up to the upper left.
-					this.updateGridCoordinate(m_targetGridCoordinate, m_targetAddress);
+					this.updateGridCoordinate(m_targetGridCoordinate, m_targetAddress, m_appContext.cameraMngr.getTargetPosition());
 					
 					this.updateSnapBufferManager(true);
 				}
