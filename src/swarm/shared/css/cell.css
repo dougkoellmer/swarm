@@ -116,3 +116,12 @@
 	
 	position: absolute;
 }
+
+.sm_scrollbar_query
+{
+	width: 100px;
+	height: 100px;
+	overflow: scroll;
+	position: absolute;
+	top: -99999px;
+}

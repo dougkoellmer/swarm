@@ -521,7 +521,8 @@ public class smBrowserNavigator implements smI_StateEventListener
 					}
 					else
 					{
-						smU_Debug.ASSERT(false, "floating state should have been entered.");
+						//--- DRK > Above action can now be performed and not cause floating state to be entered, so commented out for now.
+						//smU_Debug.ASSERT(false, "floating state should have been entered.");
 					}
 				}
 				

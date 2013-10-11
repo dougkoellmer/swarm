@@ -11,7 +11,7 @@ import swarm.client.managers.smCellBuffer;
 import swarm.client.managers.smCellBufferManager;
 import swarm.client.entities.smI_BufferCellListener;
 import swarm.client.states.StateMachine_Base;
-import swarm.client.states.camera.Action_Camera_SetCameraViewSize;
+import swarm.client.states.camera.Action_Camera_SetViewSize;
 import swarm.client.states.camera.Action_ViewingCell_Refresh;
 import swarm.client.states.camera.StateMachine_Camera;
 import swarm.client.states.camera.State_ViewingCell;
@@ -325,7 +325,7 @@ public class smVisualCellManager implements smI_UIElement
 			
 			case DID_PERFORM_ACTION:
 			{
-				if( event.getAction() == Action_Camera_SetCameraViewSize.class ||
+				if( event.getAction() == Action_Camera_SetViewSize.class ||
 					event.getAction() == StateMachine_Base.OnGridUpdate.class )
 				{
 					m_needsUpdateDueToResizingOfCameraOrGrid = true;

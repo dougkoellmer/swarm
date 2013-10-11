@@ -9,7 +9,7 @@ import swarm.client.input.smI_ClickHandler;
 import swarm.client.managers.smCameraManager;
 import swarm.client.states.StateMachine_Base;
 import swarm.client.states.camera.Action_Camera_SnapToPoint;
-import swarm.client.states.camera.Action_Camera_SetCameraViewSize;
+import swarm.client.states.camera.Action_Camera_SetViewSize;
 import swarm.client.states.camera.Action_Camera_SetInitialPosition;
 import swarm.client.states.camera.StateMachine_Camera;
 import swarm.client.states.camera.State_CameraFloating;
@@ -530,7 +530,7 @@ public class smMagnifier extends FlowPanel implements smI_StateEventListener
 						m_underThisControl = false;
 					}
 				}
-				else if( event.getAction()  == Action_Camera_SetCameraViewSize.class )
+				else if( event.getAction()  == Action_Camera_SetViewSize.class )
 				{
 					this.setDraggerPositionFromCamera();
 				}

@@ -90,7 +90,7 @@ public class StateMachine_Camera extends smA_StateMachine implements smI_StateEv
 		m_codeRepo.addSource(user);
 		m_codeRepo.addSource(m_appContext.codeCache);
 		
-		registerAction(new Action_Camera_SetCameraViewSize(m_appContext.cameraMngr, cellHudHeight));
+		registerAction(new Action_Camera_SetViewSize(m_appContext.cameraMngr));
 		registerAction(new Action_Camera_SnapToAddress(m_appContext.addressMngr));
 		registerAction(new Action_Camera_SnapToCoordinate(m_appContext.gridMngr));
 		registerAction(new Event_Camera_OnAddressResponse());
@@ -125,6 +125,13 @@ public class StateMachine_Camera extends smA_StateMachine implements smI_StateEv
 			
 			point_out.incY(-offsetY);
 		}
+	}
+	
+	public void calcViewWindowTopLeft(smA_Grid grid, smGridCoordinate coord, smPoint point_out)
+	{
+		calcViewWindowCenter(grid, coord, point_out);
+		point_out.incX(-calcViewWindowWidth(grid));
+		point_out.incY(-calcViewWindowHeight(grid));
 	}
 	
 	public void calcConstrainedCameraPoint(smA_Grid grid, smGridCoordinate coord, smPoint cameraPoint, smPoint point_out)

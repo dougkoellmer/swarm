@@ -9,7 +9,7 @@ import swarm.client.input.smClickManager;
 import swarm.client.input.smI_ClickHandler;
 import swarm.client.navigation.smBrowserNavigator;
 import swarm.client.states.camera.Action_Camera_SnapToPoint;
-import swarm.client.states.camera.Action_Camera_SetCameraViewSize;
+import swarm.client.states.camera.Action_Camera_SetViewSize;
 import swarm.client.states.camera.Action_Camera_SnapToAddress;
 import swarm.client.states.camera.Action_Camera_SnapToCoordinate;
 import swarm.client.states.camera.Action_ViewingCell_Refresh;
@@ -269,7 +269,7 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 			
 			case DID_PERFORM_ACTION:
 			{
-				if( event.getAction() == Action_Camera_SetCameraViewSize.class )
+				if( event.getAction() == Action_Camera_SetViewSize.class )
 				{
 					State_ViewingCell state = event.getContext().getEnteredState(State_ViewingCell.class);
 					

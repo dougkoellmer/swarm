@@ -53,9 +53,12 @@ public class Action_Camera_SnapToPoint extends smA_CameraAction
 		
 		boolean breakViewingState = args != null ? ((Args)args).m_breakViewingState : true;
 		
-		if( machine.getCurrentState() instanceof State_ViewingCell && breakViewingState )
+		if( machine.getCurrentState() instanceof State_ViewingCell )
 		{
-			machine_setState(machine, State_CameraFloating.class);
+			if( breakViewingState )
+			{
+				machine_setState(machine, State_CameraFloating.class);
+			}
 		}
 		else if( !(machine.getCurrentState() instanceof State_CameraFloating) )
 		{

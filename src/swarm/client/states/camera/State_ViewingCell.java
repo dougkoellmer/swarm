@@ -169,7 +169,7 @@ public class State_ViewingCell extends smA_State implements smI_StateEventListen
 			
 			case DID_PERFORM_ACTION:
 			{
-				if( event.getAction() == Action_Camera_SetCameraViewSize.class )
+				if( event.getAction() == Action_Camera_SetViewSize.class )
 				{
 					
 				}

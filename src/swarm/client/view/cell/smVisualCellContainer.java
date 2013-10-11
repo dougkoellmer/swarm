@@ -12,6 +12,11 @@ import java.util.logging.Logger;
 
 
 
+
+
+
+
+
 import swarm.client.view.*;
 import swarm.client.view.alignment.smAlignmentDefinition;
 import swarm.client.view.alignment.smAlignmentRect;
@@ -24,18 +29,23 @@ import swarm.client.view.tooltip.smToolTipConfig;
 import swarm.client.view.tooltip.smToolTipManager;
 import swarm.client.view.widget.smMagnifier;
 import swarm.client.states.*;
-import swarm.client.states.camera.Action_Camera_SetCameraViewSize;
+import swarm.client.states.camera.Action_Camera_SetViewSize;
+import swarm.client.states.camera.Action_Camera_SnapToCoordinate;
+import swarm.client.states.camera.Action_Camera_SnapToPoint;
 import swarm.client.states.camera.Event_GettingMapping_OnResponse;
 import swarm.client.states.camera.StateMachine_Camera;
+import swarm.client.states.camera.State_CameraSnapping;
 import swarm.client.states.camera.State_GettingMapping;
 import swarm.client.states.camera.State_ViewingCell;
 import swarm.client.app.smClientAppConfig;
 import swarm.client.app.smAppContext;
 import swarm.client.entities.smBufferCell;
 import swarm.client.entities.smCamera;
+import swarm.client.managers.smCameraManager;
 import swarm.client.managers.smCellBufferManager;
 import swarm.client.navigation.smMouseNavigator;
 import swarm.shared.app.smS_App;
+import swarm.shared.debugging.smU_Debug;
 import swarm.shared.entities.smA_Cell;
 import swarm.shared.entities.smA_Grid;
 import swarm.shared.lang.smBoolean;
@@ -86,17 +96,25 @@ public class smVisualCellContainer extends FlowPanel implements ResizeHandler, s
 	private final smToolTipConfig m_gettingAddressTipConfig = new smToolTipConfig(smE_ToolTipType.STATUS, m_statusAlignment, "Resolving address...");
 	private final smToolTipConfig m_mappingNotFoundTipConfig = new smToolTipConfig(smE_ToolTipType.NOTIFICATION, m_statusAlignment, "Address not found!", smE_ToolTipMood.OOPS);
 	
-	private final Action_Camera_SetCameraViewSize.Args m_args_SetCameraViewSize = new Action_Camera_SetCameraViewSize.Args();
+	private final Action_Camera_SetViewSize.Args m_args_SetCameraViewSize = new Action_Camera_SetViewSize.Args();
+	private final Action_Camera_SnapToPoint.Args m_args_SnapToPoint = new Action_Camera_SnapToPoint.Args();
+	private final Action_Camera_SnapToCoordinate.Args m_args_SnapToCoord = new Action_Camera_SnapToCoordinate.Args();
 	
 	private final smViewContext m_viewContext;
 	
+	private final int m_scrollBarWidthDiv2;
+	
 	public smVisualCellContainer(smViewContext viewContext, smViewConfig config)
 	{
+		m_args_SnapToCoord.setUserData(smVisualCellContainer.class);
+		
+		m_scrollBarWidthDiv2 = (int) Math.round(((double)this.getScrollBarWidth())/2);
+		
 		m_viewContext = viewContext;
 		
 		m_scrollContainer.addStyleName("sm_cell_scroll_container");
 		
-		this.updateScrolling(null);
+		this.toggleScrollBars(null);
 		
 		m_magnifier = new smMagnifier(viewContext, config.magnifierTickCount, config.magFadeInTime_seconds);
 		
@@ -140,10 +158,62 @@ public class smVisualCellContainer extends FlowPanel implements ResizeHandler, s
 			@Override
 			public void onScroll(ScrollEvent event)
 			{
+				StateMachine_Camera machine = m_viewContext.stateContext.getEnteredState(StateMachine_Camera.class);
+				State_ViewingCell viewingState = m_viewContext.stateContext.getEnteredState(State_ViewingCell.class);
+				
+				if( viewingState == null )
+				{
+					smU_Debug.ASSERT(false, "Expected viewing state to be entered.");
+					
+					return;
+				}
+				
+				smA_Grid grid = viewingState.getCell().getGrid();
+				
+				double minViewWidth = machine.calcViewWindowWidth(grid);
+				double windowWidth = smVisualCellContainer.this.getElement().getClientWidth();
+				double minViewHeight = machine.calcViewWindowHeight(grid);
+				double windowHeight = smVisualCellContainer.this.getElement().getClientHeight();
+				
+				smPoint centerPoint = s_utilPoint1;
+				machine.calcViewWindowCenter(grid, viewingState.getCell().getCoordinate(), centerPoint);
+				
+				if( windowWidth < minViewWidth )
+				{
+					int scroll = m_scrollContainer.getElement().getScrollLeft();
+					double newPos = centerPoint.getX() - (minViewWidth - windowWidth)/2 + scroll;
+					centerPoint.setY(newPos);
+				}
+				
+				if( windowHeight < minViewHeight )
+				{
+					int scroll = m_scrollContainer.getElement().getScrollTop();
+					double newPos = centerPoint.getY() - (minViewHeight - windowHeight)/2 + scroll;
+					centerPoint.setY(newPos);
+				}
+				
+				machine.calcConstrainedCameraPoint(grid, viewingState.getCell().getCoordinate(), centerPoint, centerPoint);
+				m_args_SnapToPoint.init(centerPoint, true, false);
+				m_viewContext.stateContext.performAction(Action_Camera_SnapToPoint.class, m_args_SnapToPoint);
 			}
 			
 		}, ScrollEvent.getType());
 	}
+	
+	private native double getScrollBarWidth()
+	/*-{
+			var scrollDiv = $doc.createElement("div");
+			scrollDiv.className = "sm_scrollbar_query";
+			$doc.body.appendChild(scrollDiv);
+			
+			// Get the scrollbar width
+			var scrollBarWidth = scrollDiv.offsetWidth - scrollDiv.clientWidth;
+			
+			// Delete the DIV 
+			$doc.body.removeChild(scrollDiv);
+			
+			return scrollBarWidth;
+	}-*/;
 	
 	public FlowPanel getMouseEnabledLayer()
 	{
@@ -241,9 +311,8 @@ public class smVisualCellContainer extends FlowPanel implements ResizeHandler, s
 					double x = m_viewContext.splitPanel.getTabPanelWidth();
 					int height = RootPanel.get().getOffsetHeight();
 					
-					m_args_SetCameraViewSize.set(width, height);
-					
-					event.getContext().performAction(Action_Camera_SetCameraViewSize.class, m_args_SetCameraViewSize);
+					m_args_SetCameraViewSize.init(width, height, true);
+					event.getContext().performAction(Action_Camera_SetViewSize.class, m_args_SetCameraViewSize);
 					
 					//--- DRK > Because width/height of "this" is still 0/0, we temporarily
 					//---		give the tool tip an override rectangle to work with.
@@ -251,8 +320,14 @@ public class smVisualCellContainer extends FlowPanel implements ResizeHandler, s
 				}
 				else if ( event.getState() instanceof State_ViewingCell )
 				{
-					updateScrolling((State_ViewingCell) event.getState());
-					this.updateCameraViewRect();
+					State_ViewingCell state = event.getState();
+					StateMachine_Camera machine = state.getParent();
+					
+					smA_Grid grid = state.getCell().getGrid();
+					
+					toggleScrollBars(state);
+					
+					adjustSnapTargetPointOnArrival();
 				}
 				
 				break;
@@ -262,8 +337,8 @@ public class smVisualCellContainer extends FlowPanel implements ResizeHandler, s
 			{
 				if ( event.getState() instanceof State_ViewingCell )
 				{
-					updateScrolling((State_ViewingCell) event.getState());
-					this.updateCameraViewRect();
+					toggleScrollBars((State_ViewingCell) event.getState());
+					this.updateCameraViewRect(true);
 				}
 				
 				break;
@@ -345,6 +420,12 @@ public class smVisualCellContainer extends FlowPanel implements ResizeHandler, s
 						m_showingMappingNotFound = true;
 					}
 				}
+				else if( event.getAction() == Action_Camera_SnapToCoordinate.class )
+				{
+					if( event.getActionArgs().getUserData() == smVisualCellContainer.class )  return;
+					
+					adjustSnapTargetPoint();
+				}
 				
 				break;
 			}
@@ -353,7 +434,82 @@ public class smVisualCellContainer extends FlowPanel implements ResizeHandler, s
 		m_magnifier.onStateEvent(event);
 	}
 	
-	private void updateScrolling(State_ViewingCell viewingState_nullable)
+	private void adjustSnapTargetPointOnArrival()
+	{
+		State_ViewingCell viewingState =  m_viewContext.stateContext.getEnteredState(State_ViewingCell.class);
+		StateMachine_Camera machine = viewingState.getParent();
+		smA_Grid grid = viewingState.getCell().getGrid();
+		
+		s_utilPoint1.copy(m_viewContext.appContext.cameraMngr.getCamera().getPosition());
+		
+		double minViewWidth = machine.calcViewWindowWidth(grid);
+		double windowWidth = smVisualCellContainer.this.getElement().getClientWidth();
+		double minViewHeight = machine.calcViewWindowHeight(grid);
+		double windowHeight = smVisualCellContainer.this.getElement().getClientHeight();
+		
+		boolean needToAdjust = false;
+		
+		if( windowWidth < minViewWidth )
+		{
+			s_utilPoint1.incY(-m_scrollBarWidthDiv2);
+			needToAdjust = true;
+		}
+		
+		if( windowHeight < minViewHeight )
+		{
+			s_utilPoint1.incX(-m_scrollBarWidthDiv2);
+			needToAdjust = true;
+		}
+		
+		if( needToAdjust )
+		{
+			this.updateCameraViewRect(false);
+			
+			machine.calcConstrainedCameraPoint(grid, viewingState.getCell().getCoordinate(), s_utilPoint1, s_utilPoint1);
+			
+			m_args_SnapToPoint.init(s_utilPoint1, true, false);
+			m_viewContext.stateContext.performAction(Action_Camera_SnapToPoint.class, m_args_SnapToPoint);
+		}
+	}
+	
+	private void adjustSnapTargetPoint()
+	{
+		State_CameraSnapping state = m_viewContext.stateContext.getEnteredState(State_CameraSnapping.class);
+		
+		if( state == null )
+		{
+			smU_Debug.ASSERT(false, "Expected snapping state to be entered.");
+			
+			return;
+		}
+		
+		StateMachine_Camera machine = state.getParent();
+		smA_Grid grid = this.m_viewContext.appContext.gridMngr.getGrid();
+		smCameraManager cameraMngr = this.m_viewContext.appContext.cameraMngr;
+		double minViewWidth = machine.calcViewWindowWidth(grid);
+		double windowWidth = smVisualCellContainer.this.getElement().getClientWidth();
+		double minViewHeight = machine.calcViewWindowHeight(grid);
+		double windowHeight = smVisualCellContainer.this.getElement().getClientHeight();
+		smPoint targetPoint = s_utilPoint1;
+		targetPoint.copy(cameraMngr.getTargetPosition());
+
+		if( windowWidth < minViewWidth )
+		{
+			targetPoint.incY(m_scrollBarWidthDiv2);
+		}
+		
+		if( windowHeight < minViewHeight )
+		{
+			targetPoint.incX(m_scrollBarWidthDiv2);
+		}
+		
+		machine.calcConstrainedCameraPoint(grid, state.getTargetCoordinate(), targetPoint, targetPoint);
+		
+		m_args_SnapToCoord.init(state.getTargetCoordinate(), targetPoint);
+		m_viewContext.stateContext.performAction(Action_Camera_SnapToCoordinate.class, m_args_SnapToCoord);
+	}
+	
+	private void toggleScrollBars(State_ViewingCell viewingState_nullable)
 	{
 		Style scrollerStyle = this.m_scrollContainer.getElement().getStyle();
 		Style innerStyle = this.m_cellContainerInner.getElement().getStyle();
@@ -365,15 +521,14 @@ public class smVisualCellContainer extends FlowPanel implements ResizeHandler, s
 			smA_Grid grid = viewingState_nullable.getCell().getGrid();
 			
 			double minViewWidth = machine.calcViewWindowWidth(grid);
-			double minViewHeight = machine.calcViewWindowHeight(grid);
 			double windowWidth = this.getElement().getClientWidth();
-			double windowHeight = this.getElement().getClientHeight();
+			
 			smPoint cameraPoint = m_viewContext.appContext.cameraMngr.getCamera().getPosition();
 			smPoint centerPoint = s_utilPoint1;
 			machine.calcViewWindowCenter(grid, viewingState_nullable.getCell().getCoordinate(), centerPoint);
 			
 			if( windowWidth < minViewWidth )
-			{				
+			{			
 				scrollerStyle.setOverflowX(Overflow.SCROLL);
 				innerStyle.setProperty("minWidth", minViewWidth+"px");
 			}
@@ -383,6 +538,9 @@ public class smVisualCellContainer extends FlowPanel implements ResizeHandler, s
 				innerStyle.clearProperty("minWidth");
 				m_scrollContainer.getElement().setScrollLeft(0);
 			}
+			
+			double minViewHeight = machine.calcViewWindowHeight(grid);
+			double windowHeight = this.getElement().getClientHeight();
 			
 			if( windowHeight < minViewHeight )
 			{
@@ -415,19 +573,43 @@ public class smVisualCellContainer extends FlowPanel implements ResizeHandler, s
 		}
 	}
 	
-	private void updateCameraViewRect()
+	private void updateCameraViewRect(boolean updateBuffer)
 	{
-		m_args_SetCameraViewSize.set(m_scrollContainer.getElement().getClientWidth(), m_scrollContainer.getElement().getClientHeight());
-		m_viewContext.stateContext.performAction(Action_Camera_SetCameraViewSize.class, m_args_SetCameraViewSize);
+		m_args_SetCameraViewSize.init(m_scrollContainer.getElement().getClientWidth(), m_scrollContainer.getElement().getClientHeight(), updateBuffer);
+		m_viewContext.stateContext.performAction(Action_Camera_SetViewSize.class, m_args_SetCameraViewSize);
 	}
 	
 	public void onResize()
 	{
 		State_ViewingCell viewingState =  m_viewContext.stateContext.getEnteredState(State_ViewingCell.class);
+		boolean isSnapping = m_viewContext.stateContext.isEntered(State_CameraSnapping.class);
 		
-		this.updateScrolling(viewingState);
+		this.toggleScrollBars(viewingState);
 		
-		this.updateCameraViewRect();
+		this.updateCameraViewRect(!isSnapping);
+		
+		if( isSnapping )
+		{
+			adjustSnapTargetPoint();
+		}
+		else if( viewingState != null )
+		{
+			StateMachine_Camera machine = viewingState.getParent();
+			smA_Grid grid = viewingState.getCell().getGrid();
+			
+			double minViewWidth = machine.calcViewWindowWidth(grid);
+			double windowWidth = smVisualCellContainer.this.getElement().getClientWidth();
+			double minViewHeight = machine.calcViewWindowHeight(grid);
+			double windowHeight = smVisualCellContainer.this.getElement().getClientHeight();
+
+			if( windowWidth < minViewWidth || windowHeight < minViewHeight )
+			{
+				s_utilPoint1.copy(m_viewContext.appContext.cameraMngr.getCamera().getPosition());
+				machine.calcConstrainedCameraPoint(grid, viewingState.getCell().getCoordinate(), s_utilPoint1, s_utilPoint1);
+				m_args_SnapToPoint.init(s_utilPoint1, true, false);
+				machine.performAction(Action_Camera_SnapToPoint.class, m_args_SnapToPoint);
+			}
+		}
 		
 		this.updateCroppers();
 		

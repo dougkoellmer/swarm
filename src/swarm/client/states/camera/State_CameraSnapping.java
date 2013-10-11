@@ -122,21 +122,8 @@ public class State_CameraSnapping extends smA_State implements smI_StateEventLis
 		{
 			targetPoint = m_utilPoint;
 			
-			machine.calcViewWindowCenter(grid, m_targetGridCoordinate, targetPoint);
-			
-			double viewWidth = camera.getViewWidth();
-			double viewHeight = camera.getViewHeight();
-			double cellWidth = machine.calcViewWindowWidth(grid);
-			double cellHeight = machine.calcViewWindowHeight(grid);
-			
-			if( viewWidth < cellWidth )
-			{
-				targetPoint.incX(-((cellWidth - viewWidth)/2));
-			}
-			if( viewHeight < cellHeight )
-			{
-				targetPoint.incY(-((cellHeight - viewHeight)/2));
-			}
+			machine.calcViewWindowTopLeft(grid, m_targetGridCoordinate, targetPoint);
+			machine.calcConstrainedCameraPoint(grid, m_targetGridCoordinate, targetPoint, targetPoint);
 		}
 		else
 		{
@@ -360,7 +347,7 @@ public class State_CameraSnapping extends smA_State implements smI_StateEventLis
 			
 			case DID_PERFORM_ACTION:
 			{
-				if( event.getAction() == Action_Camera_SetCameraViewSize.class )
+				if( event.getAction() == Action_Camera_SetViewSize.class )
 				{
 					smCamera camera = m_appContext.cameraMngr.getCamera();
 					m_snapCamera.setViewRect(camera.getViewWidth(), camera.getViewHeight());
