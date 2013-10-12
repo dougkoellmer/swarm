@@ -140,20 +140,22 @@ public class smCodeMirrorWrapper extends Widget
 			codeMirror.focus();
 	}-*/;
 	
+	/*if (document.createEvent)// W3C
+	{
+	    var ev = document.createEvent('Event');
+	    ev.initEvent('resize', true, true);
+	    $wnd.dispatchEvent(ev);
+	}
+	else // IE
+	{
+	    element=document.documentElement;
+	    var event=document.createEventObject();
+	    element.fireEvent("onresize",event);
+	}*/
+	
 	public native void refresh()
 	/*-{
-			if (document.createEvent)// W3C
-			{
-			    var ev = document.createEvent('Event');
-			    ev.initEvent('resize', true, true);
-			    $wnd.dispatchEvent(ev);
-			}
-			else // IE
-			{
-			    element=document.documentElement;
-			    var event=document.createEventObject();
-			    element.fireEvent("onresize",event);
-			}
+			
 	
 			var codeMirror = this.@swarm.client.view.tabs.code.smCodeMirrorWrapper::m_codeMirror;
 			codeMirror.refresh();

@@ -156,6 +156,12 @@ public class State_CameraSnapping extends smA_State implements smI_StateEventLis
 			
 			requestCodeForTargetCell();
 		}
+		else
+		{
+			//--- DRK > Same target cell as last time, but target position might
+			//---		have changed enough to require loading/deleting of different nearby cells
+			this.updateSnapBufferManager(true);
+		}
 		
 		smCameraManager manager = m_appContext.cameraMngr;
 		manager.setTargetPosition(targetPoint, false);

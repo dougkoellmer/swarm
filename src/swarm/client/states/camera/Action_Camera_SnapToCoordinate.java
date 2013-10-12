@@ -109,14 +109,7 @@ public class Action_Camera_SnapToCoordinate extends smA_CameraAction
 		
 		StateMachine_Camera machine = this.getState();
 		smA_State currentState = machine.getCurrentState();
-		
-		if( currentState instanceof State_CameraSnapping )
-		{
-			return !((State_CameraSnapping)currentState).getTargetCoordinate().isEqualTo(coordinate);
-		}
-		else
-		{
-			return true;
-		}
+
+		return true;
 	}
 }

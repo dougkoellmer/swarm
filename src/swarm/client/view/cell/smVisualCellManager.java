@@ -194,6 +194,8 @@ public class smVisualCellManager implements smI_UIElement
 		int scrollX = m_container.getParent().getElement().getScrollLeft();
 		int scrollY = m_container.getParent().getElement().getScrollTop();
 		
+		s_logger.severe("HEER");
+		
 		
 		//--- DRK > NOTE: ALL DOM-manipulation related to cells should occur within this block.
 		//---		This might be an extraneous optimization in some browsers if they themselves have
@@ -330,7 +332,7 @@ public class smVisualCellManager implements smI_UIElement
 				{
 					m_needsUpdateDueToResizingOfCameraOrGrid = true;
 					
-					//--- DRK > In a strict sense this is a waste of an update since in just a few milliseconds
+					//--- DRK > In some sense this is a waste of an update since in just a few milliseconds
 					//---		we'll be doing another one anyway. If we don't do it here though, there's some 
 					//---		ghosting of the cell visualizations with certain rapid resizes of the UI console.
 					//---		Also, if the camera is still and the grid resizes, visual cells won't appear until

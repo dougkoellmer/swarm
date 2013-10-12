@@ -79,6 +79,8 @@ public class StateMachine_Camera extends smA_StateMachine implements smI_StateEv
 	
 	private final smAppContext m_appContext;
 	
+	private final smPoint m_utilPoint = new smPoint();
+	
 	private final double m_cellHudHeight;
 	
 	public StateMachine_Camera(smAppContext appContext, double cellHudHeight)
@@ -134,30 +136,38 @@ public class StateMachine_Camera extends smA_StateMachine implements smI_StateEv
 		point_out.incY(-calcViewWindowHeight(grid));
 	}
 	
+	public void calcConstrainedCameraPoint(smA_Grid grid, smGridCoordinate coord, smPoint cameraPoint, double viewWidth, double viewHeight, smPoint point_out)
+	{
+		m_utilPoint.copy(cameraPoint); // in case cameraPoint and point_out are the same reference.
+		
+		double minViewWidth = this.calcViewWindowWidth(grid);
+		double minViewHeight = this.calcViewWindowHeight(grid);
+		
+		this.calcViewWindowCenter(grid, coord, point_out);
+
+		if( viewWidth < minViewWidth )
+		{
+			double diff = (minViewWidth - viewWidth)/2;
+			double x = smU_Math.clamp(m_utilPoint.getX(), point_out.getX() - diff, point_out.getX() + diff);
+			point_out.setX(x);
+		}
+		
+		if( viewHeight < minViewHeight )
+		{
+			double diff = (minViewHeight - viewHeight)/2;
+			double y = smU_Math.clamp(m_utilPoint.getY(), point_out.getY() - diff, point_out.getY() + diff);
+			point_out.setY(y);
+		}
+	}
+	
 	public void calcConstrainedCameraPoint(smA_Grid grid, smGridCoordinate coord, smPoint cameraPoint, smPoint point_out)
 	{
 		smCameraManager cameraMngr = this.m_appContext.cameraMngr;
 		
-		double cellWidth = this.calcViewWindowWidth(grid);
-		double cellHeight = this.calcViewWindowHeight(grid);
 		double viewWidth = cameraMngr.getCamera().getViewWidth();
 		double viewHeight = cameraMngr.getCamera().getViewHeight();
 		
-		this.calcViewWindowCenter(grid, coord, point_out);
-
-		if( viewWidth < cellWidth )
-		{
-			double diff = (cellWidth - viewWidth)/2;
-			double x = smU_Math.clamp(cameraPoint.getX(), point_out.getX() - diff, point_out.getX() + diff);
-			point_out.setX(x);
-		}
-		
-		if( viewHeight < cellHeight )
-		{
-			double diff = (cellHeight - viewHeight)/2;
-			double y = smU_Math.clamp(cameraPoint.getY(), point_out.getY() - diff, point_out.getY() + diff);
-			point_out.setY(y);
-		}
+		this.calcConstrainedCameraPoint(grid, coord, cameraPoint, viewWidth, viewHeight, point_out);
 	}
 	
 	void snapToCellAddress(smCellAddress address)

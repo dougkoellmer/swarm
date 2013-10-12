@@ -5,6 +5,7 @@ import swarm.client.app.smClientAppConfig;
 import swarm.client.input.smClickManager;
 import swarm.client.navigation.smBrowserNavigator;
 import swarm.client.navigation.smMouseNavigator;
+import swarm.client.navigation.smScrollNavigator;
 import swarm.client.thirdparty.captcha.smRecaptchaWrapper;
 import swarm.client.view.cell.smAlertManager;
 import swarm.client.view.cell.smVisualCellManager;
@@ -28,4 +29,5 @@ public class smViewContext
 	
 	public smBrowserNavigator browserNavigator;
 	public smMouseNavigator mouseNavigator;
+	public smScrollNavigator scrollNavigator;
 }

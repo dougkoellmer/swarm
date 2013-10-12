@@ -100,6 +100,8 @@ public class smSplitPanel extends SplitLayoutPanel implements smI_UIElement
 			}
 		}
 		
+		panelWidth = 1010;
+		
 		m_tabPanelWidth = panelWidth;
 		this.addWest(m_tabPanel, panelWidth);
 		this.add(m_cellContainer);

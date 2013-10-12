@@ -65,8 +65,7 @@ public class smMouseNavigator implements smI_UIElement, smMouse.I_Listener
 	private final smPoint m_grabPoint = new smPoint();
 	private final smPoint m_lastWorldPoint = new smPoint();
 	private final smVelocitySmoother m_flickSmoother = new smVelocitySmoother(smS_UI.FLICK_SMOOTHING_SAMPLE_COUNT);
-	
-	
+
 	private final Action_Camera_SnapToPoint.Args m_setTargetArgs = new Action_Camera_SnapToPoint.Args();
 	private final Action_Camera_SnapToCoordinate.Args m_snapToCoordArgs = new Action_Camera_SnapToCoordinate.Args();
 	

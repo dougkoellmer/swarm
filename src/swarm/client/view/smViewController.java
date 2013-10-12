@@ -8,6 +8,7 @@ import swarm.client.input.smClickManager;
 import swarm.client.input.smMouse;
 import swarm.client.navigation.smBrowserNavigator;
 import swarm.client.navigation.smMouseNavigator;
+import swarm.client.navigation.smScrollNavigator;
 import swarm.client.states.StateContainer_Base;
 import swarm.client.states.StateMachine_Base;
 import swarm.client.view.cell.smAlertManager;
@@ -22,6 +23,7 @@ import swarm.shared.statemachine.smE_StateEventType;
 import swarm.shared.statemachine.smI_StateEventListener;
 import swarm.shared.statemachine.smStateContext;
 import swarm.shared.statemachine.smStateEvent;
+
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -69,13 +71,15 @@ public class smViewController extends Object implements smI_StateEventListener
 		m_viewContext.consoleBlocker = new smConsoleBlocker();
 		m_viewContext.mouseNavigator = new smMouseNavigator(m_viewContext.stateContext, m_viewContext.appContext.gridMngr, m_viewContext.appContext.cameraMngr, mouse);
 		m_viewContext.browserNavigator = new smBrowserNavigator(m_viewContext.stateContext, m_viewContext.appContext.cameraMngr, m_viewContext.appContext.jsonFactory, m_viewConfig.defaultPageTitle, m_appConfig.floatingHistoryUpdateFreq_seconds);
+		m_viewContext.scrollNavigator = new smScrollNavigator(m_viewContext, cellContainer.getScrollContainer(), cellContainer.getCellContainerInner());
 		smVisualCellFocuser focuser = new smVisualCellFocuser(m_viewContext.stateContext, m_viewContext.appContext);
 		m_viewContext.cellMngr = new smVisualCellManager(m_viewContext, cellContainer.getCellContainerInner());
 		//smVisualCellHighlight highlighter = new smVisualCellHighlight(appContext, config, appConfig);
 		
-		
+
 		addStateListener(m_viewContext.mouseNavigator);
 		addStateListener(m_viewContext.browserNavigator);
+		addStateListener(m_viewContext.scrollNavigator);
 		addStateListener(m_viewContext.cellMngr);
 		addStateListener(m_viewContext.splitPanel);
 		//addStateListener(highlighter);
