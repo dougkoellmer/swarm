@@ -81,8 +81,8 @@ public class smBrowserNavigator implements smI_StateEventListener
 		
 		m_floatingHistoryUpdateRate = floatingHistoryUpdateRate_seconds;
 		
-		m_args_SnapToCoordinate.setUserData(this.getClass());
-		m_args_SetCameraTarget.setUserData(this.getClass());
+		m_args_SnapToCoordinate.userData = this.getClass();
+		m_args_SetCameraTarget.userData = this.getClass();
 		
 		m_historyStateListener = new smHistoryStateManager.I_Listener()
 		{
@@ -465,7 +465,7 @@ public class smBrowserNavigator implements smI_StateEventListener
 					{
 						Action_Camera_SnapToCoordinate.Args args = event.getActionArgs();
 						
-						Object userData = event.getActionArgs().getUserData();
+						Object userData = event.getActionArgs().userData;
 						if( userData == this.getClass() ) // signifies that snap was because of browser navigation event.
 						{
 							m_lastSnapAction = null;
@@ -506,7 +506,7 @@ public class smBrowserNavigator implements smI_StateEventListener
 						
 						if( args != null )
 						{
-							m_pushHistoryStateForFloating = args.getUserData() != this.getClass();
+							m_pushHistoryStateForFloating = args.userData != this.getClass();
 							
 							if( m_receivedFloatingStateEntered )
 							{

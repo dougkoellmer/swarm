@@ -12,6 +12,7 @@ import swarm.client.managers.smCellBufferManager;
 import swarm.client.entities.smI_BufferCellListener;
 import swarm.client.states.StateMachine_Base;
 import swarm.client.states.camera.Action_Camera_SetViewSize;
+import swarm.client.states.camera.Action_Camera_SnapToPoint;
 import swarm.client.states.camera.Action_ViewingCell_Refresh;
 import swarm.client.states.camera.StateMachine_Camera;
 import swarm.client.states.camera.State_ViewingCell;
@@ -34,6 +35,7 @@ import swarm.shared.statemachine.smStateEvent;
 import swarm.shared.structs.smCellAddress;
 import swarm.shared.structs.smGridCoordinate;
 import swarm.shared.structs.smPoint;
+
 import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
@@ -55,8 +57,6 @@ public class smVisualCellManager implements smI_UIElement
 	private final smPoint m_utilPoint2 = new smPoint();
 	
 	private final smPoint m_lastBasePoint = new smPoint();
-	
-	private boolean m_needsUpdateDueToResizingOfCameraOrGrid = false;
 	
 	private StateMachine_Camera m_cameraController = null;
 	
@@ -123,25 +123,8 @@ public class smVisualCellManager implements smI_UIElement
 		});
 	}
 	
-	private boolean updateCellTransforms(double timeStep, boolean flushDestroyQueueIfMoving)
+	private boolean updateCellTransforms(double timeStep)
 	{
-		if( m_cameraController == null )
-		{
-			smU_Debug.ASSERT(false);
-			
-			return false;
-		}
-		
-		if( m_viewContext.appContext.cameraMngr.isCameraAtRest() )
-		{
-			m_cellPool.cleanPool();
-			
-			if( !m_needsUpdateDueToResizingOfCameraOrGrid )
-			{
-				return false;
-			}
-		}
-
 		smCellBufferManager cellManager = m_viewContext.appContext.cellBufferMngr;
 		smCellBuffer cellBuffer = cellManager.getDisplayBuffer();
 		
@@ -194,9 +177,6 @@ public class smVisualCellManager implements smI_UIElement
 		int scrollX = m_container.getParent().getElement().getScrollLeft();
 		int scrollY = m_container.getParent().getElement().getScrollTop();
 		
-		s_logger.severe("HEER");
-		
-		
 		//--- DRK > NOTE: ALL DOM-manipulation related to cells should occur within this block.
 		//---		This might be an extraneous optimization in some browsers if they themselves have
 		//---		intelligent DOM-change batching, but we must assume that most browsers are retarded.
@@ -207,11 +187,6 @@ public class smVisualCellManager implements smI_UIElement
 			//--- NOTE: Now cell buffer can have null cells (i.e. if they aren't owned).
 			//---		So this assert is now invalid...keeping for historical reference.
 			//smU_Debug.ASSERT(cellBuffer.getCellCount() == m_pool.getAllocCount(), "smVisualCellManager::update1");
-			
-			if( flushDestroyQueueIfMoving )
-			{
-				//m_cellPool.flushDestroyQueue(m_cellDestroyLimitWhileMoving);
-			}
 			
 			for ( int i = 0; i < bufferSize; i++ )
 			{
@@ -248,8 +223,6 @@ public class smVisualCellManager implements smI_UIElement
 		m_container.getElement().getStyle().setDisplay(Display.BLOCK);
 		
 		m_lastScaling = scaling;
-		
-		m_needsUpdateDueToResizingOfCameraOrGrid = false;
 		
 		return true;
 	}
@@ -290,11 +263,17 @@ public class smVisualCellManager implements smI_UIElement
 			{
 				if( event.getState().getParent() instanceof StateMachine_Camera )
 				{
-					boolean flushDestroyQueueIfMoving = (event.getState().getUpdateCount() % 8) == 0;
+					//boolean flushDestroyQueueIfMoving = (event.getState().getUpdateCount() % 8) == 0;
 					
-					if( !this.updateCellTransforms(event.getState().getLastTimeStep(), flushDestroyQueueIfMoving) )
+					if( m_viewContext.appContext.cameraMngr.isCameraAtRest() )
 					{
+						m_cellPool.cleanPool();
+						
 						this.updateCellsIndividually(event.getState().getLastTimeStep());
+					}
+					else
+					{
+						this.updateCellTransforms(event.getState().getLastTimeStep());
 					}
 				}
 				
@@ -327,18 +306,34 @@ public class smVisualCellManager implements smI_UIElement
 			
 			case DID_PERFORM_ACTION:
 			{
-				if( event.getAction() == Action_Camera_SetViewSize.class ||
-					event.getAction() == StateMachine_Base.OnGridUpdate.class )
+				if( event.getAction() == Action_Camera_SetViewSize.class )
 				{
-					m_needsUpdateDueToResizingOfCameraOrGrid = true;
+					Action_Camera_SetViewSize.Args args = event.getActionArgs();
 					
+					if( args.updateBuffer() )
+					{
+						this.updateCellTransforms(0.0);
+					}
+				}
+				else if( event.getAction() == StateMachine_Base.OnGridUpdate.class )
+				{					
 					//--- DRK > In some sense this is a waste of an update since in just a few milliseconds
 					//---		we'll be doing another one anyway. If we don't do it here though, there's some 
-					//---		ghosting of the cell visualizations with certain rapid resizes of the UI console.
-					//---		Also, if the camera is still and the grid resizes, visual cells won't appear until
-					//---		we move.
-					boolean flushDestroyQueueIfMoving = true;
-					this.updateCellTransforms(0, flushDestroyQueueIfMoving);
+					//---		lagging of the cell visualizations with very rapid resizes of the window.
+					//---		Also, if the camera is still and the itself gets grid updated, visual cells won't appear until
+					//---		we move the camera again.
+					this.updateCellTransforms(0.0);
+				}
+				else if( event.getAction() == Action_Camera_SnapToPoint.class )
+				{
+					Action_Camera_SnapToPoint.Args args = event.getActionArgs();
+					
+					//--- DRK(TODO): Don't really like this null check here...necessary because of legacy
+					//---			 code using null snap args to simply change to floating state.
+					if( args == null || args.isInstant() )
+					{
+						this.updateCellTransforms(0.0);
+					}
 				}
 				else if( event.getAction() == Action_ViewingCell_Refresh.class )
 				{
@@ -347,6 +342,7 @@ public class smVisualCellManager implements smI_UIElement
 					//---		we get a chance to remove the alerts...might be order-dependent strangeness there.
 					//clearAlerts();
 				}
+				
 				
 				break;
 			}

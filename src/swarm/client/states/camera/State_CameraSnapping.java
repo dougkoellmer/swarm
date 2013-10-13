@@ -48,11 +48,11 @@ public class State_CameraSnapping extends smA_State implements smI_StateEventLis
 		private smCellAddress m_targetAddress;
 		private smPoint m_targetPoint;
 		
-		public Constructor(smGridCoordinate targetCoordinate, smCellAddress targetAddress_nullable, smPoint targetPoint_nullable)
+		public Constructor(smGridCoordinate targetCoordinate, smCellAddress targetAddress_nullable, smPoint targetPoint)
 		{
 			m_targetCoordinate = targetCoordinate;
 			m_targetAddress = targetAddress_nullable;
-			m_targetPoint = targetPoint_nullable;
+			m_targetPoint = targetPoint;
 		}
 		
 		private void clear()
@@ -104,7 +104,7 @@ public class State_CameraSnapping extends smA_State implements smI_StateEventLis
 		m_internalCodeRepo.addSource(m_appContext.codeCache);
 	}
 
-	void updateGridCoordinate(smGridCoordinate targetCoordinate, smCellAddress targetAddress_nullable, smPoint targetPoint_nullable)
+	void updateGridCoordinate(smGridCoordinate targetCoordinate, smCellAddress targetAddress_nullable, smPoint targetPoint)
 	{
 		smA_Grid grid = m_appContext.gridMngr.getGrid();
 		smCamera camera = m_appContext.cameraMngr.getCamera();
@@ -115,20 +115,6 @@ public class State_CameraSnapping extends smA_State implements smI_StateEventLis
 		boolean sameCoordinateAsLastTime = m_targetGridCoordinate.isEqualTo(targetCoordinate);
 		
 		m_targetGridCoordinate.copy(targetCoordinate);
-		
-		smPoint targetPoint;
-		
-		if( targetPoint_nullable == null )
-		{
-			targetPoint = m_utilPoint;
-			
-			machine.calcViewWindowTopLeft(grid, m_targetGridCoordinate, targetPoint);
-			machine.calcConstrainedCameraPoint(grid, m_targetGridCoordinate, targetPoint, targetPoint);
-		}
-		else
-		{
-			targetPoint = targetPoint_nullable;
-		}
 		
 		m_snapCamera.getPosition().copy(targetPoint);
 		

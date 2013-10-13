@@ -138,7 +138,7 @@ public class smMagnifier extends FlowPanel implements smI_StateEventListener
 		toolTipper.addTip(m_zoomOut, new smToolTipConfig(smE_ToolTipType.MOUSE_OVER, "Zoom Out"));
 		toolTipper.addTip(m_dragger, new smToolTipConfig(smE_ToolTipType.MOUSE_OVER, "Drag'n'Zoom"));
 		
-		m_args_SetCameraTarget.setUserData(this.getClass());
+		m_args_SetCameraTarget.userData = smMagnifier.class;
 		
 		this.add(innerContainer);
 		
@@ -516,9 +516,14 @@ public class smMagnifier extends FlowPanel implements smI_StateEventListener
 				{
 					if( event.getActionArgs() != null )
 					{
-						if( event.getActionArgs().getUserData() != smMagnifier.class )
+						if( event.getActionArgs().userData != smMagnifier.class )
 						{
 							m_underThisControl = false;
+							
+							if( ((Action_Camera_SnapToPoint.Args)event.getActionArgs()).isInstant() )
+							{
+								setDraggerPositionFromCamera();
+							}
 						}
 						else
 						{

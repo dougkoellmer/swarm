@@ -141,6 +141,8 @@ public class smCameraManager
 		
 		if( instant )
 		{
+			m_cameraAtRestFrameCount = 1;
+			
 			oldTargetPosition.calcDifference(m_targetPosition, m_utilVector);
 			if( m_utilVector.calcLengthSquared() < SNAP_TOLERANCE ) // kinda hacky
 			{
@@ -150,7 +152,6 @@ public class smCameraManager
 				// NOTE: DRK > Don't know what above comment means now...maybe just a copy/paste from another location?
 			}
 			
-			m_cameraAtRestFrameCount = 0;
 			this.setCameraPosition(m_targetPosition, false);
 			
 			return;

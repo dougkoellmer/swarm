@@ -83,7 +83,7 @@ public class StateMachine_Camera extends smA_StateMachine implements smI_StateEv
 	
 	private final double m_cellHudHeight;
 	
-	public StateMachine_Camera(smAppContext appContext, double cellHudHeight)
+	public StateMachine_Camera(smAppContext appContext, Action_Camera_SnapToCoordinate.I_Filter snapFilter, double cellHudHeight)
 	{
 		m_appContext = appContext;
 		m_cellHudHeight = cellHudHeight;
@@ -94,80 +94,10 @@ public class StateMachine_Camera extends smA_StateMachine implements smI_StateEv
 		
 		registerAction(new Action_Camera_SetViewSize(m_appContext.cameraMngr));
 		registerAction(new Action_Camera_SnapToAddress(m_appContext.addressMngr));
-		registerAction(new Action_Camera_SnapToCoordinate(m_appContext.gridMngr));
+		registerAction(new Action_Camera_SnapToCoordinate(snapFilter, m_appContext.gridMngr));
 		registerAction(new Event_Camera_OnAddressResponse());
 		registerAction(new Action_Camera_SnapToPoint(m_appContext.cameraMngr));
 		registerAction(new Action_Camera_SetInitialPosition(m_appContext.cameraMngr));
-	}
-	
-	public double calcViewWindowWidth(smA_Grid grid)
-	{
-		return grid.getCellWidth() + grid.getCellPadding()*2;
-	}
-	
-	public double calcViewWindowHeight(smA_Grid grid)
-	{
-		if( m_cellHudHeight > 0 )
-		{
-			return grid.getCellHeight() + m_cellHudHeight + grid.getCellPadding()*3;
-		}
-		else
-		{
-			return grid.getCellHeight() + m_cellHudHeight + grid.getCellPadding()*2;
-		}
-	}
-	
-	public void calcViewWindowCenter(smA_Grid grid, smGridCoordinate coord, smPoint point_out)
-	{		
-		grid.calcCoordCenterPoint(coord, 1, point_out);
-		
-		if( m_cellHudHeight > 0 )
-		{
-			double offsetY = (grid.getCellPadding() + m_cellHudHeight)/2;
-			
-			point_out.incY(-offsetY);
-		}
-	}
-	
-	public void calcViewWindowTopLeft(smA_Grid grid, smGridCoordinate coord, smPoint point_out)
-	{
-		calcViewWindowCenter(grid, coord, point_out);
-		point_out.incX(-calcViewWindowWidth(grid));
-		point_out.incY(-calcViewWindowHeight(grid));
-	}
-	
-	public void calcConstrainedCameraPoint(smA_Grid grid, smGridCoordinate coord, smPoint cameraPoint, double viewWidth, double viewHeight, smPoint point_out)
-	{
-		m_utilPoint.copy(cameraPoint); // in case cameraPoint and point_out are the same reference.
-		
-		double minViewWidth = this.calcViewWindowWidth(grid);
-		double minViewHeight = this.calcViewWindowHeight(grid);
-		
-		this.calcViewWindowCenter(grid, coord, point_out);
-
-		if( viewWidth < minViewWidth )
-		{
-			double diff = (minViewWidth - viewWidth)/2;
-			double x = smU_Math.clamp(m_utilPoint.getX(), point_out.getX() - diff, point_out.getX() + diff);
-			point_out.setX(x);
-		}
-		
-		if( viewHeight < minViewHeight )
-		{
-			double diff = (minViewHeight - viewHeight)/2;
-			double y = smU_Math.clamp(m_utilPoint.getY(), point_out.getY() - diff, point_out.getY() + diff);
-			point_out.setY(y);
-		}
-	}
-	
-	public void calcConstrainedCameraPoint(smA_Grid grid, smGridCoordinate coord, smPoint cameraPoint, smPoint point_out)
-	{
-		smCameraManager cameraMngr = this.m_appContext.cameraMngr;
-		
-		double viewWidth = cameraMngr.getCamera().getViewWidth();
-		double viewHeight = cameraMngr.getCamera().getViewHeight();
-		
-		this.calcConstrainedCameraPoint(grid, coord, cameraPoint, viewWidth, viewHeight, point_out);
 	}
 	
 	void snapToCellAddress(smCellAddress address)
@@ -195,11 +125,8 @@ public class StateMachine_Camera extends smA_StateMachine implements smI_StateEv
 		
 		addressManager.getCellAddressMapping(address, smE_TransactionAction.MAKE_REQUEST);
 	}
-	
-	/**
-	 * Address can be null, I think..
-	 */
-	void snapToCoordinate(smCellAddress address_nullable, smGridCoordinate coord, smPoint point_nullable)
+
+	void snapToCoordinate(smCellAddress address_nullable, smGridCoordinate coord, smPoint targetPoint)
 	{
 		if( !this.isForegrounded() )
 		{
@@ -211,11 +138,11 @@ public class StateMachine_Camera extends smA_StateMachine implements smI_StateEv
 		smA_State currentState = this.getCurrentState();
 		if( currentState instanceof State_CameraSnapping )
 		{
-			((State_CameraSnapping)currentState).updateGridCoordinate(coord, address_nullable, point_nullable);
+			((State_CameraSnapping)currentState).updateGridCoordinate(coord, address_nullable, targetPoint);
 		}
 		else
 		{
-			State_CameraSnapping.Constructor constructor = new State_CameraSnapping.Constructor(coord, address_nullable, point_nullable);
+			State_CameraSnapping.Constructor constructor = new State_CameraSnapping.Constructor(coord, address_nullable, targetPoint);
 			machine_setState(this, State_CameraSnapping.class, constructor);
 		}
 	}

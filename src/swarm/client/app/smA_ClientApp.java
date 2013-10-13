@@ -18,6 +18,7 @@ import swarm.client.managers.smCellCodeManager;
 import swarm.client.managers.smClientAccountManager;
 import swarm.client.managers.smGridManager;
 import swarm.client.managers.smUserManager;
+import swarm.client.navigation.smU_CameraViewport;
 import swarm.client.states.StateContainer_Base;
 import swarm.client.states.StateMachine_Base;
 import swarm.client.states.StateMachine_Tabs;
@@ -28,11 +29,14 @@ import swarm.client.states.account.StateMachine_Account;
 import swarm.client.states.account.State_AccountStatusPending;
 import swarm.client.states.account.State_ManageAccount;
 import swarm.client.states.account.State_SignInOrUp;
+import swarm.client.states.camera.Action_Camera_SnapToCoordinate;
+import swarm.client.states.camera.Action_Camera_SnapToCoordinate.I_Filter;
 import swarm.client.states.camera.StateMachine_Camera;
 import swarm.client.states.camera.State_CameraFloating;
 import swarm.client.states.camera.State_CameraSnapping;
 import swarm.client.states.camera.State_GettingMapping;
 import swarm.client.states.camera.State_ViewingCell;
+import swarm.client.states.camera.Action_Camera_SnapToCoordinate.Args;
 import swarm.client.states.code.StateMachine_EditingCode;
 import swarm.client.states.code.State_EditingCode;
 import swarm.client.states.code.State_EditingCodeBlocker;
@@ -60,10 +64,13 @@ import swarm.shared.app.smS_App;
 import swarm.shared.debugging.smI_AssertionDelegate;
 import swarm.shared.debugging.smTelemetryAssert;
 import swarm.shared.debugging.smU_Debug;
+import swarm.shared.entities.smA_Grid;
 import swarm.shared.statemachine.smA_State;
 import swarm.shared.statemachine.smA_StateMachine;
 import swarm.shared.statemachine.smI_StateEventListener;
 import swarm.shared.statemachine.smStateContext;
+import swarm.shared.structs.smGridCoordinate;
+import swarm.shared.structs.smPoint;
 import swarm.shared.time.smI_TimeSource;
 import swarm.shared.transaction.smE_RequestPath;
 import swarm.shared.transaction.smE_TelemetryRequestPath;
@@ -266,6 +273,27 @@ public class smA_ClientApp extends smA_App implements smI_TimeSource
 	
 	protected void stage_registerStateMachine(smI_StateEventListener stateEventListener)
 	{
+		Action_Camera_SnapToCoordinate.I_Filter snapFilter = new Action_Camera_SnapToCoordinate.I_Filter()
+		{
+			@Override
+			public void adjustTargetPoint(smGridCoordinate targetCoord, smPoint point_out)
+			{
+				m_viewContext.scrollNavigator.adjustSnapTargetPoint(targetCoord, point_out);
+			}
+			
+			@Override
+			public void setTargetPoint(smGridCoordinate targetCoord, smPoint point_out)
+			{
+				smA_Grid grid = m_appContext.gridMngr.getGrid();
+				smCamera camera = m_appContext.cameraMngr.getCamera();
+				
+				smU_CameraViewport.calcViewWindowTopLeft(grid, targetCoord, m_appConfig.cellHudHeight, point_out);
+				smU_CameraViewport.calcConstrainedCameraPoint(grid, targetCoord, point_out, camera.getViewWidth(), camera.getViewHeight(), m_appConfig.cellHudHeight, point_out);
+				
+				m_viewContext.scrollNavigator.adjustSnapTargetPoint(targetCoord, point_out);
+			}
+		};
+		
 		stateEventListener = stateEventListener != null ? stateEventListener : new smViewController(m_viewContext, m_viewConfig, m_appConfig);
 		
 		m_stateContext = m_viewContext.stateContext = new smStateContext(new StateMachine_Base(m_appContext), stateEventListener);
@@ -277,7 +305,7 @@ public class smA_ClientApp extends smA_App implements smI_TimeSource
 			
 			m_stateContext.registerState(new StateContainer_Base());
 			{
-				m_stateContext.registerState(new StateMachine_Camera(m_appContext, m_appConfig.cellHudHeight));
+				m_stateContext.registerState(new StateMachine_Camera(m_appContext, snapFilter, m_appConfig.cellHudHeight));
 				{
 					m_stateContext.registerState(new State_CameraFloating());
 					m_stateContext.registerState(new State_GettingMapping());

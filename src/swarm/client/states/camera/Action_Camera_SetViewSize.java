@@ -20,6 +20,11 @@ public class Action_Camera_SetViewSize extends smA_Action
 			m_dimensions[1] = height;
 			m_updateBuffer = updateBuffer;
 		}
+		
+		public boolean updateBuffer()
+		{
+			return m_updateBuffer;
+		}
 	}
 	
 	private final smCameraManager m_cameraMngr;

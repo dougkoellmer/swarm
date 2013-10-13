@@ -1,0 +1,1 @@
+- move cell placement algorithm out of visual cell manager

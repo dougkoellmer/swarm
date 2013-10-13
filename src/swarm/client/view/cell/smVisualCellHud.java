@@ -150,11 +150,7 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 					return;
 				}
 				
-				smBufferCell cell = state.getCell();
-				smGridCoordinate coord = cell.getCoordinate();
-				smA_Grid grid = cell.getGrid();
-				
-				coord.calcCenterPoint(s_utilPoint1, grid.getCellWidth(), grid.getCellHeight(), grid.getCellPadding(), 1);
+				s_utilPoint1.copy(smVisualCellHud.this.m_viewContext.appContext.cameraMngr.getCamera().getPosition());
 				s_utilPoint1.incZ(m_appConfig.backOffDistance);
 				
 				m_args_SetCameraTarget.init(s_utilPoint1, false, true);
@@ -275,7 +271,24 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 					
 					if( state != null )
 					{
-						smVisualCellHud.this.updatePosition(state);
+						Action_Camera_SetViewSize.Args args = event.getActionArgs();
+						if( args.updateBuffer() )
+						{
+							this.updatePosition(state);
+						}
+					}
+				}
+				else if( event.getAction() == Action_Camera_SnapToPoint.class )
+				{
+					State_ViewingCell state = event.getContext().getEnteredState(State_ViewingCell.class);
+					
+					if( state != null )
+					{
+						Action_Camera_SnapToPoint.Args args = event.getActionArgs();
+						if( args.isInstant() )
+						{
+							this.updatePosition(state);
+						}
 					}
 				}
 				else if((	event.getAction() == Action_ViewingCell_Refresh.class				||

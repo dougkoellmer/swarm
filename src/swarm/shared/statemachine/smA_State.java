@@ -223,7 +223,7 @@ public abstract class smA_State extends smA_BaseStateObject
 			{
 				//smA_Action.s_actionStack.add(action);
 				
-				action.prePerform();
+				action.prePerform(args);
 				
 				action.perform(args);
 			

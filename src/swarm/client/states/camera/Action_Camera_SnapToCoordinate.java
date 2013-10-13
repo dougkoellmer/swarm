@@ -11,11 +11,19 @@ import swarm.shared.structs.smPoint;
 
 public class Action_Camera_SnapToCoordinate extends smA_CameraAction
 {
+	public static interface I_Filter
+	{
+		void adjustTargetPoint(smGridCoordinate targetCoord, smPoint point_out);
+		
+		void setTargetPoint(smGridCoordinate targetCoord, smPoint point_out);
+	}
+	
 	public static class Args extends smA_ActionArgs
 	{
 		private smGridCoordinate m_coordinate;
 		private smCellAddress m_address;
-		private smPoint m_point = null;
+		private final smPoint m_point = new smPoint();
+		private boolean m_hasTargetPoint;
 		
 		private boolean m_onlyCausedRefresh = false;
 		
@@ -28,28 +36,32 @@ public class Action_Camera_SnapToCoordinate extends smA_CameraAction
 		{
 			m_coordinate = coordinate;
 			m_address = null;
-			m_point = null;
+			
+			m_hasTargetPoint = false;
 		}
 		
 		public void init(smGridCoordinate coordinate, smPoint point)
 		{
 			m_coordinate = coordinate;
-			m_point = point;
+			m_point.copy(point);
 			m_address = null;
+			
+			m_hasTargetPoint = true;
 		}
 		
 		void init(smCellAddress address, smGridCoordinate coordinate)
 		{
 			m_address = address;
 			m_coordinate = coordinate;
-			m_point = null;
+			
+			m_hasTargetPoint = false;
 		}
 		
 		private void clear()
 		{
 			m_address = null;
 			m_coordinate = null;
-			m_point = null;
+			m_hasTargetPoint = false;
 		}
 		
 		public boolean onlyCausedRefresh()
@@ -59,10 +71,32 @@ public class Action_Camera_SnapToCoordinate extends smA_CameraAction
 	}
 	
 	private final smGridManager m_gridMngr;
+	private final I_Filter m_filter;
 	
-	Action_Camera_SnapToCoordinate(smGridManager gridMngr)
+	Action_Camera_SnapToCoordinate(I_Filter filter_nullable, smGridManager gridMngr)
 	{
 		m_gridMngr = gridMngr;
+		m_filter = filter_nullable;
+	}
+	
+	@Override
+	public void prePerform(smA_ActionArgs args)
+	{
+		super.prePerform(args);
+		
+		if( m_filter != null )
+		{
+			Args args_cast = (Args) args;
+			
+			if( args_cast.m_hasTargetPoint )
+			{
+				m_filter.adjustTargetPoint(args_cast.m_coordinate, args_cast.m_point);
+			}
+			else
+			{
+				m_filter.setTargetPoint(args_cast.m_coordinate, args_cast.m_point);
+			}
+		}
 	}
 	
 	@Override

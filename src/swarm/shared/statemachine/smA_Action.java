@@ -32,7 +32,7 @@ public abstract class smA_Action extends smA_BaseStateObject
 		return false;
 	}
 	
-	public /*virtual*/ void prePerform()
+	public /*virtual*/ void prePerform(smA_ActionArgs args)
 	{
 		
 	}

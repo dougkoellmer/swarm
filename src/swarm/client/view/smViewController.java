@@ -69,7 +69,7 @@ public class smViewController extends Object implements smI_StateEventListener
 		m_viewContext.alertMngr = new smAlertManager();
 		m_viewContext.clickMngr = new smClickManager();
 		m_viewContext.consoleBlocker = new smConsoleBlocker();
-		m_viewContext.mouseNavigator = new smMouseNavigator(m_viewContext.stateContext, m_viewContext.appContext.gridMngr, m_viewContext.appContext.cameraMngr, mouse);
+		m_viewContext.mouseNavigator = new smMouseNavigator(m_viewContext, m_viewContext.appContext.gridMngr, m_viewContext.appContext.cameraMngr, mouse);
 		m_viewContext.browserNavigator = new smBrowserNavigator(m_viewContext.stateContext, m_viewContext.appContext.cameraMngr, m_viewContext.appContext.jsonFactory, m_viewConfig.defaultPageTitle, m_appConfig.floatingHistoryUpdateFreq_seconds);
 		m_viewContext.scrollNavigator = new smScrollNavigator(m_viewContext, cellContainer.getScrollContainer(), cellContainer.getCellContainerInner());
 		smVisualCellFocuser focuser = new smVisualCellFocuser(m_viewContext.stateContext, m_viewContext.appContext);
