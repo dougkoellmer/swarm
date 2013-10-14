@@ -245,7 +245,7 @@ public class smA_ClientApp extends smA_App implements smI_TimeSource
 		m_appContext.requestPathMngr = new smRequestPathManager(m_appContext.jsonFactory, m_appConfig.verboseTransactions);
 		m_appContext.txnMngr = new smClientTransactionManager(m_appContext.requestPathMngr, m_appContext.jsonFactory);
 		m_appContext.gridMngr = new smGridManager(m_appContext.txnMngr, m_appContext.jsonFactory, m_appConfig.grid);
-		m_appContext.cameraMngr = new smCameraManager(m_appContext.gridMngr, new smCamera(), m_appConfig.minSnapTime, m_appConfig.maxSnapTime);
+		m_appContext.cameraMngr = new smCameraManager(m_appContext.gridMngr, new smCamera(), m_appConfig.minSnapTime, m_appConfig.snapTimeRange);
 		m_appContext.addressMngr = new smCellAddressManager(m_appContext, m_appConfig.addressCacheSize, m_appConfig.addressCacheExpiration_seconds, this);
 		m_appContext.accountMngr = new smClientAccountManager(signInValidator, signUpValidator, m_appContext.txnMngr, m_appContext.jsonFactory);
 		m_appContext.codeMngr = new smCellCodeManager(m_appContext);
@@ -276,21 +276,21 @@ public class smA_ClientApp extends smA_App implements smI_TimeSource
 		Action_Camera_SnapToCoordinate.I_Filter snapFilter = new Action_Camera_SnapToCoordinate.I_Filter()
 		{
 			@Override
-			public void adjustTargetPoint(smGridCoordinate targetCoord, smPoint point_out)
-			{
-				m_viewContext.scrollNavigator.adjustSnapTargetPoint(targetCoord, point_out);
+			public void adjustTargetPoint(Action_Camera_SnapToCoordinate.Args args)
+			{				
+				m_viewContext.scrollNavigator.adjustSnapTargetPoint(args);
 			}
 			
 			@Override
-			public void setTargetPoint(smGridCoordinate targetCoord, smPoint point_out)
-			{
+			public void setTargetPoint(Action_Camera_SnapToCoordinate.Args args)
+			{				
 				smA_Grid grid = m_appContext.gridMngr.getGrid();
 				smCamera camera = m_appContext.cameraMngr.getCamera();
 				
-				smU_CameraViewport.calcViewWindowTopLeft(grid, targetCoord, m_appConfig.cellHudHeight, point_out);
-				smU_CameraViewport.calcConstrainedCameraPoint(grid, targetCoord, point_out, camera.getViewWidth(), camera.getViewHeight(), m_appConfig.cellHudHeight, point_out);
+				smU_CameraViewport.calcViewWindowTopLeft(grid, args.getTargetCoordinate(), m_appConfig.cellHudHeight, args.getTargetPoint());
+				smU_CameraViewport.calcConstrainedCameraPoint(grid, args.getTargetCoordinate(), args.getTargetPoint(), camera.getViewWidth(), camera.getViewHeight(), m_appConfig.cellHudHeight, args.getTargetPoint());
 				
-				m_viewContext.scrollNavigator.adjustSnapTargetPoint(targetCoord, point_out);
+				m_viewContext.scrollNavigator.adjustSnapTargetPoint(args);
 			}
 		};
 		

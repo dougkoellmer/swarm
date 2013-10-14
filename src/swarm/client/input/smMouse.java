@@ -169,10 +169,10 @@ public class smMouse implements MouseDownHandler, MouseUpHandler, MouseMoveHandl
 		m_wasMouseJustDown = false;
 	}
 	
-	private void setMousePoint(double x, double y, smPoint outPoint)
+	private void setMousePoint(double x, double y, smPoint point_out)
 	{
-		//--- DRK > This method used to do more...
-		outPoint.set(x, y, 0);
+		point_out.set(x, y, 0);
+		point_out.inc(-m_container.getElement().getParentElement().getScrollLeft(), -m_container.getElement().getParentElement().getScrollTop(), 0);
 	}
 	
 	@Override

@@ -54,12 +54,11 @@ public class smBrowserNavigator implements smI_StateEventListener
 
 	private Event_Camera_OnAddressResponse.Args 		m_args_OnAddressResponse	= null;
 	private Event_GettingMapping_OnResponse.Args	 	m_args_OnMappingResponse	= null;
-	private final Action_Camera_SnapToPoint.Args	m_args_SetCameraTarget		= new Action_Camera_SnapToPoint.Args();
+	private final Action_Camera_SnapToPoint.Args		m_args_SetCameraTarget		= new Action_Camera_SnapToPoint.Args();
 	private final Action_Camera_SetInitialPosition.Args	m_args_SetInitialPosition 	= new Action_Camera_SetInitialPosition.Args();
 	private final Action_Camera_SnapToAddress.Args 		m_args_SnapToAddress		= new Action_Camera_SnapToAddress.Args();
 	private final Action_Camera_SnapToCoordinate.Args 	m_args_SnapToCoordinate		= new Action_Camera_SnapToCoordinate.Args();
 
-	
 	private Class<? extends smA_Action> m_lastSnapAction = null;
 	private boolean m_pushHistoryStateForFloating = true;
 	private boolean m_receivedFloatingStateEntered = false;

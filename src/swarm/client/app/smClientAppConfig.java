@@ -10,7 +10,7 @@ public class smClientAppConfig extends smAppConfig
 	public double floatingHistoryUpdateFreq_seconds = .75;
 	public double cellHudHeight;
 	public double minSnapTime = .8;
-	public double maxSnapTime = 1.75;
+	public double snapTimeRange = 1;
 	public int framerate_milliseconds = 33;
 	public double backOffDistance;
 	

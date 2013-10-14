@@ -78,24 +78,24 @@ public class smCamera
 		return m_cachedDistanceRatio;
 	}
 	
-	public void calcWorldPoint(smPoint screenPoint, smPoint outPoint)
+	public void calcWorldPoint(smPoint screenPoint, smPoint point_out)
 	{
 		double distanceRatio = this.calcDistanceRatio();
 		
-		outPoint.copy(screenPoint);
-		outPoint.inc( -this.m_viewRect.getWidth() / 2, -this.m_viewRect.getHeight() / 2, 0);
-		outPoint.scaleByNumber(1 / distanceRatio);
-		outPoint.inc( this.m_position.getX(), this.m_position.getY(), 0);
+		point_out.copy(screenPoint);
+		point_out.inc( -this.m_viewRect.getWidth() / 2, -this.m_viewRect.getHeight() / 2, 0);
+		point_out.scaleByNumber(1 / distanceRatio);
+		point_out.inc( this.m_position.getX(), this.m_position.getY(), 0);
 	}
 	
-	public void calcScreenPoint(smPoint worldPoint, smPoint outPoint)
+	public void calcScreenPoint(smPoint worldPoint, smPoint point_out)
 	{
 		double distanceRatio = this.calcDistanceRatio(worldPoint.getZ());
 		
-		outPoint.copy(worldPoint);
-		outPoint.inc( -this.m_position.getX(), -this.m_position.getY(), 0);
-		outPoint.scaleByNumber(distanceRatio);
-		outPoint.inc(this.m_viewRect.getWidth() / 2, this.m_viewRect.getHeight() / 2, 0);
+		point_out.copy(worldPoint);
+		point_out.inc( -this.m_position.getX(), -this.m_position.getY(), 0);
+		point_out.scaleByNumber(distanceRatio);
+		point_out.inc(this.m_viewRect.getWidth() / 2, this.m_viewRect.getHeight() / 2, 0);
 	}
 	
 	public void update()

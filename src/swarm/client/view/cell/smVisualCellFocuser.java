@@ -143,8 +143,13 @@ public class smVisualCellFocuser extends FlowPanel implements smI_UIElement
 					{
 						if( this.m_poppedCell != null )
 						{
-							this.m_poppedCell.pushDown();
-							this.m_poppedCell = null;
+							State_CameraSnapping snappingState = m_stateContext.getEnteredState(State_CameraSnapping.class);
+							
+							if( snappingState == null || !snappingState.getTargetCoordinate().isEqualTo(m_poppedCellCoord))
+							{
+								this.m_poppedCell.pushDown();
+								this.m_poppedCell = null;
+							}
 						}
 						
 						break;
@@ -340,11 +345,11 @@ public class smVisualCellFocuser extends FlowPanel implements smI_UIElement
 			{
 				if( event.getAction() == Action_Camera_SnapToCoordinate.class )
 				{
-					StateMachine_Camera machine = event.getContext().getEnteredState(StateMachine_Camera.class);
+					State_CameraSnapping state = event.getContext().getEnteredState(State_CameraSnapping.class);
 					
-					if( machine.getCurrentState() instanceof State_CameraSnapping )
+					if( state != null )
 					{
-						if( machine.getCurrentState().getUpdateCount() > 0 )
+						if( state.getUpdateCount() > 0 )
 						{
 							//--- DRK > This covers the case of snapping to a new cell while already snapping.
 							this.setAnimationState(AnimationState.FADING_IN);

@@ -152,6 +152,7 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 				
 				s_utilPoint1.copy(smVisualCellHud.this.m_viewContext.appContext.cameraMngr.getCamera().getPosition());
 				s_utilPoint1.incZ(m_appConfig.backOffDistance);
+				//s_utilPoint1.incZ(0);
 				
 				m_args_SetCameraTarget.init(s_utilPoint1, false, true);
 				m_viewContext.stateContext.performAction(Action_Camera_SnapToPoint.class, m_args_SetCameraTarget);

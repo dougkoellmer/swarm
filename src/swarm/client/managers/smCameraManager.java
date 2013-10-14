@@ -36,11 +36,11 @@ public class smCameraManager
 	private double m_minSnapTime = 0;
 	private double m_snapTimeRange = 0;
 	
-	public smCameraManager(smGridManager gridMngr, smCamera camera, double minSnapTime, double maxSnapTime)
+	public smCameraManager(smGridManager gridMngr, smCamera camera, double minSnapTime, double snapTimeRange)
 	{
 		m_gridMngr = gridMngr;
 		m_minSnapTime = minSnapTime;
-		m_snapTimeRange = maxSnapTime - minSnapTime;
+		m_snapTimeRange = snapTimeRange;
 		
 		m_camera = camera;
 	}

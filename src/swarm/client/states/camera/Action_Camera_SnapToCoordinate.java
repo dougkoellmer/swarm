@@ -13,9 +13,9 @@ public class Action_Camera_SnapToCoordinate extends smA_CameraAction
 {
 	public static interface I_Filter
 	{
-		void adjustTargetPoint(smGridCoordinate targetCoord, smPoint point_out);
+		void adjustTargetPoint(Args args);
 		
-		void setTargetPoint(smGridCoordinate targetCoord, smPoint point_out);
+		void setTargetPoint(Args args);
 	}
 	
 	public static class Args extends smA_ActionArgs
@@ -57,6 +57,16 @@ public class Action_Camera_SnapToCoordinate extends smA_CameraAction
 			m_hasTargetPoint = false;
 		}
 		
+		public smGridCoordinate getTargetCoordinate()
+		{
+			return this.m_coordinate;
+		}
+		
+		public smPoint getTargetPoint()
+		{
+			return this.m_point;
+		}
+		
 		private void clear()
 		{
 			m_address = null;
@@ -90,11 +100,11 @@ public class Action_Camera_SnapToCoordinate extends smA_CameraAction
 			
 			if( args_cast.m_hasTargetPoint )
 			{
-				m_filter.adjustTargetPoint(args_cast.m_coordinate, args_cast.m_point);
+				m_filter.adjustTargetPoint(args_cast);
 			}
 			else
 			{
-				m_filter.setTargetPoint(args_cast.m_coordinate, args_cast.m_point);
+				m_filter.setTargetPoint(args_cast);
 			}
 		}
 	}

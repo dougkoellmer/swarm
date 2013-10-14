@@ -81,11 +81,11 @@ public class smMouseNavigator implements smI_UIElement, smMouse.I_Listener
 	private final smCameraManager m_cameraMngr;
 	private final smViewContext m_viewContext;
 	
-	public smMouseNavigator(smViewContext viewContext, smGridManager gridMngr, smCameraManager cameraMngr, smMouse mouse)
+	public smMouseNavigator(smViewContext viewContext, smMouse mouse)
 	{
 		m_viewContext = viewContext;
-		m_gridMngr = gridMngr;
-		m_cameraMngr = cameraMngr;
+		m_gridMngr = m_viewContext.appContext.gridMngr;
+		m_cameraMngr = m_viewContext.appContext.cameraMngr;
 		
 		m_mouse = mouse;
 		
@@ -195,6 +195,8 @@ public class smMouseNavigator implements smI_UIElement, smMouse.I_Listener
 				//--- Don't allow zoom out if mouse is over a viewed cell.
 				if ( m_cameraState instanceof State_ViewingCell )
 				{
+					if( m_viewContext.scrollNavigator.isScrolling() )  return;
+					
 					smBufferCell cell = ((State_ViewingCell) m_cameraState).getCell();
 					
 					mousePointToWorld(m_utilPoint2);
@@ -294,17 +296,16 @@ public class smMouseNavigator implements smI_UIElement, smMouse.I_Listener
 		}
 	}
 	
-	private void mousePointToWorld(smPoint outPoint)
+	private void mousePointToWorld(smPoint point_out)
 	{
-		this.screenToWorld(m_mouse.getMousePoint(), outPoint);
+		this.screenToWorld(m_mouse.getMousePoint(), point_out);
 	}
 	
-	private void screenToWorld(smPoint screenPoint, smPoint outPoint)
+	private void screenToWorld(smPoint screenPoint, smPoint point_out)
 	{
 		smCamera camera = m_cameraMngr.getCamera();
 		
-		outPoint.set(0, 0, 0);
-		camera.calcWorldPoint(screenPoint, outPoint);
+		camera.calcWorldPoint(screenPoint, point_out);
 	}
 	
 	private void updateMouseGridCoord()
@@ -374,7 +375,6 @@ public class smMouseNavigator implements smI_UIElement, smMouse.I_Listener
 		if( !m_isMouseTouchingSnappableCell )  return;
 		
 		smA_Grid grid = m_gridMngr.getGrid();
-		StateMachine_Camera machine = m_cameraMachine;
 		mousePointToWorld(m_utilPoint1);
 		
 		double cellHudHeight = m_viewContext.appConfig.cellHudHeight;
