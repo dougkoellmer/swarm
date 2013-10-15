@@ -1,1 +1,3 @@
 - move cell placement algorithm out of visual cell manager
+
+- give scroll navigator an implemented interface in order to get/set scroll properties, not the element itself

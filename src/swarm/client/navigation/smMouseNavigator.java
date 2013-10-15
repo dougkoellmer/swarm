@@ -123,10 +123,11 @@ public class smMouseNavigator implements smI_UIElement, smMouse.I_Listener
 				if ( m_cameraState instanceof State_ViewingCell )
 				{
 					smBufferCell cell = ((State_ViewingCell) m_cameraState).getCell();
+					smA_Grid grid = cell.getGrid();
 					
 					mousePointToWorld(m_utilPoint1);
 					
-					if ( cell.isTouchingPoint(m_utilPoint1) )
+					if( smU_CameraViewport.isPointInViewport(grid, cell.getCoordinate(), m_utilPoint1, m_viewContext.appConfig.cellHudHeight, grid.getCellPadding()))
 					{
 						m_mouseWentDownOnViewedCell = true;
 						
@@ -195,13 +196,14 @@ public class smMouseNavigator implements smI_UIElement, smMouse.I_Listener
 				//--- Don't allow zoom out if mouse is over a viewed cell.
 				if ( m_cameraState instanceof State_ViewingCell )
 				{
-					if( m_viewContext.scrollNavigator.isScrolling() )  return;
+					//if( m_viewContext.scrollNavigator.isScrolling() )  return;
 					
 					smBufferCell cell = ((State_ViewingCell) m_cameraState).getCell();
+					smA_Grid grid = cell.getGrid();
 					
 					mousePointToWorld(m_utilPoint2);
 					
-					if ( cell.isTouchingPoint(m_utilPoint2) )
+					if( smU_CameraViewport.isPointInViewport(grid, cell.getCoordinate(), m_utilPoint2, m_viewContext.appConfig.cellHudHeight, grid.getCellPadding()))
 					{
 						return;
 					}

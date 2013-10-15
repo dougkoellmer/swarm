@@ -13,6 +13,7 @@ import swarm.client.states.StateMachine_Base;
 import swarm.client.states.StateMachine_Tabs;
 import swarm.client.states.account.State_ManageAccount;
 import swarm.client.states.account.State_SignInOrUp;
+import swarm.client.states.camera.StateMachine_Camera;
 import swarm.client.thirdparty.captcha.smRecaptchaWrapper;
 import swarm.client.view.alignment.smAlignmentDefinition;
 import swarm.client.view.alignment.smU_Alignment;
@@ -27,6 +28,7 @@ import swarm.shared.statemachine.smA_Action;
 import swarm.shared.statemachine.smA_State;
 import swarm.shared.statemachine.smE_StateEventType;
 import swarm.shared.statemachine.smStateEvent;
+
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -100,7 +102,7 @@ public class smSplitPanel extends SplitLayoutPanel implements smI_UIElement
 			}
 		}
 		
-		//panelWidth = 1010;
+		panelWidth = 1010;
 		
 		m_tabPanelWidth = panelWidth;
 		this.addWest(m_tabPanel, panelWidth);
@@ -238,6 +240,16 @@ public class smSplitPanel extends SplitLayoutPanel implements smI_UIElement
 	{
 		switch(event.getType())
 		{
+			case DID_ENTER:
+			{
+				if( event.getState() instanceof StateMachine_Camera )
+				{
+					this.forceLayout();
+				}
+				
+				break;
+			}
+			
 			case DID_UPDATE:
 			{
 				if( event.getState() instanceof StateContainer_Base)

@@ -238,19 +238,24 @@ public class smVisualCellContainer extends FlowPanel implements ResizeHandler, s
 			{
 				if( event.getState() instanceof StateMachine_Camera )
 				{
+					int height2 = this.getElement().getOffsetHeight();
+					int width = this.getElement().getOffsetWidth();
+					
+					int blah = 10;
 					//--- DRK > For some reason we can't use the updateCameraViewRect method because
 					//---		offset width/height returns 0...I think it's because CSS isn't applied yet.
 					//---		So kind of a hack here...would be nice if I could fix this, so...TODO(DRK).
-					int width = (int) Math.round(m_viewContext.splitPanel.getCellPanelWidth());
+					/*int width = (int) Math.round(m_viewContext.splitPanel.getCellPanelWidth());
 					double x = m_viewContext.splitPanel.getTabPanelWidth();
 					int height = RootPanel.get().getOffsetHeight();
+					int height2 = this.getElement().getClientHeight();
 					
 					m_args_SetCameraViewSize.init(width, height, true);
 					event.getContext().performAction(Action_Camera_SetViewSize.class, m_args_SetCameraViewSize);
 					
 					//--- DRK > Because width/height of "this" is still 0/0, we temporarily
 					//---		give the tool tip an override rectangle to work with.
-					m_statusAlignment.setMasterRect(new smAlignmentRect(x, 0, width, height));
+					m_statusAlignment.setMasterRect(new smAlignmentRect(x, 0, width, height));*/
 				}
 				
 				break;

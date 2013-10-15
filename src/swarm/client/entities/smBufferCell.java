@@ -393,27 +393,6 @@ public class smBufferCell extends smA_Cell
 		}
 	}
 	
-	public boolean isTouchingPoint(smPoint point)
-	{
-		double cellWidthPlusPadding = m_grid.getCellWidth() + m_grid.getCellPadding();
-		double cellHeightPlusPadding = m_grid.getCellHeight() + m_grid.getCellPadding();
-		
-		if ( point.getZ() != 0 )  return false;
-		
-		this.getCoordinate().calcPoint(s_utilPoint, m_grid.getCellWidth(), m_grid.getCellHeight(), m_grid.getCellPadding(), 1);
-		
-		if
-		(
-			smU_Math.isWithin(point.getX(), s_utilPoint.getX(), s_utilPoint.getX() + cellWidthPlusPadding) &&
-			smU_Math.isWithin(point.getY(), s_utilPoint.getY(), s_utilPoint.getY() + cellHeightPlusPadding)
-		)
-		{
-			return true;
-		}
-		
-		return false;
-	}
-	
 	public void onServerRequestCancelled(smE_CodeType eType)
 	{
 		if( eType == smE_CodeType.COMPILED )

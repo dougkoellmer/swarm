@@ -79,14 +79,9 @@ public class StateMachine_Camera extends smA_StateMachine implements smI_StateEv
 	
 	private final smAppContext m_appContext;
 	
-	private final smPoint m_utilPoint = new smPoint();
-	
-	private final double m_cellHudHeight;
-	
-	public StateMachine_Camera(smAppContext appContext, Action_Camera_SnapToCoordinate.I_Filter snapFilter, double cellHudHeight)
+	public StateMachine_Camera(smAppContext appContext, Action_Camera_SnapToCoordinate.I_Filter snapFilter)
 	{
 		m_appContext = appContext;
-		m_cellHudHeight = cellHudHeight;
 		
 		smA_ClientUser user = m_appContext.userMngr.getUser();
 		m_codeRepo.addSource(user);

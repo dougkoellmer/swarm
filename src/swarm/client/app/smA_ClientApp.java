@@ -305,7 +305,7 @@ public class smA_ClientApp extends smA_App implements smI_TimeSource
 			
 			m_stateContext.registerState(new StateContainer_Base());
 			{
-				m_stateContext.registerState(new StateMachine_Camera(m_appContext, snapFilter, m_appConfig.cellHudHeight));
+				m_stateContext.registerState(new StateMachine_Camera(m_appContext, snapFilter));
 				{
 					m_stateContext.registerState(new State_CameraFloating());
 					m_stateContext.registerState(new State_GettingMapping());

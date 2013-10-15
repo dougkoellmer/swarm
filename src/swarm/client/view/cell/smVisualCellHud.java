@@ -62,7 +62,7 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 	private final HorizontalPanel m_rightDock = new HorizontalPanel();
 	
 	//private final smHudButton m_back		= new smHudButton("back");
-	//private final smHudButton m_forward		= new smHudButton("forward");
+	//private final smHudButton m_forward	= new smHudButton("forward");
 	private final smHudButton m_refresh		= new smHudButton("refresh");
 	private final smHudButton m_close		= new smHudButton("close");
 
@@ -152,7 +152,6 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 				
 				s_utilPoint1.copy(smVisualCellHud.this.m_viewContext.appContext.cameraMngr.getCamera().getPosition());
 				s_utilPoint1.incZ(m_appConfig.backOffDistance);
-				//s_utilPoint1.incZ(0);
 				
 				m_args_SetCameraTarget.init(s_utilPoint1, false, true);
 				m_viewContext.stateContext.performAction(Action_Camera_SnapToPoint.class, m_args_SetCameraTarget);
@@ -217,6 +216,9 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 				if( event.getState() instanceof State_ViewingCell )
 				{
 					this.updatePosition((State_ViewingCell) event.getState());
+					smA_Grid grid = ((State_ViewingCell) event.getState()).getCell().getGrid();
+					
+					this.getElement().getStyle().setWidth(grid.getCellWidth()-10, Unit.PX);
 					
 					this.setVisible(true);
 				}

@@ -10,6 +10,17 @@ public class smU_CameraViewport
 {
 	private static final smPoint s_utilPoint1 = new smPoint();
 	
+	public static boolean isPointInViewport(smA_Grid grid, smGridCoordinate coord, smPoint point, double cellHudHeight, double extraPadding)
+	{
+		smU_CameraViewport.calcViewWindowCenter(grid, coord, cellHudHeight, s_utilPoint1);
+		double spaceX = calcViewWindowWidth(grid)/2 + extraPadding;
+		double spaceY = calcViewWindowHeight(grid, cellHudHeight)/2 + extraPadding;
+
+		return
+			smU_Math.isWithin(point.getX(), s_utilPoint1.getX()-spaceX, s_utilPoint1.getX() + spaceX) &&
+			smU_Math.isWithin(point.getY(), s_utilPoint1.getY()-spaceY, s_utilPoint1.getY() + spaceY) ;
+	}
+	
 	public static double calcViewWindowWidth(smA_Grid grid)
 	{
 		return grid.getCellWidth() + grid.getCellPadding()*2;

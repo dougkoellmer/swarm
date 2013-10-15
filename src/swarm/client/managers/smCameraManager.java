@@ -103,7 +103,7 @@ public class smCameraManager
 		m_camera.update();
 	}
 	
-	private void constrainPoint(smPoint point_out)
+	private void constrainZ(smPoint point_out)
 	{
 		double maxZ = m_camera.calcMaxZ();
 		
@@ -137,7 +137,7 @@ public class smCameraManager
 			}
 		}
 		
-		this.constrainPoint(m_targetPosition);
+		this.constrainZ(m_targetPosition);
 		
 		if( instant )
 		{
@@ -221,7 +221,7 @@ public class smCameraManager
 		
 		if( enforceZConstraints )
 		{
-			constrainPoint(m_targetPosition);
+			constrainZ(m_targetPosition);
 		}
 		
 		m_camera.getPosition().copy(m_targetPosition);
