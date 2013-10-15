@@ -95,7 +95,7 @@ public class smScrollNavigator implements smI_StateEventListener
 		if( snappingState != null )
 		{
 			m_utilPoint1.copy(m_originalTargetSnapPoint);
-			this.updateCameraViewRect(false);
+			this.updateCameraViewRect(false, false);
 			
 			this.adjustSnapTargetPoint_private(snappingState.getTargetCoordinate(), m_utilPoint1);
 			
@@ -104,18 +104,18 @@ public class smScrollNavigator implements smI_StateEventListener
 		}
 		else if( viewingState != null )
 		{
-			this.updateCameraViewRect(false);
+			this.updateCameraViewRect(false, false);
 			updateCameraFromScrollBars();
 		}
 		else
 		{
-			this.updateCameraViewRect(true);
+			this.updateCameraViewRect(true, false);
 		}
 	}
 	
-	private void updateCameraViewRect(boolean updateBuffer)
+	private void updateCameraViewRect(boolean updateBuffer, boolean maintainApparentPosition)
 	{
-		m_args_SetCameraViewSize.init(m_scrollContainer.getElement().getClientWidth(), m_scrollContainer.getElement().getClientHeight(), updateBuffer);
+		m_args_SetCameraViewSize.init(m_scrollContainer.getElement().getClientWidth(), m_scrollContainer.getElement().getClientHeight(), updateBuffer, maintainApparentPosition);
 		m_viewContext.stateContext.performAction(Action_Camera_SetViewSize.class, m_args_SetCameraViewSize);
 	}
 	
@@ -329,7 +329,7 @@ public class smScrollNavigator implements smI_StateEventListener
 		
 		if( needToAdjust )
 		{
-			this.updateCameraViewRect(false);
+			this.updateCameraViewRect(false, false);
 			
 			if( arrival )
 			{
@@ -401,13 +401,20 @@ public class smScrollNavigator implements smI_StateEventListener
 
 		if( widthSmaller )
 		{
-			point_out.incY(m_scrollBarWidthDiv2);
+			if( viewingState == null )
+			{
+				point_out.incY(m_scrollBarWidthDiv2);
+			}
 			newWindowHeight = 0;
 		}
 		
 		if( heightSmaller )
 		{
-			point_out.incX(m_scrollBarWidthDiv2);
+			if( viewingState == null )
+			{
+				point_out.incX(m_scrollBarWidthDiv2);
+			}
+			
 			newWindowWidth = 0;
 		}
 		
@@ -428,8 +435,8 @@ public class smScrollNavigator implements smI_StateEventListener
 					m_currentGrid = state.getCell().getGrid();
 					
 					toggleScrollBars(state);
-					
-					adjustViewportOnArrivalOrExit(true);
+
+					this.updateCameraViewRect(false, true);
 				}
 				
 				break;
@@ -443,15 +450,8 @@ public class smScrollNavigator implements smI_StateEventListener
 					double windowHeight = m_scrollContainer.getElement().getClientHeight();
 					
 					toggleScrollBars((State_ViewingCell) event.getState());
-					
-					if( !event.getContext().isEntered(State_CameraSnapping.class) )
-					{
-						adjustViewportOnArrivalOrExit(false, windowWidth, windowHeight);
-					}
-					else
-					{
-						this.updateCameraViewRect(true);
-					}
+
+					this.updateCameraViewRect(false, true);
 					
 					m_currentGrid = null;
 				}

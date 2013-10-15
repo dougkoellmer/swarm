@@ -13,12 +13,14 @@ public class Action_Camera_SetViewSize extends smA_Action
 	{
 		private final double[] m_dimensions = new double[2];
 		private boolean m_updateBuffer = true;
+		private boolean m_maintainApparentCameraPosition = false;
 		
-		public void init(double width, double height, boolean updateBuffer)
+		public void init(double width, double height, boolean updateBuffer, boolean maintainApparentCameraPosition)
 		{
 			m_dimensions[0] = width;
 			m_dimensions[1] = height;
 			m_updateBuffer = updateBuffer;
+			m_maintainApparentCameraPosition = maintainApparentCameraPosition;
 		}
 		
 		public boolean updateBuffer()
@@ -26,6 +28,8 @@ public class Action_Camera_SetViewSize extends smA_Action
 			return m_updateBuffer;
 		}
 	}
+	
+	private final smPoint m_utilPoint1 = new smPoint();
 	
 	private final smCameraManager m_cameraMngr;
 	
@@ -39,19 +43,12 @@ public class Action_Camera_SetViewSize extends smA_Action
 	{
 		Args args_cast = (Args) args;
 		StateMachine_Camera machine = this.getState();
+		smCamera camera = m_cameraMngr.getCamera();
+		
+		double deltaX = args_cast.m_dimensions[0] - camera.getViewWidth();
+		double deltaY = args_cast.m_dimensions[1] - camera.getViewHeight();
 		
 		m_cameraMngr.getCamera().setViewRect(args_cast.m_dimensions[0], args_cast.m_dimensions[1]);
-		
-		if( machine.getCurrentState() instanceof State_ViewingCell )
-		{
-			State_ViewingCell viewingState = machine.getCurrentState();
-			smCamera camera = m_cameraMngr.getCamera();
-		}
-		
-		if( args_cast.m_updateBuffer )
-		{
-			machine.updateBufferManager();
-		}
 		
 		if( machine.getCurrentState() instanceof State_CameraFloating )
 		{
@@ -60,6 +57,16 @@ public class Action_Camera_SetViewSize extends smA_Action
 		else if( machine.getCurrentState() == null )
 		{
 			m_cameraMngr.setCameraPosition(m_cameraMngr.getTargetPosition(), true);
+		}
+		
+		if( args_cast.m_maintainApparentCameraPosition )
+		{
+			m_cameraMngr.shiftCamera(deltaX/2, deltaY/2);
+		}
+		
+		if( args_cast.m_updateBuffer )
+		{
+			machine.updateBufferManager();
 		}
 	}
 

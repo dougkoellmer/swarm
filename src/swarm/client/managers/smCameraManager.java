@@ -20,7 +20,7 @@ public class smCameraManager
 	private final smPoint m_targetPosition = new smPoint();
 	private final smVector m_diffVector = new smVector();
 	private final smVector m_utilVector = new smVector();
-	private final smPoint m_utilPoint = new smPoint();
+	private final smPoint m_utilPoint1 = new smPoint();
 	
 	private double m_startY = 0;
 	private double m_lengthToTravel = 0;
@@ -118,11 +118,18 @@ public class smCameraManager
 		}
 	}
 	
+	public void shiftCamera(double deltaX, double deltaY)
+	{
+		m_camera.getPosition().inc(deltaX, deltaY, 0);
+		m_targetPosition.inc(deltaX, deltaY, 0);
+		m_cameraOrigin.inc(deltaX, deltaY, 0);
+	}
+	
 	public void setTargetPosition(smPoint point, boolean instant)
 	{
 		smA_Grid grid = m_gridMngr.getGrid();
 		
-		smPoint oldTargetPosition = m_utilPoint;
+		smPoint oldTargetPosition = m_utilPoint1;
 		oldTargetPosition.copy(m_targetPosition);
 		
 		//--- DRK > This is here so that given target points can selectively choose which
