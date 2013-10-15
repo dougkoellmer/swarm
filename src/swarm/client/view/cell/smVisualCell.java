@@ -238,6 +238,8 @@ public class smVisualCell extends AbsolutePanel implements smI_BufferCellListene
 	@Override
 	public void onFocusGained()
 	{
+		smE_ZIndex.CELL_FOCUSED.assignTo(this);
+		
 		this.m_glassPanel.setVisible(false);
 		this.addStyleName("visual_cell_focused");
 

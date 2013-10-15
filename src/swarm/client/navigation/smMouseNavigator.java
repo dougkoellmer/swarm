@@ -348,7 +348,7 @@ public class smMouseNavigator implements smI_UIElement, smMouse.I_Listener
 			m_isMouseTouchingCell = false;
 		}*/
 		
-		smGridCoordinate viewedOrTargetCoord = null;
+		/*smGridCoordinate viewedOrTargetCoord = null;
 		
 		if( m_cameraState instanceof State_ViewingCell )
 		{
@@ -365,7 +365,7 @@ public class smMouseNavigator implements smI_UIElement, smMouse.I_Listener
 		{
 			m_isMouseTouchingSnappableCell = false;
 			return;
-		}
+		}*/
 		
 		m_isMouseTouchingSnappableCell = true;
 	}
@@ -374,7 +374,11 @@ public class smMouseNavigator implements smI_UIElement, smMouse.I_Listener
 	{
 		updateMouseGridCoord();
 		
+		s_logger.severe("HERERE1");
+		
 		if( !m_isMouseTouchingSnappableCell )  return;
+		
+		s_logger.severe("HERERE2");
 		
 		smA_Grid grid = m_gridMngr.getGrid();
 		mousePointToWorld(m_utilPoint1);
