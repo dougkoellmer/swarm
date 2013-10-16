@@ -148,7 +148,7 @@ public class smCameraManager
 		
 		if( instant )
 		{
-			m_cameraAtRestFrameCount = 1;
+			m_cameraAtRestFrameCount = 2;
 			
 			oldTargetPosition.calcDifference(m_targetPosition, m_utilVector);
 			if( m_utilVector.calcLengthSquared() < SNAP_TOLERANCE ) // kinda hacky

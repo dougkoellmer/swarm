@@ -530,11 +530,11 @@ public class smBrowserNavigator implements smI_StateEventListener
 		}
 	}
 	
-	private void setPositionForFloatingState(smA_State state, smPoint point, boolean force)
+	public void setPositionForFloatingState(smA_State state, smPoint point, boolean force)
 	{
 		double timeInState = state.getTimeInState(smE_StateTimeType.TOTAL);
 		if( force || timeInState - m_lastTimeFloatingStateSet >= m_floatingHistoryUpdateRate )
-		{
+		{s_logger.severe("ERERER");
 			m_historyManager.setState(FLOATING_STATE_PATH, point);
 			
 			m_lastTimeFloatingStateSet = timeInState;

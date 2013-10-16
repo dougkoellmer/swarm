@@ -186,6 +186,11 @@ public class smMouseNavigator implements smI_UIElement, smMouse.I_Listener
 						m_args_SnapToPoint.init(m_utilPoint1, false, true);
 						m_cameraMachine.performAction(Action_Camera_SnapToPoint.class, m_args_SnapToPoint);
 					}
+					else
+					{
+						//--- DRK(TODO): Hacky...mouse navigator shouldn't know about browser navigator.
+						m_viewContext.browserNavigator.setPositionForFloatingState(m_cameraState, m_cameraMngr.getCamera().getPosition(), true);
+					}
 				}
 				
 				break;
