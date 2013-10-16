@@ -7,6 +7,7 @@ import com.google.gwt.dom.client.Style.Overflow;
 import com.google.gwt.event.dom.client.ScrollEvent;
 import com.google.gwt.event.dom.client.ScrollHandler;
 import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 import swarm.client.entities.smCamera;
@@ -115,7 +116,7 @@ public class smScrollNavigator implements smI_StateEventListener
 	
 	private void updateCameraViewRect(boolean updateBuffer, boolean maintainApparentPosition)
 	{
-		m_args_SetCameraViewSize.init(m_scrollContainer.getElement().getClientWidth(), m_scrollContainer.getElement().getClientHeight(), updateBuffer, maintainApparentPosition);
+		m_args_SetCameraViewSize.init(this.getWindowWidth(), this.getWindowHeight(), updateBuffer, maintainApparentPosition);
 		m_viewContext.stateContext.performAction(Action_Camera_SetViewSize.class, m_args_SetCameraViewSize);
 	}
 	
@@ -135,9 +136,9 @@ public class smScrollNavigator implements smI_StateEventListener
 		smA_Grid grid = viewingState.getCell().getGrid();
 		
 		double minViewWidth = smU_CameraViewport.calcViewWindowWidth(grid);
-		double windowWidth = m_scrollContainer.getElement().getClientWidth();
+		double windowWidth = this.getWindowWidth();
 		double minViewHeight = smU_CameraViewport.calcViewWindowHeight(grid, m_cellHudHeight);
-		double windowHeight = m_scrollContainer.getElement().getClientHeight();
+		double windowHeight = this.getWindowHeight();
 		smGridCoordinate coord = viewingState.getCell().getCoordinate();
 		smPoint centerPoint = m_utilPoint1;
 		smU_CameraViewport.calcViewWindowCenter(grid, viewingState.getCell().getCoordinate(), m_cellHudHeight, centerPoint);
@@ -192,7 +193,7 @@ public class smScrollNavigator implements smI_StateEventListener
 		Style innerStyle = this.m_scrollContainerInner.getElement().getStyle();
 		Style mouseLayerStyle = this.m_mouseLayer.getElement().getStyle();
 		
-		double windowWidth = m_scrollContainer.getElement().getClientWidth();
+		double windowWidth = this.getWindowWidth();
 		
 		if( windowWidth < minViewWidth )
 		{			
@@ -221,7 +222,7 @@ public class smScrollNavigator implements smI_StateEventListener
 		Style innerStyle = this.m_scrollContainerInner.getElement().getStyle();
 		Style mouseLayerStyle = this.m_mouseLayer.getElement().getStyle();
 		
-		double windowHeight = m_scrollContainer.getElement().getClientHeight();
+		double windowHeight = this.getWindowHeight();
 		
 		if( windowHeight < minViewHeight )
 		{
@@ -271,85 +272,66 @@ public class smScrollNavigator implements smI_StateEventListener
 		}
 	}
 	
-	public boolean isScrolling()
+	private double getWindowWidth()
 	{
-		State_ViewingCell viewingState =  m_viewContext.stateContext.getEnteredState(State_ViewingCell.class);
+		double value = this.m_scrollContainer.getElement().getClientWidth();
 		
-		if( viewingState == null )  return false;
-		
-		smA_Grid grid = viewingState.getCell().getGrid();
-		
-		double minViewWidth = smU_CameraViewport.calcViewWindowWidth(grid);
-		double windowWidth = m_scrollContainer.getElement().getClientWidth();
-		double minViewHeight = smU_CameraViewport.calcViewWindowHeight(grid, m_cellHudHeight);
-		double windowHeight = m_scrollContainer.getElement().getClientHeight();
-		
-		return windowWidth < minViewWidth || windowHeight < minViewHeight;
-	}
-	
-	private void adjustViewportOnArrivalOrExit(boolean arrival)
-	{
-		double windowWidth = m_scrollContainer.getElement().getClientWidth();
-		double windowHeight = m_scrollContainer.getElement().getClientHeight();
-		
-		this.adjustViewportOnArrivalOrExit(arrival, windowWidth, windowHeight);
-	}
-	
-	private void adjustViewportOnArrivalOrExit(boolean arrival, double windowWidth, double windowHeight)
-	{
-		smA_Grid grid = m_currentGrid;
-		
-		smCamera camera = m_viewContext.appContext.cameraMngr.getCamera();
-		smPoint cameraPoint = camera.getPosition();
-		m_utilPoint1.copy(cameraPoint);
-		
-		double minViewWidth = smU_CameraViewport.calcViewWindowWidth(grid);
-		double minViewHeight = smU_CameraViewport.calcViewWindowHeight(grid, m_cellHudHeight);
-		
-		boolean needToAdjust = false;
-		
-		/*if( windowWidth < minViewWidth && windowHeight < minViewHeight )
+		if( value == 0 )
 		{
-			this.updateCameraViewRect(true);
-			
-			return;
-		}*/
-		
-		if( windowWidth < minViewWidth )
-		{
-			m_utilPoint1.incY(arrival ? -m_scrollBarWidthDiv2 : m_scrollBarWidthDiv2);
-			needToAdjust = true;
-		}
-		
-		if( windowHeight < minViewHeight )
-		{
-			m_utilPoint1.incX(arrival ? -m_scrollBarWidthDiv2 : m_scrollBarWidthDiv2);
-			needToAdjust = true;
-		}
-		
-		if( needToAdjust )
-		{
-			this.updateCameraViewRect(false, false);
-			
-			if( arrival )
+			if( m_scrollContainer.getElement().getOffsetWidth() != 0 )
 			{
-				State_ViewingCell viewingState = m_viewContext.stateContext.getEnteredState(State_ViewingCell.class);
-				
-				if( viewingState != null )
-				{
-					smGridCoordinate coord = viewingState.getCell().getCoordinate();
-					smU_CameraViewport.calcConstrainedCameraPoint(grid, coord, m_utilPoint1, windowWidth, windowHeight, m_cellHudHeight, m_utilPoint1);
-				}
-				else
-				{
-					smU_Debug.ASSERT(false, "expected viewing state to be entered.");
-				}
+				return 0;
 			}
-			
-			m_utilPoint1.setZ(Double.NaN);
-			m_args_SnapToPoint.init(m_utilPoint1, arrival, false);
-			m_viewContext.stateContext.performAction(Action_Camera_SnapToPoint.class, m_args_SnapToPoint);
+			else
+			{
+				return m_viewContext.splitPanel.getCellPanelWidth();
+			}
 		}
+		else
+		{
+			return value;
+		}
+	}
+	
+	private double getWindowHeight()
+	{
+		double value = this.m_scrollContainer.getElement().getClientHeight();
+		
+		if( value == 0 )
+		{
+			if( m_scrollContainer.getElement().getOffsetHeight() != 0 )
+			{
+				return 0;
+			}
+			else
+			{
+				return RootPanel.get().getOffsetHeight();
+			}
+		}
+		else
+		{
+			return value;
+		}
+	}
+	
+	private boolean isScrollingX()
+	{
+		if( m_currentGrid == null )  return false;
+		
+		double minViewWidth = smU_CameraViewport.calcViewWindowWidth(m_currentGrid);
+		double windowWidth = this.getWindowWidth();
+		
+		return windowWidth < minViewWidth;
+	}
+	
+	private boolean isScrollingY()
+	{
+		if( m_currentGrid == null )  return false;
+		
+		double minViewHeight = smU_CameraViewport.calcViewWindowHeight(m_currentGrid, m_cellHudHeight);
+		double windowHeight = this.getWindowHeight();
+		
+		return windowHeight < minViewHeight;
 	}
 	
 	public void adjustSnapTargetPoint(Action_Camera_SnapToCoordinate.Args args)
@@ -367,8 +349,8 @@ public class smScrollNavigator implements smI_StateEventListener
 		smA_Grid grid = this.m_viewContext.appContext.gridMngr.getGrid();
 		double minViewWidth = smU_CameraViewport.calcViewWindowWidth(grid);
 		double minViewHeight = smU_CameraViewport.calcViewWindowHeight(grid, m_cellHudHeight);
-		double windowWidth = m_scrollContainer.getElement().getClientWidth();
-		double windowHeight = m_scrollContainer.getElement().getClientHeight();
+		double windowWidth = this.getWindowWidth();
+		double windowHeight = this.getWindowHeight();
 		
 		double newWindowWidth = windowWidth;
 		double newWindowHeight = windowHeight;
@@ -397,7 +379,15 @@ public class smScrollNavigator implements smI_StateEventListener
 			heightSmaller = true;
 		}
 		
-		if( widthSmaller && heightSmaller )  return;
+		if( !widthSmaller && windowWidth < minViewWidth )
+		{
+			if( viewingState == null )
+			{
+				windowHeight -= m_scrollBarWidthDiv2*2;
+			}
+			
+			widthSmaller = true;
+		}
 
 		if( widthSmaller )
 		{
@@ -405,6 +395,7 @@ public class smScrollNavigator implements smI_StateEventListener
 			{
 				point_out.incY(m_scrollBarWidthDiv2);
 			}
+			
 			newWindowHeight = 0;
 		}
 		
@@ -416,6 +407,18 @@ public class smScrollNavigator implements smI_StateEventListener
 			}
 			
 			newWindowWidth = 0;
+		}
+		
+		if( widthSmaller && heightSmaller )
+		{
+			if( viewingState == null )
+			{
+				point_out.incX(-m_scrollBarWidthDiv2);
+				point_out.incY(-m_scrollBarWidthDiv2);
+			}
+			
+			newWindowWidth = windowWidth - m_scrollBarWidthDiv2*10;
+			newWindowHeight = windowHeight - m_scrollBarWidthDiv2*10;
 		}
 		
 		smU_CameraViewport.calcConstrainedCameraPoint(grid, targetCoord, point_out, newWindowWidth, newWindowHeight, m_cellHudHeight, point_out);
@@ -435,8 +438,14 @@ public class smScrollNavigator implements smI_StateEventListener
 					m_currentGrid = state.getCell().getGrid();
 					
 					toggleScrollBars(state);
+					
+					boolean isScrollingX = isScrollingX();
+					boolean isScrollingY = isScrollingY();
 
-					this.updateCameraViewRect(false, true);
+					if( isScrollingX || isScrollingY )
+					{
+						this.updateCameraViewRect(true,  false);
+					}
 				}
 				
 				break;
@@ -446,12 +455,15 @@ public class smScrollNavigator implements smI_StateEventListener
 			{
 				if ( event.getState() instanceof State_ViewingCell )
 				{
-					double windowWidth = m_scrollContainer.getElement().getClientWidth();
-					double windowHeight = m_scrollContainer.getElement().getClientHeight();
+					boolean isScrollingX = isScrollingX();
+					boolean isScrollingY = isScrollingY();
 					
 					toggleScrollBars((State_ViewingCell) event.getState());
 
-					this.updateCameraViewRect(false, true);
+					if( isScrollingX || isScrollingY )
+					{
+						this.updateCameraViewRect(true, true);
+					}
 					
 					m_currentGrid = null;
 				}

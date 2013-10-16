@@ -238,10 +238,6 @@ public class smVisualCellContainer extends FlowPanel implements ResizeHandler, s
 			{
 				if( event.getState() instanceof StateMachine_Camera )
 				{
-					int height2 = this.getElement().getOffsetHeight();
-					int width = this.getElement().getOffsetWidth();
-					
-					int blah = 10;
 					//--- DRK > For some reason we can't use the updateCameraViewRect method because
 					//---		offset width/height returns 0...I think it's because CSS isn't applied yet.
 					//---		So kind of a hack here...would be nice if I could fix this, so...TODO(DRK).

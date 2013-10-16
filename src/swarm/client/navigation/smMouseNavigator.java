@@ -374,11 +374,7 @@ public class smMouseNavigator implements smI_UIElement, smMouse.I_Listener
 	{
 		updateMouseGridCoord();
 		
-		s_logger.severe("HERERE1");
-		
 		if( !m_isMouseTouchingSnappableCell )  return;
-		
-		s_logger.severe("HERERE2");
 		
 		smA_Grid grid = m_gridMngr.getGrid();
 		mousePointToWorld(m_utilPoint1);
