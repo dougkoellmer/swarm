@@ -16,6 +16,7 @@ class smCellAddressManagerListener implements smCellAddressManager.I_Listener
 	smCellAddressManagerListener(StateMachine_Camera machine)
 	{
 		m_machine = machine;
+		m_snapToCoordArgs.userData = Action_Camera_SnapToAddress.class;
 	}
 	
 	private boolean dispatchGotMappingEvent(Event_GettingMapping_OnResponse.E_Type type, smCellAddress address, smCellAddressMapping mapping)

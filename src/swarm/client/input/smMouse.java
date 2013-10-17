@@ -117,12 +117,8 @@ public class smMouse implements MouseDownHandler, MouseUpHandler, MouseMoveHandl
 	}
 	
 	private void addMouseDownHandlers()
-	{
-		if( m_container.getParent() != null )
-		{
-			m_container.getParent().addDomHandler(this, MouseWheelEvent.getType()); // TODO: Have to add to parent so zoom works over hud...HACKY
-		}
-		
+	{		
+		m_container.addDomHandler(this, MouseWheelEvent.getType());
 		m_container.addDomHandler(this, MouseOverEvent.getType());
 		m_container.addDomHandler(this, MouseOutEvent.getType());
 		m_container.addDomHandler(this, MouseMoveEvent.getType());

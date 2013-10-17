@@ -194,7 +194,7 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 		camera.calcScreenPoint(s_utilPoint1, s_utilPoint2);
 		this.getElement().getStyle().setLeft(s_utilPoint2.getX() + scrollX, Unit.PX);
 		double y = s_utilPoint2.getY()-m_appConfig.cellHudHeight-grid.getCellPadding();
-		y -= 3; // account for margin...sigh
+		y -= 1; // account for margin...sigh
 		this.getElement().getStyle().setTop(y + scrollY, Unit.PX);
 	}
 	
@@ -218,7 +218,7 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 					this.updatePosition((State_ViewingCell) event.getState());
 					smA_Grid grid = ((State_ViewingCell) event.getState()).getCell().getGrid();
 					
-					this.getElement().getStyle().setWidth(grid.getCellWidth()-10, Unit.PX);
+					this.getElement().getStyle().setWidth(grid.getCellWidth()-9, Unit.PX);
 					
 					this.setVisible(true);
 				}

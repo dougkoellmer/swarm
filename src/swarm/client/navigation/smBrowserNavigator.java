@@ -209,7 +209,7 @@ public class smBrowserNavigator implements smI_StateEventListener
 					}
 				}
 				else if( event.getState() instanceof State_ViewingCell )
-				{					
+				{
 					if( m_lastSnapAction == null )
 					{
 						//--- DRK > This case implies that browser navigation (pressing forward/backward)
@@ -458,7 +458,6 @@ public class smBrowserNavigator implements smI_StateEventListener
 						 event.getAction() == Action_Camera_SnapToCoordinate.class )
 				{
 					m_args_OnAddressResponse = null;
-					m_args_OnMappingResponse = null;
 					
 					if( event.getAction() == Action_Camera_SnapToCoordinate.class )
 					{
@@ -478,9 +477,22 @@ public class smBrowserNavigator implements smI_StateEventListener
 							
 							return;
 						}
+						
+						//--- DRK > TODO: Kinda hacky...relying on very specific configuration of state machine.
+						if( args.userData == Action_Camera_SnapToAddress.class )
+						{
+							m_lastSnapAction = Action_Camera_SnapToAddress.class;
+						}
+						else
+						{
+							m_lastSnapAction = event.getAction();
+							m_args_OnMappingResponse = null;
+						}
 					}
 					else if( event.getAction() == Action_Camera_SnapToAddress.class )
 					{
+						m_args_OnMappingResponse = null;
+						
 						Action_Camera_SnapToAddress.Args args = event.getActionArgs();
 						
 						if( args.onlyCausedRefresh() )
@@ -489,9 +501,11 @@ public class smBrowserNavigator implements smI_StateEventListener
 							
 							return;
 						}
+						
+						m_lastSnapAction = event.getAction();
 					}
 					
-					m_lastSnapAction = event.getAction();
+					
 				}
 				else if( event.getAction() == Action_Camera_SnapToPoint.class )
 				{
@@ -534,7 +548,7 @@ public class smBrowserNavigator implements smI_StateEventListener
 	{
 		double timeInState = state.getTimeInState(smE_StateTimeType.TOTAL);
 		if( force || timeInState - m_lastTimeFloatingStateSet >= m_floatingHistoryUpdateRate )
-		{s_logger.severe("ERERER");
+		{
 			m_historyManager.setState(FLOATING_STATE_PATH, point);
 			
 			m_lastTimeFloatingStateSet = timeInState;
