@@ -265,7 +265,7 @@ public class smVisualCellManager implements smI_UIElement
 				{
 					//boolean flushDestroyQueueIfMoving = (event.getState().getUpdateCount() % 8) == 0;
 					
-					if( m_viewContext.appContext.cameraMngr.isCameraAtRest() )
+					if( m_viewContext.appContext.cameraMngr.getAtRestFrameCount() >=2 )
 					{
 						m_cellPool.cleanPool();
 						

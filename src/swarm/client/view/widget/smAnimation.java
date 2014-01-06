@@ -1,7 +1,7 @@
 package swarm.client.view.widget;
 
-import com.b33hive.client.ui.bhU_Image;
-import com.b33hive.client.ui.bhU_UI;
+import swarm.client.view.smU_Image;
+
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.dom.client.Style.Position;

@@ -1,6 +1,6 @@
 package swarm.client.view;
 
-import com.b33hive.client.data.bhU_Caching;
+import swarm.client.js.bhU_Caching;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.dom.client.Style.Unit;

@@ -1,3 +1,15 @@
+- Change "Words" to "characters or something, in tool tip and in text input.
+
+- add tooltip to character image itself...same as the reload button
+
+- tab doesn't work between fields
+
+- can't type in fields
+
+- 
+
+
+
 
 - decommission URI policy and API when leaving cell.
 

@@ -10,6 +10,8 @@
 
 - mount shared folder by using sudo mount -t vboxsf linux_share linux_share
 
+- for the above command...the last argument is actual path to the shared folder in virtualbox
+
 - copy past jars and js into linux_share
 
 - VERY IMPORTANT...remove all caja-related jar files from the build path, then delete, all inside eclipse, not in windows

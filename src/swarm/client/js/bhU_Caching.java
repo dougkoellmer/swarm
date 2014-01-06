@@ -1,4 +1,4 @@
-package com.b33hive.client.data;
+package swarm.client.js;
 
 public class bhU_Caching
 {

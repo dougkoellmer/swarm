@@ -1,0 +1,3 @@
+navigate to directory where swarm is to be included, and, e.g....
+
+mklink /J swarm "C:/code/swarm/src/swarm"

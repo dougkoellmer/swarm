@@ -245,6 +245,11 @@ public class smCameraManager
 		return m_cameraAtRestFrameCount == 1;
 	}
 	
+	public int getAtRestFrameCount()
+	{
+		return m_cameraAtRestFrameCount;
+	}
+	
 	public boolean isCameraAtRest()
 	{
 		if( m_cameraAtRestFrameCount >= 1 )

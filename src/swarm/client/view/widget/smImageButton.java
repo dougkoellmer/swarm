@@ -1,6 +1,5 @@
-package com.b33hive.client.ui.widget;
+package swarm.client.view.widget;
 
-import com.b33hive.client.ui.bhU_Image;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style.Cursor;
