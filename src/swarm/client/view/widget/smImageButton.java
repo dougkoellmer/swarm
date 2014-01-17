@@ -19,18 +19,18 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.RootPanel;
 
-public class bhImageButton extends bhButton
+public class smImageButton extends smButton
 {
-	private Element m_imageElement;
+	/*private Element m_imageElement;
 	
 	private boolean m_isMouseDown = false;
 	
-	public static bhImageButton wrap(com.google.gwt.dom.client.Element element, String image, boolean preventCaching, boolean dimOnPress)
+	public static smImageButton wrap(com.google.gwt.dom.client.Element element, String image, boolean preventCaching, boolean dimOnPress)
 	{
 	    // Assert that the element is attached.
 	    assert Document.get().getBody().isOrHasChild(element);
 
-	    bhImageButton button = new bhImageButton(element, image, preventCaching, dimOnPress);
+	    smImageButton button = new smImageButton(element, image, preventCaching, dimOnPress);
 
 	    // Mark it attached and remember it for cleanup.
 	    button.onAttach();
@@ -39,7 +39,7 @@ public class bhImageButton extends bhButton
 	    return button;
 	}
 	
-	protected bhImageButton(Element element, String image, boolean preventCaching, boolean dimOnPress)
+	protected smImageButton(Element element, String image, boolean preventCaching, boolean dimOnPress)
 	{
 		super(element);
 		
@@ -129,5 +129,5 @@ public class bhImageButton extends bhButton
 	private void unDim()
 	{
 		m_imageElement.getStyle().clearOpacity();
-	}
+	}*/
 }

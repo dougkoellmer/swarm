@@ -8,9 +8,9 @@ JS_MIN_OUT=min.js
 JSP=$(realpath ./war/index.jsp)
 MODULE=$(realpath ./war/r.app)
 
-BH_SCRIPTS="./lib/swarm/scripts/client"
+SWARM_SCRIPTS="./lib/swarm/scripts/client"
 
-cd $BH_SCRIPTS
+cd $SWARM_SCRIPTS
 sh build_js.sh $APP_JS $JS_MIN_OUT $JSP $MODULE
 #sh minify_html.sh $WAR/index.jsp $WAR/index.min.jsp
 cd -

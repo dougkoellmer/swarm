@@ -25,6 +25,7 @@ public enum smE_RequestPath implements smI_RequestPath
 	getCellAddress			(smE_HttpMethod.GET),
 	getStartingPosition		(smE_HttpMethod.GET),
 	getServerVersion		(smE_HttpMethod.GET),
+	getHashedPassword		(smE_HttpMethod.GET),
 	getPasswordChangeToken	(smE_HttpMethod.GET);
 	
 	private final smE_HttpMethod m_method;

@@ -58,6 +58,12 @@ public class smU_Hashing
 		return Base64.encodeBase64URLSafeString(bytes);
 	}
 	
+	public static String convertBytesToHashString(byte[] bytes)
+	{
+		String string = Base64.encodeBase64String(bytes);
+		return string;
+	}
+	
 	public static byte[] convertHashStringToBytes(String base64HashString)
 	{
 		byte[] bytes = Base64.decodeBase64(base64HashString);
@@ -68,7 +74,7 @@ public class smU_Hashing
 	{
 		byte[] saltBytes = convertHashStringToBytes(base64Salt);
 		byte[] hashBytes = hashWithSalt(text, saltBytes);
-		return Base64.encodeBase64String(hashBytes);
+		return convertBytesToHashString(hashBytes);
 	}
 	
 	public static byte[] hashWithSalt(String text, byte[] salt)

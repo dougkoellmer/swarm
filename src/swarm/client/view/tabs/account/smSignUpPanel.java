@@ -126,7 +126,7 @@ public class smSignUpPanel extends VerticalPanel implements smI_StateEventListen
 		recaptchaResponseFieldElement.removeFromParent();
 		recaptchaResponseFieldElement.getStyle().clearDisplay();
 		
-		m_captchaInput = new smTextBoxWrapper(new smTextBox(recaptchaResponseFieldElement, "Enter The Words Below"));
+		m_captchaInput = new smTextBoxWrapper(new smTextBox(recaptchaResponseFieldElement, "Enter The Text Below"));
 		m_captchaInput.getTextBox().addStyleName("sm_recaptcha_field");
 		m_inputs[3] = m_captchaInput;
 		
@@ -139,6 +139,7 @@ public class smSignUpPanel extends VerticalPanel implements smI_StateEventListen
 		m_captchaImageContainer = new smHtmlWrapper(recaptchaImageElement);
 		m_captchaImageContainer.addStyleName("sm_captcha_container");
 		m_captchaImageContainer.addStyleName("sm_signinorup_element");
+		
 		
 		m_reloadCaptcha.getElement().getStyle().setMarginLeft(3, Unit.PX);
 		m_captchaHelp.getElement().getStyle().setMarginLeft(12, Unit.PX);
@@ -156,7 +157,7 @@ public class smSignUpPanel extends VerticalPanel implements smI_StateEventListen
 		});
 		
 		m_viewContext.clickMngr.addClickHandler(m_captchaImageContainer, new smI_ClickHandler()
-		{			
+		{
 			@Override
 			public void onClick()
 			{
@@ -197,8 +198,9 @@ public class smSignUpPanel extends VerticalPanel implements smI_StateEventListen
 		config = new smToolTipConfig(smE_ToolTipType.MOUSE_OVER, "What is this thing?");
 		toolTipper.addTip(m_captchaHelp, config);
 		
-		config = new smToolTipConfig(smE_ToolTipType.MOUSE_OVER, "Click here to get new words.");
+		config = new smToolTipConfig(smE_ToolTipType.MOUSE_OVER, "Click here to get new text.");
 		toolTipper.addTip(m_reloadCaptcha, config);
+		toolTipper.addTip(m_captchaImageContainer, config);
 		
 		m_usernameInput.getTextBox().setMaxLength(smS_Account.MAX_USERNAME_LENGTH);
 		m_emailInput.getTextBox().setMaxLength(smS_Account.MAX_EMAIL_LENGTH);

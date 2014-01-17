@@ -16,7 +16,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONException;
 
 import swarm.server.account.smE_Role;
-
 import swarm.server.app.smA_ServerApp;
 import swarm.server.app.smA_ServerJsonFactory;
 import swarm.server.app.smServerContext;
@@ -25,6 +24,7 @@ import swarm.server.transaction.smServerTransactionManager;
 import swarm.shared.app.smSharedAppContext;
 import swarm.shared.app.smS_App;
 import swarm.shared.json.smA_JsonFactory;
+import swarm.shared.json.smE_JsonKey;
 import swarm.shared.json.smI_JsonObject;
 import swarm.shared.transaction.smI_RequestPath;
 import swarm.shared.transaction.smS_Transaction;
@@ -72,20 +72,30 @@ public class smAdminServlet extends smA_BaseServlet
 			smI_JsonObject requestJson = null;
 			
 			String requestPathString = "";
+			String requestJsonString = "";
+			String requestJsonArgsString = "";
 			
 			if( !isGet )
 			{
 				requestPathString = nativeRequest.getParameter("requestPath");
 				smI_RequestPath requestPath = context.requestPathMngr.getPath(requestPathString);
 				requestJson = context.jsonFactory.createJsonObject();
-				context.requestPathMngr.putToJson(requestJson, requestPath);
+				context.requestPathMngr.putToJson(requestPath, requestJson);
+				
+				requestJsonArgsString = nativeRequest.getParameter("args");
+				smI_JsonObject requestJsonArgs = context.jsonFactory.createJsonObject(requestJsonArgsString);
+				if( requestJsonArgs != null )
+				{
+					context.jsonFactory.getHelper().putJsonObject(requestJson, smE_JsonKey.txnArgs, requestJsonArgs);
+					
+				}
 			}
 			
 			PrintWriter writer = nativeResponse.getWriter();
 			
-			writer.write("<html><head></head><body onKeyPress=\"if(event.keyCode==13){document.forms['the_form'].submit();}\"><form name='the_form' method='POST'>");
+			writer.write("<html><head><title>API</title></head><body onKeyPress=\"if(event.keyCode==13){document.forms['the_form'].submit();}\"><form name='the_form' method='POST'>");
 			
-			String selectTag = "<select name='requestPath'>";
+			String selectTag = "<select style='width:300px;' name='requestPath'>";
 			{
 				Iterator<String> pathIterator = context.requestPathMngr.getPaths();
 				while( pathIterator.hasNext() )
@@ -95,10 +105,10 @@ public class smAdminServlet extends smA_BaseServlet
 					selectTag += "<option "+selected+">"+path+"</option>";
 				}
 			}
-			selectTag += "</select>";
+			selectTag += "</select><br>";
 			
 			writer.write(selectTag);
-			//writer.write("<textarea style='width:400px; height:200px;' name='json'>"+requestJsonString+"</textarea>");
+			writer.write("<textarea style='width:300px; height:50px;' name='args'>"+requestJsonArgsString+"</textarea><br>");
 			writer.write("<input type='submit' value='Submit'>");
 			writer.write("</form></body></html>");
 			

@@ -257,7 +257,7 @@ public class smVisualCellManager implements smI_UIElement
 	@Override
 	public void onStateEvent(smStateEvent event)
 	{
-		switch(event.getType())
+		switch( event.getType() )
 		{
 			case DID_UPDATE:
 			{

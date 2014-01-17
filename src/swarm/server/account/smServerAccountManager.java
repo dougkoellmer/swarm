@@ -62,14 +62,14 @@ public class smServerAccountManager
 		return true;
 	}
 	
-	private boolean earlyOut_signIn(smSignInCredentials creds, smSignInValidationResult result_out)
+	private boolean signIn_earlyOut(smSignInCredentials creds, smSignInValidationResult result_out)
 	{
 		m_signInValidator.validate(creds, result_out);
 		
 		return !result_out.isEverythingOk();
 	}
 	
-	private boolean earlyOut_signUp(smSignUpCredentials creds, smSignUpValidationResult result_out)
+	private boolean signUp_earlyOut(smSignUpCredentials creds, smSignUpValidationResult result_out)
 	{
 		m_signUpValidator.validate(creds, result_out);
 		
@@ -120,7 +120,7 @@ public class smServerAccountManager
 	 */
 	public String setNewDesiredPassword(smSignInCredentials credentials, smSignInValidationResult result_out)
 	{
-		if( earlyOut_signIn(credentials, result_out) )  return null;
+		if( signIn_earlyOut(credentials, result_out) )  return null;
 		
 		String email				= credentials.get(smE_SignInCredentialType.EMAIL);
 		String plainTextPassword	= credentials.get(smE_SignInCredentialType.PASSWORD);
@@ -149,7 +149,7 @@ public class smServerAccountManager
 	
 	public smUserSession attemptSignUp(smSignUpCredentials credentials, smSignUpValidationResult result_out)
 	{
-		if( earlyOut_signUp(credentials, result_out) )  return null;
+		if( signUp_earlyOut(credentials, result_out) )  return null;
 		
 		String email				= credentials.get(smE_SignUpCredentialType.EMAIL);
 		String username				= credentials.get(smE_SignUpCredentialType.USERNAME);
@@ -253,7 +253,7 @@ public class smServerAccountManager
 	
 	public smUserSession confirmNewPassword(smSignInCredentials credentials, String passwordResetToken, smSignInValidationResult result_out)
     {
-		if( earlyOut_signIn(credentials, result_out) )  return null;
+		if( signIn_earlyOut(credentials, result_out) )  return null;
 		
     	String email				= credentials.get(smE_SignInCredentialType.EMAIL);
 		String plainTextPassword	= credentials.get(smE_SignInCredentialType.PASSWORD);
@@ -294,7 +294,7 @@ public class smServerAccountManager
 
 	public smUserSession attemptSignIn(smSignInCredentials credentials, smSignInValidationResult result_out)
     {
-		if( earlyOut_signIn(credentials, result_out) )  return null;
+		if( signIn_earlyOut(credentials, result_out) )  return null;
 		
     	String email				= credentials.get(smE_SignInCredentialType.EMAIL);
 		String plainTextPassword	= credentials.get(smE_SignInCredentialType.PASSWORD);

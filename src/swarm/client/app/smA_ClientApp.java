@@ -132,7 +132,7 @@ public class smA_ClientApp extends smA_App implements smI_TimeSource
 			
 			case REGISTER_STATES:
 			{
-				stage_registerStateMachine(null);	break;
+				stage_registerStateMachine(null, null);	break;
 			}
 			
 			case ESTABLISH_TIMING:
@@ -271,7 +271,7 @@ public class smA_ClientApp extends smA_App implements smI_TimeSource
 		m_viewContext.toolTipMngr.setDefaultPadding(smS_UI.TOOl_TIP_PADDING);
 	}
 	
-	protected void stage_registerStateMachine(smI_StateEventListener stateEventListener)
+	protected void stage_registerStateMachine(smI_StateEventListener stateEventListener, Class<? extends smA_State> consoleState_T_null)
 	{
 		Action_Camera_SnapToCoordinate.I_Filter snapFilter = new Action_Camera_SnapToCoordinate.I_Filter()
 		{
@@ -303,7 +303,7 @@ public class smA_ClientApp extends smA_App implements smI_TimeSource
 			m_stateContext.registerState(new State_GenericDialog());
 			m_stateContext.registerState(new State_AsyncDialog());
 			
-			m_stateContext.registerState(new StateContainer_Base());
+			m_stateContext.registerState(new StateContainer_Base(consoleState_T_null));
 			{
 				m_stateContext.registerState(new StateMachine_Camera(m_appContext, snapFilter));
 				{

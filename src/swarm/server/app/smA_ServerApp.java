@@ -10,7 +10,6 @@ import com.google.appengine.api.rdbms.AppEngineDriver;
 import swarm.client.app.smClientAppConfig;
 import swarm.server.account.smSqlAccountDatabase;
 import swarm.server.account.smServerAccountManager;
-
 import swarm.server.code.smServerCodeCompiler;
 import swarm.server.data.blob.smBlobManagerFactory;
 import swarm.server.entities.smServerGrid;
@@ -26,6 +25,7 @@ import swarm.server.handlers.normal.getCellAddress;
 import swarm.server.handlers.normal.getCellAddressMapping;
 import swarm.server.handlers.normal.getCode;
 import swarm.server.handlers.normal.getGridData;
+import swarm.server.handlers.normal.getHashedPassword;
 import swarm.server.handlers.normal.getPasswordChangeToken;
 import swarm.server.handlers.normal.getServerVersion;
 import swarm.server.handlers.normal.getUserData;
@@ -136,9 +136,13 @@ public abstract class smA_ServerApp extends smA_App
 		m_context.inlineTxnMngr = new smInlineTransactionManager(m_context.txnMngr, m_context.requestPathMngr, (smA_ServerJsonFactory) m_context.jsonFactory, appConfig.appId, appConfig.verboseTransactions);
 		m_context.blobMngrFactory = new smBlobManagerFactory();
 		m_context.sessionMngr = new smSessionManager(m_context.blobMngrFactory, m_context.jsonFactory);
-		
-		m_context.telemetryDb = new smTelemetryDatabase(appConfig.databaseUrl, appConfig.telemetryDatabase);
 		m_context.redirector = new smServletRedirector(appConfig.mainPage);
+		
+		if( appConfig.telemetryDatabase != null )
+		{
+			m_context.telemetryDb = new smTelemetryDatabase(appConfig.databaseUrl, appConfig.telemetryDatabase);
+			addTxnScopeListener(m_context.telemetryDb);
+		}
 		
 		addClientHandlers();
 		addAdminHandlers(m_appConfig.T_homeCellCreator);
@@ -148,7 +152,6 @@ public abstract class smA_ServerApp extends smA_App
 		
 		addTxnScopeListener(m_context.blobMngrFactory);
 		addTxnScopeListener(m_context.sessionMngr);
-		addTxnScopeListener(m_context.telemetryDb);
 		
 		if( accountDatabase != null )
 		{
@@ -186,6 +189,7 @@ public abstract class smA_ServerApp extends smA_App
 		setNormalHandler(new setNewDesiredPassword(),	smE_RequestPath.setNewDesiredPassword);
 		setNormalHandler(new getPasswordChangeToken(),	smE_RequestPath.getPasswordChangeToken);
 		setNormalHandler(new getServerVersion(),		smE_RequestPath.getServerVersion);
+		setNormalHandler(new getHashedPassword(),		smE_RequestPath.getHashedPassword);
 		
 		m_context.txnMngr.addDeferredHandler(getCodeHandler);
 	}

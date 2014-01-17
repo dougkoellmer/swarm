@@ -71,15 +71,15 @@ public class smRequestPathManager
 		}
 	}
 	
-	public void putToJson(smI_JsonObject json, smI_RequestPath path)
+	public void putToJson(smI_RequestPath path, smI_JsonObject json_out)
 	{
 		if( m_verboseRequestPaths )
 		{
-			m_jsonFactory.getHelper().putString(json, smE_JsonKey.requestPath, path.getName());
+			m_jsonFactory.getHelper().putString(json_out, smE_JsonKey.requestPath, path.getName());
 		}
 		else
 		{
-			m_jsonFactory.getHelper().putInt(json, smE_JsonKey.requestPath, path.getId());
+			m_jsonFactory.getHelper().putInt(json_out, smE_JsonKey.requestPath, path.getId());
 		}
 	}
 	

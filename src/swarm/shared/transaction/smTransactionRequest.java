@@ -118,7 +118,7 @@ public class smTransactionRequest extends smA_TransactionObject
 	{
 		super.writeJson(factory, json_out);
 		
-		requestPathMngr.putToJson(json_out, m_path);
+		requestPathMngr.putToJson(m_path, json_out);
 		
 		if( m_serverVersion != null )
 		{

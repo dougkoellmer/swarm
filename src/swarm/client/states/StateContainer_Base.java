@@ -19,8 +19,11 @@ import swarm.shared.transaction.smTransactionResponse;
  */
 public class StateContainer_Base extends smA_StateContainer
 {
-	public StateContainer_Base()
+	private final Class<? extends smA_State> m_consoleState_T;
+	
+	public StateContainer_Base(Class<? extends smA_State> consoleState_T)
 	{
+		m_consoleState_T = consoleState_T;
 		registerAction(new Action_Base_HideSupplementState());
 		registerAction(new Action_Base_ShowSupplementState());
 	}
@@ -40,10 +43,13 @@ public class StateContainer_Base extends smA_StateContainer
 	{
 		if ( revealingState == null )
 		{
-			if ( !this.isStateEntered(StateMachine_Tabs.class) )
+			if( m_consoleState_T != null )
 			{
-				container_enterState(this, StateMachine_Tabs.class);
-				container_foregroundState(this, StateMachine_Tabs.class);
+				if ( !this.isStateEntered(m_consoleState_T) )
+				{
+					container_enterState(this, m_consoleState_T);
+					container_foregroundState(this, m_consoleState_T);
+				}
 			}
 			
 			if ( !this.isStateEntered(StateMachine_Camera.class) )

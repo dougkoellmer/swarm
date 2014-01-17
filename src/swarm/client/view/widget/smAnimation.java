@@ -1,5 +1,6 @@
 package swarm.client.view.widget;
 
+import swarm.client.view.smU_Css;
 import swarm.client.view.smU_Image;
 
 import com.google.gwt.dom.client.Element;
@@ -27,7 +28,7 @@ public class smAnimation
 		{
 			Element frame = smU_Image.createNonCachedImage(m_container, imagePaths[i], 1);
 			frame.getStyle().setPosition(Position.ABSOLUTE);
-			bhU_UI.setPosition(frame, 0, 0);
+			smU_Css.setPosition(frame, 0, 0);
 			frame.getStyle().setDisplay(Display.NONE);
 			
 			m_elements[i] = frame;

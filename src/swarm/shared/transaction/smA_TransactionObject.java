@@ -66,12 +66,12 @@ public abstract class smA_TransactionObject
 	{
 		if( m_jsonArgs != null )
 		{
-			factory.getHelper().putJsonObject(json_out, smE_JsonKey.requestArgs, m_jsonArgs);
+			factory.getHelper().putJsonObject(json_out, smE_JsonKey.txnArgs, m_jsonArgs);
 		}
 	}
 	
 	public void readJson(smA_JsonFactory factory, smI_JsonObject json)
 	{
-		m_jsonArgs = factory.getHelper().getJsonObject(json, smE_JsonKey.requestArgs);
+		m_jsonArgs = factory.getHelper().getJsonObject(json, smE_JsonKey.txnArgs);
 	}
 }

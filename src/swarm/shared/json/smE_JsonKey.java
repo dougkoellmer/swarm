@@ -9,7 +9,7 @@ package swarm.shared.json;
 public enum smE_JsonKey implements smI_JsonKeySource
 {
 	serverVersion,
-	requestArgs,
+	txnArgs,
 	requestPath,
 	requestList,
 	responseList,

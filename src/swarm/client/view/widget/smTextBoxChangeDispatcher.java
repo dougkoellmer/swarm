@@ -32,7 +32,7 @@ public class smTextBoxChangeDispatcher
 					dispatchTextChangeDeferred();
 				}
 				
-				event.preventDefault();
+				//event.preventDefault();
 			}
 		});
 		
