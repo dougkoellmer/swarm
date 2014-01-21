@@ -11,6 +11,7 @@ import swarm.client.navigation.smMouseNavigator;
 import swarm.client.navigation.smScrollNavigator;
 import swarm.client.states.StateContainer_Base;
 import swarm.client.states.StateMachine_Base;
+import swarm.client.states.camera.StateMachine_Camera;
 import swarm.client.view.cell.smAlertManager;
 import swarm.client.view.cell.smVisualCellContainer;
 import swarm.client.view.cell.smVisualCellFocuser;
@@ -78,15 +79,10 @@ public class smViewController extends Object implements smI_StateEventListener
 		
 
 		addStateListener(m_viewContext.mouseNavigator);
+		addStateListener(m_viewContext.browserNavigator); 
 		addStateListener(m_viewContext.scrollNavigator);
 		addStateListener(m_viewContext.cellMngr);
 		addStateListener(m_viewContext.splitPanel);
-		
-		//--- DRK > Moved browser navigator here, away from other navigators, after split panel, cause split panel is the
-		//---		thing that initially sets the size of the viewport, and if there's an existing history state in the browser
-		//---		it tries to snap to a cell that doesn't exist yet because the cell buffer hasn't updated correctly cause the
-		//---		viewport is nil...so, yea...it originally got the state event right after mouse navigator, but it shouldn't matter that it's here.
-		addStateListener(m_viewContext.browserNavigator); 
 		
 		//addStateListener(highlighter);
 		addStateListener(focuser);
@@ -115,6 +111,14 @@ public class smViewController extends Object implements smI_StateEventListener
 				shutDownInitialUI();
 				
 				startUpCoreUI();
+			}
+			else if( event.getState() instanceof StateMachine_Camera )
+			{
+				//--- This is handled hackishly here, instead of internally by split panel, because of a tricky race condition.
+				//--- Browser navigator should receive events before split panel, but during the start up sequence, if there's a history
+				//--- state available, browser navigator expects the camera viewport to be set already, which split panel could only do afterwards.
+				//--- So, bending the rules here a little.
+				m_viewContext.splitPanel.setInitialCameraViewport();
 			}
 		}
 		else if( event.getType() == smE_StateEventType.DID_UPDATE )

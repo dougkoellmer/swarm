@@ -98,20 +98,15 @@ public class smBrowserNavigator implements smI_StateEventListener
 				
 				if( state.getMapping() != null )
 				{
-					smA_State cameraMachine = m_stateContext.getEnteredState(StateMachine_Camera.class);
+					m_args_SnapToCoordinate.init(state.getMapping().getCoordinate());
 					
-					//if( cameraMachine != null && cameraMachine.getUpdateCount() > 0 )
+					if( !m_stateContext.isActionPerformable(Action_Camera_SnapToCoordinate.class, m_args_SnapToCoordinate) )
 					{
-						m_args_SnapToCoordinate.init(state.getMapping().getCoordinate());
-						
-						if( !m_stateContext.isActionPerformable(Action_Camera_SnapToCoordinate.class, m_args_SnapToCoordinate) )
-						{
-							m_historyManager./*re*/pushState(path, state.getMapping());
-						}
-						else
-						{
-							m_stateContext.performAction(Action_Camera_SnapToCoordinate.class, m_args_SnapToCoordinate);
-						}
+						m_historyManager./*re*/pushState(path, state.getMapping());
+					}
+					else
+					{
+						m_stateContext.performAction(Action_Camera_SnapToCoordinate.class, m_args_SnapToCoordinate);
 					}
 				}
 				else if( state.getPoint() != null )
@@ -124,14 +119,16 @@ public class smBrowserNavigator implements smI_StateEventListener
 					{
 						//--- DRK > Always try to set camera's initial position first.  This can essentially only be done
 						//---		at app start up.  The rest of the time it will fail and we'll set camera target normally.
-						m_args_SetInitialPosition.init(state.getPoint());
+						/*m_args_SetInitialPosition.init(state.getPoint());
 						if( m_stateContext.performAction(Action_Camera_SetInitialPosition.class, m_args_SetInitialPosition) )
 						{
 							//s_logger.info("SETTING INITIAL POINT: " + state.getPoint());
 						}
-						else
+						else*/
 						{
-							m_args_SetCameraTarget.init(state.getPoint(), false, true);
+							smA_State cameraMachine = m_stateContext.getEnteredState(StateMachine_Camera.class);
+							boolean instant = cameraMachine != null && cameraMachine.getUpdateCount() == 0;
+							m_args_SetCameraTarget.init(state.getPoint(), instant, true);
 							m_stateContext.performAction(Action_Camera_SnapToPoint.class, m_args_SetCameraTarget);
 							
 							//s_logger.info("SETTING TARGET POINT: " + state.getPoint());

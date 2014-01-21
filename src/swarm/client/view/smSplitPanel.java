@@ -235,21 +235,16 @@ public class smSplitPanel extends SplitLayoutPanel implements smI_UIElement
 		return m_tabPanel;
 	}
 	
+	public void setInitialCameraViewport()
+	{
+		this.forceLayout();
+	}
+	
 	@Override
 	public void onStateEvent(smStateEvent event)
 	{
 		switch(event.getType())
-		{
-			case DID_ENTER:
-			{
-				if( event.getState() instanceof StateMachine_Camera )
-				{
-					this.forceLayout();
-				}
-				
-				break;
-			}
-			
+		{			
 			case DID_UPDATE:
 			{
 				if( event.getState() instanceof StateContainer_Base)
