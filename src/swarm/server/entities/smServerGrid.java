@@ -114,7 +114,7 @@ public class smServerGrid extends smA_Grid implements smI_Blob
 			{
 				int coordIndex = preference.calcArrayIndex(currentGridWidth);
 				
-				if( m_ownership.isSet(coordIndex) )
+				if( this.isTaken(coordIndex) )
 				{
 					throw new GridException(GridException.Reason.PREFERENCE_TAKEN, "Preference is taken.");
 				}

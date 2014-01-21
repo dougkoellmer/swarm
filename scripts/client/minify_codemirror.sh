@@ -1,8 +1,6 @@
 #!/bin/bash
 
 
-OUT_DIR="../../bin"
-
 DIR=../../src/swarm/client/js
 CM_DIR="$DIR/codemirror/"
 

@@ -26,7 +26,7 @@ public class smCellAddress extends smA_JsonEncodable implements smI_JsonComparab
 	private String m_rawAddress = null;
 	private String m_caseSensitiveRawAddress = null;
 	
-	private final String[] m_parts = new String[E_Part.values().length];
+	private final ArrayList<String> m_parts = new ArrayList<String>();
 	
 	private smE_CellAddressParseError m_parseError = null;
 	
@@ -62,10 +62,7 @@ public class smCellAddress extends smA_JsonEncodable implements smI_JsonComparab
 		m_caseSensitiveRawAddress = null;
 		m_rawAddress = null;
 		m_parseError = null;
-		for( int i = 0; i < m_parts.length; i++ )
-		{
-			m_parts[i] = null;
-		}
+		m_parts.clear();
 		
 		parse(rawAddress);
 	}
@@ -97,7 +94,7 @@ public class smCellAddress extends smA_JsonEncodable implements smI_JsonComparab
 	
 	public String getPart(E_Part part)
 	{
-		return m_parts[part.ordinal()];
+		return part.ordinal() >= m_parts.size() ? null : m_parts.get(part.ordinal());
 	}
 	
 	private void parse(String rawAddress)
@@ -171,7 +168,7 @@ public class smCellAddress extends smA_JsonEncodable implements smI_JsonComparab
 				m_caseSensitiveRawAddress += "/" + part;
 			}
 			
-			m_parts[i] = partToLowerCase;
+			m_parts.add(partToLowerCase);
 		}
 
 		m_parseError = smE_CellAddressParseError.NO_ERROR;

@@ -11,7 +11,8 @@ public enum smE_AdminRequestPath implements smI_RequestPath
 	deactivateUserCells,
 	refreshHomeCells,
 	clearCell,
-	recompileCells;
+	recompileCells,
+	recreateHomeCells;
 	
 	private final smE_HttpMethod m_method;
 	

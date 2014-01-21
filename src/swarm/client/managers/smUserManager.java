@@ -111,13 +111,15 @@ public class smUserManager implements smI_TransactionResponseHandler, smClientAc
 		{
 			smUserCell userCell = cellIterator.next();
 			
-			if( firstIteration )
+			//--- DRK > NOTE:	This block used to kinda make sense with b33hive, but now with more generic usage
+			//---				like dougkoellmer.com, a user's cell doesn't necessarily have the username in it.
+			/*if( firstIteration )
 			{
 				smAccountInfo info = m_appContext.accountMngr.getAccountInfo();
 				userCell.setAddress(new smCellAddress(info.get(smAccountInfo.Type.USERNAME)));
 				
 				firstIteration = false;
-			}
+			}*/
 			
 			//TODO: When user can have more than one cell, try to populate other cell addresses from local sources.
 			

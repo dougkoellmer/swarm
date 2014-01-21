@@ -14,6 +14,7 @@ import swarm.server.code.smServerCodeCompiler;
 import swarm.server.data.blob.smBlobManagerFactory;
 import swarm.server.entities.smServerGrid;
 import swarm.server.handlers.admin.adminHandler;
+import swarm.server.handlers.admin.recreateHomeCells;
 import swarm.server.handlers.admin.smI_HomeCellCreator;
 import swarm.server.handlers.admin.clearCell;
 import swarm.server.handlers.admin.createGrid;
@@ -213,6 +214,7 @@ public abstract class smA_ServerApp extends smA_App
 		setAdminHandler(new refreshHomeCells(T_homeCellCreator),				smE_AdminRequestPath.refreshHomeCells);
 		setAdminHandler(new clearCell(),										smE_AdminRequestPath.clearCell);
 		setAdminHandler(new recompileCells(),									smE_AdminRequestPath.recompileCells);
+		setAdminHandler(new recreateHomeCells(),								smE_AdminRequestPath.recreateHomeCells);
 	}
 	
 	protected void setAdminHandler(smA_DefaultRequestHandler handler_nullable, smI_RequestPath path)

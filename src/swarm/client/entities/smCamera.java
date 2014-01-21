@@ -39,7 +39,7 @@ public class smCamera
 	
 	public double calcMaxZ()
 	{
-		return 5000;
+		return 10000;
 		/*
 		if( m_cachedMaxZ != DIRTY_VALUE )
 		{

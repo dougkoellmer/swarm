@@ -143,7 +143,7 @@ public class smBlobTransaction_CreateCell extends smA_BlobTransaction
 		blobManager.putBlobs(mappings);
 		
 		//--- DRK > Add an empty cell to the database.
-		smServerCell cell = m_privileges != null ? new smServerCell(m_addresses[0], m_privileges) : new smServerCell(m_addresses[0]);
+		smServerCell cell = m_privileges != null ? new smServerCell(m_privileges, m_addresses) : new smServerCell(m_addresses[0]);
 		blobManager.putBlob(m_mapping, cell);
 		
 		//TODO: All of the above "puts" might be doable in a batch...google docs say no because of different blob types, but I suspect the docs are out of date.

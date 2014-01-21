@@ -14,8 +14,8 @@ import javax.servlet.jsp.JspWriter;
 import swarm.server.account.smS_ServerAccount;
 import swarm.server.account.smUserSession;
 import swarm.server.app.smA_ServerApp;
+import swarm.server.app.smServerAppConfig;
 import swarm.server.app.smServerContext;
-
 import swarm.server.data.blob.smBlobException;
 import swarm.server.data.blob.smBlobManagerFactory;
 import swarm.server.data.blob.smE_BlobCacheLevel;
@@ -51,6 +51,7 @@ public class smU_InlineTransactions
 	public static void addInlineTransactions(HttpServletRequest nativeRequest, HttpServletResponse nativeResponse, Writer out) throws IOException
 	{
 		smServerContext context = smA_ServerApp.getInstance().getContext();
+		smServerAppConfig config = context.config;
 		
 		String rawAddress = nativeRequest.getRequestURI();
 		smServerCellAddress cellAddress = new smServerCellAddress(rawAddress);
@@ -197,7 +198,8 @@ public class smU_InlineTransactions
 			}
 			else
 			{
-				(new smGridCoordinate()).calcCenterPoint(startingPosition, grid.getCellWidth(), grid.getCellHeight(), grid.getCellPadding(), 1);
+				smGridCoordinate startingCoord = config.startingCoord != null ? config.startingCoord : new smGridCoordinate();
+				startingCoord.calcCenterPoint(startingPosition, grid.getCellWidth(), grid.getCellHeight(), grid.getCellPadding(), 1);
 			}
 			
 			startingPosition.setZ(smA_ServerApp.getInstance().getConfig().startingZ);

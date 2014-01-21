@@ -110,26 +110,26 @@ public final class smU_CellCode
 		return persistedCell;
 	}
 	
-	public static smCompilerResult compileCell(smA_CodeCompiler compiler, smServerCell cell, smCode sourceCode, smCellAddressMapping mapping, String apiNamespace)
+	public static smCompilerResult compileCell(smA_CodeCompiler compiler, smServerCell cell_out, smCode sourceCode, smCellAddressMapping mapping, String apiNamespace)
 	{
-		cell.setCode(smE_CodeType.SOURCE, sourceCode); // DRK > may be redundant.
+		cell_out.setCode(smE_CodeType.SOURCE, sourceCode); // DRK > may be redundant.
 		
-		smCompilerResult result = compiler.compile(sourceCode, cell.getCodePrivileges(), mapping.writeString(), apiNamespace);
+		smCompilerResult result = compiler.compile(sourceCode, cell_out.getCodePrivileges(), mapping.writeString(), apiNamespace);
 		
 		if( result.getStatus() == smE_CompilationStatus.NO_ERROR )
 		{
 			smServerCode splash = (smServerCode) result.getCode(smE_CodeType.SPLASH);
-			cell.setCode(smE_CodeType.SPLASH, splash);
+			cell_out.setCode(smE_CodeType.SPLASH, splash);
 			
 			//--- DRK > Avoid extra data write if splash can stand in for compiled.
 			if( splash.isStandInFor(smE_CodeType.COMPILED) )
 			{
-				cell.setCode(smE_CodeType.COMPILED, null);
+				cell_out.setCode(smE_CodeType.COMPILED, null);
 			}
 			else
 			{
 				smServerCode compiled = (smServerCode) result.getCode(smE_CodeType.COMPILED);
-				cell.setCode(smE_CodeType.COMPILED, compiled);
+				cell_out.setCode(smE_CodeType.COMPILED, compiled);
 			}
 		}
 		

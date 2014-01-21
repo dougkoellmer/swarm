@@ -3,6 +3,8 @@ package swarm.server.entities;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Map;
 
 import swarm.server.data.blob.smE_BlobCacheLevel;
@@ -26,10 +28,10 @@ public class smServerCell extends smA_Cell implements smI_Blob
 {
 	private static final int STARTING_CODE_VERSION = 0;
 	
-	private static final int EXTERNAL_VERSION = 1;
+	private static final int EXTERNAL_VERSION = 2;
 	
-	private smServerCellAddress m_address;
-
+	private final ArrayList<smServerCellAddress> m_addresses = new ArrayList<smServerCellAddress>();
+	
 	private final smDate m_lastUpdated = new smDate();
 	
 	private int m_codeVersion = STARTING_CODE_VERSION;
@@ -37,22 +39,21 @@ public class smServerCell extends smA_Cell implements smI_Blob
 	public smServerCell()
 	{
 		super(new smServerCodePrivileges());
-		
-		m_address = new smServerCellAddress();
 	}
 	
-	public smServerCell(smServerCellAddress address)
+	public smServerCell(smServerCellAddress ... addresses)
 	{
-		super(new smServerCodePrivileges());
-	
-		m_address = address;
+		this(new smServerCodePrivileges(), addresses);
 	}
 	
-	public smServerCell(smServerCellAddress address, smServerCodePrivileges privileges)
+	public smServerCell(smServerCodePrivileges privileges, smServerCellAddress ... addresses)
 	{
 		super(privileges);
-		
-		m_address = address;
+
+		for( int i = 0; i < addresses.length; i++ )
+		{
+			m_addresses.add(addresses[i]);
+		}
 	}
 	
 	@Override
@@ -66,15 +67,31 @@ public class smServerCell extends smA_Cell implements smI_Blob
 		}
 	}
 	
-	public smServerCellAddress getAddress()
+	public Iterator<smServerCellAddress> getAddresses()
 	{
-		return m_address;
+		return m_addresses.iterator();
 	}
 	
-	public void setAddress(smServerCellAddress address)
+	public smServerCellAddress getPrimaryAddress()
+	{
+		return m_addresses.size() > 0 ? m_addresses.get(0) : null;
+	}
+	
+	public void setAddresses(smServerCellAddress ... addresses)
+	{
+		m_addresses.clear();
+		
+		for( int i = 0; i < addresses.length; i++ )
+		{
+			m_addresses.add(addresses[i]);
+		}
+		
+	}
+	
+	/*public void setAddress(smServerCellAddress address)
 	{
 		m_address = address;
-	}
+	}*/
 	
 	public smServerCode getServerCode(smE_CodeType eType)
 	{
@@ -90,7 +107,7 @@ public class smServerCell extends smA_Cell implements smI_Blob
 		smU_Serialization.writeNullableObject(this.getServerCode(smE_CodeType.SPLASH), out);
 		smU_Serialization.writeNullableObject(this.getServerCode(smE_CodeType.COMPILED), out);
 
-		m_address.writeExternal(out);
+		smU_Serialization.writeArrayList(m_addresses, out);
 		
 		m_lastUpdated.writeExternal(out);
 		
@@ -115,7 +132,16 @@ public class smServerCell extends smA_Cell implements smI_Blob
 		code = smU_Serialization.readNullableObject(smServerCode.class, in);
 		this.setCode(smE_CodeType.COMPILED, code);
 
-		m_address.readExternal(in);
+		if( externalVersion == 1 )
+		{
+			smServerCellAddress primaryAddress = new smServerCellAddress();
+			primaryAddress.readExternal(in);
+			m_addresses.add(primaryAddress);
+		}
+		else if( externalVersion > 1 )
+		{
+			smU_Serialization.readArrayList(m_addresses, smServerCellAddress.class, in);
+		}
 		
 		m_lastUpdated.readExternal(in);
 		

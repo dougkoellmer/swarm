@@ -71,6 +71,13 @@ public abstract class smA_Grid extends smA_JsonEncodable
 		
 		m_ownership.set(bitIndex, true);
 	}
+	
+	public boolean isTaken(int bitIndex)
+	{
+		if( m_ownership == null )  return false;
+		
+		return m_ownership.isSet(bitIndex);
+	}
 
 	public boolean isTaken(smGridCoordinate coordinate)
 	{

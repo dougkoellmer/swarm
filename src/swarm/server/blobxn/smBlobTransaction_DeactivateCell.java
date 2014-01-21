@@ -1,13 +1,21 @@
 package swarm.server.blobxn;
 
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+
+
+
 
 
 import swarm.server.data.blob.smA_BlobTransaction;
 import swarm.server.data.blob.smBlobException;
 import swarm.server.data.blob.smBlobManagerFactory;
 import swarm.server.data.blob.smE_BlobCacheLevel;
+import swarm.server.data.blob.smI_Blob;
+import swarm.server.data.blob.smI_BlobKey;
 import swarm.server.data.blob.smI_BlobManager;
 import swarm.server.entities.smE_GridType;
 import swarm.server.entities.smServerCell;
@@ -21,20 +29,12 @@ public class smBlobTransaction_DeactivateCell extends smA_BlobTransaction
 {
 	private static final Logger s_logger = Logger.getLogger(smBlobTransaction_DeactivateCell.class.getName());
 	
-	private final smServerCellAddress m_address;
 	private final smServerCellAddressMapping m_mapping;
 	
 	private smServerCellAddressMapping m_newMapping;
 	
-	public smBlobTransaction_DeactivateCell(smServerCellAddress address)
-	{
-		m_address = address;
-		m_mapping = null;
-	}
-	
 	public smBlobTransaction_DeactivateCell(smServerCellAddressMapping mapping)
 	{
-		m_address = null;
 		m_mapping = mapping;
 	}
 	
@@ -57,23 +57,7 @@ public class smBlobTransaction_DeactivateCell extends smA_BlobTransaction
 			throw new smBlobException("Grid was not supposed to be null or empty.");
 		}
 		
-		smServerCellAddress addressToDelete = null;
-		smServerCellAddressMapping mappingToDelete = null;
-		
-		if( m_address != null )
-		{
-			addressToDelete = m_address;
-			mappingToDelete = blobManager.getBlob(addressToDelete, smServerCellAddressMapping.class);
-			
-			if( mappingToDelete == null )
-			{
-				throw new smBlobException("Could not find mapping for the address: " + addressToDelete.getRawAddressLeadSlash());
-			}
-		}
-		else
-		{
-			mappingToDelete = m_mapping;
-		}
+		smServerCellAddressMapping mappingToDelete = m_mapping;
 		
 		smServerCell cell = blobManager.getBlob(mappingToDelete, smServerCell.class);
 		
@@ -82,20 +66,15 @@ public class smBlobTransaction_DeactivateCell extends smA_BlobTransaction
 			throw new smBlobException("Could not find cell at mapping: " + mappingToDelete);
 		}
 		
-		if( addressToDelete == null )
+		HashMap<smI_BlobKey, Class<? extends smI_Blob>> deletions = new HashMap<smI_BlobKey, Class<? extends smI_Blob>>();
+		deletions.put(mappingToDelete, smServerCell.class);
+		Iterator<smServerCellAddress> addresses = cell.getAddresses();
+		while( addresses.hasNext() )
 		{
-			addressToDelete = cell.getAddress();
-		}
-		else
-		{
-			if( !addressToDelete.isEqualTo(cell.getAddress()) )
-			{
-				throw new smBlobException("Address provided and address found in cell didn't match...something's really messed up.");
-			}
+			deletions.put(addresses.next(), smServerCellAddressMapping.class);
 		}
 		
-		blobManager.deleteBlob(addressToDelete, smServerCellAddressMapping.class);
-		blobManager.deleteBlob(mappingToDelete, smServerCell.class);
+		blobManager.deleteBlobs(deletions);
 		
 		activeGrid.markCoordinateAvailable(mappingToDelete.getCoordinate());
 		

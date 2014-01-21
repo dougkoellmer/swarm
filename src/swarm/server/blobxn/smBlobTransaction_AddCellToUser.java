@@ -38,6 +38,7 @@ private static final Logger s_logger = Logger.getLogger(smBlobTransaction_AddCel
 	private smServerUser m_user = null;
 	
 	private final smBlobTransaction_CreateCell m_createCellTransaction;
+	private boolean m_checkUsernameMatch = true;
 	
 	public smBlobTransaction_AddCellToUser(smUserSession session, smServerCellAddress[] cellAddresses, smGridCoordinate preference, smServerCodePrivileges privileges, int gridExpansionDelta)
 	{
@@ -52,6 +53,11 @@ private static final Logger s_logger = Logger.getLogger(smBlobTransaction_AddCel
 		
 		m_session = session;
 	}
+	
+	public void checkUsernameMatch(boolean value)
+	{
+		m_checkUsernameMatch = value;
+	}
 
 	@Override
 	protected void performOperations() throws smBlobException
@@ -60,10 +66,13 @@ private static final Logger s_logger = Logger.getLogger(smBlobTransaction_AddCel
 		
 		//--- DRK > Sanity check.
 		smServerCellAddress address = m_createCellTransaction.getAddresses()[0];
-		String usernamePart = address.getPart(smCellAddress.E_Part.USERNAME);
-		if( usernamePart == null || !m_session.getUsername().equals(usernamePart))
+		if( m_checkUsernameMatch )
 		{
-			throw new smBlobException("Username doesn't match username part of cell address..." + m_session.getUsername() + ", " + usernamePart);
+			String usernamePart = address.getPart(smCellAddress.E_Part.USERNAME);
+			if( usernamePart == null || !m_session.getUsername().equals(usernamePart))
+			{
+				throw new smBlobException("Username doesn't match username part of cell address..." + m_session.getUsername() + ", " + usernamePart);
+			}
 		}
 		
 		//--- DRK > Another sanity check.

@@ -67,6 +67,8 @@ public class smServerJsonFactory extends smA_ServerJsonFactory
 	@Override
 	public smI_JsonObject createJsonObject(String data)
 	{
+		if( data == null || data.length() == 0 )  return null;
+		
 		try
 		{
 			return new smServerJsonObject(this, data);

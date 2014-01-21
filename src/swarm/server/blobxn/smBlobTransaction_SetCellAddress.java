@@ -69,7 +69,7 @@ public class smBlobTransaction_SetCellAddress extends smA_BlobTransaction
 			batch.put(m_addresses[i], m_mapping);
 		}
 		
-		cell.setAddress(m_addresses[0]);
+		cell.setAddresses(m_addresses);
 		
 		batch.put(m_mapping, cell);
 		

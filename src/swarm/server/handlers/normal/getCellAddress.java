@@ -35,7 +35,7 @@ public class getCellAddress extends smA_DefaultRequestHandler
 			persistedCell = blobManager.getBlob(mapping, smServerCell.class);
 			if( persistedCell != null )
 			{
-				result.setAddress(persistedCell.getAddress());
+				result.setAddress(persistedCell.getPrimaryAddress());
 			}
 			else
 			{
