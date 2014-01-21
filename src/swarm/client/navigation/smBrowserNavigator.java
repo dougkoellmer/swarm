@@ -8,6 +8,7 @@ import swarm.client.entities.smCamera;
 import swarm.client.input.smBrowserHistoryManager;
 import swarm.client.input.smBrowserAddressManager;
 import swarm.client.managers.smCameraManager;
+import swarm.client.managers.smCellBufferManager;
 import swarm.client.states.camera.Action_Camera_SnapToPoint;
 import swarm.client.states.camera.Action_Camera_SetInitialPosition;
 import swarm.client.states.camera.Action_Camera_SnapToAddress;
@@ -97,15 +98,20 @@ public class smBrowserNavigator implements smI_StateEventListener
 				
 				if( state.getMapping() != null )
 				{
-					m_args_SnapToCoordinate.init(state.getMapping().getCoordinate());
+					smA_State cameraMachine = m_stateContext.getEnteredState(StateMachine_Camera.class);
 					
-					if( !m_stateContext.isActionPerformable(Action_Camera_SnapToCoordinate.class, m_args_SnapToCoordinate) )
+					//if( cameraMachine != null && cameraMachine.getUpdateCount() > 0 )
 					{
-						m_historyManager./*re*/pushState(path, state.getMapping());
-					}
-					else
-					{
-						m_stateContext.performAction(Action_Camera_SnapToCoordinate.class, m_args_SnapToCoordinate);
+						m_args_SnapToCoordinate.init(state.getMapping().getCoordinate());
+						
+						if( !m_stateContext.isActionPerformable(Action_Camera_SnapToCoordinate.class, m_args_SnapToCoordinate) )
+						{
+							m_historyManager./*re*/pushState(path, state.getMapping());
+						}
+						else
+						{
+							m_stateContext.performAction(Action_Camera_SnapToCoordinate.class, m_args_SnapToCoordinate);
+						}
 					}
 				}
 				else if( state.getPoint() != null )

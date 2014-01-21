@@ -78,10 +78,16 @@ public class smViewController extends Object implements smI_StateEventListener
 		
 
 		addStateListener(m_viewContext.mouseNavigator);
-		addStateListener(m_viewContext.browserNavigator);
 		addStateListener(m_viewContext.scrollNavigator);
 		addStateListener(m_viewContext.cellMngr);
 		addStateListener(m_viewContext.splitPanel);
+		
+		//--- DRK > Moved browser navigator here, away from other navigators, after split panel, cause split panel is the
+		//---		thing that initially sets the size of the viewport, and if there's an existing history state in the browser
+		//---		it tries to snap to a cell that doesn't exist yet because the cell buffer hasn't updated correctly cause the
+		//---		viewport is nil...so, yea...it originally got the state event right after mouse navigator, but it shouldn't matter that it's here.
+		addStateListener(m_viewContext.browserNavigator); 
+		
 		//addStateListener(highlighter);
 		addStateListener(focuser);
 		//addStateListener(new smVisualCellHud((Panel)cellContainer, m_appConfig));
