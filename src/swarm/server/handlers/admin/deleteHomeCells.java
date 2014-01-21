@@ -40,9 +40,9 @@ import swarm.shared.transaction.smE_ResponseError;
 import swarm.shared.transaction.smTransactionRequest;
 import swarm.shared.transaction.smTransactionResponse;
 
-public class recreateHomeCells extends smA_DefaultRequestHandler
+public class deleteHomeCells extends smA_DefaultRequestHandler
 {
-	private static final Logger s_logger = Logger.getLogger(recreateHomeCells.class.getName());
+	private static final Logger s_logger = Logger.getLogger(deleteHomeCells.class.getName());
 	
 	@Override
 	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)

@@ -12,7 +12,7 @@ public enum smE_AdminRequestPath implements smI_RequestPath
 	refreshHomeCells,
 	clearCell,
 	recompileCells,
-	recreateHomeCells;
+	deleteHomeCells;
 	
 	private final smE_HttpMethod m_method;
 	

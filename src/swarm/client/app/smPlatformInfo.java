@@ -16,6 +16,9 @@ public class smPlatformInfo
 	{
 		m_rawUserAgent = Window.Navigator.getUserAgent().toLowerCase();
 		m_rawPlatform = Window.Navigator.getPlatform();
+		
+		m_has3dTransforms = has3dTransforms_native();
+		
 
 		if( isIOS() )
 		{
@@ -24,13 +27,17 @@ public class smPlatformInfo
 		else if( m_rawUserAgent.indexOf("chrome") != -1 )
 		{
 			m_platform = smE_Platform.CHROME;
+			
+			// currently there's a bug in chrome that paints weird ghost artifacts if there
+			// are too many cells on screen at the same tie with 3d transforms.
+			m_has3dTransforms = false; 
 		}
 		else
 		{
 			m_platform = smE_Platform.OTHER;
 		}
 		
-		m_has3dTransforms = has3dTransforms_native();
+		
 		
 		m_cssTransform = getCssTransform();
 	}

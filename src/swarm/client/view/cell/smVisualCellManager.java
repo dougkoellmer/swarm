@@ -171,7 +171,7 @@ public class smVisualCellManager implements smI_UIElement
 			cellHeightPlusPadding = grid.getCellHeight() * scaling;
 		}
 		
-		boolean use3dTransforms = false; m_viewContext.appContext.platformInfo.has3dTransforms();
+		boolean use3dTransforms = m_viewContext.appContext.platformInfo.has3dTransforms();
 	
 		String scaleProperty = scaling < NO_SCALING ? smU_Css.createScaleTransform(scaling, use3dTransforms) : null;
 		int scrollX = m_container.getParent().getElement().getScrollLeft();
