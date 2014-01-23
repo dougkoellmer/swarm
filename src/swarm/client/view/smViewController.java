@@ -15,6 +15,7 @@ import swarm.client.states.camera.StateMachine_Camera;
 import swarm.client.view.cell.smAlertManager;
 import swarm.client.view.cell.smVisualCellContainer;
 import swarm.client.view.cell.smVisualCellFocuser;
+import swarm.client.view.cell.smVisualCellHighlight;
 import swarm.client.view.cell.smVisualCellHud;
 import swarm.client.view.cell.smVisualCellManager;
 import swarm.client.view.dialog.smDialogManager;
@@ -75,7 +76,7 @@ public class smViewController extends Object implements smI_StateEventListener
 		m_viewContext.scrollNavigator = new smScrollNavigator(m_viewContext, cellContainer.getScrollContainer(), cellContainer.getCellContainerInner(), cellContainer.getMouseEnabledLayer());
 		smVisualCellFocuser focuser = new smVisualCellFocuser(m_viewContext.stateContext, m_viewContext.appContext);
 		m_viewContext.cellMngr = new smVisualCellManager(m_viewContext, cellContainer.getCellContainerInner());
-		//smVisualCellHighlight highlighter = new smVisualCellHighlight(appContext, config, appConfig);
+		smVisualCellHighlight highlighter = new smVisualCellHighlight(m_viewContext);
 		
 
 		addStateListener(m_viewContext.mouseNavigator);
@@ -84,13 +85,13 @@ public class smViewController extends Object implements smI_StateEventListener
 		addStateListener(m_viewContext.cellMngr);
 		addStateListener(m_viewContext.splitPanel);
 		
-		//addStateListener(highlighter);
+		addStateListener(highlighter);
 		addStateListener(focuser);
 		//addStateListener(new smVisualCellHud((Panel)cellContainer, m_appConfig));
 		
 		RootLayoutPanel.get().add(m_viewContext.splitPanel);
 		cellContainer.getCellContainerInner().add(focuser);
-		//cellContainer.getCellContainerInner().add(highlighter);
+		cellContainer.getCellContainerInner().add(highlighter);
 	}
 	
 	protected void addStateListener(smI_StateEventListener listener)

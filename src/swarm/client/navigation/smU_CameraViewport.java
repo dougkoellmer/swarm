@@ -21,20 +21,25 @@ public class smU_CameraViewport
 			smU_Math.isWithin(point.getY(), s_utilPoint1.getY()-spaceY, s_utilPoint1.getY() + spaceY) ;
 	}
 	
+	public static double getViewPadding(smA_Grid grid)
+	{
+		return grid.getCellPadding();
+	}
+	
 	public static double calcViewWindowWidth(smA_Grid grid)
 	{
-		return grid.getCellWidth() + grid.getCellPadding()*2;
+		return grid.getCellWidth() + getViewPadding(grid)*2;
 	}
 	
 	public static double calcViewWindowHeight(smA_Grid grid, double cellHudHeight)
 	{
 		if( cellHudHeight > 0 )
 		{
-			return grid.getCellHeight() + cellHudHeight + grid.getCellPadding()*3;
+			return grid.getCellHeight() + cellHudHeight + getViewPadding(grid)*3;
 		}
 		else
 		{
-			return grid.getCellHeight() + cellHudHeight + grid.getCellPadding()*2;
+			return grid.getCellHeight() + cellHudHeight + getViewPadding(grid)*2;
 		}
 	}
 	
@@ -44,7 +49,7 @@ public class smU_CameraViewport
 		
 		if( cellHudHeight > 0 )
 		{
-			double offsetY = (grid.getCellPadding() + cellHudHeight)/2;
+			double offsetY = (getViewPadding(grid) + cellHudHeight)/2;
 			
 			point_out.incY(-offsetY);
 		}

@@ -86,6 +86,11 @@ public class smBrowserHistoryManager
 		}
 	}
 	
+	public boolean hasState(int offset)
+	{
+		return m_historyJs.hasState(offset);
+	}
+	
 	public void go(int offset)
 	{
 		m_historyJs.go(offset);

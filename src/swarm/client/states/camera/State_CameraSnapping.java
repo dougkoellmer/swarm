@@ -68,7 +68,7 @@ public class State_CameraSnapping extends smA_State implements smI_StateEventLis
 	private final smGridCoordinate m_targetGridCoordinate = new smGridCoordinate();
 	private final smPoint m_utilPoint = new smPoint();
 	
-	private final smCamera m_snapCamera = new smCamera();
+	private final smCamera m_snapCamera = new smCamera(null);
 	private final smCellBufferManager m_snapBufferManager;
 	
 	//--- DRK > This is exposed externally so the main cell buffer manager can extract cell code that m_internalCodeRepo has.

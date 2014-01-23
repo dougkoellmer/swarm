@@ -547,6 +547,11 @@ public class smBrowserNavigator implements smI_StateEventListener
 		}
 	}
 	
+	public boolean hasState(int offset)
+	{
+		return m_historyManager.hasState(offset);
+	}
+	
 	public void setPositionForFloatingState(smA_State state, smPoint point, boolean force)
 	{
 		double timeInState = state.getTimeInState(smE_StateTimeType.TOTAL);

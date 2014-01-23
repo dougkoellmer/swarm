@@ -12,6 +12,7 @@ import swarm.client.view.smE_ZIndex;
 import swarm.client.view.smI_UIElement;
 import swarm.client.view.smS_UI;
 import swarm.client.view.smU_Css;
+import swarm.client.view.smViewConfig;
 import swarm.client.view.smViewContext;
 import swarm.shared.app.smS_App;
 import swarm.shared.debugging.smU_Debug;
@@ -20,6 +21,7 @@ import swarm.shared.statemachine.smA_Action;
 import swarm.shared.statemachine.smStateEvent;
 import swarm.shared.structs.smGridCoordinate;
 import swarm.shared.structs.smPoint;
+
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Panel;
 
@@ -54,7 +56,7 @@ public class smVisualCellHighlight extends FlowPanel implements smI_UIElement
 		smMouse mouse = navManager.getMouse();
 		boolean isPanning = mouse.isMouseDown() && mouse.hasMouseStrayedWhileDown();
 		
-		if( !isMouseTouchingSnappableCell || isPanning )
+		if( isPanning )
 		{
 			this.setVisible(false);
 			
@@ -73,7 +75,7 @@ public class smVisualCellHighlight extends FlowPanel implements smI_UIElement
 		
 		if( cell == null )
 		{
-			smU_Debug.ASSERT(false, "Expected cell to be non null.");
+			this.setVisible(false);
 			
 			return;
 		}
@@ -117,14 +119,16 @@ public class smVisualCellHighlight extends FlowPanel implements smI_UIElement
 		this.getElement().getStyle().setProperty("top", basePoint.getY() + "px");
 		this.getElement().getStyle().setProperty("left", basePoint.getX() + "px");
 		
+		smViewConfig viewConfig = m_viewContext.viewConfig;
+		
 		if( m_lastScaling != highlightScaling )
 		{
 			double scale =  Math.sqrt(highlightScaling);
 			
-			int shadowSize = (int) (((double)smS_UI.HIGHLIGHT_MAX_SIZE) * (scale));
-			shadowSize = shadowSize < smS_UI.HIGHLIGHT_MIN_SIZE ? smS_UI.HIGHLIGHT_MIN_SIZE : shadowSize;
+			int shadowSize = (int) (((double)viewConfig.cellHighlightMaxSize) * (scale));
+			shadowSize = (shadowSize < viewConfig.cellHighlightMinSize ? viewConfig.cellHighlightMinSize : shadowSize);
 			
-			smU_Css.setBoxShadow(this.getElement(), "0 0 "+shadowSize+"px " + smS_UI.HIGHLIGHT_COLOR);
+			smU_Css.setBoxShadow(this.getElement(), "0 0 "+(shadowSize/2)+"px "+(shadowSize/2)+"px " + m_viewContext.viewConfig.cellHighlightColor);
 		}
 		
 		m_lastScaling = highlightScaling;

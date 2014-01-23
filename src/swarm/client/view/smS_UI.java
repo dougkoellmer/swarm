@@ -24,7 +24,7 @@ public class smS_UI
 	
 	public static final int HIGHLIGHT_MIN_SIZE = 4;
 	
-	public static final int HIGHLIGHT_MAX_SIZE = 32;
+	public static final int HIGHLIGHT_MAX_SIZE = 16;
 	
 	public static final String HIGHLIGHT_COLOR = "#ffcc00";
 	

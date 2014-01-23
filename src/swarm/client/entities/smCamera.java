@@ -1,6 +1,8 @@
 package swarm.client.entities;
 
+import swarm.client.managers.smGridManager;
 import swarm.shared.app.smS_App;
+import swarm.shared.entities.smA_Grid;
 import swarm.shared.structs.smPoint;
 import swarm.shared.structs.smRect;
 import swarm.shared.structs.smVector;
@@ -11,6 +13,42 @@ import swarm.shared.structs.smVector;
  */
 public class smCamera
 {
+	public interface I_MaxZAlgorithm
+	{
+		public double calcMaxZ();
+	}
+	
+	public static class DefaultMaxZAlgorithm implements I_MaxZAlgorithm
+	{
+		private smCamera m_camera;
+		private smA_Grid m_grid;
+		
+		public DefaultMaxZAlgorithm()
+		{
+			
+		}
+		
+		public void init(smA_Grid grid, smCamera camera)
+		{
+			m_camera = camera;
+			m_grid = grid;
+		}
+		
+		@Override
+		public double calcMaxZ()
+		{
+			double minViewDimension = m_camera.calcMinViewDimension();
+			double maxGridSize = Math.max(m_grid.calcPixelWidth(), m_grid.calcPixelHeight());
+			double maxDistanceRatio = (minViewDimension/2) / maxGridSize;
+			
+			double maxZ = calcZFromDistanceRatio(maxDistanceRatio, smS_App.DEPTH_OF_FIELD);
+			
+			maxZ = maxZ < smS_App.MIN_MAX_Z ? smS_App.MIN_MAX_Z : maxZ;
+			
+			return maxZ;
+		}
+	}
+	
 	private static final double DIRTY_VALUE = -1;
 	
 	private final smPoint m_position = new smPoint();
@@ -23,8 +61,11 @@ public class smCamera
 
 	private double m_cachedMaxZ = DIRTY_VALUE;
 	
-	public smCamera()
+	private final I_MaxZAlgorithm m_maxZAlgorithm;
+	
+	public smCamera(I_MaxZAlgorithm maxZAlgorithm)
 	{
+		m_maxZAlgorithm = maxZAlgorithm;
 	}
 	
 	public void onGridSizeChanged()
@@ -32,28 +73,20 @@ public class smCamera
 		smCamera.this.m_cachedMaxZ = DIRTY_VALUE;
 	}
 	
-	private static double calcZFromDistanceRatio(double distanceRatio, double depthOfField)
+	public static double calcZFromDistanceRatio(double distanceRatio, double depthOfField)
 	{
 		return -depthOfField * Math.tan((Math.PI*distanceRatio) / 2 - Math.PI/2);
 	}
 	
 	public double calcMaxZ()
 	{
-		return 10000;
-		/*
 		if( m_cachedMaxZ != DIRTY_VALUE )
 		{
 			return m_cachedMaxZ;
 		}
+		m_cachedMaxZ = this.m_maxZAlgorithm.calcMaxZ();
 		
-		smClientGrid grid = smClientGrid.getInstance();
-		double maxDimension = this.calcMinViewDimension();
-		double maxDistanceRatio = (maxDimension/2) / grid.calcPixelWidth();
-		m_cachedMaxZ = calcZFromDistanceRatio(maxDistanceRatio, smS_App.DEPTH_OF_FIELD);
-		
-		m_cachedMaxZ = m_cachedMaxZ < smS_App.MIN_MAX_Z ? smS_App.MIN_MAX_Z : m_cachedMaxZ;
-		
-		return m_cachedMaxZ;*/
+		return m_cachedMaxZ;
 	}
 
 	public double calcDistanceRatio()

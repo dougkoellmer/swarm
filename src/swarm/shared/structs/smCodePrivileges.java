@@ -56,6 +56,11 @@ public class smCodePrivileges extends smA_JsonEncodable
 		return m_characterQuota;
 	}
 	
+	public void setCharacterQuota(smE_CharacterQuota quota)
+	{
+		m_characterQuota = quota;
+	}
+	
 	public static boolean isReadable(smA_JsonFactory factory, smI_JsonObject json)
 	{
 		return factory.getHelper().containsAnyKeys(json, smE_JsonKey.networkPrivilege, smE_JsonKey.characterQuota);

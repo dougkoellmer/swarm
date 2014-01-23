@@ -18,6 +18,7 @@ public class smViewContext
 	public smStateContext stateContext;
 	
 	public smClientAppConfig appConfig;
+	public smViewConfig viewConfig;
 	
 	public smSplitPanel splitPanel;
 	public smVisualCellManager cellMngr;

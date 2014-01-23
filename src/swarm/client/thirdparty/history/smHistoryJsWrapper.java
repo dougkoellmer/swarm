@@ -31,16 +31,25 @@ public class smHistoryJsWrapper
 			History.pushState(data, title, path);
 	}-*/;
 	
+	
+	public native boolean hasState(int offset)
+	/*-{
+			var History = $wnd.History;
+			var state = History.getStateByIndex(History.getCurrentIndex() + offset);
+			
+			return state != undefined;
+	}-*/;
+	
 	public native void go(int offset)
 	/*-{
 			var History = $wnd.History;
 			if( offset > 0 )
 			{
-				History.forward();
+				History.forward(false);
 			}
 			else if( offset < 0 )
 			{
-				History.back();
+				History.back(false);
 			}
 	}-*/;
 	

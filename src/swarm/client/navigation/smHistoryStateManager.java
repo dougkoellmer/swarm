@@ -136,6 +136,11 @@ public class smHistoryStateManager
 		}
 	}
 	
+	public boolean hasState(int offset)
+	{
+		return m_historyManager.hasState(offset);
+	}
+	
 	public void go(int offset)
 	{
 		m_historyManager.go(offset);

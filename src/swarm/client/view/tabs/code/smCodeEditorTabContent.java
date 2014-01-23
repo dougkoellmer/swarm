@@ -370,19 +370,26 @@ public class smCodeEditorTabContent extends AbsolutePanel implements smI_TabCont
 		{
 			smCodePrivileges privileges = viewingState.getCell().getCodePrivileges();
 			
-			int charCount = m_editor.getContent().length();
-			
-			int max = privileges.getCharacterQuota().getMaxCharacters();
-			
-			m_characterCountLabel.setText(charCount + " / " + max + " characters used.");
-			
-			if( charCount > max )
+			if( privileges.getCharacterQuota() != smE_CharacterQuota.UNLIMITED )
 			{
-				m_characterCountLabel.getElement().getStyle().setColor("red");
+				int charCount = m_editor.getContent().length();
+				
+				int max = privileges.getCharacterQuota().getMaxCharacters();
+				
+				m_characterCountLabel.setText(charCount + " / " + max + " characters used.");
+				
+				if( charCount > max )
+				{
+					m_characterCountLabel.getElement().getStyle().setColor("red");
+				}
+				else
+				{
+					m_characterCountLabel.getElement().getStyle().clearColor();
+				}
 			}
 			else
 			{
-				m_characterCountLabel.getElement().getStyle().clearColor();
+				m_characterCountLabel.setText("");
 			}
 		}
 		else

@@ -8,6 +8,7 @@ import swarm.client.entities.smE_CodeStatus;
 import swarm.client.input.smClickManager;
 import swarm.client.input.smI_ClickHandler;
 import swarm.client.navigation.smBrowserNavigator;
+import swarm.client.navigation.smU_CameraViewport;
 import swarm.client.states.camera.Action_Camera_SnapToPoint;
 import swarm.client.states.camera.Action_Camera_SetViewSize;
 import swarm.client.states.camera.Action_Camera_SnapToAddress;
@@ -32,6 +33,7 @@ import swarm.shared.statemachine.smA_State;
 import swarm.shared.statemachine.smStateEvent;
 import swarm.shared.structs.smGridCoordinate;
 import swarm.shared.structs.smPoint;
+
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -61,8 +63,8 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 	private final HorizontalPanel m_leftDock = new HorizontalPanel();
 	private final HorizontalPanel m_rightDock = new HorizontalPanel();
 	
-	//private final smHudButton m_back		= new smHudButton("back");
-	//private final smHudButton m_forward	= new smHudButton("forward");
+	private final smHudButton m_back		= new smHudButton("back");
+	private final smHudButton m_forward	= new smHudButton("forward");
 	private final smHudButton m_refresh		= new smHudButton("refresh");
 	private final smHudButton m_close		= new smHudButton("close");
 
@@ -87,13 +89,14 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 		this.setVisible(false);
 		
 		m_innerContainer.setWidth("100%");
+		this.getElement().getStyle().setProperty("minWidth", "168px"); // TODO: GHETTO
 		
 		m_innerContainer.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		m_leftDock.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		m_rightDock.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		
-		//m_leftDock.add(m_back);
-		//m_leftDock.add(m_forward);
+		m_leftDock.add(m_back);
+		m_leftDock.add(m_forward);
 		m_leftDock.add(m_refresh);
 		
 		m_rightDock.add(m_close);
@@ -105,23 +108,27 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 		
 		this.add(m_innerContainer);
 		
-		/*m_back.addClickHandler(new ClickHandler()
+		m_viewContext.clickMngr.addClickHandler(m_back, new smI_ClickHandler()
 		{
 			@Override
-			public void onClick(ClickEvent event)
+			public void onClick()
 			{
-				smBrowserNavigator.getInstance().go(-1);
+				if( !m_back.isEnabled() )  return;
+				
+				m_viewContext.browserNavigator.go(-1);
 			}
 		});
 		
-		m_forward.addClickHandler(new ClickHandler()
+		m_viewContext.clickMngr.addClickHandler(m_forward, new smI_ClickHandler()
 		{
 			@Override
-			public void onClick(ClickEvent event)
+			public void onClick()
 			{
-				smBrowserNavigator.getInstance().go(1);
+				if( !m_forward.isEnabled() )  return;
+				
+				m_viewContext.browserNavigator.go(1);
 			}
-		});*/
+		});
 		
 		m_viewContext.clickMngr.addClickHandler(m_refresh, new smI_ClickHandler()
 		{
@@ -160,8 +167,8 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 		
 		smToolTipManager toolTipper = m_viewContext.toolTipMngr;
 		
-		//toolTipper.addTip(m_back, new smToolTipConfig(smE_ToolTipType.MOUSE_OVER, "Go back."));
-		//toolTipper.addTip(m_forward, new smToolTipConfig(smE_ToolTipType.MOUSE_OVER, "Go forward."));
+		toolTipper.addTip(m_back, new smToolTipConfig(smE_ToolTipType.MOUSE_OVER, "Go back."));
+		toolTipper.addTip(m_forward, new smToolTipConfig(smE_ToolTipType.MOUSE_OVER, "Go forward."));
 		toolTipper.addTip(m_refresh, new smToolTipConfig(smE_ToolTipType.MOUSE_OVER, "Refresh this cell."));
 		toolTipper.addTip(m_close, new smToolTipConfig(smE_ToolTipType.MOUSE_OVER, "Back off."));
 	}
@@ -198,12 +205,24 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 		this.getElement().getStyle().setTop(y + scrollY, Unit.PX);
 	}
 	
-	private void toggleButtons()
+	private void refreshHistoryButtons()
 	{
-		/*boolean enabled = smA_Action.isPerformable(State_ViewingCell.Back.class);
-		m_back.setEnabled(enabled);
-		m_forward.setEnabled(smA_Action.isPerformable(State_ViewingCell.Forward.class));*/
-		m_refresh.setEnabled(m_viewContext.stateContext.isActionPerformable(Action_ViewingCell_Refresh.class));
+		//m_back.setEnabled(m_viewContext.browserNavigator.hasState(-1));
+		//m_forward.setEnabled(m_viewContext.browserNavigator.hasState(1));
+		//m_refresh.setEnabled(m_viewContext.stateContext.isActionPerformable(Action_ViewingCell_Refresh.class));
+	}
+	
+	private void updateSize(State_ViewingCell state)
+	{
+		smA_Grid grid = state.getCell().getGrid();
+		smCamera camera = m_viewContext.appContext.cameraMngr.getCamera();
+		
+		double viewPadding = smU_CameraViewport.getViewPadding(grid);
+		double viewWidth = camera.getViewWidth() - viewPadding*2;
+		double cellWidth = grid.getCellWidth();
+		double hudWidth = Math.min(viewWidth, cellWidth);
+		
+		this.getElement().getStyle().setWidth(hudWidth-9, Unit.PX);
 	}
 	
 	@Override
@@ -216,9 +235,7 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 				if( event.getState() instanceof State_ViewingCell )
 				{
 					this.updatePosition((State_ViewingCell) event.getState());
-					smA_Grid grid = ((State_ViewingCell) event.getState()).getCell().getGrid();
-					
-					this.getElement().getStyle().setWidth(grid.getCellWidth()-9, Unit.PX);
+					this.updateSize((State_ViewingCell) event.getState());
 					
 					this.setVisible(true);
 				}
@@ -230,7 +247,7 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 			{
 				if( event.getState() instanceof State_ViewingCell )
 				{
-					this.toggleButtons();
+					this.refreshHistoryButtons();
 					updateRefreshButton();
 				}
 				
@@ -279,6 +296,8 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 						{
 							this.updatePosition(state);
 						}
+						
+						this.updateSize(state);
 					}
 				}
 				else if( event.getAction() == Action_Camera_SnapToPoint.class )
