@@ -1,5 +1,7 @@
 package swarm.client.view.cell;
 
+import java.util.logging.Logger;
+
 import swarm.client.app.smClientAppConfig;
 import swarm.client.app.smAppContext;
 import swarm.client.entities.smCamera;
@@ -46,6 +48,8 @@ import com.google.gwt.user.client.ui.HasHorizontalAlignment.HorizontalAlignmentC
 
 public class smVisualCellHud extends FlowPanel implements smI_UIElement
 {
+	private static final Logger s_logger = Logger.getLogger(smVisualCellHud.class.getName());
+	
 	private static final smPoint s_utilPoint1 = new smPoint();
 	private static final smPoint s_utilPoint2 = new smPoint();
 	
@@ -76,6 +80,9 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 	
 	private final Action_Camera_SnapToPoint.Args m_args_SetCameraTarget = new Action_Camera_SnapToPoint.Args();
 	
+	private final double m_minWidth = 169;// TODO: GHETTO
+	private double m_width = 0;
+	
 	public smVisualCellHud(smViewContext viewContext, smClientAppConfig appConfig)
 	{
 		m_viewContext = viewContext;
@@ -88,8 +95,9 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 		
 		this.setVisible(false);
 		
+		
 		m_innerContainer.setWidth("100%");
-		this.getElement().getStyle().setProperty("minWidth", "168px"); // TODO: GHETTO
+		this.getElement().getStyle().setProperty("minWidth", m_minWidth + "px");
 		
 		m_innerContainer.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		m_leftDock.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
@@ -190,16 +198,26 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 	
 	private void updatePosition(State_ViewingCell state)
 	{
-		int scrollX = this.getParent().getParent().getElement().getScrollLeft();
-		int scrollY = this.getParent().getParent().getElement().getScrollTop();
+		int scrollX = this.getParent().getElement().getScrollLeft();
+		int scrollY = this.getParent().getElement().getScrollTop();
 		
 		smCamera camera = m_viewContext.appContext.cameraMngr.getCamera();
 		smBufferCell cell = ((State_ViewingCell)state).getCell();
 		smA_Grid grid = cell.getGrid();
+		
 		smGridCoordinate coord = cell.getCoordinate();
 		coord.calcPoint(s_utilPoint1, grid.getCellWidth(), grid.getCellHeight(), grid.getCellPadding(), 1);
 		camera.calcScreenPoint(s_utilPoint1, s_utilPoint2);
-		this.getElement().getStyle().setLeft(s_utilPoint2.getX() + scrollX, Unit.PX);
+		double x = s_utilPoint2.getX() + scrollX*2;
+		
+		if( m_width < m_minWidth )
+		{
+			s_logger.severe(x + "");
+		}
+		
+		this.getElement().getStyle().setLeft(x, Unit.PX);
+		
+		
 		double y = s_utilPoint2.getY()-m_appConfig.cellHudHeight-grid.getCellPadding();
 		y -= 1; // account for margin...sigh
 		this.getElement().getStyle().setTop(y + scrollY, Unit.PX);
@@ -212,17 +230,29 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 		//m_refresh.setEnabled(m_viewContext.stateContext.isActionPerformable(Action_ViewingCell_Refresh.class));
 	}
 	
+	private double getViewWidth(smCamera camera, smA_Grid grid)
+	{
+		double viewPadding = smU_CameraViewport.getViewPadding(grid);
+		double viewWidth = camera.getViewWidth() - viewPadding*2;
+		
+		return viewWidth;
+	}
+	
 	private void updateSize(State_ViewingCell state)
 	{
 		smA_Grid grid = state.getCell().getGrid();
 		smCamera camera = m_viewContext.appContext.cameraMngr.getCamera();
 		
-		double viewPadding = smU_CameraViewport.getViewPadding(grid);
-		double viewWidth = camera.getViewWidth() - viewPadding*2;
+		double viewWidth = getViewWidth(camera, grid);
 		double cellWidth = grid.getCellWidth();
 		double hudWidth = Math.min(viewWidth, cellWidth);
 		
-		this.getElement().getStyle().setWidth(hudWidth-9, Unit.PX);
+		m_width = hudWidth - 9; // TODO: GHETTO...takes into account padding or something.
+		//m_width = Math.max(m_width, m_minWidth);
+		
+		//s_logger.severe("hud width: " + m_width);
+		
+		this.getElement().getStyle().setWidth(m_width, Unit.PX);
 	}
 	
 	@Override
@@ -234,8 +264,8 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 			{
 				if( event.getState() instanceof State_ViewingCell )
 				{
-					this.updatePosition((State_ViewingCell) event.getState());
 					this.updateSize((State_ViewingCell) event.getState());
+					this.updatePosition((State_ViewingCell) event.getState());
 					
 					this.setVisible(true);
 				}
@@ -291,13 +321,13 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 					
 					if( state != null )
 					{
+						this.updateSize(state);
+						
 						Action_Camera_SetViewSize.Args args = event.getActionArgs();
 						if( args.updateBuffer() )
 						{
 							this.updatePosition(state);
 						}
-						
-						this.updateSize(state);
 					}
 				}
 				else if( event.getAction() == Action_Camera_SnapToPoint.class )
@@ -313,14 +343,14 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 						}
 					}
 				}
-				else if((	event.getAction() == Action_ViewingCell_Refresh.class				||
-							event.getAction() == Action_EditingCode_Save.class					||
-							event.getAction() == Action_EditingCode_Preview.class				||
+				else if((	event.getAction() == Action_ViewingCell_Refresh.class		||
+							event.getAction() == Action_EditingCode_Save.class			||
+							event.getAction() == Action_EditingCode_Preview.class		||
 				
 							//--- DRK > These two cover the case of if we snap to a cell that we're already visiting.
 							//---		This effectively refreshes the cell in this case.
 							event.getAction() == Action_Camera_SnapToAddress.class		||
-							event.getAction() == Action_Camera_SnapToCoordinate.class		))
+							event.getAction() == Action_Camera_SnapToCoordinate.class	))
 				{
 					updateRefreshButton();
 				}

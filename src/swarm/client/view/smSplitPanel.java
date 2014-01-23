@@ -102,7 +102,8 @@ public class smSplitPanel extends SplitLayoutPanel implements smI_UIElement
 			}
 		}
 		
-		//panelWidth = 1100;
+		// CHANGE THIS FOR DEBUGGING EXTREMELY SMALL VIEWPORT CASES
+		panelWidth = 1400;
 		
 		m_tabPanelWidth = panelWidth;
 		this.addWest(m_tabPanel, panelWidth);
