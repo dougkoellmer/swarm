@@ -36,6 +36,7 @@ import swarm.shared.statemachine.smStateEvent;
 import swarm.shared.structs.smGridCoordinate;
 import swarm.shared.structs.smPoint;
 
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -68,7 +69,7 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 	private final HorizontalPanel m_rightDock = new HorizontalPanel();
 	
 	private final smHudButton m_back		= new smHudButton("back");
-	private final smHudButton m_forward	= new smHudButton("forward");
+	private final smHudButton m_forward		= new smHudButton("forward");
 	private final smHudButton m_refresh		= new smHudButton("refresh");
 	private final smHudButton m_close		= new smHudButton("close");
 
@@ -198,8 +199,9 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 	
 	private void updatePosition(State_ViewingCell state)
 	{
-		int scrollX = this.getParent().getElement().getScrollLeft();
-		int scrollY = this.getParent().getElement().getScrollTop();
+		Element scrollElement = this.getParent().getElement();
+		double scrollX = scrollElement.getScrollLeft();
+		double scrollY = scrollElement.getScrollTop();
 		
 		smCamera camera = m_viewContext.appContext.cameraMngr.getCamera();
 		smBufferCell cell = ((State_ViewingCell)state).getCell();
@@ -210,13 +212,18 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 		camera.calcScreenPoint(s_utilPoint1, s_utilPoint2);
 		double x = s_utilPoint2.getX() + scrollX*2;
 		
-		if( m_width < m_minWidth )
+		double viewWidth = getViewWidth(camera, grid);
+		double hudWidth = Math.max(m_width, m_minWidth);
+		if( hudWidth > viewWidth )
 		{
-			s_logger.severe(x + "");
+			double scrollWidth = scrollElement.getScrollWidth();
+			double clientWidth = scrollElement.getClientWidth();
+			double diff = (hudWidth - viewWidth) +  smU_CameraViewport.getViewPadding(grid)/2.0;
+			double scrollRatio = scrollX / (scrollWidth-clientWidth);
+			x -= diff * scrollRatio;
 		}
 		
 		this.getElement().getStyle().setLeft(x, Unit.PX);
-		
 		
 		double y = s_utilPoint2.getY()-m_appConfig.cellHudHeight-grid.getCellPadding();
 		y -= 1; // account for margin...sigh
@@ -225,8 +232,8 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 	
 	private void refreshHistoryButtons()
 	{
-		//m_back.setEnabled(m_viewContext.browserNavigator.hasState(-1));
-		//m_forward.setEnabled(m_viewContext.browserNavigator.hasState(1));
+		m_back.setEnabled(m_viewContext.browserNavigator.hasBack());
+		m_forward.setEnabled(m_viewContext.browserNavigator.hasForward());
 		//m_refresh.setEnabled(m_viewContext.stateContext.isActionPerformable(Action_ViewingCell_Refresh.class));
 	}
 	

@@ -87,8 +87,16 @@ public class smBrowserNavigator implements smI_StateEventListener
 		m_historyStateListener = new smHistoryStateManager.I_Listener()
 		{
 			@Override
-			public void onStateChange(String path, smHistoryState state)
+			public void onStateChange(String url, smHistoryState state)
 			{
+				//TODO: The 'repushState' conditions here are fringe cases that haven't been tested, and will most likely
+				//		not do anything useful. They hit if, for example, a blocking modal dialog is up (e.g. connection error)
+				//		and the user hits the browser back button to go to a previous cell. Currently the modal will prevent the action
+				//		from being performed...in order to repush that history state, we'd need to track the last history state here manually
+				//		cause 'url' parameter points to the destination cell...that's arguably a broken UX though...best option might be to
+				//		somehow dismiss the modal in this specific case, but there could be other reasons that the snap action is not performable...
+				//
+				//		sticky situation!
 				if( state == null )
 				{
 					smU_Debug.ASSERT(false, "History state shouldn't be null.");
@@ -102,7 +110,7 @@ public class smBrowserNavigator implements smI_StateEventListener
 					
 					if( !m_stateContext.isActionPerformable(Action_Camera_SnapToCoordinate.class, m_args_SnapToCoordinate) )
 					{
-						m_historyManager./*re*/pushState(path, state.getMapping());
+						m_historyManager./*re*/pushState(url, state.getMapping());
 					}
 					else
 					{
@@ -113,7 +121,7 @@ public class smBrowserNavigator implements smI_StateEventListener
 				{
 					if( !m_stateContext.isActionPerformable(Action_Camera_SnapToPoint.class) )
 					{
-						m_historyManager./*re*/pushState(path, state.getPoint());
+						m_historyManager./*re*/pushState(url, state.getPoint());
 					}
 					else
 					{
@@ -144,9 +152,8 @@ public class smBrowserNavigator implements smI_StateEventListener
 			}
 		};
 		
-		m_historyManager = new smHistoryStateManager(jsonFactory, defaultPageTitle, m_historyStateListener);
-		
 		m_addressManager = new smBrowserAddressManager();
+		m_historyManager = new smHistoryStateManager(jsonFactory, defaultPageTitle, m_historyStateListener, m_addressManager);
 	}
 	
 	public void go(int offset)
@@ -205,7 +212,7 @@ public class smBrowserNavigator implements smI_StateEventListener
 					
 					//--- DRK > This case essentially manually fires a state change event when we're coming from a different domain.
 					else
-					{
+					{s_logger.severe("not empty history state: " + currentHistoryState.getId() + " " + currentHistoryState.getHighestId());
 						String path = address == null ? FLOATING_STATE_PATH : address.getCasedRawAddressLeadSlash();
 						
 						m_historyStateListener.onStateChange(path, currentHistoryState);
@@ -547,9 +554,14 @@ public class smBrowserNavigator implements smI_StateEventListener
 		}
 	}
 	
-	public boolean hasState(int offset)
+	public boolean hasBack()
 	{
-		return m_historyManager.hasState(offset);
+		return m_historyManager.hasBack();
+	}
+	
+	public boolean hasForward()
+	{
+		return m_historyManager.hasForward();
 	}
 	
 	public void setPositionForFloatingState(smA_State state, smPoint point, boolean force)

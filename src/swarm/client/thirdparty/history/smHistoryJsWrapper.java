@@ -22,7 +22,7 @@ public class smHistoryJsWrapper
 	public native void replaceState(String path, String title, JavaScriptObject data)
 	/*-{
 			var History = $wnd.History;
-			History.replaceState(data, title, path);
+			History.replaceState(data, title, path, false);
 	}-*/;
 	
 	public native void pushState(String path, String title, JavaScriptObject data)

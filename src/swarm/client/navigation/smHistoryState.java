@@ -15,11 +15,16 @@ import swarm.shared.structs.smTolerance;
 
 class smHistoryState extends smA_JsonEncodable
 {
+	private static final String ID_KEY = "sm_state_id";
+	private static final String HIGHEST_ID_KEY = "sm_state_highest_id";
+	
 	//private static int s_currentFreeIndex = 0;
 	
 	//private int m_index;
 	private smPoint m_point = null;
 	private smCellAddressMapping m_mapping = null;
+	private int m_id;
+	private int m_highestId = 0;
 	
 	smHistoryState()
 	{
@@ -38,6 +43,22 @@ class smHistoryState extends smA_JsonEncodable
 		m_point = point;
 		
 		//initIndex();
+	}
+	
+	void setIds(int id, int highestId)
+	{
+		m_id = id;
+		m_highestId = highestId;
+	}
+	
+	int getId()
+	{
+		return m_id;
+	}
+	
+	int getHighestId()
+	{
+		return m_highestId;
 	}
 	
 	/*private void initIndex()
@@ -61,6 +82,9 @@ class smHistoryState extends smA_JsonEncodable
 		{
 			m_point.writeJson(factory, json_out);
 		}
+		
+		json_out.putInt(ID_KEY, m_id);
+		json_out.putInt(HIGHEST_ID_KEY, m_highestId);
 	}
 
 	@Override
@@ -83,6 +107,9 @@ class smHistoryState extends smA_JsonEncodable
 			m_point = new smPoint();
 			m_point.readJson(factory, json);
 		}
+		
+		m_id = json.containsKey(ID_KEY) ? json.getInt(ID_KEY) : 0;
+		m_highestId = json.containsKey(HIGHEST_ID_KEY) ? json.getInt(HIGHEST_ID_KEY) : 0;
 	}
 	
 	/*public boolean isBefore(smHistoryState state)
