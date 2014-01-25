@@ -212,7 +212,9 @@ public class smBrowserNavigator implements smI_StateEventListener
 					
 					//--- DRK > This case essentially manually fires a state change event when we're coming from a different domain.
 					else
-					{s_logger.severe("not empty history state: " + currentHistoryState.getId() + " " + currentHistoryState.getHighestId());
+					{
+						//s_logger.severe("not empty history state: " + currentHistoryState.getId() + " " + currentHistoryState.getHighestId());
+						
 						String path = address == null ? FLOATING_STATE_PATH : address.getCasedRawAddressLeadSlash();
 						
 						m_historyStateListener.onStateChange(path, currentHistoryState);

@@ -7,7 +7,10 @@ import swarm.client.managers.smCellBuffer;
 import swarm.client.managers.smCellBufferManager;
 import swarm.client.navigation.smMouseNavigator;
 import swarm.client.input.smMouse;
+import swarm.client.states.camera.Action_Camera_SetViewSize;
+import swarm.client.states.camera.Action_Camera_SnapToPoint;
 import swarm.client.states.camera.StateMachine_Camera;
+import swarm.client.states.camera.State_ViewingCell;
 import swarm.client.view.smE_ZIndex;
 import swarm.client.view.smI_UIElement;
 import swarm.client.view.smS_UI;
@@ -22,6 +25,7 @@ import swarm.shared.statemachine.smStateEvent;
 import swarm.shared.structs.smGridCoordinate;
 import swarm.shared.structs.smPoint;
 
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Panel;
 
@@ -113,10 +117,17 @@ public class smVisualCellHighlight extends FlowPanel implements smI_UIElement
 
 		basePoint.copy(lastBasePoint);
 		basePoint.inc(deltaPixelsX, deltaPixelsY, 0);
+		double y = basePoint.getY();
+		
+		if( m_viewContext.stateContext.isEntered(State_ViewingCell.class) )
+		{
+			Element scrollElement = this.getParent().getParent().getElement();
+			y += scrollElement.getScrollTop();
+		}
 		
 		String size = (cell.getGrid().getCellWidth() * highlightScaling) + "px";
 		this.setSize(size, size);
-		this.getElement().getStyle().setProperty("top", basePoint.getY() + "px");
+		this.getElement().getStyle().setProperty("top", y + "px");
 		this.getElement().getStyle().setProperty("left", basePoint.getX() + "px");
 		
 		smViewConfig viewConfig = m_viewContext.viewConfig;
@@ -145,6 +156,22 @@ public class smVisualCellHighlight extends FlowPanel implements smI_UIElement
 				if( event.getState().getParent() instanceof StateMachine_Camera )
 				{
 					this.update();
+				}
+				
+				break;
+			}
+			
+			case DID_PERFORM_ACTION:
+			{
+				if( event.getAction() == Action_Camera_SetViewSize.class ||
+					event.getAction() == Action_Camera_SnapToPoint.class )
+				{
+					State_ViewingCell state = event.getContext().getEnteredState(State_ViewingCell.class);
+					
+					if( state != null )
+					{
+						this.update();
+					}
 				}
 				
 				break;
