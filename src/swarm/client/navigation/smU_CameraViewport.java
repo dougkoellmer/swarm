@@ -69,8 +69,9 @@ public class smU_CameraViewport
 		double minViewWidth = calcViewWindowWidth(grid);
 		double minViewHeight = calcViewWindowHeight(grid, cellHudHeight);
 		
-		viewWidth -= 8;
-		viewHeight -= 8;
+		//TODO: Huh?
+		//viewWidth -= 8;
+		//viewHeight -= 8;
 		
 		calcViewWindowCenter(grid, coord, cellHudHeight, point_out);
 

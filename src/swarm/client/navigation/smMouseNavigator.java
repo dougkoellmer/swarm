@@ -382,7 +382,14 @@ public class smMouseNavigator implements smI_UIElement, smMouse.I_Listener
 		if( !m_isMouseTouchingSnappableCell )  return;
 		
 		smA_Grid grid = m_gridMngr.getGrid();
-		mousePointToWorld(m_utilPoint1);
+		
+		//--- DRK > Currently always snapping to top/left corner.
+		//---		Using mouse point was used in the past, and allowed
+		//---		you to snap to constrained parts of the cell if window
+		//---		was too small to see whole cell...it's judged as bad UX
+		//---		as of this writing however.
+		//mousePointToWorld(m_utilPoint1);
+		grid.calcCoordTopLeftPoint(m_mouseGridCoord, 1, m_utilPoint1);
 		
 		double cellHudHeight = m_viewContext.appConfig.cellHudHeight;
 		double viewWidth = m_cameraMngr.getCamera().getViewWidth();
