@@ -11,5 +11,7 @@ public class smViewConfig
 	public String cellHighlightColor = smS_UI.HIGHLIGHT_COLOR;
 	public int cellHighlightMinSize = smS_UI.HIGHLIGHT_MIN_SIZE;
 	public int cellHighlightMaxSize = smS_UI.HIGHLIGHT_MAX_SIZE;
+	public double initialBumpDistance = 128;
+	public double extraScrollArea = 50;
 	public smI_Tab[] tabs;
 }

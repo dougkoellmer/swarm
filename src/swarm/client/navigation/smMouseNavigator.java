@@ -208,7 +208,15 @@ public class smMouseNavigator implements smI_UIElement, smMouse.I_Listener
 					
 					mousePointToWorld(m_utilPoint2);
 					
-					if( smU_CameraViewport.isPointInViewport(grid, cell.getCoordinate(), m_utilPoint2, m_viewContext.appConfig.cellHudHeight, grid.getCellPadding()))
+					smScrollNavigator scrollNavigator = m_viewContext.scrollNavigator;
+					double extraPadding = 0;
+					
+					if( scrollNavigator.isScrollingX() || scrollNavigator.isScrollingY() )
+					{
+						extraPadding = m_viewContext.viewConfig.extraScrollArea;
+					}
+					
+					if( smU_CameraViewport.isPointInViewport(grid, cell.getCoordinate(), m_utilPoint2, m_viewContext.appConfig.cellHudHeight, extraPadding))
 					{
 						return;
 					}

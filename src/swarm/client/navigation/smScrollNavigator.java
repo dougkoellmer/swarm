@@ -68,6 +68,7 @@ public class smScrollNavigator implements smI_StateEventListener
 			@Override
 			public void onScroll(ScrollEvent event)
 			{
+				s_logger.severe(m_scrollContainer.getElement().getScrollTop() + " " + m_scrollContainer.getElement().getScrollHeight());
 				updateCameraFromScrollBars();
 			}
 			
@@ -214,7 +215,8 @@ public class smScrollNavigator implements smI_StateEventListener
 		double delta = (minViewHeight - windowHeight)/2;
 		double cameraPos = smU_Math.clamp(cameraPoint.getY(), centerPoint.getY()-delta, centerPoint.getY()+delta);
 		double scroll = (cameraPos - (centerPoint.getY()-delta));
-		m_scrollContainer.getElement().setScrollTop((int) Math.round(scroll));
+		int scrollRounded = (int) Math.round(scroll);
+		m_scrollContainer.getElement().setScrollTop(scrollRounded);
 	}
 	
 	private void toggleScrollBarX(State_ViewingCell viewingState, double minViewWidth, smPoint cameraPoint, smPoint centerPoint)
@@ -228,9 +230,11 @@ public class smScrollNavigator implements smI_StateEventListener
 		if( windowWidth < minViewWidth )
 		{
 			scrollerStyle.setOverflowX(Overflow.SCROLL);
-			String minWidth = minViewWidth+"px";
-			innerStyle.setProperty("minWidth", minWidth);
-			mouseLayerStyle.setProperty("minWidth", minWidth);
+			String widthProperty = minViewWidth+"px";
+			innerStyle.setProperty("minWidth", widthProperty);
+			mouseLayerStyle.setProperty("minWidth", widthProperty);
+			//innerStyle.setProperty("maxWidth", widthProperty);
+			//mouseLayerStyle.setProperty("maxWidth", widthProperty);
 		}
 		else
 		{
@@ -249,9 +253,11 @@ public class smScrollNavigator implements smI_StateEventListener
 		if( windowHeight < minViewHeight )
 		{
 			scrollerStyle.setOverflowY(Overflow.SCROLL);
-			String minHeight = minViewHeight+"px";
-			innerStyle.setProperty("minHeight", minHeight);
-			mouseLayerStyle.setProperty("minHeight", minHeight);
+			String heightProperty = minViewHeight+"px";
+			innerStyle.setProperty("minHeight", heightProperty);
+			mouseLayerStyle.setProperty("minHeight", heightProperty);
+			//innerStyle.setProperty("maxHeight", heightProperty);
+			//mouseLayerStyle.setProperty("maxHeight", heightProperty);
 		}
 		else
 		{
@@ -328,7 +334,7 @@ public class smScrollNavigator implements smI_StateEventListener
 		}
 	}
 	
-	private boolean isScrollingX()
+	public boolean isScrollingX()
 	{
 		if( m_currentGrid == null )  return false;
 		
@@ -338,7 +344,7 @@ public class smScrollNavigator implements smI_StateEventListener
 		return windowWidth < minViewWidth;
 	}
 	
-	private boolean isScrollingY()
+	public boolean isScrollingY()
 	{
 		if( m_currentGrid == null )  return false;
 		

@@ -19,6 +19,7 @@ import swarm.client.states.camera.StateMachine_Camera;
 import swarm.client.states.camera.State_CameraFloating;
 import swarm.client.states.camera.State_CameraSnapping;
 import swarm.client.states.camera.State_ViewingCell;
+import swarm.client.view.smViewContext;
 import swarm.client.view.tooltip.smToolTipManager;
 import swarm.client.view.widget.smMagnifier;
 import swarm.shared.debugging.smU_Debug;
@@ -55,7 +56,7 @@ public class smBrowserNavigator implements smI_StateEventListener
 
 	private Event_Camera_OnAddressResponse.Args 		m_args_OnAddressResponse	= null;
 	private Event_GettingMapping_OnResponse.Args	 	m_args_OnMappingResponse	= null;
-	private final Action_Camera_SnapToPoint.Args		m_args_SetCameraTarget		= new Action_Camera_SnapToPoint.Args();
+	private final Action_Camera_SnapToPoint.Args		m_args_SnapToPoint			= new Action_Camera_SnapToPoint.Args();
 	private final Action_Camera_SetInitialPosition.Args	m_args_SetInitialPosition 	= new Action_Camera_SetInitialPosition.Args();
 	private final Action_Camera_SnapToAddress.Args 		m_args_SnapToAddress		= new Action_Camera_SnapToAddress.Args();
 	private final Action_Camera_SnapToCoordinate.Args 	m_args_SnapToCoordinate		= new Action_Camera_SnapToCoordinate.Args();
@@ -73,16 +74,20 @@ public class smBrowserNavigator implements smI_StateEventListener
 	
 	private final smCameraManager m_cameraMngr;
 	private final smStateContext m_stateContext;
+	private final smViewContext m_viewContext;
 	
-	public smBrowserNavigator(smStateContext stateContext, smCameraManager cameraMngr, smA_JsonFactory jsonFactory, String defaultPageTitle, double floatingHistoryUpdateRate_seconds)
+	private final smPoint m_utilPoint1 = new smPoint();
+	
+	public smBrowserNavigator(smViewContext viewContext, String defaultPageTitle, double floatingHistoryUpdateRate_seconds)
 	{
-		m_stateContext = stateContext;
-		m_cameraMngr = cameraMngr;
+		m_viewContext = viewContext;
+		m_stateContext = m_viewContext.stateContext;
+		m_cameraMngr = m_viewContext.appContext.cameraMngr;
 		
 		m_floatingHistoryUpdateRate = floatingHistoryUpdateRate_seconds;
 		
 		m_args_SnapToCoordinate.userData = this.getClass();
-		m_args_SetCameraTarget.userData = this.getClass();
+		m_args_SnapToPoint.userData = this.getClass();
 		
 		m_historyStateListener = new smHistoryStateManager.I_Listener()
 		{
@@ -136,8 +141,8 @@ public class smBrowserNavigator implements smI_StateEventListener
 						{
 							smA_State cameraMachine = m_stateContext.getEnteredState(StateMachine_Camera.class);
 							boolean instant = cameraMachine != null && cameraMachine.getUpdateCount() == 0;
-							m_args_SetCameraTarget.init(state.getPoint(), instant, true);
-							m_stateContext.performAction(Action_Camera_SnapToPoint.class, m_args_SetCameraTarget);
+							m_args_SnapToPoint.init(state.getPoint(), instant, true);
+							m_stateContext.performAction(Action_Camera_SnapToPoint.class, m_args_SnapToPoint);
 							
 							//s_logger.info("SETTING TARGET POINT: " + state.getPoint());
 						}
@@ -153,7 +158,7 @@ public class smBrowserNavigator implements smI_StateEventListener
 		};
 		
 		m_addressManager = new smBrowserAddressManager();
-		m_historyManager = new smHistoryStateManager(jsonFactory, defaultPageTitle, m_historyStateListener, m_addressManager);
+		m_historyManager = new smHistoryStateManager(m_viewContext.appContext.jsonFactory, defaultPageTitle, m_historyStateListener, m_addressManager);
 	}
 	
 	public void go(int offset)
@@ -207,6 +212,12 @@ public class smBrowserNavigator implements smI_StateEventListener
 							//---		if for some strange reason the user put them there.
 							m_pushHistoryStateForFloating = false;
 							m_historyManager.setState(FLOATING_STATE_PATH, m_cameraMngr.getCamera().getPosition());
+							
+							//--- DRK > Give the camera a little bump to let new users know they're in a 3d environment.
+							m_utilPoint1.copy(m_cameraMngr.getCamera().getPosition());
+							m_utilPoint1.incZ(-m_viewContext.viewConfig.initialBumpDistance);
+							m_args_SnapToPoint.init(m_utilPoint1, false, false);
+							event.getState().performAction(Action_Camera_SnapToPoint.class, m_args_SnapToPoint);
 						}
 					}
 					

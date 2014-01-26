@@ -69,9 +69,10 @@ public class smU_CameraViewport
 		double minViewWidth = calcViewWindowWidth(grid);
 		double minViewHeight = calcViewWindowHeight(grid, cellHudHeight);
 		
-		//TODO: Huh?
-		//viewWidth -= 8;
-		//viewHeight -= 8;
+		//--- DRK > This used to be hardcoded as '-= 8', probably went under the radar after a late-night
+		//---		coding session...pretty sure it should be half the cell padding.	
+		viewWidth -= grid.getCellPadding();
+		viewHeight -= grid.getCellPadding();
 		
 		calcViewWindowCenter(grid, coord, cellHudHeight, point_out);
 
