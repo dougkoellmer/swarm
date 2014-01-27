@@ -40,6 +40,11 @@
 	left:0px;
 }
 
+.sm_cell_container_inner
+{
+	overflow:hidden;
+}
+
 .sm_splash_glass
 {
 	background-color: rgba(0,0, 0,0.0);

@@ -51,6 +51,8 @@ public class smScrollNavigator implements smI_StateEventListener
 	
 	private smA_Grid m_currentGrid = null;
 	
+	private double m_scrollHeight = 0;
+	
 	public smScrollNavigator(smViewContext viewContext, Panel scrollContainer, Panel scrollee, Panel mouseLayer)
 	{
 		m_viewContext = viewContext;
@@ -67,8 +69,17 @@ public class smScrollNavigator implements smI_StateEventListener
 		{
 			@Override
 			public void onScroll(ScrollEvent event)
-			{
-				s_logger.severe(m_scrollContainer.getElement().getScrollTop() + " " + m_scrollContainer.getElement().getScrollHeight());
+			{//s_logger.severe(m_scrollContainer.getElement().getScrollTop() + " " + m_scrollContainer.getElement().getScrollHeight());
+				/*int maxScrollTop = (int)m_scrollHeight - m_scrollContainer.getElement().getClientHeight();
+				int overY = m_scrollContainer.getElement().getScrollTop() - maxScrollTop;
+				if( overY > 0 )
+				{
+					m_scrollContainer.getElement().setScrollTop(overY);
+					event.preventDefault();
+					
+					return;
+				}*/
+				
 				updateCameraFromScrollBars();
 			}
 			
@@ -171,8 +182,8 @@ public class smScrollNavigator implements smI_StateEventListener
 		Style mouseLayerStyle = this.m_mouseLayer.getElement().getStyle();
 		
 		scrollerStyle.setOverflowX(Overflow.HIDDEN);
-		innerStyle.clearProperty("minWidth");
-		mouseLayerStyle.clearProperty("minWidth");
+		innerStyle.clearProperty("width");
+		mouseLayerStyle.clearProperty("width");
 		m_scrollContainer.getElement().setScrollLeft(0);
 	}
 	
@@ -183,9 +194,11 @@ public class smScrollNavigator implements smI_StateEventListener
 		Style mouseLayerStyle = this.m_mouseLayer.getElement().getStyle();
 		
 		scrollerStyle.setOverflowY(Overflow.HIDDEN);
-		innerStyle.clearProperty("minHeight");
-		mouseLayerStyle.clearProperty("minHeight");
+		innerStyle.clearProperty("height");
+		mouseLayerStyle.clearProperty("height");
 		m_scrollContainer.getElement().setScrollTop(0);
+		
+		m_scrollHeight = 0;
 	}
 	
 	private void setInitialScrollbarPosX(State_ViewingCell viewingState)
@@ -228,11 +241,11 @@ public class smScrollNavigator implements smI_StateEventListener
 		double windowWidth = this.getWindowWidth();
 		
 		if( windowWidth < minViewWidth )
-		{
+		{			
 			scrollerStyle.setOverflowX(Overflow.SCROLL);
 			String widthProperty = minViewWidth+"px";
-			innerStyle.setProperty("minWidth", widthProperty);
-			mouseLayerStyle.setProperty("minWidth", widthProperty);
+			innerStyle.setProperty("width", widthProperty);
+			mouseLayerStyle.setProperty("width", widthProperty);
 			//innerStyle.setProperty("maxWidth", widthProperty);
 			//mouseLayerStyle.setProperty("maxWidth", widthProperty);
 		}
@@ -251,13 +264,15 @@ public class smScrollNavigator implements smI_StateEventListener
 		double windowHeight = this.getWindowHeight();
 		
 		if( windowHeight < minViewHeight )
-		{
+		{			
 			scrollerStyle.setOverflowY(Overflow.SCROLL);
 			String heightProperty = minViewHeight+"px";
-			innerStyle.setProperty("minHeight", heightProperty);
-			mouseLayerStyle.setProperty("minHeight", heightProperty);
+			innerStyle.setProperty("height", heightProperty);
+			mouseLayerStyle.setProperty("height", heightProperty);
 			//innerStyle.setProperty("maxHeight", heightProperty);
 			//mouseLayerStyle.setProperty("maxHeight", heightProperty);
+			
+			m_scrollHeight = minViewHeight;
 		}
 		else
 		{
@@ -423,11 +438,13 @@ public class smScrollNavigator implements smI_StateEventListener
 				point_out.incX(m_scrollBarWidthDiv2*.5);
 				point_out.incY(m_scrollBarWidthDiv2*.5);
 			}*/
-			double deltaX = (minViewWidth - originalWindowWidth)/2;
+			
+			
+			/*double deltaX = (minViewWidth - originalWindowWidth)/2;
 			double deltaY = (minViewHeight - originalWindowHeight)/2;
 			smU_CameraViewport.calcViewWindowCenter(grid, targetCoord, m_cellHudHeight, m_utilPoint1);
-			boolean maxX = point_out.getX() >= m_utilPoint1.getX() +deltaX;
-			boolean maxY = point_out.getY() >= m_utilPoint1.getY() +deltaY;
+			boolean maxX = point_out.getX() >= m_utilPoint1.getX() + deltaX;
+			boolean maxY = point_out.getY() >= m_utilPoint1.getY() + deltaY;
 			//boolean maxY = m_utilPoint1.getY() + windowHeight/2;
 			
 			if( maxX )
@@ -446,7 +463,7 @@ public class smScrollNavigator implements smI_StateEventListener
 			else
 			{
 				point_out.incY(m_scrollBarWidthDiv2*.5);
-			}
+			}*/
 			
 			//newWindowWidth = windowWidth + m_scrollBarWidthDiv2;
 			//newWindowHeight = windowHeight + m_scrollBarWidthDiv2;
@@ -458,8 +475,8 @@ public class smScrollNavigator implements smI_StateEventListener
 				point_out.incY(m_scrollBarWidthDiv2);
 			}
 
-			point_out.incX(-m_scrollBarWidthDiv2*.5);
-			newWindowWidth = windowWidth + m_scrollBarWidthDiv2;
+			//point_out.incX(-m_scrollBarWidthDiv2*.5);
+			//newWindowWidth = windowWidth + m_scrollBarWidthDiv2;
 			
 			newWindowHeight = 0;
 			
@@ -472,8 +489,8 @@ public class smScrollNavigator implements smI_StateEventListener
 				point_out.incX(m_scrollBarWidthDiv2);
 			}
 			
-			point_out.incY(-m_scrollBarWidthDiv2*.5);
-			newWindowHeight = windowHeight + m_scrollBarWidthDiv2;
+			//point_out.incY(-m_scrollBarWidthDiv2*.5);
+			//newWindowHeight = windowHeight + m_scrollBarWidthDiv2;
 			
 			newWindowWidth = 0;
 			
@@ -486,6 +503,16 @@ public class smScrollNavigator implements smI_StateEventListener
 	{
 		switch(event.getType())
 		{
+			/*case DID_UPDATE:
+			{
+				if ( event.getState() instanceof State_ViewingCell )
+				{// 7521.5 vs 7526
+				//	s_logger.severe(m_viewContext.appContext.cameraMngr.getCamera().getPosition() + "");
+				}
+				
+				break;
+			}*/
+			
 			case DID_ENTER:
 			{
 				if ( event.getState() instanceof State_ViewingCell )
@@ -513,6 +540,8 @@ public class smScrollNavigator implements smI_StateEventListener
 							this.setInitialScrollbarPosY(state);
 						}
 					}
+					
+					m_scrollContainer.getElement().setScrollTop(0);
 				}
 				
 				break;
