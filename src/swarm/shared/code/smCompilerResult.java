@@ -18,6 +18,8 @@ public class smCompilerResult extends smA_JsonEncodable
 {
 	private smCompilerCell m_codeCell;
 	
+	private smCode m_sourceCode = null;
+	
 	private smE_CompilationStatus m_status;
 	
 	private ArrayList<smCompilerMessage> m_compilerMessages = null;
@@ -32,6 +34,11 @@ public class smCompilerResult extends smA_JsonEncodable
 		super(factory, json);
 	}
 	
+	public void setSource(smCode code)
+	{
+		m_sourceCode = code;
+	}
+	
 	private void initCell()
 	{
 		m_codeCell = new smCompilerCell();
@@ -44,7 +51,7 @@ public class smCompilerResult extends smA_JsonEncodable
 	
 	public smCode getCode(smE_CodeType eType)
 	{
-		return m_codeCell.getCode(eType);
+		return eType == smE_CodeType.SOURCE ? m_sourceCode : m_codeCell.getCode(eType);
 	}
 	
 	public List<smCompilerMessage> getMessages()

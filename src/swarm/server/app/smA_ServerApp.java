@@ -131,7 +131,7 @@ public abstract class smA_ServerApp extends smA_App
 		}
 		
 		m_context.jsonFactory = new smServerJsonFactory();
-		m_context.codeCompiler = new smServerCodeCompiler();
+		m_context.codeCompiler = new smServerCodeCompiler(true);
 		m_context.requestPathMngr = new smRequestPathManager(m_context.jsonFactory, appConfig.verboseTransactions);
 		m_context.txnMngr = new smServerTransactionManager((smA_ServerJsonFactory) m_context.jsonFactory, m_context.requestPathMngr, appConfig.verboseTransactions);
 		m_context.inlineTxnMngr = new smInlineTransactionManager(m_context.txnMngr, m_context.requestPathMngr, (smA_ServerJsonFactory) m_context.jsonFactory, appConfig.appId, appConfig.verboseTransactions);

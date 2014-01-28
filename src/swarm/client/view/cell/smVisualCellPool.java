@@ -51,7 +51,7 @@ public class smVisualCellPool implements smI_CellPoolDelegate
 	
 	private boolean m_poolNeedsCleaning = false;
 	
-	smVisualCellPool(final smSandboxManager sandboxMngr, Widget cellContainer)
+	smVisualCellPool(final smSandboxManager sandboxMngr, Widget cellContainer, final smI_CellSpinnerFactory spinnerFactory)
 	{
 		m_cellContainer = cellContainer;
 		
@@ -60,7 +60,7 @@ public class smVisualCellPool implements smI_CellPoolDelegate
 			@Override
 			public smVisualCell newInstance()
 			{
-				return new smVisualCell(sandboxMngr);
+				return new smVisualCell(spinnerFactory.newSpinner(), sandboxMngr);
 			}
 		};
 		

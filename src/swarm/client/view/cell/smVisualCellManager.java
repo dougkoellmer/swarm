@@ -74,7 +74,7 @@ public class smVisualCellManager implements smI_UIElement
 	{
 		m_container = container;
 		m_viewContext = viewContext;
-		m_cellPool = new smVisualCellPool(viewContext.appContext.cellSandbox, m_container);
+		m_cellPool = new smVisualCellPool(viewContext.appContext.cellSandbox, m_container, m_viewContext.spinnerFactory);
 		
 		m_viewContext.appContext.cellBufferMngr.getCellPool().setDelegate(m_cellPool);
 

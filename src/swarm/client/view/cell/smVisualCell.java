@@ -26,6 +26,7 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Widget;
 
 public class smVisualCell extends AbsolutePanel implements smI_BufferCellListener
 {
@@ -56,7 +57,8 @@ public class smVisualCell extends AbsolutePanel implements smI_BufferCellListene
 	//private final AbsolutePanel //m_backgroundPanel = new AbsolutePanel();
 	private final smUIBlocker	m_statusPanel = new smUIBlocker();
 	private final AbsolutePanel m_glassPanel = new AbsolutePanel();
-	private final smCellSpinner m_spinner	= new smCellSpinner(smS_UI.SPINNER_ROTATION_RATE);
+	//private final smCellSpinner m_spinner	= new smCellSpinner(smS_UI.SPINNER_ROTATION_RATE);
+	private final smI_CellSpinner m_spinner;
 	private final smMutableCode m_utilCode = new smMutableCode(smE_CodeType.values());
 	
 	//private final ArrayList<Image> //m_backgroundImages = new ArrayList<Image>();
@@ -78,8 +80,9 @@ public class smVisualCell extends AbsolutePanel implements smI_BufferCellListene
 	
 	private smE_CodeSafetyLevel m_codeSafetyLevel;
 	
-	public smVisualCell(smSandboxManager sandboxMngr)
+	public smVisualCell(smI_CellSpinner spinner, smSandboxManager sandboxMngr)
 	{
+		m_spinner = spinner;
 		m_sandboxMngr = sandboxMngr;
 		m_id = s_currentId; s_currentId++;
 		
@@ -146,7 +149,7 @@ public class smVisualCell extends AbsolutePanel implements smI_BufferCellListene
 	
 	public void update(double timeStep)
 	{
-		if( m_spinner.getParent() != null )
+		if( m_spinner.asWidget().getParent() != null )
 		{
 			m_spinner.update(timeStep);
 		}
@@ -350,11 +353,11 @@ public class smVisualCell extends AbsolutePanel implements smI_BufferCellListene
 	@Override
 	public void showLoading()
 	{
-		if( m_spinner.getParent() == null )
+		if( m_spinner.asWidget().getParent() == null )
 		{
 			m_spinner.reset();
 			
-			this.m_statusPanel.setContent(m_spinner);
+			this.m_statusPanel.setContent(m_spinner.asWidget());
 		}
 	}
 
@@ -372,7 +375,7 @@ public class smVisualCell extends AbsolutePanel implements smI_BufferCellListene
 	@Override
 	public void clearLoading()
 	{
-		if( m_spinner.getParent() != null )
+		if( m_spinner.asWidget().getParent() != null )
 		{
 			this.m_statusPanel.setContent(null);
 		}

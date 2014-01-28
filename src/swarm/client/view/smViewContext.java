@@ -8,6 +8,7 @@ import swarm.client.navigation.smMouseNavigator;
 import swarm.client.navigation.smScrollNavigator;
 import swarm.client.thirdparty.captcha.smRecaptchaWrapper;
 import swarm.client.view.cell.smAlertManager;
+import swarm.client.view.cell.smI_CellSpinnerFactory;
 import swarm.client.view.cell.smVisualCellManager;
 import swarm.client.view.tooltip.smToolTipManager;
 import swarm.shared.statemachine.smStateContext;
@@ -27,6 +28,7 @@ public class smViewContext
 	public smRecaptchaWrapper recaptchaWrapper;
 	public smAlertManager alertMngr;
 	public smConsoleBlocker consoleBlocker;
+	public smI_CellSpinnerFactory spinnerFactory;
 	
 	public smBrowserNavigator browserNavigator;
 	public smMouseNavigator mouseNavigator;

@@ -97,9 +97,13 @@ public class smServerCodeCompiler extends smA_CodeCompiler
 	
 	private Pair<HtmlSchema, List<Message>> m_customHtmlSchema;
 	
-	public smServerCodeCompiler()
-	{		
+	private final boolean m_formatSourceHtml;
+	
+	public smServerCodeCompiler(boolean formatSourceHtml)
+	{
 		super();
+		
+		m_formatSourceHtml = formatSourceHtml;
 	}
 
 	private synchronized void createHtmlSchema()
@@ -195,6 +199,16 @@ public class smServerCodeCompiler extends smA_CodeCompiler
 			s_logger.log(Level.SEVERE, "", e);
 			
 			return result.onFailure(smE_CompilationStatus.COMPILER_EXCEPTION);
+		}
+		
+		if( m_formatSourceHtml )
+		{
+			String sourceCodeFormatted = Nodes.renderUnsafe(htmlDom.getValue(), MarkupRenderMode.HTML);
+			result.setSource(new smServerCode(sourceCodeFormatted, smE_CodeType.SOURCE));
+		}
+		else
+		{
+			result.setSource(sourceCode);
 		}
 		
 		smHtmlSchema schema = new smHtmlSchema(this.getHtmlSchema());

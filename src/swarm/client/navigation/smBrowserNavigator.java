@@ -2,6 +2,8 @@ package swarm.client.navigation;
 
 import java.util.logging.Logger;
 
+import com.google.gwt.dom.client.Document;
+
 import swarm.client.app.smAppContext;
 import swarm.client.entities.smBufferCell;
 import swarm.client.entities.smCamera;
@@ -98,7 +100,7 @@ public class smBrowserNavigator implements smI_StateEventListener
 				//		not do anything useful. They hit if, for example, a blocking modal dialog is up (e.g. connection error)
 				//		and the user hits the browser back button to go to a previous cell. Currently the modal will prevent the action
 				//		from being performed...in order to repush that history state, we'd need to track the last history state here manually
-				//		cause 'url' parameter points to the destination cell...that's arguably a broken UX though...best option might be to
+				//		because 'url' parameter points to the destination cell...that's arguably a broken UX though...best option might be to
 				//		somehow dismiss the modal in this specific case, but there could be other reasons that the snap action is not performable...
 				//
 				//		sticky situation!
@@ -221,12 +223,20 @@ public class smBrowserNavigator implements smI_StateEventListener
 						}
 					}
 					
-					//--- DRK > This case essentially manually fires a state change event when we're coming from a different domain.
+					//--- DRK > This case manually fires a state change event when we're coming from a different domain,
+					//---		or if we're refreshing the page.
 					else
 					{
-						//s_logger.severe("not empty history state: " + currentHistoryState.getId() + " " + currentHistoryState.getHighestId());
-						
-						String path = address == null ? FLOATING_STATE_PATH : address.getCasedRawAddressLeadSlash();
+						String path;
+						if( address == null )
+						{
+							path = FLOATING_STATE_PATH;
+						}
+						else
+						{
+							path = address.getCasedRawAddressLeadSlash();
+							Document.get().setTitle(path); // manually doing this because for some reason history api sometimes won't set the title
+						}
 						
 						m_historyStateListener.onStateChange(path, currentHistoryState);
 					}

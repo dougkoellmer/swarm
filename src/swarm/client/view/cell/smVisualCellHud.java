@@ -84,11 +84,16 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 	private final double m_minWidth = 169;// TODO: GHETTO
 	private double m_width = 0;
 	
+	private double m_baseAlpha;
+	private double m_alpha;
+	
 	public smVisualCellHud(smViewContext viewContext, smClientAppConfig appConfig)
 	{
 		m_viewContext = viewContext;
 		
 		m_appConfig = appConfig;
+		
+		m_alpha = m_baseAlpha = 0.0;
 		
 		this.addStyleName("sm_cell_hud");
 		

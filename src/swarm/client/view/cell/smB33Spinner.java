@@ -10,11 +10,11 @@ import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 
-public class smCellSpinner extends FlowPanel
+public class smB33Spinner extends FlowPanel implements smI_CellSpinner
 {
 	private static final double WING_FLAP_TIME = 1.0/30.0;
 	
-	private static final Logger s_logger = Logger.getLogger(smCellSpinner.class.getName());
+	private static final Logger s_logger = Logger.getLogger(smB33Spinner.class.getName());
 	
 	private final FlowPanel m_inner = new FlowPanel();
 	private final Image[] m_b33s = new Image[2];
@@ -23,7 +23,7 @@ public class smCellSpinner extends FlowPanel
 	private double m_timeProgressed = 0;
 	private int m_currentB33 = 0;
 	
-	public smCellSpinner(double rotationRate)
+	public smB33Spinner(double rotationRate)
 	{
 		m_rotationRate = rotationRate;
 		
