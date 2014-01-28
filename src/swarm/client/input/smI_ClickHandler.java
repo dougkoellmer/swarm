@@ -2,5 +2,5 @@ package swarm.client.input;
 
 public interface smI_ClickHandler
 {
-	void onClick();
+	void onClick(int x, int y);
 }

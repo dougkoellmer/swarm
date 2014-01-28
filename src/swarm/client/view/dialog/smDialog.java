@@ -67,7 +67,7 @@ public class smDialog extends AbsolutePanel
 		clickMngr.addClickHandler(m_okButton, new smI_ClickHandler()
 		{
 			@Override
-			public void onClick()
+			public void onClick(int x, int y)
 			{
 				onOkPressed();
 			}

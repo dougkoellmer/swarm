@@ -150,7 +150,7 @@ public class smSignUpPanel extends VerticalPanel implements smI_StateEventListen
 		m_viewContext.clickMngr.addClickHandler(m_reloadCaptcha, new smI_ClickHandler()
 		{
 			@Override
-			public void onClick()
+			public void onClick(int x, int y)
 			{
 				onRecaptchaClicked();
 			}
@@ -159,7 +159,7 @@ public class smSignUpPanel extends VerticalPanel implements smI_StateEventListen
 		m_viewContext.clickMngr.addClickHandler(m_captchaImageContainer, new smI_ClickHandler()
 		{
 			@Override
-			public void onClick()
+			public void onClick(int x, int y)
 			{
 				m_viewContext.recaptchaWrapper.loadNewImage();
 				onRecaptchaClicked();
@@ -302,7 +302,7 @@ public class smSignUpPanel extends VerticalPanel implements smI_StateEventListen
 		m_viewContext.clickMngr.addClickHandler(m_button, new smI_ClickHandler()
 		{
 			@Override
-			public void onClick()
+			public void onClick(int x, int y)
 			{
 				submit(-1);
 			}

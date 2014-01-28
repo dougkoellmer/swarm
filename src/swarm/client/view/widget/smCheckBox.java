@@ -48,7 +48,7 @@ public class smCheckBox extends FlowPanel
 		clickMngr.addClickHandler(m_clickCatcher, new smI_ClickHandler()
 		{
 			@Override
-			public void onClick()
+			public void onClick(int x, int y)
 			{
 				m_checkBox.setValue(!m_checkBox.getValue());
 			}

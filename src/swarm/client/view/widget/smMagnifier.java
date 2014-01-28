@@ -144,7 +144,7 @@ public class smMagnifier extends FlowPanel implements smI_StateEventListener
 		
 		m_viewContext.clickMngr.addClickHandler(m_zoomIn, new smI_ClickHandler()
 		{
-			public void onClick()
+			public void onClick(int x, int y)
 			{
 				if( !m_zoomIn.isEnabled() )  return;
 				
@@ -167,7 +167,7 @@ public class smMagnifier extends FlowPanel implements smI_StateEventListener
 		
 		m_viewContext.clickMngr.addClickHandler(m_zoomOut, new smI_ClickHandler()
 		{
-			public void onClick()
+			public void onClick(int x, int y)
 			{
 				if( !m_zoomOut.isEnabled() )  return;
 				
@@ -188,12 +188,11 @@ public class smMagnifier extends FlowPanel implements smI_StateEventListener
 			}
 		});
 		
-		m_slider.addClickHandler(new ClickHandler()
+		m_viewContext.clickMngr.addClickHandler(m_slider, new smI_ClickHandler()
 		{
-			@Override
-			public void onClick(ClickEvent event)
+			public void onClick(int x, int y)
 			{
-				double mouseY = event.getRelativeY(smMagnifier.this.m_slider.getElement());
+				double mouseY = y;
 				smMagnifier.this.setDraggerPositionFromMouse(mouseY);
 			}
 		});

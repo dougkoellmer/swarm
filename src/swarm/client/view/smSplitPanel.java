@@ -145,7 +145,7 @@ public class smSplitPanel extends SplitLayoutPanel implements smI_UIElement
 		m_viewContext.clickMngr.addClickHandler(m_panelButton, new smI_ClickHandler()
 		{
 			@Override
-			public void onClick()
+			public void onClick(int x, int y)
 			{
 				if( m_viewContext.stateContext.performAction(Action_Base_HideSupplementState.class) )
 				{

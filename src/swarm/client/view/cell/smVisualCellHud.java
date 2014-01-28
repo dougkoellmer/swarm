@@ -125,7 +125,7 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 		m_viewContext.clickMngr.addClickHandler(m_back, new smI_ClickHandler()
 		{
 			@Override
-			public void onClick()
+			public void onClick(int x, int y)
 			{
 				if( !m_back.isEnabled() )  return;
 				
@@ -136,7 +136,7 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 		m_viewContext.clickMngr.addClickHandler(m_forward, new smI_ClickHandler()
 		{
 			@Override
-			public void onClick()
+			public void onClick(int x, int y)
 			{
 				if( !m_forward.isEnabled() )  return;
 				
@@ -147,7 +147,7 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 		m_viewContext.clickMngr.addClickHandler(m_refresh, new smI_ClickHandler()
 		{
 			@Override
-			public void onClick()
+			public void onClick(int x, int y)
 			{
 				if( !m_refresh.isEnabled() )  return;
 				
@@ -160,7 +160,7 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 		m_viewContext.clickMngr.addClickHandler(m_close, new smI_ClickHandler()
 		{
 			@Override
-			public void onClick()
+			public void onClick(int x, int y)
 			{
 				State_ViewingCell state = m_viewContext.stateContext.getEnteredState(State_ViewingCell.class);
 				

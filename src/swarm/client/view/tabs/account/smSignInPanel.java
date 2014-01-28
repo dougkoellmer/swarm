@@ -100,7 +100,7 @@ public class smSignInPanel extends VerticalPanel implements smI_StateEventListen
 		m_viewContext.clickMngr.addClickHandler(m_changePassword, new smI_ClickHandler()
 		{
 			@Override
-			public void onClick()
+			public void onClick(int x, int y)
 			{
 				submit(-1, E_SubmitType.RESET_PASSWORD);
 			}
@@ -175,7 +175,7 @@ public class smSignInPanel extends VerticalPanel implements smI_StateEventListen
 		m_viewContext.clickMngr.addClickHandler(m_button, new smI_ClickHandler()
 		{
 			@Override
-			public void onClick()
+			public void onClick(int x, int y)
 			{
 				submit(-1, E_SubmitType.SIGN_IN);
 			}

@@ -66,7 +66,7 @@ public class smManageAccountPanel extends FlowPanel implements smI_StateEventLis
 		m_viewContext.clickMngr.addClickHandler(m_signOutButton, new smI_ClickHandler()
 		{
 			@Override
-			public void onClick()
+			public void onClick(int x, int y)
 			{
 				m_viewContext.stateContext.performAction(Action_ManageAccount_SignOut.class);
 			}

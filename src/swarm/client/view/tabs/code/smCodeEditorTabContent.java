@@ -81,7 +81,7 @@ public class smCodeEditorTabContent extends AbsolutePanel implements smI_TabCont
 		smI_ClickHandler commitHandler = new smI_ClickHandler()
 		{
 			@Override
-			public void onClick()
+			public void onClick(int x, int y)
 			{
 				onSaveClicked();
 			}
@@ -90,7 +90,7 @@ public class smCodeEditorTabContent extends AbsolutePanel implements smI_TabCont
 		smI_ClickHandler previewHandler = new smI_ClickHandler()
 		{
 			@Override
-			public void onClick()
+			public void onClick(int x, int y)
 			{
 				onPreviewClicked();
 			}
