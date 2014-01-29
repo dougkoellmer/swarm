@@ -76,8 +76,7 @@ public class smClickManager
 
 		function handler(event)
 		{
-			//return e.getClientY() - target.getAbsoluteTop() + target.getScrollTop() +
-    //  target.getOwnerDocument().getScrollTop();
+			console.log(event.type);
       
 			var clientX, clientY;
 			if( event.type == 'click' )
@@ -100,12 +99,12 @@ public class smClickManager
 			
 			var relativeX = clientX - absoluteLeft + element.scrollLeft + docScrollLeft;
 			var relativeY = clientY - absoluteTop + element.scrollTop + docScrollTop;
-			console.log(clientY, absoluteTop, element.scrollTop, docScrollTop);
+			//console.log(clientY, absoluteTop, element.scrollTop, docScrollTop);
 			
 			clickHandler.@swarm.client.input.smI_ClickHandler::onClick(II)(relativeX, relativeY);
 		}
 		
-		var fastButton = new $wnd.google.ui.FastButton(element, handler);
+		var fastButton = new $wnd.FastButton(element, handler);
 		
 	}-*/;
 }
