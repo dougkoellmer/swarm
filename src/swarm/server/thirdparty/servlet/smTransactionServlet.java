@@ -44,7 +44,7 @@ public class smTransactionServlet extends smA_BaseServlet
 	
 	private void doGetOrPost(HttpServletRequest nativeRequest, HttpServletResponse nativeResponse, boolean isGet) throws ServletException, IOException
 	{		
-		//smU_Servlet.simulateLag(3000);
+		//smU_Servlet.simulateLag(10000);
 		//smU_Servlet.simulateException(true);
 		
 		smServerContext context = smA_ServerApp.getInstance().getContext();
