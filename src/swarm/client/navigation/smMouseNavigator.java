@@ -169,7 +169,7 @@ public class smMouseNavigator implements smI_UIElement, smMouse.I_Listener
 				
 				if ( !m_mouse.hasMouseStrayedWhileDown() )
 				{
-					mouseClicked();
+					onMouseClick();
 				}
 				else if ( m_cameraState instanceof State_CameraFloating )
 				{
@@ -383,7 +383,7 @@ public class smMouseNavigator implements smI_UIElement, smMouse.I_Listener
 		m_isMouseTouchingSnappableCell = true;
 	}
 	
-	private void mouseClicked()
+	private void onMouseClick()
 	{
 		updateMouseGridCoord();
 		

@@ -47,7 +47,6 @@ public class smScrollNavigator implements smI_StateEventListener
 	private final Panel m_mouseLayer;
 	
 	private final smPoint m_utilPoint1 = new smPoint();
-	private final smPoint m_originalTargetSnapPoint = new smPoint();
 	
 	private smA_Grid m_currentGrid = null;
 	
@@ -107,8 +106,16 @@ public class smScrollNavigator implements smI_StateEventListener
 		
 		if( snappingState != null )
 		{
-			m_utilPoint1.copy(m_originalTargetSnapPoint);
 			this.updateCameraViewRect(false, false);
+			
+			smA_Grid grid = m_viewContext.appContext.gridMngr.getGrid();
+			grid.calcCoordTopLeftPoint(snappingState.getTargetCoordinate(), 1, m_utilPoint1);
+			
+			double cellHudHeight = m_viewContext.appConfig.cellHudHeight;
+			double viewWidth = m_viewContext.appContext.cameraMngr.getCamera().getViewWidth();
+			double viewHeight = m_viewContext.appContext.cameraMngr.getCamera().getViewHeight();
+			
+			smU_CameraViewport.calcConstrainedCameraPoint(grid, snappingState.getTargetCoordinate(), m_utilPoint1, viewWidth, viewHeight, cellHudHeight, m_utilPoint1);
 			
 			this.adjustSnapTargetPoint_private(snappingState.getTargetCoordinate(), m_utilPoint1);
 			
@@ -373,8 +380,6 @@ public class smScrollNavigator implements smI_StateEventListener
 	{
 		if( args.userData == this.getClass() )   return;
 		
-		m_originalTargetSnapPoint.copy(args.getTargetPoint());
-		
 		this.adjustSnapTargetPoint_private(args.getTargetCoordinate(), args.getTargetPoint());
 	}
 	
@@ -389,7 +394,6 @@ public class smScrollNavigator implements smI_StateEventListener
 		double originalWindowWidth = windowWidth;
 		double originalWindowHeight = windowHeight;
 		
-		point_out.copy(m_originalTargetSnapPoint);
 		boolean widthSmaller = false;
 		boolean heightSmaller = false;
 		
@@ -506,8 +510,8 @@ public class smScrollNavigator implements smI_StateEventListener
 			/*case DID_UPDATE:
 			{
 				if ( event.getState() instanceof State_ViewingCell )
-				{// 7521.5 vs 7526
-				//	s_logger.severe(m_viewContext.appContext.cameraMngr.getCamera().getPosition() + "");
+				{
+					s_logger.severe(m_viewContext.appContext.cameraMngr.getCamera().getPosition() + "");
 				}
 				
 				break;

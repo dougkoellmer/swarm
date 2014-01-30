@@ -9,6 +9,7 @@ import swarm.client.entities.smBufferCell;
 import swarm.client.entities.smE_CodeStatus;
 import swarm.client.input.smClickManager;
 import swarm.client.input.smI_ClickHandler;
+import swarm.client.managers.smCameraManager;
 import swarm.client.navigation.smBrowserNavigator;
 import swarm.client.navigation.smU_CameraViewport;
 import swarm.client.states.camera.Action_Camera_SnapToPoint;
@@ -39,6 +40,7 @@ import swarm.shared.statemachine.smE_StateTimeType;
 import swarm.shared.statemachine.smStateEvent;
 import swarm.shared.structs.smGridCoordinate;
 import swarm.shared.structs.smPoint;
+import swarm.shared.structs.smVector;
 import swarm.shared.utils.smU_Math;
 
 import com.google.gwt.dom.client.Element;
@@ -58,6 +60,7 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 	
 	private static final smPoint s_utilPoint1 = new smPoint();
 	private static final smPoint s_utilPoint2 = new smPoint();
+	private static final smVector s_utilVector = new smVector();
 	
 	private class smHudButton extends smSpriteButton
 	{
@@ -93,8 +96,13 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 	private double m_alpha;
 	private final double m_fadeOutTime_seconds;
 	
-	private double m_lastScaling = -1;
-	private final smGridCoordinate m_lastCoordViewed = new smGridCoordinate();
+	private String m_lastTranslation = "";
+	private final smPoint m_lastWorldPositionOnDoubleSnap = new smPoint();
+	private final smPoint m_lastWorldPosition = new smPoint();
+	private final smGridCoordinate m_lastSnapCoord = new smGridCoordinate();
+	
+	
+	private boolean m_performedDoubleSnap;
 	
 	public smVisualCellHud(smViewContext viewContext, smClientAppConfig appConfig)
 	{
@@ -228,22 +236,55 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 		}
 	}
 	
-	private void updatePosition(smA_Grid grid, smGridCoordinate coord)
+	private void updatePositionFromScreenPoint(smA_Grid grid, smPoint screenPoint)
 	{
-		if( m_lastCoordViewed != coord)
-		{
-			m_lastCoordViewed.copy(coord);
-		}
+		smCamera camera = m_viewContext.appContext.cameraMngr.getCamera();
+		camera.calcWorldPoint(screenPoint, m_lastWorldPosition);
 		
+		boolean has3dTransforms = m_viewContext.appContext.platformInfo.has3dTransforms();
+		m_lastTranslation = smU_Css.createTranslateTransform(screenPoint.getX(), screenPoint.getY(), has3dTransforms);
+		
+		double scaling = m_viewContext.cellMngr.getLastScaling();
+		String scaleProperty = smU_Css.createScaleTransform(scaling, has3dTransforms);
+		smU_Css.setTransform(this.getElement(), m_lastTranslation + " " + scaleProperty);
+	}
+	
+	private void updateScalingOnly()
+	{
+		boolean has3dTransforms = m_viewContext.appContext.platformInfo.has3dTransforms();
+		double scaling = m_viewContext.cellMngr.getLastScaling();
+		String scaleProperty = smU_Css.createScaleTransform(scaling, has3dTransforms);
+		smU_Css.setTransform(this.getElement(), m_lastTranslation + " " + scaleProperty);
+	}
+	
+	private void updatePositionFromWorldPoint(smA_Grid grid, smPoint worldPoint)
+	{
+		smCamera camera = m_viewContext.appContext.cameraMngr.getCamera();
+		
+		camera.calcScreenPoint(worldPoint, s_utilPoint2);
+		
+		this.updatePositionFromScreenPoint(grid, s_utilPoint2);
+	}
+	
+	private void updatePosition(smA_Grid grid, smGridCoordinate coord)
+	{		
+		this.calcScreenPositionFromCoord(grid, coord, s_utilPoint2);
+		
+		this.updatePositionFromScreenPoint(grid, s_utilPoint2);
+	}
+	
+	private void calcScreenPositionFromCoord(smA_Grid grid, smGridCoordinate coord, smPoint point_out)
+	{
+		smCamera camera = m_viewContext.appContext.cameraMngr.getCamera();
+		
+		coord.calcPoint(s_utilPoint1, grid.getCellWidth(), grid.getCellHeight(), grid.getCellPadding(), 1);
+		camera.calcScreenPoint(s_utilPoint1, point_out);
+
 		Element scrollElement = this.getParent().getElement();
 		double scrollX = scrollElement.getScrollLeft();
 		double scrollY = scrollElement.getScrollTop();
 		
-		smCamera camera = m_viewContext.appContext.cameraMngr.getCamera();
-		
-		coord.calcPoint(s_utilPoint1, grid.getCellWidth(), grid.getCellHeight(), grid.getCellPadding(), 1);
-		camera.calcScreenPoint(s_utilPoint1, s_utilPoint2);
-		double x = s_utilPoint2.getX() + scrollX*2;
+		double x = point_out.getX() + scrollX*2;
 		
 		double viewWidth = getViewWidth(camera, grid);
 		double hudWidth = Math.max(m_width, m_minWidth);
@@ -256,20 +297,15 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 			x -= diff * scrollRatio;
 		}
 		
-		
 		double scaling = m_viewContext.cellMngr.getLastScaling();
-		double y = s_utilPoint2.getY()-(m_appConfig.cellHudHeight+grid.getCellPadding())*scaling;
+		double y = point_out.getY()-(m_appConfig.cellHudHeight+grid.getCellPadding())*scaling;
 		y -= 1*scaling; // account for margin...sigh
 		y += scrollY * scaling;
 		
-		
-		boolean has3dTransforms = m_viewContext.appContext.platformInfo.has3dTransforms();
-		String translateProperty = smU_Css.createTranslateTransform(x, y, has3dTransforms);
-		String scaleProperty = smU_Css.createScaleTransform(scaling, has3dTransforms);
-		smU_Css.setTransform(this.getElement(), translateProperty + " " + scaleProperty);
+		point_out.set(x, y, 0);
 	}
 	
-	private void updatePosition(State_CameraSnapping state)
+	private void updatePositionFromState(State_CameraSnapping state)
 	{
 		smA_Grid grid = m_viewContext.appContext.gridMngr.getGrid(); // TODO: Can be more than one grid in the future
 		smGridCoordinate coord = state.getTargetCoordinate();
@@ -277,7 +313,7 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 		this.updatePosition(grid, coord);
 	}
 	
-	private void updatePosition(State_ViewingCell state)
+	private void updatePositionFromState(State_ViewingCell state)
 	{
 		smBufferCell cell = ((State_ViewingCell)state).getCell();
 		smA_Grid grid = cell.getGrid();
@@ -328,6 +364,12 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 		this.getElement().getStyle().setWidth(m_width, Unit.PX);
 	}
 	
+	private void onDoubleSnap()
+	{
+		m_lastWorldPositionOnDoubleSnap.copy(m_lastWorldPosition);
+		m_performedDoubleSnap = true;
+	}
+	
 	@Override
 	public void onStateEvent(smStateEvent event)
 	{
@@ -338,7 +380,7 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 				if( event.getState() instanceof State_ViewingCell )
 				{
 					this.updateSize((State_ViewingCell) event.getState());
-					this.updatePosition((State_ViewingCell) event.getState());
+					this.updatePositionFromState((State_ViewingCell) event.getState());
 					this.updateCloseButton();
 					this.updateHistoryButtons();
 					
@@ -349,7 +391,7 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 				{
 					if( event.getState().getPreviousState() != State_ViewingCell.class )
 					{
-						this.updatePosition((State_CameraSnapping)event.getState());
+						this.updatePositionFromState((State_CameraSnapping)event.getState());
 						
 						this.setVisible(true);
 						m_baseAlpha = m_alpha;
@@ -359,6 +401,8 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 					
 					this.updateCloseButton();
 					this.updateHistoryButtons();
+					
+					m_performedDoubleSnap = false;
 				}
 				
 				break;
@@ -393,13 +437,36 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 					else if( event.getState() instanceof State_CameraSnapping )
 					{
 						State_CameraSnapping cameraSnapping = m_viewContext.stateContext.getEnteredState(State_CameraSnapping.class);
-						if( cameraSnapping != null && cameraSnapping.getPreviousState() != State_ViewingCell.class )
+						if( cameraSnapping != null )
 						{
-							//s_logger.severe(cameraSnapping.getOverallSnapProgress() + "");
-							this.setAlpha(m_baseAlpha + (1-m_baseAlpha) * cameraSnapping.getOverallSnapProgress());
-							//this.setAlpha((1 - m_baseAlpha) * (1 - ));
-							
-							this.updatePosition((State_CameraSnapping)event.getState());
+							if( cameraSnapping.getPreviousState() != State_ViewingCell.class )
+							{
+								//s_logger.severe(cameraSnapping.getOverallSnapProgress() + "");
+								this.setAlpha(m_baseAlpha + (1-m_baseAlpha) * cameraSnapping.getOverallSnapProgress());
+								//this.setAlpha((1 - m_baseAlpha) * (1 - ));
+							}
+					
+							if( !m_performedDoubleSnap && cameraSnapping.getPreviousState() != State_ViewingCell.class)
+							{
+								this.updatePositionFromState((State_CameraSnapping)event.getState());
+							}
+							else
+							{
+								smA_Grid grid = m_viewContext.appContext.gridMngr.getGrid();
+								smGridCoordinate coord = cameraSnapping.getTargetCoordinate();
+								smCameraManager cameraMngr = m_viewContext.appContext.cameraMngr;
+								smCamera camera = cameraMngr.getCamera();
+								
+								this.calcScreenPositionFromCoord(grid, coord, s_utilPoint2);
+								camera.calcWorldPoint(s_utilPoint2, s_utilPoint2);
+								s_utilPoint2.calcDifference(m_lastWorldPositionOnDoubleSnap, s_utilVector);
+								double progress = cameraMngr.getSnapProgressRatio();
+								s_utilVector.scaleByNumber(progress);
+								s_utilPoint2.copy(m_lastWorldPositionOnDoubleSnap);
+								s_utilPoint2.translate(s_utilVector);
+								
+								this.updatePositionFromWorldPoint(grid, s_utilPoint2);
+							}
 						}
 					}
 					else if( !(event.getState() instanceof State_ViewingCell) )
@@ -415,7 +482,7 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 									
 									this.setAlpha(m_baseAlpha * (1-timeMantissa));
 									smA_Grid grid = m_viewContext.appContext.gridMngr.getGrid();
-									this.updatePosition(grid, m_lastCoordViewed);
+									this.updatePositionFromWorldPoint(grid, m_lastWorldPosition);
 									
 									if( m_alpha <= 0 )
 									{
@@ -432,19 +499,19 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 			
 			case DID_EXIT:
 			{
-				if( event.getState() instanceof State_ViewingCell )
-				{					
-					m_waitingForBeingRefreshableAgain = false;
-					
-					this.updateCloseButton();
-					this.updateHistoryButtons();
-					this.updateRefreshButton();
-					
-					m_baseAlpha = m_alpha;
-				}
-				else if( event.getState() instanceof State_CameraSnapping )
+				if( event.getState() instanceof State_ViewingCell || event.getState() instanceof State_CameraSnapping )
 				{
 					m_baseAlpha = m_alpha;
+					smCamera camera = m_viewContext.appContext.cameraMngr.getCamera();
+					
+					if( event.getState() instanceof State_ViewingCell )
+					{
+						m_waitingForBeingRefreshableAgain = false;
+						
+						this.updateCloseButton();
+						this.updateHistoryButtons();
+						this.updateRefreshButton();
+					}
 				}
 				
 				break;
@@ -463,8 +530,12 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 						Action_Camera_SetViewSize.Args args = event.getActionArgs();
 						if( args.updateBuffer() )
 						{
-							this.updatePosition(state);
+							this.updatePositionFromState(state);
 						}
+					}
+					else if( event.getContext().isEntered(State_CameraSnapping.class) )
+					{
+						this.onDoubleSnap();
 					}
 				}
 				else if( event.getAction() == Action_Camera_SnapToPoint.class )
@@ -476,9 +547,24 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 						Action_Camera_SnapToPoint.Args args = event.getActionArgs();
 						if( args.isInstant() )
 						{
-							this.updatePosition(state);
+							this.updatePositionFromState(state);
 						}
 					}
+				}
+				else if( event.getAction() == Action_Camera_SnapToCoordinate.class )
+				{
+					State_CameraSnapping state = event.getContext().getEnteredState(State_CameraSnapping.class);
+					
+					//if( state != null && state.getUpdateCount() > 0 )
+					{
+						if( !m_lastSnapCoord.isEqualTo(state.getTargetCoordinate()) )
+						{
+							this.onDoubleSnap();
+						}
+					}
+					
+					
+					m_lastSnapCoord.copy(state.getTargetCoordinate());
 				}
 				else if((	event.getAction() == Action_ViewingCell_Refresh.class		||
 							event.getAction() == Action_EditingCode_Save.class			||

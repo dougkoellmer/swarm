@@ -72,6 +72,14 @@ public class smCameraManager
 		return 0;
 	}
 	
+	public double getSnapProgressRatio()
+	{
+		double progressRatio = calcY(m_xProgress);
+		progressRatio = 1 - progressRatio / m_startY;
+		
+		return progressRatio;
+	}
+	
 	public void update(double timeStep)
 	{
 		if ( m_xProgress == 0 )
