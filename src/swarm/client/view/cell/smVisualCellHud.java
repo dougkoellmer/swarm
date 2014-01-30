@@ -391,7 +391,10 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 				{
 					if( event.getState().getPreviousState() != State_ViewingCell.class )
 					{
-						this.updatePositionFromState((State_CameraSnapping)event.getState());
+						if( m_alpha <= 0 )
+						{
+							this.updatePositionFromState((State_CameraSnapping)event.getState());
+						}
 						
 						this.setVisible(true);
 						m_baseAlpha = m_alpha;
@@ -512,6 +515,10 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 						this.updateHistoryButtons();
 						this.updateRefreshButton();
 					}
+					else if( event.getState() instanceof State_CameraSnapping )
+					{
+						m_lastSnapCoord.set(-1, -1);
+					}
 				}
 				
 				break;
@@ -552,13 +559,13 @@ public class smVisualCellHud extends FlowPanel implements smI_UIElement
 					}
 				}
 				else if( event.getAction() == Action_Camera_SnapToCoordinate.class )
-				{
+				{s_logger.severe("snap to coord");
 					State_CameraSnapping state = event.getContext().getEnteredState(State_CameraSnapping.class);
 					
-					//if( state != null && state.getUpdateCount() > 0 )
+					//if( state != null && (state.getUpdateCount() > 0 )
 					{
-						if( !m_lastSnapCoord.isEqualTo(state.getTargetCoordinate()) )
-						{
+						//if( !m_lastSnapCoord.isEqualTo(state.getTargetCoordinate()) )
+						{s_logger.severe("double");
 							this.onDoubleSnap();
 						}
 					}
