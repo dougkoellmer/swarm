@@ -40,6 +40,8 @@ import swarm.shared.structs.smPoint;
 
 public class State_CameraSnapping extends smA_State implements smI_StateEventListener
 {
+	private static final smGridCoordinate INVALID = new smGridCoordinate(-1, -1);
+	
 	private static final Logger s_logger = Logger.getLogger(State_CameraSnapping.class.getName());
 	
 	public static class Constructor extends smA_StateConstructor
@@ -112,6 +114,7 @@ public class State_CameraSnapping extends smA_State implements smI_StateEventLis
 		
 		m_targetAddress = targetAddress_nullable;
 		
+		boolean firstUpdate = m_targetGridCoordinate.isEqualTo(INVALID);
 		boolean sameCoordinateAsLastTime = m_targetGridCoordinate.isEqualTo(targetCoordinate);
 		
 		m_targetGridCoordinate.copy(targetCoordinate);
@@ -149,12 +152,17 @@ public class State_CameraSnapping extends smA_State implements smI_StateEventLis
 			this.updateSnapBufferManager(true);
 		}
 		
-		if( !sameCoordinateAsLastTime )
+		smCameraManager manager = m_appContext.cameraMngr;
+		
+		if( firstUpdate )
+		{
+			m_snapProgressBase = 0.0;
+		}
+		else
 		{
 			m_snapProgressBase = this.getOverallSnapProgress();
 		}
 		
-		smCameraManager manager = m_appContext.cameraMngr;
 		manager.setTargetPosition(targetPoint, false);
 	}
 	
@@ -260,7 +268,7 @@ public class State_CameraSnapping extends smA_State implements smI_StateEventLis
 		
 		m_appContext.registerBufferMngr(m_snapBufferManager);
 		
-		m_targetGridCoordinate.set(-1, -1);
+		m_targetGridCoordinate.copy(INVALID);
 		
 		smCamera camera = m_appContext.cameraMngr.getCamera();
 		

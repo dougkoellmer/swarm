@@ -135,8 +135,6 @@ public class smVisualCellFocuser extends FlowPanel implements smI_UIElement
 			
 			case FADING_IN:
 			{
-				m_startAlpha = m_alpha;
-				
 				switch( oldState )
 				{
 					case FADING_IN: // This is the only animation state that can be entered more than once in a row.
@@ -149,6 +147,7 @@ public class smVisualCellFocuser extends FlowPanel implements smI_UIElement
 							{
 								this.m_poppedCell.pushDown();
 								this.m_poppedCell = null;
+								m_startAlpha = m_alpha;
 							}
 						}
 						
@@ -157,6 +156,8 @@ public class smVisualCellFocuser extends FlowPanel implements smI_UIElement
 					
 					case FADING_OUT:
 					{
+						m_startAlpha = m_alpha;
+						
 						if( this.m_poppedCell != null )
 						{
 							StateMachine_Camera cameraController = m_stateContext.getEnteredState(StateMachine_Camera.class);
@@ -181,6 +182,7 @@ public class smVisualCellFocuser extends FlowPanel implements smI_UIElement
 					
 					case NONE:
 					{
+						m_startAlpha = m_alpha;
 						this.setVisible(true);
 						
 						break;

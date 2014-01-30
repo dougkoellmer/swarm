@@ -26,19 +26,11 @@ public class smSpriteButton extends smButton
 		
 		if( enabled )
 		{
-			if( m_spriteId != null )
-			{
-				m_sprite.removeClassName(calcStyleName(m_spriteId, false));
-				m_sprite.addClassName(calcStyleName(m_spriteId, true));
-			}
+			m_sprite.getStyle().setOpacity(1);
 		}
 		else
 		{
-			if( m_spriteId != null )
-			{
-				m_sprite.removeClassName(calcStyleName(m_spriteId, true));
-				m_sprite.addClassName(calcStyleName(m_spriteId, false));
-			}
+			m_sprite.getStyle().setOpacity(.5);
 		}
 	}
 	

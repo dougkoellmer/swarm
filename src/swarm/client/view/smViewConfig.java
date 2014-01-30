@@ -5,7 +5,8 @@ import swarm.shared.statemachine.smI_StateEventListener;
 
 public class smViewConfig
 {
-	public double magFadeInTime_seconds;
+	public double magFadeInTime_seconds = .5;
+	public double hudFadeOutTime_seconds = magFadeInTime_seconds;
 	public int magnifierTickCount;
 	public String defaultPageTitle;
 	public String cellHighlightColor = smS_UI.HIGHLIGHT_COLOR;
