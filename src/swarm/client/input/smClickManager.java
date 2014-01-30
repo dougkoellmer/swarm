@@ -76,7 +76,7 @@ public class smClickManager
 
 		function handler(event)
 		{
-			console.log(event.type);
+			//console.log(event.type);
       
 			var clientX, clientY;
 			if( event.type == 'click' )

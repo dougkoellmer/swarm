@@ -324,7 +324,7 @@ public class smA_ClientApp extends smA_App implements smI_TimeSource
 	protected void stage_establishTiming()
 	{
 		//--- DRK > Get timing and update loop going.
-		smU_Time.startUp();
+		/*smU_Time.startUp();
 		Timer timer = new Timer()
 		{
 			@Override
@@ -333,8 +333,24 @@ public class smA_ClientApp extends smA_App implements smI_TimeSource
 				smA_ClientApp.this.update();				
 			}
 		};
-		timer.scheduleRepeating(m_appConfig.framerate_milliseconds);
+		timer.scheduleRepeating(m_appConfig.framerate_milliseconds);*/
+		
+		requestAnimationFrameLoop();
 	}
+	
+	private native void requestAnimationFrameLoop()
+	/*-{
+			var thisArg = this;
+		
+			function update()
+			{
+				thisArg.@swarm.client.app.smA_ClientApp::update()();
+				
+				$wnd.requestAnimationFrame(update);
+			}
+
+			$wnd.requestAnimationFrame(update);
+	}-*/;
 	
 	protected void stage_gunshotSound()
 	{

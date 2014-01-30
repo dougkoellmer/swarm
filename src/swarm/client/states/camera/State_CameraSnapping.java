@@ -149,13 +149,13 @@ public class State_CameraSnapping extends smA_State implements smI_StateEventLis
 			this.updateSnapBufferManager(true);
 		}
 		
-		smCameraManager manager = m_appContext.cameraMngr;
-		manager.setTargetPosition(targetPoint, false);
-		
 		if( !sameCoordinateAsLastTime )
 		{
 			m_snapProgressBase = this.getOverallSnapProgress();
 		}
+		
+		smCameraManager manager = m_appContext.cameraMngr;
+		manager.setTargetPosition(targetPoint, false);
 	}
 	
 	public double getOverallSnapProgress()
