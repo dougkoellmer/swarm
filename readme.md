@@ -1,0 +1,1 @@
+Swarm is a client-heavy HTML5 content management system that provides a Google-Maps-like user-interface for exploring and managing content in a natural, seamless fashion.
