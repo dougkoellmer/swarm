@@ -72,7 +72,7 @@ public class CameraManager
 		return 0;
 	}
 	
-	public double getSnapProgressRatio()
+	public double getWeightedSnapProgress()
 	{
 		double progressRatio = calcY(m_xProgress);
 		progressRatio = 1 - progressRatio / m_startY;

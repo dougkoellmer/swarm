@@ -100,7 +100,6 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 	private String m_lastTranslation = "";
 	private final Point m_lastWorldPositionOnDoubleSnap = new Point();
 	private final Point m_lastWorldPosition = new Point();
-	private final GridCoordinate m_lastSnapCoord = new GridCoordinate();
 	
 	private final Rect m_utilRect = new Rect();
 	
@@ -289,7 +288,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 		
 		double viewWidth = getViewWidth(camera, grid);
 		double hudWidth = Math.max(m_width, m_minWidth);
-		if( hudWidth > viewWidth )
+		if( hudWidth > viewWidth && m_viewContext.stateContext.isEntered(State_ViewingCell.class) )
 		{
 			double scrollWidth = scrollElement.getScrollWidth();
 			double clientWidth = scrollElement.getClientWidth();
@@ -408,7 +407,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 					this.updateCloseButton();
 					this.updateHistoryButtons();
 					
-					m_performedDoubleSnap = false;
+					//m_performedDoubleSnap = false;
 				}
 				
 				break;
@@ -447,9 +446,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 						{
 							if( cameraSnapping.getPreviousState() != State_ViewingCell.class )
 							{
-								//s_logger.severe(cameraSnapping.getOverallSnapProgress() + "");
 								this.setAlpha(m_baseAlpha + (1-m_baseAlpha) * cameraSnapping.getOverallSnapProgress());
-								//this.setAlpha((1 - m_baseAlpha) * (1 - ));
 							}
 					
 							if( !m_performedDoubleSnap && cameraSnapping.getPreviousState() != State_ViewingCell.class)
@@ -466,7 +463,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 								this.calcScreenPositionFromCoord(grid, coord, s_utilPoint2);
 								camera.calcWorldPoint(s_utilPoint2, s_utilPoint2);
 								s_utilPoint2.calcDifference(m_lastWorldPositionOnDoubleSnap, s_utilVector);
-								double progress = cameraMngr.getSnapProgressRatio();
+								double progress = cameraMngr.getWeightedSnapProgress();
 								s_utilVector.scaleByNumber(progress);
 								s_utilPoint2.copy(m_lastWorldPositionOnDoubleSnap);
 								s_utilPoint2.translate(s_utilVector);
@@ -518,10 +515,6 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 						this.updateHistoryButtons();
 						this.updateRefreshButton();
 					}
-					else if( event.getState() instanceof State_CameraSnapping )
-					{
-						m_lastSnapCoord.set(-1, -1);
-					}
 				}
 				
 				break;
@@ -544,7 +537,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 							this.updatePositionFromState(viewingState);
 						}
 					}
-					else if( event.getContext().isEntered(State_CameraSnapping.class) )
+					else if( snappingState != null )
 					{
 						this.updateSize(m_viewContext.appContext.gridMngr.getGrid());
 						
@@ -565,8 +558,13 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 					}
 				}
 				else if( event.getAction() == Action_Camera_SnapToCoordinate.class )
-				{//s_logger.severe("snap to coord");
+				{
 					State_CameraSnapping state = event.getContext().getEnteredState(State_CameraSnapping.class);
+					
+					if( m_alpha <= 0 )
+					{
+						this.updatePositionFromState(state);
+					}
 					
 					//if( state != null && (state.getUpdateCount() > 0 )
 					{
@@ -575,9 +573,6 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 							this.onDoubleSnap();
 						}
 					}
-					
-					
-					m_lastSnapCoord.copy(state.getTargetCoordinate());
 				}
 				else if((	event.getAction() == Action_ViewingCell_Refresh.class		||
 							event.getAction() == Action_EditingCode_Save.class			||
