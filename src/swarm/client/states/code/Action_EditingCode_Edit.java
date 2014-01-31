@@ -1,17 +1,17 @@
 package swarm.client.states.code;
 
-import swarm.client.app.smAppContext;
-import swarm.client.entities.smA_ClientUser;
-import swarm.client.entities.smBufferCell;
-import swarm.client.managers.smUserManager;
+import swarm.client.app.AppContext;
+import swarm.client.entities.A_ClientUser;
+import swarm.client.entities.BufferCell;
+import swarm.client.managers.UserManager;
 import swarm.client.states.camera.State_ViewingCell;
-import swarm.shared.statemachine.smA_Action;
-import swarm.shared.statemachine.smA_ActionArgs;
-import swarm.shared.statemachine.smA_State;
+import swarm.shared.statemachine.A_Action;
+import swarm.shared.statemachine.A_ActionArgs;
+import swarm.shared.statemachine.A_State;
 
-public class Action_EditingCode_Edit extends smA_Action 
+public class Action_EditingCode_Edit extends A_Action 
 {
-	public static class Args extends smA_ActionArgs
+	public static class Args extends A_ActionArgs
 	{
 		private String m_changedCode = null;
 		
@@ -21,28 +21,28 @@ public class Action_EditingCode_Edit extends smA_Action
 		}
 	}
 	
-	private final smUserManager m_userMngr;
+	private final UserManager m_userMngr;
 	
-	Action_EditingCode_Edit(smUserManager userMngr)
+	Action_EditingCode_Edit(UserManager userMngr)
 	{
 		m_userMngr = userMngr;
 	}
 	
 	@Override
-	public void perform(smA_ActionArgs args)
+	public void perform(A_ActionArgs args)
 	{
 		String code = ((Action_EditingCode_Edit.Args) args).m_changedCode;
 		
 		State_ViewingCell viewingState = getContext().getForegroundedState(State_ViewingCell.class);
-		smBufferCell viewedCell = viewingState.getCell();
+		BufferCell viewedCell = viewingState.getCell();
 		
-		smA_ClientUser user = m_userMngr.getUser();
+		A_ClientUser user = m_userMngr.getUser();
 		
 		user.onSourceCodeChanged(viewedCell.getCoordinate(), code);
 	}
 	
 	@Override
-	public boolean isPerformable(smA_ActionArgs args)
+	public boolean isPerformable(A_ActionArgs args)
 	{
 		State_ViewingCell state = getContext().getForegroundedState(State_ViewingCell.class);
 		
@@ -52,7 +52,7 @@ public class Action_EditingCode_Edit extends smA_Action
 		}
 
 		//--- DRK > Just to make extra sure.
-		smA_ClientUser user = m_userMngr.getUser();
+		A_ClientUser user = m_userMngr.getUser();
 		if( !user.isEditable(state.getCell().getCoordinate()))
 		{
 			return false;

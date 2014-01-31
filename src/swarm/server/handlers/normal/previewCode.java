@@ -1,29 +1,29 @@
 package swarm.server.handlers.normal;
 
-import swarm.server.account.smE_Role;
+import swarm.server.account.E_Role;
 
-import swarm.server.session.smSessionManager;
-import swarm.server.structs.smServerGridCoordinate;
-import swarm.server.transaction.smA_DefaultRequestHandler;
-import swarm.server.transaction.smI_RequestHandler;
-import swarm.server.transaction.smTransactionContext;
-import swarm.shared.app.smSharedAppContext;
-import swarm.shared.code.smA_CodeCompiler;
-import swarm.shared.code.smCompilerResult;
-import swarm.shared.entities.smE_CodeSafetyLevel;
-import swarm.shared.entities.smE_CodeType;
-import swarm.shared.structs.smCode;
-import swarm.shared.structs.smCodePrivileges;
-import swarm.shared.transaction.smTransactionRequest;
-import swarm.shared.transaction.smTransactionResponse;
+import swarm.server.session.SessionManager;
+import swarm.server.structs.ServerGridCoordinate;
+import swarm.server.transaction.A_DefaultRequestHandler;
+import swarm.server.transaction.I_RequestHandler;
+import swarm.server.transaction.TransactionContext;
+import swarm.shared.app.BaseAppContext;
+import swarm.shared.code.A_CodeCompiler;
+import swarm.shared.code.CompilerResult;
+import swarm.shared.entities.E_CodeSafetyLevel;
+import swarm.shared.entities.E_CodeType;
+import swarm.shared.structs.Code;
+import swarm.shared.structs.CodePrivileges;
+import swarm.shared.transaction.TransactionRequest;
+import swarm.shared.transaction.TransactionResponse;
 
 
-public class previewCode extends smA_DefaultRequestHandler
+public class previewCode extends A_DefaultRequestHandler
 {
 	@Override
-	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
+	public void handleRequest(TransactionContext context, TransactionRequest request, TransactionResponse response)
 	{
-		if( !m_serverContext.sessionMngr.isAuthorized(request, response, smE_Role.USER) )
+		if( !m_serverContext.sessionMngr.isAuthorized(request, response, E_Role.USER) )
 		{
 			return;
 		}
@@ -37,16 +37,16 @@ public class previewCode extends smA_DefaultRequestHandler
 		//---		environment as a whole under a DoS attack, especially if memcache came into play, but I'm leaving
 		//---		it for now because I think the low risk of a DoS isn't worth the slower performance for well-meaning users.
 		
-		smServerGridCoordinate coordinate = new smServerGridCoordinate(m_serverContext.jsonFactory, request.getJsonArgs());
+		ServerGridCoordinate coordinate = new ServerGridCoordinate(m_serverContext.jsonFactory, request.getJsonArgs());
 		
 		//--- DRK > Obviously we're trusting the client here as to their privileges, which could easily be hacked, but it doesn't really matter.
 		//---		This handler should be completely self-contained, so there's no chance of the hacked code leaking into the database.
 		//---		This is an optimization so that we don't have to hit the database, but in the future I might just hit the database for it.
-		smCodePrivileges privileges = new smCodePrivileges(m_serverContext.jsonFactory, request.getJsonArgs());
+		CodePrivileges privileges = new CodePrivileges(m_serverContext.jsonFactory, request.getJsonArgs());
 		
-		smCode sourceCode = new smCode(m_serverContext.jsonFactory, request.getJsonArgs(), smE_CodeType.SOURCE);
+		Code sourceCode = new Code(m_serverContext.jsonFactory, request.getJsonArgs(), E_CodeType.SOURCE);
 		
-		smCompilerResult result = m_serverContext.codeCompiler.compile(sourceCode, privileges, coordinate.writeString(), m_serverContext.config.appId);
+		CompilerResult result = m_serverContext.codeCompiler.compile(sourceCode, privileges, coordinate.writeString(), m_serverContext.config.appId);
 		
 		result.writeJson(m_serverContext.jsonFactory, response.getJsonArgs());
 	}

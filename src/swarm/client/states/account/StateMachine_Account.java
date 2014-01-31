@@ -1,16 +1,16 @@
 package swarm.client.states.account;
 
-import swarm.client.app.smAppContext;
-import swarm.client.managers.smClientAccountManager;
-import swarm.client.managers.smClientAccountManager.E_ResponseType;
+import swarm.client.app.AppContext;
+import swarm.client.managers.ClientAccountManager;
+import swarm.client.managers.ClientAccountManager.E_ResponseType;
 import swarm.client.states.StateMachine_Base;
 import swarm.client.states.State_AsyncDialog;
 import swarm.client.states.State_GenericDialog;
 import swarm.client.states.code.State_EditingCodeBlocker;
-import swarm.shared.debugging.smU_Debug;
-import swarm.shared.statemachine.smA_State;
-import swarm.shared.statemachine.smA_StateMachine;
-import swarm.shared.statemachine.smA_StateConstructor;
+import swarm.shared.debugging.U_Debug;
+import swarm.shared.statemachine.A_State;
+import swarm.shared.statemachine.A_StateMachine;
+import swarm.shared.statemachine.A_StateConstructor;
 
 
 
@@ -18,14 +18,14 @@ import swarm.shared.statemachine.smA_StateConstructor;
  * ...
  * @author 
  */
-public class StateMachine_Account extends smA_StateMachine
+public class StateMachine_Account extends A_StateMachine
 {
-	private static class AccountManagerDelegate implements smClientAccountManager.I_Delegate
+	private static class AccountManagerDelegate implements ClientAccountManager.I_Delegate
 	{
-		private final smClientAccountManager m_accountMngr;
+		private final ClientAccountManager m_accountMngr;
 		private final StateMachine_Account m_state;
 		
-		AccountManagerDelegate(StateMachine_Account state, smClientAccountManager accountManager)
+		AccountManagerDelegate(StateMachine_Account state, ClientAccountManager accountManager)
 		{
 			m_state = state;
 			m_accountMngr = accountManager;
@@ -59,29 +59,29 @@ public class StateMachine_Account extends smA_StateMachine
 			}
 			else
 			{
-				smU_Debug.ASSERT(false);
+				U_Debug.ASSERT(false);
 			}
 		}
 	}
 	
 	private final AccountManagerDelegate m_accountManagerDelegate;
-	private final smClientAccountManager m_accountMngr;
+	private final ClientAccountManager m_accountMngr;
 	
-	public StateMachine_Account(smClientAccountManager accountMngr)
+	public StateMachine_Account(ClientAccountManager accountMngr)
 	{
 		m_accountManagerDelegate = new AccountManagerDelegate(this, accountMngr);
 		m_accountMngr = accountMngr;
 	}
 	
 	@Override
-	protected void didEnter(smA_StateConstructor constructor)
+	protected void didEnter(A_StateConstructor constructor)
 	{
 	}
 	
 	@Override
-	protected void didForeground(Class<? extends smA_State> revealingState, Object[] args)
+	protected void didForeground(Class<? extends A_State> revealingState, Object[] args)
 	{
-		smClientAccountManager accountManager = m_accountMngr;
+		ClientAccountManager accountManager = m_accountMngr;
 		
 		accountManager.addDelegate(m_accountManagerDelegate);
 		
@@ -112,9 +112,9 @@ public class StateMachine_Account extends smA_StateMachine
 	
 	void popBlockerAndSetState()
 	{
-		smU_Debug.ASSERT(this.isForegrounded(), "popBlockerAndSetState1");
+		U_Debug.ASSERT(this.isForegrounded(), "popBlockerAndSetState1");
 		
-		smClientAccountManager accountManager = m_accountMngr;
+		ClientAccountManager accountManager = m_accountMngr;
 		
 		machine_beginBatch(this);
 	
@@ -123,7 +123,7 @@ public class StateMachine_Account extends smA_StateMachine
 			machine_popState(this);
 		}
 		
-		smA_State currentState = this.getCurrentState();
+		A_State currentState = this.getCurrentState();
 		
 		if( accountManager.isSignedIn() )
 		{
@@ -144,9 +144,9 @@ public class StateMachine_Account extends smA_StateMachine
 	}
 	
 	@Override 
-	protected void willBackground(Class<? extends smA_State> blockingState)
+	protected void willBackground(Class<? extends A_State> blockingState)
 	{
-		smClientAccountManager accountManager = m_accountMngr;
+		ClientAccountManager accountManager = m_accountMngr;
 		
 		accountManager.removeDelegate(m_accountManagerDelegate);
 		

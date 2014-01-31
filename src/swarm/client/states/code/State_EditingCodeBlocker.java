@@ -1,13 +1,13 @@
 package swarm.client.states.code;
 
 
-import swarm.shared.statemachine.smA_Action;
-import swarm.shared.statemachine.smA_EventAction;
-import swarm.shared.statemachine.smA_State;
-import swarm.shared.statemachine.smA_StateConstructor;
-import swarm.shared.structs.smCellAddress;
+import swarm.shared.statemachine.A_Action;
+import swarm.shared.statemachine.A_EventAction;
+import swarm.shared.statemachine.A_State;
+import swarm.shared.statemachine.A_StateConstructor;
+import swarm.shared.structs.CellAddress;
 
-public class State_EditingCodeBlocker extends smA_State
+public class State_EditingCodeBlocker extends A_State
 {
 	public static enum Reason
 	{
@@ -20,7 +20,7 @@ public class State_EditingCodeBlocker extends smA_State
 		PREVIEWING
 	};
 	
-	static class Constructor extends smA_StateConstructor
+	static class Constructor extends A_StateConstructor
 	{
 		private final Reason m_reason;
 		
@@ -30,10 +30,10 @@ public class State_EditingCodeBlocker extends smA_State
 		}
 	}
 	
-	public static class OnReasonChange extends smA_EventAction
+	public static class OnReasonChange extends A_EventAction
 	{
 		@Override
-		public Class<? extends smA_State> getStateAssociation()
+		public Class<? extends A_State> getStateAssociation()
 		{
 			return State_EditingCodeBlocker.class;
 		}
@@ -60,7 +60,7 @@ public class State_EditingCodeBlocker extends smA_State
 	}
 	
 	@Override
-	protected void didEnter(smA_StateConstructor constructor)
+	protected void didEnter(A_StateConstructor constructor)
 	{
 		Constructor thisCons = (Constructor) constructor;
 		

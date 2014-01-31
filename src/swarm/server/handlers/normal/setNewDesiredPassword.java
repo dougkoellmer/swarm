@@ -9,46 +9,46 @@ import javax.mail.*;
 import javax.mail.internet.*;
 import javax.servlet.http.HttpServletRequest;
 
-import swarm.server.account.smE_Role;
-import swarm.server.account.smS_ServerAccount;
-import swarm.server.account.smServerAccountManager;
-import swarm.server.account.smUserSession;
+import swarm.server.account.E_Role;
+import swarm.server.account.S_ServerAccount;
+import swarm.server.account.ServerAccountManager;
+import swarm.server.account.UserSession;
 
-import swarm.server.session.smSessionManager;
-import swarm.server.transaction.smA_DefaultRequestHandler;
-import swarm.server.transaction.smI_RequestHandler;
-import swarm.server.transaction.smTransactionContext;
-import swarm.shared.account.smE_SignInCredentialType;
-import swarm.shared.account.smS_Account;
-import swarm.shared.account.smSignInCredentials;
-import swarm.shared.account.smSignInValidationResult;
-import swarm.shared.account.smSignInValidator;
-import swarm.shared.transaction.smE_ResponseError;
-import swarm.shared.transaction.smTransactionRequest;
-import swarm.shared.transaction.smTransactionResponse;
+import swarm.server.session.SessionManager;
+import swarm.server.transaction.A_DefaultRequestHandler;
+import swarm.server.transaction.I_RequestHandler;
+import swarm.server.transaction.TransactionContext;
+import swarm.shared.account.E_SignInCredentialType;
+import swarm.shared.account.S_Account;
+import swarm.shared.account.SignInCredentials;
+import swarm.shared.account.SignInValidationResult;
+import swarm.shared.account.SignInValidator;
+import swarm.shared.transaction.E_ResponseError;
+import swarm.shared.transaction.TransactionRequest;
+import swarm.shared.transaction.TransactionResponse;
 
-public class setNewDesiredPassword extends smA_DefaultRequestHandler
+public class setNewDesiredPassword extends A_DefaultRequestHandler
 {
 	private static final Logger s_logger = Logger.getLogger(setNewDesiredPassword.class.getName());
 	
 	@Override
-	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
+	public void handleRequest(TransactionContext context, TransactionRequest request, TransactionResponse response)
 	{
-		smServerAccountManager accountManager = m_serverContext.accountMngr;
+		ServerAccountManager accountManager = m_serverContext.accountMngr;
 		
 		//--- DRK > Just a sanity check...probably meaningless.
-		smUserSession session = m_serverContext.sessionMngr.getSession(request, response);
+		UserSession session = m_serverContext.sessionMngr.getSession(request, response);
 		if( session != null )
 		{
-			response.setError(smE_ResponseError.BAD_STATE);
+			response.setError(E_ResponseError.BAD_STATE);
 			
 			return;
 		}
 		
 		//--- DRK > Get password change token.
-		smSignInCredentials creds = new smSignInCredentials(m_serverContext.jsonFactory, request.getJsonArgs());
+		SignInCredentials creds = new SignInCredentials(m_serverContext.jsonFactory, request.getJsonArgs());
 		creds.setIsForNewPassword(true);
-		smSignInValidationResult result = new smSignInValidationResult();
+		SignInValidationResult result = new SignInValidationResult();
 		String changeToken = accountManager.setNewDesiredPassword(creds, result);
 		
 		if( changeToken != null )
@@ -59,7 +59,7 @@ public class setNewDesiredPassword extends smA_DefaultRequestHandler
 	        Session mailSession = Session.getDefaultInstance(props, null);
 	        
 	        String serverAddress = "http://www.b33hive.net";
-	        serverAddress += "?" + smS_ServerAccount.PASSWORD_CHANGE_TOKEN_PARAMETER_NAME + "=" + changeToken;
+	        serverAddress += "?" + S_ServerAccount.PASSWORD_CHANGE_TOKEN_PARAMETER_NAME + "=" + changeToken;
 
 	        String msgBody =
     			"Hello,<br><br>" +
@@ -72,7 +72,7 @@ public class setNewDesiredPassword extends smA_DefaultRequestHandler
 	        {
 	            Message msg = new MimeMessage(mailSession);
 	            msg.setFrom(new InternetAddress("support@b33hive.net", "b33hive Support"));
-	            msg.addRecipient(Message.RecipientType.TO,  new InternetAddress(creds.get(smE_SignInCredentialType.EMAIL)));
+	            msg.addRecipient(Message.RecipientType.TO,  new InternetAddress(creds.get(E_SignInCredentialType.EMAIL)));
 	            msg.setSubject("Password Change Verification");
 	            msg.setContent(msgBody, "text/html");
 	            Transport.send(msg);
@@ -80,17 +80,17 @@ public class setNewDesiredPassword extends smA_DefaultRequestHandler
 	        catch (AddressException e)
 	        {
 	        	s_logger.log(Level.SEVERE, "Could not send e-mail.", e);
-	        	response.setError(smE_ResponseError.SERVICE_EXCEPTION);
+	        	response.setError(E_ResponseError.SERVICE_EXCEPTION);
 	        }
 	        catch (MessagingException e)
 	        {
 	        	s_logger.log(Level.SEVERE, "Could not send e-mail.", e);
-	        	response.setError(smE_ResponseError.SERVICE_EXCEPTION);
+	        	response.setError(E_ResponseError.SERVICE_EXCEPTION);
 	        }
 			catch (UnsupportedEncodingException e)
 			{
 				s_logger.log(Level.SEVERE, "Could not send e-mail.", e);
-				response.setError(smE_ResponseError.SERVICE_EXCEPTION);
+				response.setError(E_ResponseError.SERVICE_EXCEPTION);
 			}
 		}
 		else

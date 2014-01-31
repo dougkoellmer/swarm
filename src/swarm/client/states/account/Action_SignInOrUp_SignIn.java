@@ -1,50 +1,50 @@
 package swarm.client.states.account;
 
-import swarm.client.managers.smClientAccountManager;
-import swarm.client.managers.smUserManager;
-import swarm.client.transaction.smE_TransactionAction;
-import swarm.shared.account.smSignInCredentials;
-import swarm.shared.statemachine.smA_Action;
-import swarm.shared.statemachine.smA_ActionArgs;
-import swarm.shared.statemachine.smA_State;
+import swarm.client.managers.ClientAccountManager;
+import swarm.client.managers.UserManager;
+import swarm.client.transaction.E_TransactionAction;
+import swarm.shared.account.SignInCredentials;
+import swarm.shared.statemachine.A_Action;
+import swarm.shared.statemachine.A_ActionArgs;
+import swarm.shared.statemachine.A_State;
 
-public class Action_SignInOrUp_SignIn extends smA_Action
+public class Action_SignInOrUp_SignIn extends A_Action
 {
-	public static class Args extends smA_ActionArgs
+	public static class Args extends A_ActionArgs
 	{
-		smSignInCredentials m_creds;
+		SignInCredentials m_creds;
 		
-		public void setCreds(smSignInCredentials creds)
+		public void setCreds(SignInCredentials creds)
 		{
 			m_creds = creds;
 		}
 	}
 	
-	private final smClientAccountManager m_accountMngr;
-	private final smUserManager m_userMngr;
+	private final ClientAccountManager m_accountMngr;
+	private final UserManager m_userMngr;
 	
-	Action_SignInOrUp_SignIn(smClientAccountManager accountMngr, smUserManager userMngr)
+	Action_SignInOrUp_SignIn(ClientAccountManager accountMngr, UserManager userMngr)
 	{
 		m_accountMngr = accountMngr;
 		m_userMngr = userMngr;
 	}
 	
 	@Override
-	public void perform(smA_ActionArgs args)
+	public void perform(A_ActionArgs args)
 	{
-		smSignInCredentials creds = ((Action_SignInOrUp_SignIn.Args) args).m_creds;
+		SignInCredentials creds = ((Action_SignInOrUp_SignIn.Args) args).m_creds;
 
-		smUserManager userManager = m_userMngr;
-		smClientAccountManager accountManager = m_accountMngr;
+		UserManager userManager = m_userMngr;
+		ClientAccountManager accountManager = m_accountMngr;
 		
-		accountManager.signIn(creds, smE_TransactionAction.QUEUE_REQUEST);
-		userManager.populateUser(smE_TransactionAction.QUEUE_REQUEST_AND_FLUSH);
+		accountManager.signIn(creds, E_TransactionAction.QUEUE_REQUEST);
+		userManager.populateUser(E_TransactionAction.QUEUE_REQUEST_AND_FLUSH);
 		
 		machine_pushState(this.getState().getParent(), State_AccountStatusPending.class);			
 	}
 	
 	@Override
-	public boolean isPerformable(smA_ActionArgs args)
+	public boolean isPerformable(A_ActionArgs args)
 	{
 		State_SignInOrUp state = this.getState();
 		

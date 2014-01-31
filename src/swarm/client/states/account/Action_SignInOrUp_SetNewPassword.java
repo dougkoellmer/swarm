@@ -1,33 +1,33 @@
 package swarm.client.states.account;
 
-import swarm.client.managers.smClientAccountManager;
-import swarm.shared.account.smSignInCredentials;
-import swarm.shared.statemachine.smA_Action;
-import swarm.shared.statemachine.smA_ActionArgs;
-import swarm.shared.statemachine.smA_State;
+import swarm.client.managers.ClientAccountManager;
+import swarm.shared.account.SignInCredentials;
+import swarm.shared.statemachine.A_Action;
+import swarm.shared.statemachine.A_ActionArgs;
+import swarm.shared.statemachine.A_State;
 
-public class Action_SignInOrUp_SetNewPassword extends smA_Action
+public class Action_SignInOrUp_SetNewPassword extends A_Action
 {
-	private final smClientAccountManager m_accountMngr;
+	private final ClientAccountManager m_accountMngr;
 	
-	Action_SignInOrUp_SetNewPassword(smClientAccountManager accountMngr)
+	Action_SignInOrUp_SetNewPassword(ClientAccountManager accountMngr)
 	{
 		m_accountMngr = accountMngr;
 	}
 	
 	@Override
-	public void perform(smA_ActionArgs args)
+	public void perform(A_ActionArgs args)
 	{
-		smSignInCredentials creds = ((Action_SignInOrUp_SignIn.Args) args).m_creds;
+		SignInCredentials creds = ((Action_SignInOrUp_SignIn.Args) args).m_creds;
 		
-		smClientAccountManager manager = m_accountMngr;
+		ClientAccountManager manager = m_accountMngr;
 		manager.setNewDesiredPassword(creds);
 		
 		machine_pushState(this.getState().getParent(), State_AccountStatusPending.class);	
 	}
 	
 	@Override
-	public boolean isPerformable(smA_ActionArgs args)
+	public boolean isPerformable(A_ActionArgs args)
 	{
 		State_SignInOrUp state = this.getState();
 		

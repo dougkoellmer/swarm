@@ -2,47 +2,47 @@ package swarm.client.states;
 
 import java.util.ArrayList;
 
-import swarm.client.app.smAppContext;
-import swarm.client.entities.smBufferCell;
-import swarm.client.entities.smA_ClientUser;
-import swarm.client.managers.smCellAddressManager;
-import swarm.client.managers.smCellBufferManager;
-import swarm.client.managers.smClientAccountManager;
-import swarm.client.managers.smGridManager;
-import swarm.client.managers.smUserManager;
-import swarm.client.managers.smClientAccountManager.E_ResponseType;
+import swarm.client.app.AppContext;
+import swarm.client.entities.BufferCell;
+import swarm.client.entities.A_ClientUser;
+import swarm.client.managers.CellAddressManager;
+import swarm.client.managers.CellBufferManager;
+import swarm.client.managers.ClientAccountManager;
+import swarm.client.managers.GridManager;
+import swarm.client.managers.UserManager;
+import swarm.client.managers.ClientAccountManager.E_ResponseType;
 import swarm.client.states.account.StateMachine_Account;
 import swarm.client.states.camera.State_ViewingCell;
-import swarm.client.transaction.smE_ResponseErrorControl;
-import swarm.client.transaction.smE_ResponseSuccessControl;
-import swarm.client.transaction.smI_ResponseBatchListener;
-import swarm.client.transaction.smI_TransactionResponseHandler;
-import swarm.client.transaction.smClientTransactionManager;
-import swarm.shared.account.smSignUpCredentials;
-import swarm.shared.code.smCompilerMessage;
-import swarm.shared.debugging.smU_Debug;
-import swarm.shared.entities.smE_CodeType;
-import swarm.shared.statemachine.smA_Action;
+import swarm.client.transaction.E_ResponseErrorControl;
+import swarm.client.transaction.E_ResponseSuccessControl;
+import swarm.client.transaction.I_ResponseBatchListener;
+import swarm.client.transaction.I_TransactionResponseHandler;
+import swarm.client.transaction.ClientTransactionManager;
+import swarm.shared.account.SignUpCredentials;
+import swarm.shared.code.CompilerMessage;
+import swarm.shared.debugging.U_Debug;
+import swarm.shared.entities.E_CodeType;
+import swarm.shared.statemachine.A_Action;
 
-import swarm.shared.statemachine.smA_ActionArgs;
-import swarm.shared.statemachine.smA_EventAction;
-import swarm.shared.statemachine.smA_State;
-import swarm.shared.statemachine.smA_StateMachine;
-import swarm.shared.statemachine.smA_StateConstructor;
-import swarm.shared.statemachine.smStateContext;
-import swarm.shared.structs.smCellAddressMapping;
-import swarm.shared.transaction.smE_RequestPath;
-import swarm.shared.transaction.smE_ResponseError;
-import swarm.shared.transaction.smE_TelemetryRequestPath;
-import swarm.shared.transaction.smTransactionRequest;
-import swarm.shared.transaction.smTransactionResponse;
+import swarm.shared.statemachine.A_ActionArgs;
+import swarm.shared.statemachine.A_EventAction;
+import swarm.shared.statemachine.A_State;
+import swarm.shared.statemachine.A_StateMachine;
+import swarm.shared.statemachine.A_StateConstructor;
+import swarm.shared.statemachine.StateContext;
+import swarm.shared.structs.CellAddressMapping;
+import swarm.shared.transaction.E_RequestPath;
+import swarm.shared.transaction.E_ResponseError;
+import swarm.shared.transaction.E_TelemetryRequestPath;
+import swarm.shared.transaction.TransactionRequest;
+import swarm.shared.transaction.TransactionResponse;
 
 
 /**
  * ...
  * @author 
  */
-public class StateMachine_Base extends smA_StateMachine implements smI_TransactionResponseHandler
+public class StateMachine_Base extends A_StateMachine implements I_TransactionResponseHandler
 {
 	/*public static class PushDialog extends smA_Action
 	{
@@ -53,37 +53,37 @@ public class StateMachine_Base extends smA_StateMachine implements smI_Transacti
 		}
 	}*/
 	
-	public static class OnAccountManagerResponse extends smA_EventAction
+	public static class OnAccountManagerResponse extends A_EventAction
 	{
-		public static class Args extends smA_ActionArgs
+		public static class Args extends A_ActionArgs
 		{
-			private final smClientAccountManager.E_ResponseType m_type;
+			private final ClientAccountManager.E_ResponseType m_type;
 			
-			public Args(smClientAccountManager.E_ResponseType type)
+			public Args(ClientAccountManager.E_ResponseType type)
 			{
 				m_type = type;
 			}
 			
-			public smClientAccountManager.E_ResponseType getType()
+			public ClientAccountManager.E_ResponseType getType()
 			{
 				return m_type;
 			}
 		}
 	}
 	
-	public static class OnUserPopulated extends smA_EventAction
+	public static class OnUserPopulated extends A_EventAction
 	{
 	}
 	
-	public static class OnUserCleared extends smA_EventAction
+	public static class OnUserCleared extends A_EventAction
 	{
 	}
 	
-	public static class OnGridUpdate extends smA_EventAction
+	public static class OnGridUpdate extends A_EventAction
 	{
 	}
 	
-	private static class BatchListener implements smI_ResponseBatchListener
+	private static class BatchListener implements I_ResponseBatchListener
 	{
 		private final StateMachine_Base m_baseController;
 		
@@ -117,7 +117,7 @@ public class StateMachine_Base extends smA_StateMachine implements smI_Transacti
 		}
 	}
 	
-	private static class AccountManagerDelegate implements smClientAccountManager.I_Delegate
+	private static class AccountManagerDelegate implements ClientAccountManager.I_Delegate
 	{
 		private final StateMachine_Base m_state;
 		
@@ -191,11 +191,11 @@ public class StateMachine_Base extends smA_StateMachine implements smI_Transacti
 	private boolean m_hasShownVersionMismatchDialog = false;
 	private boolean m_hasShownGeneralTransactionErrorDialog = false;
 	
-	private final smI_ResponseBatchListener m_batchListener = new BatchListener(this);
+	private final I_ResponseBatchListener m_batchListener = new BatchListener(this);
 	
-	private final smAppContext m_appContext;
+	private final AppContext m_appContext;
 	
-	public StateMachine_Base(smAppContext appContext)
+	public StateMachine_Base(AppContext appContext)
 	{
 		m_appContext = appContext;
 		
@@ -250,19 +250,19 @@ public class StateMachine_Base extends smA_StateMachine implements smI_Transacti
 	}
 	
 	@Override
-	protected void didEnter(smA_StateConstructor constructor)
+	protected void didEnter(A_StateConstructor constructor)
 	{
-		final smClientAccountManager accountManager = m_appContext.accountMngr;
-		final smUserManager userManager = m_appContext.userMngr;
-		final smGridManager gridManager = m_appContext.gridMngr;
-		final smClientTransactionManager transactionManager = m_appContext.txnMngr;
+		final ClientAccountManager accountManager = m_appContext.accountMngr;
+		final UserManager userManager = m_appContext.userMngr;
+		final GridManager gridManager = m_appContext.gridMngr;
+		final ClientTransactionManager transactionManager = m_appContext.txnMngr;
 		
 		transactionManager.addHandler(this);
 		transactionManager.addBatchListener(m_batchListener);
 		
 		accountManager.start();
 		
-		gridManager.start(new smGridManager.I_Listener()
+		gridManager.start(new GridManager.I_Listener()
 		{
 			@Override
 			public void onGridUpdate()
@@ -271,7 +271,7 @@ public class StateMachine_Base extends smA_StateMachine implements smI_Transacti
 			}
 		});
 		
-		userManager.start(new smUserManager.I_Listener()
+		userManager.start(new UserManager.I_Listener()
 		{
 			@Override
 			public void onUserPopulated()
@@ -304,10 +304,10 @@ public class StateMachine_Base extends smA_StateMachine implements smI_Transacti
 	@Override
 	protected void willExit()
 	{
-		final smClientAccountManager accountManager = m_appContext.accountMngr;
-		final smUserManager userManager = m_appContext.userMngr;
-		final smGridManager gridManager = m_appContext.gridMngr;
-		final smClientTransactionManager transactionManager = m_appContext.txnMngr;
+		final ClientAccountManager accountManager = m_appContext.accountMngr;
+		final UserManager userManager = m_appContext.userMngr;
+		final GridManager gridManager = m_appContext.gridMngr;
+		final ClientTransactionManager transactionManager = m_appContext.txnMngr;
 		
 		accountManager.removeDelegate(m_accountManagerDelegate);
 		
@@ -323,7 +323,7 @@ public class StateMachine_Base extends smA_StateMachine implements smI_Transacti
 	}
 	
 	@Override
-	protected void didForeground(Class<? extends smA_State> revealingState, Object[] argsFromRevealingState)
+	protected void didForeground(Class<? extends A_State> revealingState, Object[] argsFromRevealingState)
 	{
 		if( this.getCurrentState() == null )
 		{
@@ -337,17 +337,17 @@ public class StateMachine_Base extends smA_StateMachine implements smI_Transacti
 	}
 
 	@Override
-	public smE_ResponseSuccessControl onResponseSuccess(smTransactionRequest request, smTransactionResponse response)
+	public E_ResponseSuccessControl onResponseSuccess(TransactionRequest request, TransactionResponse response)
 	{
-		return smE_ResponseSuccessControl.CONTINUE;
+		return E_ResponseSuccessControl.CONTINUE;
 	}
 
 	@Override
-	public smE_ResponseErrorControl onResponseError(smTransactionRequest request, smTransactionResponse response)
+	public E_ResponseErrorControl onResponseError(TransactionRequest request, TransactionResponse response)
 	{
-		if( request.getPath() instanceof smE_TelemetryRequestPath )
+		if( request.getPath() instanceof E_TelemetryRequestPath )
 		{
-			return smE_ResponseErrorControl.BREAK;
+			return E_ResponseErrorControl.BREAK;
 		}
 		
 		switch( response.getError() )
@@ -367,7 +367,7 @@ public class StateMachine_Base extends smA_StateMachine implements smI_Transacti
 					m_hasShownVersionMismatchDialog = true;
 				}
 				
-				return smE_ResponseErrorControl.BREAK;
+				return E_ResponseErrorControl.BREAK;
 			}
 			
 			case NOT_AUTHORIZED:
@@ -380,12 +380,12 @@ public class StateMachine_Base extends smA_StateMachine implements smI_Transacti
 				
 				queueAsyncDialog(State_AsyncDialog.class, constructor);
 				
-				return smE_ResponseErrorControl.BREAK;
+				return E_ResponseErrorControl.BREAK;
 			}
 			
 			case REDUNDANT:
 			{
-				return smE_ResponseErrorControl.BREAK;
+				return E_ResponseErrorControl.BREAK;
 			}
 			
 			default:
@@ -403,7 +403,7 @@ public class StateMachine_Base extends smA_StateMachine implements smI_Transacti
 					m_hasShownGeneralTransactionErrorDialog = true;
 				}
 				
-				return smE_ResponseErrorControl.BREAK;
+				return E_ResponseErrorControl.BREAK;
 			}
 		}
 	}

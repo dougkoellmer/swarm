@@ -1,16 +1,16 @@
 package swarm.client.states.camera;
 
 
-import swarm.client.managers.smCameraManager;
-import swarm.shared.statemachine.smA_ActionArgs;
-import swarm.shared.statemachine.smA_State;
-import swarm.shared.structs.smPoint;
+import swarm.client.managers.CameraManager;
+import swarm.shared.statemachine.A_ActionArgs;
+import swarm.shared.statemachine.A_State;
+import swarm.shared.structs.Point;
 
 public class Action_Camera_SnapToPoint extends smA_CameraAction
 {
-	public static class Args extends smA_ActionArgs
+	public static class Args extends A_ActionArgs
 	{
-		private smPoint m_point;
+		private Point m_point;
 		private boolean m_instant;
 		private boolean m_breakViewingState;
 		
@@ -21,14 +21,14 @@ public class Action_Camera_SnapToPoint extends smA_CameraAction
 			m_breakViewingState = true;
 		}
 		
-		public void init(smPoint point, boolean instant, boolean breakViewingState)
+		public void init(Point point, boolean instant, boolean breakViewingState)
 		{
 			m_point = point;
 			m_instant = instant;
 			m_breakViewingState = breakViewingState;
 		}
 		
-		public smPoint getPoint()
+		public Point getPoint()
 		{
 			return m_point;
 		}
@@ -39,15 +39,15 @@ public class Action_Camera_SnapToPoint extends smA_CameraAction
 		}
 	}
 	
-	private final smCameraManager m_cameraMngr;
+	private final CameraManager m_cameraMngr;
 	
-	public Action_Camera_SnapToPoint(smCameraManager cameraMngr)
+	public Action_Camera_SnapToPoint(CameraManager cameraMngr)
 	{
 		m_cameraMngr = cameraMngr;
 	}
 	
 	@Override
-	public void perform(smA_ActionArgs args)
+	public void perform(A_ActionArgs args)
 	{
 		StateMachine_Camera machine = this.getState();
 		
@@ -67,7 +67,7 @@ public class Action_Camera_SnapToPoint extends smA_CameraAction
 		
 		if( args == null )  return;
 		
-		smPoint point = ((Args)args).m_point;
+		Point point = ((Args)args).m_point;
 		boolean instant = ((Args)args).isInstant();
 		
 		if( point == null )  return;

@@ -1,42 +1,42 @@
 package swarm.client.states.code;
 
-import swarm.client.managers.smCellCodeManager;
-import swarm.client.managers.smClientAccountManager;
-import swarm.client.managers.smUserManager;
-import swarm.client.app.smAppContext;
-import swarm.client.code.smCompilerErrorMessageGenerator;
-import swarm.client.entities.smBufferCell;
-import swarm.client.entities.smA_ClientUser;
-import swarm.client.entities.smE_CodeStatus;
+import swarm.client.managers.CellCodeManager;
+import swarm.client.managers.ClientAccountManager;
+import swarm.client.managers.UserManager;
+import swarm.client.app.AppContext;
+import swarm.client.code.CompilerErrorMessageGenerator;
+import swarm.client.entities.BufferCell;
+import swarm.client.entities.A_ClientUser;
+import swarm.client.entities.E_CodeStatus;
 import swarm.client.states.StateMachine_Base;
 import swarm.client.states.State_AsyncDialog;
 import swarm.client.states.State_GenericDialog;
 import swarm.client.states.camera.State_ViewingCell;
 import swarm.client.states.code.State_EditingCodeBlocker.Reason;
-import swarm.shared.code.smA_CodeCompiler;
-import swarm.shared.code.smCompilerResult;
-import swarm.shared.code.smE_CompilationStatus;
-import swarm.shared.debugging.smU_Debug;
-import swarm.shared.entities.smE_CodeType;
-import swarm.shared.statemachine.smA_Action;
-import swarm.shared.statemachine.smA_StateConstructor;
+import swarm.shared.code.A_CodeCompiler;
+import swarm.shared.code.CompilerResult;
+import swarm.shared.code.E_CompilationStatus;
+import swarm.shared.debugging.U_Debug;
+import swarm.shared.entities.E_CodeType;
+import swarm.shared.statemachine.A_Action;
+import swarm.shared.statemachine.A_StateConstructor;
 
-import swarm.shared.statemachine.smA_State;
-import swarm.shared.structs.smCode;
-import swarm.shared.structs.smGridCoordinate;
+import swarm.shared.statemachine.A_State;
+import swarm.shared.structs.Code;
+import swarm.shared.structs.GridCoordinate;
 
 
 /**
  * ...
  * @author 
  */
-public class State_EditingCode extends smA_State
+public class State_EditingCode extends A_State
 {	
 	private State_EditingCodeBlocker.Reason m_mostRecentBlockerReason = null;
 	
-	private final smAppContext m_appContext;
+	private final AppContext m_appContext;
 	
-	public State_EditingCode(smAppContext appContext)
+	public State_EditingCode(AppContext appContext)
 	{
 		m_appContext = appContext;
 		
@@ -45,18 +45,18 @@ public class State_EditingCode extends smA_State
 		registerAction(new Action_EditingCode_Preview());
 	}
 	
-	void performCommitOrPreview(smA_Action thisArg)
+	void performCommitOrPreview(A_Action thisArg)
 	{
 		State_ViewingCell viewingState = getContext().getForegroundedState(State_ViewingCell.class);
-		smBufferCell viewedCell = viewingState.getCell();
-		smGridCoordinate coord = viewedCell.getCoordinate();
+		BufferCell viewedCell = viewingState.getCell();
+		GridCoordinate coord = viewedCell.getCoordinate();
 		
-		smA_ClientUser user = m_appContext.userMngr.getUser();
-		smCode sourceCode = user.getCode(coord, smE_CodeType.SOURCE);
+		A_ClientUser user = m_appContext.userMngr.getUser();
+		Code sourceCode = user.getCode(coord, E_CodeType.SOURCE);
 		
-		smCompilerResult compilerResult = m_appContext.codeCompiler.compile(sourceCode, viewedCell.getCodePrivileges(), /*cellNamespace=*/null, /*apiNamespace=*/null);
+		CompilerResult compilerResult = m_appContext.codeCompiler.compile(sourceCode, viewedCell.getCodePrivileges(), /*cellNamespace=*/null, /*apiNamespace=*/null);
 		
-		if( compilerResult.getStatus() == smE_CompilationStatus.NO_ERROR )
+		if( compilerResult.getStatus() == E_CompilationStatus.NO_ERROR )
 		{
 			if( thisArg instanceof Action_EditingCode_Save )
 			{
@@ -70,7 +70,7 @@ public class State_EditingCode extends smA_State
 			}
 			else
 			{
-				smU_Debug.ASSERT(false, "performCommitOrPreview");
+				U_Debug.ASSERT(false, "performCommitOrPreview");
 			}
 		}
 		else
@@ -95,7 +95,7 @@ public class State_EditingCode extends smA_State
 			return false;
 		}
 		
-		smA_ClientUser user = m_appContext.userMngr.getUser();
+		A_ClientUser user = m_appContext.userMngr.getUser();
 		if( !user.isCellOwner(state.getCell().getCoordinate()) )
 		{
 			return false;
@@ -113,7 +113,7 @@ public class State_EditingCode extends smA_State
 		
 		//--- DRK > There are other mechanisms in place to prevent syncing/previewing from clashing with
 		//---		account management transactions, but the more the merrier I say.
-		smClientAccountManager.E_WaitReason waitReason = m_appContext.accountMngr.getWaitReason();
+		ClientAccountManager.E_WaitReason waitReason = m_appContext.accountMngr.getWaitReason();
 		switch(waitReason)
 		{
 			case SIGNING_IN:
@@ -131,13 +131,13 @@ public class State_EditingCode extends smA_State
 	}
 	
 	@Override
-	protected void didEnter(smA_StateConstructor constructor)
+	protected void didEnter(A_StateConstructor constructor)
 	{
 		m_mostRecentBlockerReason = null;
 	}
 	
 	@Override
-	protected void didForeground(Class<? extends smA_State> revealingState, Object[] argsFromRevealingState)
+	protected void didForeground(Class<? extends A_State> revealingState, Object[] argsFromRevealingState)
 	{
 		if( revealingState == State_EditingCodeBlocker.class )
 		{
@@ -147,10 +147,10 @@ public class State_EditingCode extends smA_State
 		}
 	}
 	
-	public smCode getCode()
+	public Code getCode()
 	{
-		smCode code = ((StateMachine_EditingCode)getParent()).getCode();
-		return code != null ? code : new smCode("", smE_CodeType.SOURCE);
+		Code code = ((StateMachine_EditingCode)getParent()).getCode();
+		return code != null ? code : new Code("", E_CodeType.SOURCE);
 	}
 	
 	public State_EditingCodeBlocker.Reason getMostRecentBlockerReason()

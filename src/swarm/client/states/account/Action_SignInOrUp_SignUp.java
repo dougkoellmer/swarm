@@ -1,61 +1,61 @@
 package swarm.client.states.account;
 
 
-import swarm.client.managers.smClientAccountManager;
-import swarm.client.managers.smUserManager;
-import swarm.client.transaction.smE_TransactionAction;
-import swarm.shared.account.smSignUpCredentials;
-import swarm.shared.account.smSignUpValidator;
-import swarm.shared.debugging.smU_Debug;
-import swarm.shared.statemachine.smA_Action;
-import swarm.shared.statemachine.smA_ActionArgs;
-import swarm.shared.statemachine.smA_State;
+import swarm.client.managers.ClientAccountManager;
+import swarm.client.managers.UserManager;
+import swarm.client.transaction.E_TransactionAction;
+import swarm.shared.account.SignUpCredentials;
+import swarm.shared.account.SignUpValidator;
+import swarm.shared.debugging.U_Debug;
+import swarm.shared.statemachine.A_Action;
+import swarm.shared.statemachine.A_ActionArgs;
+import swarm.shared.statemachine.A_State;
 
-public class Action_SignInOrUp_SignUp extends smA_Action
+public class Action_SignInOrUp_SignUp extends A_Action
 {
-	public static class Args extends smA_ActionArgs
+	public static class Args extends A_ActionArgs
 	{
-		private smSignUpCredentials m_creds;
+		private SignUpCredentials m_creds;
 		
-		public void setCreds(smSignUpCredentials creds)
+		public void setCreds(SignUpCredentials creds)
 		{
 			m_creds = creds;
 		}
 	}
 	
-	private final smClientAccountManager m_accountMngr;
+	private final ClientAccountManager m_accountMngr;
 	
-	private final smUserManager m_userMngr;
+	private final UserManager m_userMngr;
 	
-	Action_SignInOrUp_SignUp(smClientAccountManager accountMngr, smUserManager userMngr)
+	Action_SignInOrUp_SignUp(ClientAccountManager accountMngr, UserManager userMngr)
 	{
 		m_accountMngr = accountMngr;
 		m_userMngr = userMngr;
 	}
 	
 	@Override
-	public void perform(smA_ActionArgs args)
+	public void perform(A_ActionArgs args)
 	{
-		smSignUpCredentials creds = ((Action_SignInOrUp_SignUp.Args) args).m_creds;
+		SignUpCredentials creds = ((Action_SignInOrUp_SignUp.Args) args).m_creds;
 
-		smUserManager userManager = m_userMngr;
-		smClientAccountManager accountManager = m_accountMngr;
+		UserManager userManager = m_userMngr;
+		ClientAccountManager accountManager = m_accountMngr;
 		
-		accountManager.signUp(creds, smE_TransactionAction.QUEUE_REQUEST);
-		userManager.populateUser(smE_TransactionAction.QUEUE_REQUEST_AND_FLUSH);
+		accountManager.signUp(creds, E_TransactionAction.QUEUE_REQUEST);
+		userManager.populateUser(E_TransactionAction.QUEUE_REQUEST_AND_FLUSH);
 
 		machine_pushState(this.getState().getParent(), State_AccountStatusPending.class);	
 	}
 
 	@Override
-	public boolean isPerformable(smA_ActionArgs args)
+	public boolean isPerformable(A_ActionArgs args)
 	{
 		//--- DRK > Just a final double-check catch-all here...UI should have completely validated before performing the action.
 		
-		smSignUpCredentials creds = ((Action_SignInOrUp_SignUp.Args) args).m_creds;
+		SignUpCredentials creds = ((Action_SignInOrUp_SignUp.Args) args).m_creds;
 		boolean everythingOk = m_accountMngr.getSignUpValidator().validate(creds).isEverythingOk();
 		
-		smU_Debug.ASSERT(everythingOk, "SignUp1");
+		U_Debug.ASSERT(everythingOk, "SignUp1");
 		
 		return everythingOk;
 	}

@@ -1,65 +1,65 @@
 package swarm.client.states.code;
 
-import swarm.client.managers.smCellCodeManager;
-import swarm.client.managers.smUserManager;
-import swarm.client.app.smAppContext;
-import swarm.client.entities.smBufferCell;
-import swarm.client.entities.smA_ClientUser;
-import swarm.client.entities.smE_CodeStatus;
+import swarm.client.managers.CellCodeManager;
+import swarm.client.managers.UserManager;
+import swarm.client.app.AppContext;
+import swarm.client.entities.BufferCell;
+import swarm.client.entities.A_ClientUser;
+import swarm.client.entities.E_CodeStatus;
 import swarm.client.states.StateMachine_Base;
 import swarm.client.states.camera.Action_ViewingCell_Refresh;
 import swarm.client.states.camera.StateMachine_Camera;
 import swarm.client.states.camera.State_CameraSnapping;
 import swarm.client.states.camera.State_ViewingCell;
 import swarm.client.states.code.State_EditingCodeBlocker.Reason;
-import swarm.client.transaction.smClientTransactionManager;
-import swarm.client.view.tabs.code.smCodeMirrorWrapper;
-import swarm.shared.debugging.smU_Debug;
-import swarm.shared.entities.smE_CodeType;
-import swarm.shared.statemachine.smA_Action;
+import swarm.client.transaction.ClientTransactionManager;
+import swarm.client.view.tabs.code.CodeMirrorWrapper;
+import swarm.shared.debugging.U_Debug;
+import swarm.shared.entities.E_CodeType;
+import swarm.shared.statemachine.A_Action;
 
-import swarm.shared.statemachine.smA_State;
-import swarm.shared.statemachine.smA_StateMachine;
-import swarm.shared.statemachine.smI_StateEventListener;
-import swarm.shared.statemachine.smA_StateConstructor;
-import swarm.shared.statemachine.smStateEvent;
-import swarm.shared.structs.smCode;
-import swarm.shared.structs.smGridCoordinate;
+import swarm.shared.statemachine.A_State;
+import swarm.shared.statemachine.A_StateMachine;
+import swarm.shared.statemachine.I_StateEventListener;
+import swarm.shared.statemachine.A_StateConstructor;
+import swarm.shared.statemachine.StateEvent;
+import swarm.shared.structs.Code;
+import swarm.shared.structs.GridCoordinate;
 
 
 /**
  * ...
  * @author 
  */
-public class StateMachine_EditingCode extends smA_StateMachine implements smI_StateEventListener
+public class StateMachine_EditingCode extends A_StateMachine implements I_StateEventListener
 {
 	private boolean m_waitingOnHtmlForViewedCell = false;
 	
-	smCode m_code = null;
-	private final smAppContext m_appContext;
+	Code m_code = null;
+	private final AppContext m_appContext;
 	
-	public StateMachine_EditingCode(smAppContext appContext)
+	public StateMachine_EditingCode(AppContext appContext)
 	{
 		m_appContext = appContext;
 	}
 	
 	@Override
-	protected void didEnter(smA_StateConstructor constructor)
+	protected void didEnter(A_StateConstructor constructor)
 	{
 		m_waitingOnHtmlForViewedCell = false;
 		m_code = null;
 	}
 	
-	smCode getCode()
+	Code getCode()
 	{
 		return m_code;
 	}
 	
 	@Override
-	protected void didForeground(Class<? extends smA_State> revealingState, Object[] argsFromRevealingState)
+	protected void didForeground(Class<? extends A_State> revealingState, Object[] argsFromRevealingState)
 	{
 		//--- DRK > Camera controller can be null during start up...should be the only time.
-		smA_StateMachine cameraController = getContext().getEnteredState(StateMachine_Camera.class);
+		A_StateMachine cameraController = getContext().getEnteredState(StateMachine_Camera.class);
 		if( cameraController != null )
 		{
 			pushOrPopBlocker(cameraController.getCurrentState());
@@ -71,7 +71,7 @@ public class StateMachine_EditingCode extends smA_StateMachine implements smI_St
 	}
 	
 	@Override 
-	protected void willBackground(Class<? extends smA_State> blockingState)
+	protected void willBackground(Class<? extends A_State> blockingState)
 	{
 		if( blockingState == null )
 		{
@@ -84,7 +84,7 @@ public class StateMachine_EditingCode extends smA_StateMachine implements smI_St
 	
 	void setBlockerReason(Reason reason)
 	{
-		smU_Debug.ASSERT(this.isForegrounded(), "setBlockerReason1");
+		U_Debug.ASSERT(this.isForegrounded(), "setBlockerReason1");
 	
 		if( this.getCurrentState() instanceof State_EditingCodeBlocker )
 		{
@@ -113,7 +113,7 @@ public class StateMachine_EditingCode extends smA_StateMachine implements smI_St
 		}
 	}
 	
-	private void pushOrPopBlocker(smA_State cameraState)
+	private void pushOrPopBlocker(A_State cameraState)
 	{
 		if( !this.isForegrounded() )  return;
 		
@@ -130,25 +130,25 @@ public class StateMachine_EditingCode extends smA_StateMachine implements smI_St
 				m_waitingOnHtmlForViewedCell = false;
 				
 				State_ViewingCell viewingState = (State_ViewingCell) cameraState;
-				smBufferCell viewedCell = viewingState.getCell();
-				smGridCoordinate coord = viewedCell.getCoordinate();
-				smA_ClientUser user = m_appContext.userMngr.getUser();
+				BufferCell viewedCell = viewingState.getCell();
+				GridCoordinate coord = viewedCell.getCoordinate();
+				A_ClientUser user = m_appContext.userMngr.getUser();
 				
 				if( user.isCellOwner(coord) )
 				{
 					//--- DRK > This gets source which has possibly been edited but not saved.
 					//---		We access this instead of the cell's direct html source because
 					//---		user might have edited, then navigated away, then came back to continue editing.
-					m_code = user.getCode(coord, smE_CodeType.SOURCE);
+					m_code = user.getCode(coord, E_CodeType.SOURCE);
 				}
 				else
 				{
-					m_code = viewedCell.getCode(smE_CodeType.SOURCE);
+					m_code = viewedCell.getCode(E_CodeType.SOURCE);
 				}
 				
 				if( m_code == null )
 				{					
-					if( viewedCell.getStatus(smE_CodeType.SOURCE) != smE_CodeStatus.HAS_CODE )
+					if( viewedCell.getStatus(E_CodeType.SOURCE) != E_CodeStatus.HAS_CODE )
 					{
 						//--- DRK > I had this smU_Debug.ASSERT here, but NEEDS_HTML is valid if this state is backgrounded.
 						//---		Technically as of this writing, the policy is to never get source html unless this
@@ -158,7 +158,7 @@ public class StateMachine_EditingCode extends smA_StateMachine implements smI_St
 						//---		As it is, the stuff below shouldn't be performance intensive anyway.
 						//smU_Debug.ASSERT(viewedCell.getStatus(smE_HtmlType.SOURCE) != smE_HtmlStatus.NEEDS_HTML);
 						
-						if( viewedCell.getStatus(smE_CodeType.SOURCE) == smE_CodeStatus.GET_ERROR )
+						if( viewedCell.getStatus(E_CodeType.SOURCE) == E_CodeStatus.GET_ERROR )
 						{
 							this.setBlockerReason(State_EditingCodeBlocker.Reason.ERROR);
 							
@@ -176,7 +176,7 @@ public class StateMachine_EditingCode extends smA_StateMachine implements smI_St
 						//---		Note that this is not an error case, for now at least.
 						this.setBlockerReason(State_EditingCodeBlocker.Reason.NO_HTML);
 						
-						smU_Debug.ASSERT(false, "Code should now not be null.");
+						U_Debug.ASSERT(false, "Code should now not be null.");
 					}
 				}
 				else
@@ -206,7 +206,7 @@ public class StateMachine_EditingCode extends smA_StateMachine implements smI_St
 	}
 	
 	@Override
-	public void onStateEvent(smStateEvent event)
+	public void onStateEvent(StateEvent event)
 	{
 		if( !this.isForegrounded() )  return;
 		
@@ -231,8 +231,8 @@ public class StateMachine_EditingCode extends smA_StateMachine implements smI_St
 				if( event.getState() instanceof State_ViewingCell )
 				{
 					State_ViewingCell viewingState = (State_ViewingCell) event.getState();
-					smBufferCell viewedCell = viewingState.getCell();
-					smGridCoordinate coord = viewedCell.getCoordinate();
+					BufferCell viewedCell = viewingState.getCell();
+					GridCoordinate coord = viewedCell.getCoordinate();
 					
 					/*if( this.getCurrentState() instanceof State_EditingCodeBlocker )
 					{
@@ -260,11 +260,11 @@ public class StateMachine_EditingCode extends smA_StateMachine implements smI_St
 
 					if( m_waitingOnHtmlForViewedCell )
 					{
-						if( viewedCell.getStatus(smE_CodeType.SOURCE) == smE_CodeStatus.HAS_CODE )
+						if( viewedCell.getStatus(E_CodeType.SOURCE) == E_CodeStatus.HAS_CODE )
 						{
 							m_waitingOnHtmlForViewedCell = false;
 							
-							smCode code = viewedCell.getCode(smE_CodeType.SOURCE);
+							Code code = viewedCell.getCode(E_CodeType.SOURCE);
 							
 							if( code == null )
 							{
@@ -276,7 +276,7 @@ public class StateMachine_EditingCode extends smA_StateMachine implements smI_St
 								this.setBlockerReason(null);
 							}
 						}
-						else if( viewedCell.getStatus(smE_CodeType.SOURCE) == smE_CodeStatus.GET_ERROR )
+						else if( viewedCell.getStatus(E_CodeType.SOURCE) == E_CodeStatus.GET_ERROR )
 						{
 							this.setBlockerReason(State_EditingCodeBlocker.Reason.ERROR);
 						}

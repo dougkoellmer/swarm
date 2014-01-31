@@ -1,38 +1,38 @@
 package swarm.client.states.camera;
 
-import swarm.client.entities.smBufferCell;
-import swarm.shared.statemachine.smA_Action;
-import swarm.shared.statemachine.smA_State;
-import swarm.shared.statemachine.smA_StateConstructor;
-import swarm.shared.statemachine.smStateEvent;
-import swarm.shared.structs.smCellAddress;
-import swarm.shared.structs.smPoint;
+import swarm.client.entities.BufferCell;
+import swarm.shared.statemachine.A_Action;
+import swarm.shared.statemachine.A_State;
+import swarm.shared.statemachine.A_StateConstructor;
+import swarm.shared.statemachine.StateEvent;
+import swarm.shared.structs.CellAddress;
+import swarm.shared.structs.Point;
 
-public class State_GettingMapping extends smA_State
+public class State_GettingMapping extends A_State
 {
-	static class Constructor extends smA_StateConstructor
+	static class Constructor extends A_StateConstructor
 	{
-		private final smCellAddress m_address;
+		private final CellAddress m_address;
 		
-		public Constructor(smCellAddress address)
+		public Constructor(CellAddress address)
 		{
 			m_address = address;
 		}
 	}
 	
-	private smCellAddress m_address = null;
+	private CellAddress m_address = null;
 	
 	public State_GettingMapping()
 	{
 		registerAction(new Event_GettingMapping_OnResponse());
 	}
 	
-	smCellAddress getAddress()
+	CellAddress getAddress()
 	{
 		return m_address;
 	}
 	
-	void updateAddress(smCellAddress address)
+	void updateAddress(CellAddress address)
 	{
 		m_address = address;
 	}
@@ -44,19 +44,19 @@ public class State_GettingMapping extends smA_State
 	}
 	
 	@Override
-	protected void didEnter(smA_StateConstructor constructor)
+	protected void didEnter(A_StateConstructor constructor)
 	{
 		Constructor thisConstructor = (Constructor) constructor;
 		updateAddress(thisConstructor.m_address);
 	}
 	
 	@Override
-	protected void didForeground(Class<? extends smA_State> revealingState, Object[] argsFromRevealingState)
+	protected void didForeground(Class<? extends A_State> revealingState, Object[] argsFromRevealingState)
 	{
 	}
 	
 	@Override
-	protected void willBackground(Class<? extends smA_State> blockingState)
+	protected void willBackground(Class<? extends A_State> blockingState)
 	{
 		
 	}

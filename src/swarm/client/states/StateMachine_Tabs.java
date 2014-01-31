@@ -5,23 +5,23 @@ import java.util.List;
 
 import swarm.client.states.account.StateMachine_Account;
 import swarm.client.states.code.StateMachine_EditingCode;
-import swarm.shared.statemachine.smA_Action;
+import swarm.shared.statemachine.A_Action;
 
-import swarm.shared.statemachine.smA_State;
-import swarm.shared.statemachine.smA_StateMachine;
-import swarm.shared.statemachine.smA_StateConstructor;
+import swarm.shared.statemachine.A_State;
+import swarm.shared.statemachine.A_StateMachine;
+import swarm.shared.statemachine.A_StateConstructor;
 
 /**
  * ...
  * @author 
  */
-public class StateMachine_Tabs extends smA_StateMachine
+public class StateMachine_Tabs extends A_StateMachine
 {	
-	private final List<Class<? extends smA_State>> m_tabStates;
+	private final List<Class<? extends A_State>> m_tabStates;
 	
 	private int m_tabIndex = -1;
 	
-	public StateMachine_Tabs(List<Class<? extends smA_State>> tabStates) 
+	public StateMachine_Tabs(List<Class<? extends A_State>> tabStates) 
 	{
 		registerAction(new Action_Tabs_SelectTab());
 		
@@ -29,12 +29,12 @@ public class StateMachine_Tabs extends smA_StateMachine
 	}
 	
 	@Override
-	protected void didEnter(smA_StateConstructor constructor)
+	protected void didEnter(A_StateConstructor constructor)
 	{
 		
 	}
 	
-	public int calcTabIndex(Class<? extends smA_State> tabState)
+	public int calcTabIndex(Class<? extends A_State> tabState)
 	{
 		for( int i = 0; i < m_tabStates.size(); i++ )
 		{
@@ -67,7 +67,7 @@ public class StateMachine_Tabs extends smA_StateMachine
 	}
 	
 	@Override
-	protected void didForeground(Class<? extends smA_State> revealingState, Object[] argsFromRevealingState)
+	protected void didForeground(Class<? extends A_State> revealingState, Object[] argsFromRevealingState)
 	{
 		if( this.m_tabIndex == -1 )
 		{

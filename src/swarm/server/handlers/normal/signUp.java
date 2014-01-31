@@ -6,22 +6,22 @@ import net.tanesha.recaptcha.ReCaptcha;
 import net.tanesha.recaptcha.ReCaptchaFactory;
 import net.tanesha.recaptcha.ReCaptchaResponse;
 
-import swarm.server.account.smServerAccountManager;
-import swarm.server.account.smUserSession;
+import swarm.server.account.ServerAccountManager;
+import swarm.server.account.UserSession;
 
-import swarm.server.session.smSessionManager;
-import swarm.server.transaction.smA_DefaultRequestHandler;
-import swarm.server.transaction.smI_RequestHandler;
-import swarm.server.transaction.smTransactionContext;
-import swarm.shared.account.smE_SignUpCredentialType;
-import swarm.shared.account.smE_SignUpValidationError;
-import swarm.shared.account.smSignUpCredentials;
-import swarm.shared.account.smSignUpValidationResult;
-import swarm.shared.account.smSignUpValidator;
-import swarm.shared.transaction.smTransactionRequest;
-import swarm.shared.transaction.smTransactionResponse;
+import swarm.server.session.SessionManager;
+import swarm.server.transaction.A_DefaultRequestHandler;
+import swarm.server.transaction.I_RequestHandler;
+import swarm.server.transaction.TransactionContext;
+import swarm.shared.account.E_SignUpCredentialType;
+import swarm.shared.account.E_SignUpValidationError;
+import swarm.shared.account.SignUpCredentials;
+import swarm.shared.account.SignUpValidationResult;
+import swarm.shared.account.SignUpValidator;
+import swarm.shared.transaction.TransactionRequest;
+import swarm.shared.transaction.TransactionResponse;
 
-public class signUp extends smA_DefaultRequestHandler
+public class signUp extends A_DefaultRequestHandler
 {
 	private final String m_publicRecaptchaKey;
 	private final String m_privateRecaptchaKey;
@@ -32,10 +32,10 @@ public class signUp extends smA_DefaultRequestHandler
 		m_privateRecaptchaKey = privateRecaptchaKey;
 	}
 	
-	private boolean isCaptchaValid(smSignUpCredentials creds, smSignUpValidationResult result_out, String remoteAddress)
+	private boolean isCaptchaValid(SignUpCredentials creds, SignUpValidationResult result_out, String remoteAddress)
 	{
 		String captchaChallenge = creds.getCaptchaChallenge();
-		String captchaResponse = creds.get(smE_SignUpCredentialType.CAPTCHA_RESPONSE);
+		String captchaResponse = creds.get(E_SignUpCredentialType.CAPTCHA_RESPONSE);
 		
 		ReCaptcha captcha = ReCaptchaFactory.newReCaptcha(m_publicRecaptchaKey, m_privateRecaptchaKey, false);
         ReCaptchaResponse recaptchaResponse = captcha.checkAnswer(remoteAddress, captchaChallenge, captchaResponse);
@@ -43,7 +43,7 @@ public class signUp extends smA_DefaultRequestHandler
         if ( !recaptchaResponse.isValid())
         {
         	result_out.setNoErrors(); // just make sure all errors are filled in for json writing...kinda hacky.
-        	result_out.setError(smE_SignUpCredentialType.CAPTCHA_RESPONSE, smE_SignUpValidationError.CAPTCHA_INCORRECT);
+        	result_out.setError(E_SignUpCredentialType.CAPTCHA_RESPONSE, E_SignUpValidationError.CAPTCHA_INCORRECT);
         	
         	return false;
         }
@@ -52,16 +52,16 @@ public class signUp extends smA_DefaultRequestHandler
 	}
 	
 	@Override
-	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
+	public void handleRequest(TransactionContext context, TransactionRequest request, TransactionResponse response)
 	{
-		smServerAccountManager accountManager = m_serverContext.accountMngr;
-		smSignUpCredentials creds = new smSignUpCredentials(m_serverContext.jsonFactory, request.getJsonArgs());
-		smSignUpValidationResult result = new smSignUpValidationResult();
+		ServerAccountManager accountManager = m_serverContext.accountMngr;
+		SignUpCredentials creds = new SignUpCredentials(m_serverContext.jsonFactory, request.getJsonArgs());
+		SignUpValidationResult result = new SignUpValidationResult();
 		String remoteAddress = ((HttpServletRequest) request.getNativeRequest()).getRemoteAddr();
 		
 		if( isCaptchaValid(creds, result, remoteAddress))
 		{
-			smUserSession userSession = accountManager.attemptSignUp(creds, result);
+			UserSession userSession = accountManager.attemptSignUp(creds, result);
 			
 			if( userSession != null )
 			{

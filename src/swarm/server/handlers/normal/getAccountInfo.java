@@ -1,28 +1,28 @@
 package swarm.server.handlers.normal;
 
-import swarm.client.structs.smAccountInfo;
-import swarm.server.account.smE_Role;
-import swarm.server.account.smUserSession;
+import swarm.client.structs.AccountInfo;
+import swarm.server.account.E_Role;
+import swarm.server.account.UserSession;
 
-import swarm.server.session.smSessionManager;
-import swarm.server.transaction.smA_DefaultRequestHandler;
-import swarm.server.transaction.smI_RequestHandler;
-import swarm.server.transaction.smTransactionContext;
-import swarm.shared.transaction.smTransactionRequest;
-import swarm.shared.transaction.smTransactionResponse;
+import swarm.server.session.SessionManager;
+import swarm.server.transaction.A_DefaultRequestHandler;
+import swarm.server.transaction.I_RequestHandler;
+import swarm.server.transaction.TransactionContext;
+import swarm.shared.transaction.TransactionRequest;
+import swarm.shared.transaction.TransactionResponse;
 
-public class getAccountInfo extends smA_DefaultRequestHandler
+public class getAccountInfo extends A_DefaultRequestHandler
 {
 	@Override
-	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
+	public void handleRequest(TransactionContext context, TransactionRequest request, TransactionResponse response)
 	{
-		if( !m_serverContext.sessionMngr.isAuthorized(request, response, smE_Role.USER) )
+		if( !m_serverContext.sessionMngr.isAuthorized(request, response, E_Role.USER) )
 		{
 			return;
 		}
 		
-		smUserSession userSession = m_serverContext.sessionMngr.getSession(request, response);
-		smAccountInfo accountInfo = new smAccountInfo(userSession.getUsername());
+		UserSession userSession = m_serverContext.sessionMngr.getSession(request, response);
+		AccountInfo accountInfo = new AccountInfo(userSession.getUsername());
 		accountInfo.writeJson(m_serverContext.jsonFactory, response.getJsonArgs());
 	}
 }

@@ -1,15 +1,15 @@
 package swarm.client.states.camera;
 
-import swarm.client.entities.smBufferCell;
-import swarm.client.entities.smE_CodeStatus;
-import swarm.shared.entities.smE_CodeType;
-import swarm.shared.statemachine.smA_ActionArgs;
-import swarm.shared.statemachine.smA_State;
+import swarm.client.entities.BufferCell;
+import swarm.client.entities.E_CodeStatus;
+import swarm.shared.entities.E_CodeType;
+import swarm.shared.statemachine.A_ActionArgs;
+import swarm.shared.statemachine.A_State;
 
 public class Action_ViewingCell_Refresh extends smA_CameraAction 
 {
 	@Override
-	public void perform(smA_ActionArgs args)
+	public void perform(A_ActionArgs args)
 	{
 		State_ViewingCell state = (State_ViewingCell) this.getState();
 		
@@ -17,12 +17,12 @@ public class Action_ViewingCell_Refresh extends smA_CameraAction
 	}
 	
 	@Override
-	public boolean isPerformable(smA_ActionArgs args)
+	public boolean isPerformable(A_ActionArgs args)
 	{
 		State_ViewingCell state = (State_ViewingCell) this.getState();
-		smBufferCell cell = state.getCell();
+		BufferCell cell = state.getCell();
 		
-		if( cell.getStatus(smE_CodeType.COMPILED) == smE_CodeStatus.WAITING_ON_CODE )
+		if( cell.getStatus(E_CodeType.COMPILED) == E_CodeStatus.WAITING_ON_CODE )
 		{
 			return false;
 		}

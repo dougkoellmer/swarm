@@ -1,22 +1,22 @@
 package swarm.client.states.camera;
 
-import swarm.shared.statemachine.smA_ActionArgs;
-import swarm.shared.statemachine.smA_EventAction;
-import swarm.shared.statemachine.smA_State;
-import swarm.shared.structs.smCellAddress;
-import swarm.shared.structs.smCellAddressMapping;
+import swarm.shared.statemachine.A_ActionArgs;
+import swarm.shared.statemachine.A_EventAction;
+import swarm.shared.statemachine.A_State;
+import swarm.shared.structs.CellAddress;
+import swarm.shared.structs.CellAddressMapping;
 
-public class Event_Camera_OnAddressResponse extends smA_EventAction
+public class Event_Camera_OnAddressResponse extends A_EventAction
 {
 	public static enum E_Type
 	{
 		ON_FOUND, ON_NOT_FOUND, ON_RESPONSE_ERROR
 	}
 	
-	public static class Args extends smA_ActionArgs
+	public static class Args extends A_ActionArgs
 	{
-		private smCellAddress m_address;
-		private smCellAddressMapping m_mapping;
+		private CellAddress m_address;
+		private CellAddressMapping m_mapping;
 		private Event_Camera_OnAddressResponse.E_Type m_responseType;
 		
 		Args()
@@ -24,24 +24,24 @@ public class Event_Camera_OnAddressResponse extends smA_EventAction
 			init(null, null, null);
 		}
 		
-		Args(Event_Camera_OnAddressResponse.E_Type responseType, smCellAddress address, smCellAddressMapping mapping)
+		Args(Event_Camera_OnAddressResponse.E_Type responseType, CellAddress address, CellAddressMapping mapping)
 		{
 			init(responseType, address, mapping);
 		}
 		
-		public void init(Event_Camera_OnAddressResponse.E_Type responseType, smCellAddress address, smCellAddressMapping mapping)
+		public void init(Event_Camera_OnAddressResponse.E_Type responseType, CellAddress address, CellAddressMapping mapping)
 		{
 			m_responseType = responseType;
 			m_address = address;
 			m_mapping = mapping;
 		}
 		
-		public smCellAddress getAddress()
+		public CellAddress getAddress()
 		{
 			return m_address;
 		}
 		
-		public smCellAddressMapping getMapping()
+		public CellAddressMapping getMapping()
 		{
 			return m_mapping;
 		}
@@ -53,10 +53,10 @@ public class Event_Camera_OnAddressResponse extends smA_EventAction
 	}
 	
 	@Override
-	public boolean isPerformable(smA_ActionArgs args)
+	public boolean isPerformable(A_ActionArgs args)
 	{
 		StateMachine_Camera machine = this.getState();
-		smA_State currentState = machine.getCurrentState();
+		A_State currentState = machine.getCurrentState();
 		
 		return currentState instanceof State_CameraSnapping || currentState instanceof State_ViewingCell;
 	}

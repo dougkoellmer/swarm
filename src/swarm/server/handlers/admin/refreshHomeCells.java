@@ -5,59 +5,59 @@ import java.util.logging.Logger;
 
 import javax.servlet.ServletContext;
 
-import swarm.server.account.smE_Role;
-import swarm.server.account.smUserSession;
+import swarm.server.account.E_Role;
+import swarm.server.account.UserSession;
 
-import swarm.server.data.blob.smBlobException;
-import swarm.server.data.blob.smBlobManagerFactory;
-import swarm.server.data.blob.smE_BlobCacheLevel;
-import swarm.server.data.blob.smI_BlobManager;
-import swarm.server.entities.smServerCell;
-import swarm.server.entities.smServerUser;
-import swarm.server.handlers.smU_Handler;
-import swarm.server.session.smSessionManager;
-import swarm.server.structs.smServerCellAddressMapping;
-import swarm.server.transaction.smA_DefaultRequestHandler;
-import swarm.server.transaction.smI_RequestHandler;
-import swarm.server.transaction.smTransactionContext;
-import swarm.shared.structs.smE_GetCellAddressError;
-import swarm.shared.structs.smGetCellAddressResult;
-import swarm.shared.transaction.smE_ResponseError;
-import swarm.shared.transaction.smTransactionRequest;
-import swarm.shared.transaction.smTransactionResponse;
+import swarm.server.data.blob.BlobException;
+import swarm.server.data.blob.BlobManagerFactory;
+import swarm.server.data.blob.E_BlobCacheLevel;
+import swarm.server.data.blob.I_BlobManager;
+import swarm.server.entities.ServerCell;
+import swarm.server.entities.ServerUser;
+import swarm.server.handlers.U_Handler;
+import swarm.server.session.SessionManager;
+import swarm.server.structs.ServerCellAddressMapping;
+import swarm.server.transaction.A_DefaultRequestHandler;
+import swarm.server.transaction.I_RequestHandler;
+import swarm.server.transaction.TransactionContext;
+import swarm.shared.structs.E_GetCellAddressError;
+import swarm.shared.structs.GetCellAddressResult;
+import swarm.shared.transaction.E_ResponseError;
+import swarm.shared.transaction.TransactionRequest;
+import swarm.shared.transaction.TransactionResponse;
 
-public class refreshHomeCells extends smA_DefaultRequestHandler
+public class refreshHomeCells extends A_DefaultRequestHandler
 {
 	private static final Logger s_logger = Logger.getLogger(refreshHomeCells.class.getName());
 	
-	private final Class<? extends smI_HomeCellCreator> m_T_homeCellCreator;
+	private final Class<? extends I_HomeCellCreator> m_T_homeCellCreator;
 	
-	public refreshHomeCells(Class<? extends smI_HomeCellCreator> T_homeCellCreator)
+	public refreshHomeCells(Class<? extends I_HomeCellCreator> T_homeCellCreator)
 	{
 		m_T_homeCellCreator = T_homeCellCreator;
 	}
 	
 	@Override
-	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
+	public void handleRequest(TransactionContext context, TransactionRequest request, TransactionResponse response)
 	{
-		smI_BlobManager blobManager = m_serverContext.blobMngrFactory.create(smE_BlobCacheLevel.values());
-		smUserSession session = m_serverContext.sessionMngr.getSession(request, response);
+		I_BlobManager blobManager = m_serverContext.blobMngrFactory.create(E_BlobCacheLevel.values());
+		UserSession session = m_serverContext.sessionMngr.getSession(request, response);
 		
-		smServerUser user = null;
+		ServerUser user = null;
 		try
 		{
-			user = blobManager.getBlob(session, smServerUser.class);
+			user = blobManager.getBlob(session, ServerUser.class);
 		}
-		catch(smBlobException e)
+		catch(BlobException e)
 		{
-			response.setError(smE_ResponseError.SERVICE_EXCEPTION);
+			response.setError(E_ResponseError.SERVICE_EXCEPTION);
 			
 			s_logger.log(Level.SEVERE, "Could not get user for refresh home cells.", e);
 			
 			return;
 		}
 		
-		smI_HomeCellCreator homeCellCreator = smU_Handler.newObjectInstance(m_T_homeCellCreator, response);
+		I_HomeCellCreator homeCellCreator = U_Handler.newObjectInstance(m_T_homeCellCreator, response);
 		
 		if( homeCellCreator == null )  return;
 		

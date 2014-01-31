@@ -1,12 +1,12 @@
 package swarm.client.states;
 
-import swarm.shared.statemachine.smA_Action;
-import swarm.shared.statemachine.smA_ActionArgs;
-import swarm.shared.statemachine.smA_State;
+import swarm.shared.statemachine.A_Action;
+import swarm.shared.statemachine.A_ActionArgs;
+import swarm.shared.statemachine.A_State;
 
-public class Action_Tabs_SelectTab extends smA_Action 
+public class Action_Tabs_SelectTab extends A_Action 
 {
-	public static class Args extends smA_ActionArgs
+	public static class Args extends A_ActionArgs
 	{
 		private int m_index;
 		
@@ -17,7 +17,7 @@ public class Action_Tabs_SelectTab extends smA_Action
 	}
 	
 	@Override
-	public void perform(smA_ActionArgs args)
+	public void perform(A_ActionArgs args)
 	{
 		int tabIndex = ((Action_Tabs_SelectTab.Args) args).m_index;
 		StateMachine_Tabs tabController = (StateMachine_Tabs) this.getState();
@@ -25,7 +25,7 @@ public class Action_Tabs_SelectTab extends smA_Action
 	}
 	
 	@Override
-	public boolean isPerformable(smA_ActionArgs args)
+	public boolean isPerformable(A_ActionArgs args)
 	{
 		int tabIndex = ((Action_Tabs_SelectTab.Args) args).m_index;
 		StateMachine_Tabs tabController = (StateMachine_Tabs) this.getState();
@@ -41,7 +41,7 @@ public class Action_Tabs_SelectTab extends smA_Action
 	}
 	
 	@Override
-	public Class<? extends smA_State> getStateAssociation()
+	public Class<? extends A_State> getStateAssociation()
 	{
 		return StateMachine_Tabs.class;
 	}

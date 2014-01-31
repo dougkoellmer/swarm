@@ -4,31 +4,31 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
-import swarm.server.account.smE_Role;
-import swarm.server.account.smUserSession;
+import swarm.server.account.E_Role;
+import swarm.server.account.UserSession;
 
-import swarm.server.blobxn.smBlobTransaction_CreateUser;
-import swarm.server.data.blob.smBlobException;
-import swarm.server.data.blob.smBlobManagerFactory;
-import swarm.server.data.blob.smE_BlobCacheLevel;
-import swarm.server.data.blob.smE_BlobTransactionType;
-import swarm.server.data.blob.smI_BlobManager;
-import swarm.server.entities.smServerUser;
-import swarm.server.session.smSessionManager;
-import swarm.server.transaction.smA_DefaultRequestHandler;
-import swarm.server.transaction.smI_RequestHandler;
-import swarm.server.transaction.smTransactionContext;
-import swarm.shared.app.smSharedAppContext;
-import swarm.shared.entities.smA_Grid;
-import swarm.shared.json.smA_JsonFactory;
-import swarm.shared.json.smE_JsonKey;
-import swarm.shared.json.smI_JsonObject;
-import swarm.shared.json.smJsonHelper;
-import swarm.shared.transaction.smE_ResponseError;
-import swarm.shared.transaction.smTransactionRequest;
-import swarm.shared.transaction.smTransactionResponse;
+import swarm.server.blobxn.BlobTransaction_CreateUser;
+import swarm.server.data.blob.BlobException;
+import swarm.server.data.blob.BlobManagerFactory;
+import swarm.server.data.blob.E_BlobCacheLevel;
+import swarm.server.data.blob.E_BlobTransactionType;
+import swarm.server.data.blob.I_BlobManager;
+import swarm.server.entities.ServerUser;
+import swarm.server.session.SessionManager;
+import swarm.server.transaction.A_DefaultRequestHandler;
+import swarm.server.transaction.I_RequestHandler;
+import swarm.server.transaction.TransactionContext;
+import swarm.shared.app.BaseAppContext;
+import swarm.shared.entities.A_Grid;
+import swarm.shared.json.A_JsonFactory;
+import swarm.shared.json.E_JsonKey;
+import swarm.shared.json.I_JsonObject;
+import swarm.shared.json.JsonHelper;
+import swarm.shared.transaction.E_ResponseError;
+import swarm.shared.transaction.TransactionRequest;
+import swarm.shared.transaction.TransactionResponse;
 
-public class getUserData extends smA_DefaultRequestHandler
+public class getUserData extends A_DefaultRequestHandler
 {
 	private static final Logger s_logger = Logger.getLogger(getUserData.class.getName());
 	
@@ -42,27 +42,27 @@ public class getUserData extends smA_DefaultRequestHandler
 	}
 	
 	@Override
-	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
+	public void handleRequest(TransactionContext context, TransactionRequest request, TransactionResponse response)
 	{
-		if( !m_serverContext.sessionMngr.isAuthorized(request, response, smE_Role.USER) )
+		if( !m_serverContext.sessionMngr.isAuthorized(request, response, E_Role.USER) )
 		{
 			return;
 		}
 		
-		smUserSession userSession = m_serverContext.sessionMngr.getSession(request, response);
+		UserSession userSession = m_serverContext.sessionMngr.getSession(request, response);
 
-		smServerUser user = null;
+		ServerUser user = null;
 		
-		smI_BlobManager blobManager = m_serverContext.blobMngrFactory.create(smE_BlobCacheLevel.PERSISTENT);
+		I_BlobManager blobManager = m_serverContext.blobMngrFactory.create(E_BlobCacheLevel.PERSISTENT);
 
 		//--- DRK > First try to just get the user with a straight read...should be successful most of the time.
 		try
 		{
-			user = blobManager.getBlob(userSession, smServerUser.class);
+			user = blobManager.getBlob(userSession, ServerUser.class);
 		}
-		catch(smBlobException e)
+		catch(BlobException e)
 		{
-			response.setError(smE_ResponseError.SERVICE_EXCEPTION);
+			response.setError(E_ResponseError.SERVICE_EXCEPTION);
 			
 			s_logger.log(Level.SEVERE, "Could not retrieve user due to exception.", e);
 			
@@ -78,22 +78,22 @@ public class getUserData extends smA_DefaultRequestHandler
 		{
 			try
 			{
-				smBlobTransaction_CreateUser createUserTransaction = new smBlobTransaction_CreateUser(userSession, m_autoCreateHomeCell, m_gridExpansionDelta);
-				createUserTransaction.perform(m_serverContext.blobMngrFactory, smE_BlobTransactionType.MULTI_BLOB_TYPE, 5);
+				BlobTransaction_CreateUser createUserTransaction = new BlobTransaction_CreateUser(userSession, m_autoCreateHomeCell, m_gridExpansionDelta);
+				createUserTransaction.perform(m_serverContext.blobMngrFactory, E_BlobTransactionType.MULTI_BLOB_TYPE, 5);
 				
 				//--- DRK > Not a huge fan of this method of letting client know that grid size changed.
 				//---		Better would be if I could let client know through batch system, but I can't figure
 				//---		out how to make that efficient without completely spaghettifying server code.
 				if( createUserTransaction.didGridGrow() )
 				{
-					smA_Grid dummyGrid = new smA_Grid(createUserTransaction.getGridWidth(), createUserTransaction.getGridHeight())
+					A_Grid dummyGrid = new A_Grid(createUserTransaction.getGridWidth(), createUserTransaction.getGridHeight())
 					{
 						@Override
-						public void writeJson(smA_JsonFactory factory, smI_JsonObject json_out)
+						public void writeJson(A_JsonFactory factory, I_JsonObject json_out)
 						{
 							//--- DRK > Only sending down width and height so we don't overwrite other properties.
-							factory.getHelper().putInt(json_out, smE_JsonKey.gridWidth, this.getWidth());
-							factory.getHelper().putInt(json_out, smE_JsonKey.gridHeight, this.getHeight());
+							factory.getHelper().putInt(json_out, E_JsonKey.gridWidth, this.getWidth());
+							factory.getHelper().putInt(json_out, E_JsonKey.gridHeight, this.getHeight());
 						}
 					};
 					
@@ -103,9 +103,9 @@ public class getUserData extends smA_DefaultRequestHandler
 				user = createUserTransaction.getUser();
 				createdUser = true;
 			}
-			catch(smBlobException e)
+			catch(BlobException e)
 			{
-				response.setError(smE_ResponseError.SERVICE_EXCEPTION);
+				response.setError(E_ResponseError.SERVICE_EXCEPTION);
 				
 				s_logger.log(Level.SEVERE, "Could not create user because of exception.", e);
 				
@@ -116,14 +116,14 @@ public class getUserData extends smA_DefaultRequestHandler
 		//--- DRK > Just being really anal here...should never be null by this point.
 		if( user == null )
 		{
-			response.setError(smE_ResponseError.SERVICE_EXCEPTION);
+			response.setError(E_ResponseError.SERVICE_EXCEPTION);
 
 			s_logger.severe("User object came up null when it should have been initialized.");
 			
 			return;
 		}
 
-		m_serverContext.jsonFactory.getHelper().putBoolean(response.getJsonArgs(), smE_JsonKey.createdUser, createdUser);
+		m_serverContext.jsonFactory.getHelper().putBoolean(response.getJsonArgs(), E_JsonKey.createdUser, createdUser);
 		user.writeJson(m_serverContext.jsonFactory, response.getJsonArgs());
 	}
 }

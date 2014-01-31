@@ -1,27 +1,27 @@
 package swarm.client.states;
 
-import swarm.client.app.smAppContext;
+import swarm.client.app.AppContext;
 import swarm.client.states.camera.StateMachine_Camera;
-import swarm.client.transaction.smE_ResponseErrorControl;
-import swarm.client.transaction.smE_ResponseSuccessControl;
-import swarm.client.transaction.smI_TransactionResponseHandler;
-import swarm.client.transaction.smClientTransactionManager;
+import swarm.client.transaction.E_ResponseErrorControl;
+import swarm.client.transaction.E_ResponseSuccessControl;
+import swarm.client.transaction.I_TransactionResponseHandler;
+import swarm.client.transaction.ClientTransactionManager;
 
-import swarm.shared.statemachine.smA_State;
-import swarm.shared.statemachine.smA_StateContainer;
-import swarm.shared.statemachine.smA_StateConstructor;
-import swarm.shared.transaction.smTransactionRequest;
-import swarm.shared.transaction.smTransactionResponse;
+import swarm.shared.statemachine.A_State;
+import swarm.shared.statemachine.A_StateContainer;
+import swarm.shared.statemachine.A_StateConstructor;
+import swarm.shared.transaction.TransactionRequest;
+import swarm.shared.transaction.TransactionResponse;
 
 /**
  * ...
  * @author 
  */
-public class StateContainer_Base extends smA_StateContainer
+public class StateContainer_Base extends A_StateContainer
 {
-	private final Class<? extends smA_State> m_consoleState_T;
+	private final Class<? extends A_State> m_consoleState_T;
 	
-	public StateContainer_Base(Class<? extends smA_State> consoleState_T)
+	public StateContainer_Base(Class<? extends A_State> consoleState_T)
 	{
 		m_consoleState_T = consoleState_T;
 		registerAction(new Action_Base_HideSupplementState());
@@ -29,7 +29,7 @@ public class StateContainer_Base extends smA_StateContainer
 	}
 	
 	@Override
-	protected void didEnter(smA_StateConstructor constructor)
+	protected void didEnter(A_StateConstructor constructor)
 	{
 	}
 	
@@ -39,7 +39,7 @@ public class StateContainer_Base extends smA_StateContainer
 	}
 	
 	@Override
-	protected void didForeground(Class<? extends smA_State> revealingState, Object[] argsFromRevealingState)
+	protected void didForeground(Class<? extends A_State> revealingState, Object[] argsFromRevealingState)
 	{
 		if ( revealingState == null )
 		{

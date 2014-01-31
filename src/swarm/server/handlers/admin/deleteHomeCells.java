@@ -7,57 +7,57 @@ import java.util.logging.Logger;
 
 import javax.servlet.ServletContext;
 
-import swarm.server.account.smE_Role;
-import swarm.server.account.smUserSession;
-import swarm.server.blobxn.smBlobTransaction_DeactivateCell;
-import swarm.server.blobxn.smBlobTransaction_DeactivateUserCells;
-import swarm.server.data.blob.smBlobException;
-import swarm.server.data.blob.smBlobManagerFactory;
-import swarm.server.data.blob.smE_BlobCacheLevel;
-import swarm.server.data.blob.smE_BlobTransactionType;
-import swarm.server.data.blob.smI_BlobManager;
-import swarm.server.entities.smE_GridType;
-import swarm.server.entities.smServerGrid;
-import swarm.server.entities.smServerUser;
-import swarm.server.session.smSessionManager;
-import swarm.server.structs.smServerCellAddress;
-import swarm.server.structs.smServerCellAddressMapping;
-import swarm.server.structs.smServerCodePrivileges;
-import swarm.server.transaction.smA_DefaultRequestHandler;
-import swarm.server.transaction.smI_RequestHandler;
-import swarm.server.transaction.smServerTransactionManager;
-import swarm.server.transaction.smTransactionContext;
-import swarm.shared.app.smSharedAppContext;
-import swarm.shared.entities.smA_User;
-import swarm.shared.entities.smE_CodeType;
-import swarm.shared.json.smE_JsonKey;
-import swarm.shared.json.smJsonHelper;
-import swarm.shared.structs.smCode;
-import swarm.shared.structs.smE_NetworkPrivilege;
-import swarm.shared.structs.smGridCoordinate;
-import swarm.shared.transaction.smE_RequestPath;
-import swarm.shared.transaction.smE_ResponseError;
-import swarm.shared.transaction.smTransactionRequest;
-import swarm.shared.transaction.smTransactionResponse;
+import swarm.server.account.E_Role;
+import swarm.server.account.UserSession;
+import swarm.server.blobxn.BlobTransaction_DeactivateCell;
+import swarm.server.blobxn.BlobTransaction_DeactivateUserCells;
+import swarm.server.data.blob.BlobException;
+import swarm.server.data.blob.BlobManagerFactory;
+import swarm.server.data.blob.E_BlobCacheLevel;
+import swarm.server.data.blob.E_BlobTransactionType;
+import swarm.server.data.blob.I_BlobManager;
+import swarm.server.entities.E_GridType;
+import swarm.server.entities.BaseServerGrid;
+import swarm.server.entities.ServerUser;
+import swarm.server.session.SessionManager;
+import swarm.server.structs.ServerCellAddress;
+import swarm.server.structs.ServerCellAddressMapping;
+import swarm.server.structs.ServerCodePrivileges;
+import swarm.server.transaction.A_DefaultRequestHandler;
+import swarm.server.transaction.I_RequestHandler;
+import swarm.server.transaction.ServerTransactionManager;
+import swarm.server.transaction.TransactionContext;
+import swarm.shared.app.BaseAppContext;
+import swarm.shared.entities.A_User;
+import swarm.shared.entities.E_CodeType;
+import swarm.shared.json.E_JsonKey;
+import swarm.shared.json.JsonHelper;
+import swarm.shared.structs.Code;
+import swarm.shared.structs.E_NetworkPrivilege;
+import swarm.shared.structs.GridCoordinate;
+import swarm.shared.transaction.E_RequestPath;
+import swarm.shared.transaction.E_ResponseError;
+import swarm.shared.transaction.TransactionRequest;
+import swarm.shared.transaction.TransactionResponse;
 
-public class deleteHomeCells extends smA_DefaultRequestHandler
+public class deleteHomeCells extends A_DefaultRequestHandler
 {
 	private static final Logger s_logger = Logger.getLogger(deleteHomeCells.class.getName());
 	
 	@Override
-	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
+	public void handleRequest(TransactionContext context, TransactionRequest request, TransactionResponse response)
 	{
-		smI_BlobManager blobManager = m_serverContext.blobMngrFactory.create(smE_BlobCacheLevel.values());
-		smUserSession session = m_serverContext.sessionMngr.getSession(request, response);
+		I_BlobManager blobManager = m_serverContext.blobMngrFactory.create(E_BlobCacheLevel.values());
+		UserSession session = m_serverContext.sessionMngr.getSession(request, response);
 		
-		smServerUser user = null;
+		ServerUser user = null;
 		try
 		{
-			user = blobManager.getBlob(session, smServerUser.class);
+			user = blobManager.getBlob(session, ServerUser.class);
 		}
-		catch(smBlobException e)
+		catch(BlobException e)
 		{
-			response.setError(smE_ResponseError.SERVICE_EXCEPTION);
+			response.setError(E_ResponseError.SERVICE_EXCEPTION);
 			s_logger.log(Level.SEVERE, "Could not get user for refresh home cells.", e);
 			
 			return;
@@ -69,22 +69,22 @@ public class deleteHomeCells extends smA_DefaultRequestHandler
 			return;
 		}
 		
-		Iterator<smServerCellAddressMapping> iterator = user.getOwnedCells();
+		Iterator<ServerCellAddressMapping> iterator = user.getOwnedCells();
 		while( iterator.hasNext() )
 		{
-			smServerCellAddressMapping mapping = iterator.next();
+			ServerCellAddressMapping mapping = iterator.next();
 			
-			if( mapping.getGridType() != smE_GridType.ACTIVE )
+			if( mapping.getGridType() != E_GridType.ACTIVE )
 			{
 				return;
 			}
 			
-			smBlobTransaction_DeactivateCell deactivateCellTransaction = new smBlobTransaction_DeactivateCell(mapping);
+			BlobTransaction_DeactivateCell deactivateCellTransaction = new BlobTransaction_DeactivateCell(mapping);
 			try
 			{
-				deactivateCellTransaction.perform(m_serverContext.blobMngrFactory, smE_BlobTransactionType.MULTI_BLOB_TYPE, 1);
+				deactivateCellTransaction.perform(m_serverContext.blobMngrFactory, E_BlobTransactionType.MULTI_BLOB_TYPE, 1);
 			}
-			catch (smBlobException e)
+			catch (BlobException e)
 			{
 				s_logger.log(Level.WARNING, e.getMessage());
 			}
@@ -98,7 +98,7 @@ public class deleteHomeCells extends smA_DefaultRequestHandler
 		}
 		catch (Exception e)
 		{
-			response.setError(smE_ResponseError.SERVICE_EXCEPTION);
+			response.setError(E_ResponseError.SERVICE_EXCEPTION);
 			s_logger.log(Level.SEVERE, "", e);
 		}
 	}

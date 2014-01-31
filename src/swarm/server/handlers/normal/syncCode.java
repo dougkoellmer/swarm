@@ -4,77 +4,77 @@ import java.util.ConcurrentModificationException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import swarm.server.account.smE_Role;
-import swarm.server.account.smUserSession;
+import swarm.server.account.E_Role;
+import swarm.server.account.UserSession;
 
-import swarm.server.data.blob.smBlobException;
-import swarm.server.data.blob.smBlobManagerFactory;
-import swarm.server.data.blob.smE_BlobCacheLevel;
-import swarm.server.data.blob.smI_BlobManager;
-import swarm.server.entities.smE_GridType;
-import swarm.server.entities.smServerCell;
-import swarm.server.entities.smServerUser;
-import swarm.server.handlers.smU_CellCode;
-import swarm.server.session.smSessionManager;
-import swarm.server.structs.smServerCellAddressMapping;
-import swarm.server.structs.smServerCode;
-import swarm.server.structs.smServerGridCoordinate;
-import swarm.server.transaction.smA_DefaultRequestHandler;
-import swarm.server.transaction.smI_RequestHandler;
-import swarm.server.transaction.smTransactionContext;
-import swarm.shared.app.smS_App;
-import swarm.shared.code.smA_CodeCompiler;
-import swarm.shared.code.smCompilerResult;
-import swarm.shared.code.smE_CompilationStatus;
-import swarm.shared.entities.smE_CodeType;
-import swarm.shared.entities.smE_EditingPermission;
-import swarm.shared.transaction.smE_ResponseError;
-import swarm.shared.transaction.smTransactionRequest;
-import swarm.shared.transaction.smTransactionResponse;
+import swarm.server.data.blob.BlobException;
+import swarm.server.data.blob.BlobManagerFactory;
+import swarm.server.data.blob.E_BlobCacheLevel;
+import swarm.server.data.blob.I_BlobManager;
+import swarm.server.entities.E_GridType;
+import swarm.server.entities.ServerCell;
+import swarm.server.entities.ServerUser;
+import swarm.server.handlers.U_CellCode;
+import swarm.server.session.SessionManager;
+import swarm.server.structs.ServerCellAddressMapping;
+import swarm.server.structs.ServerCode;
+import swarm.server.structs.ServerGridCoordinate;
+import swarm.server.transaction.A_DefaultRequestHandler;
+import swarm.server.transaction.I_RequestHandler;
+import swarm.server.transaction.TransactionContext;
+import swarm.shared.app.S_CommonApp;
+import swarm.shared.code.A_CodeCompiler;
+import swarm.shared.code.CompilerResult;
+import swarm.shared.code.E_CompilationStatus;
+import swarm.shared.entities.E_CodeType;
+import swarm.shared.entities.E_EditingPermission;
+import swarm.shared.transaction.E_ResponseError;
+import swarm.shared.transaction.TransactionRequest;
+import swarm.shared.transaction.TransactionResponse;
 
-public class syncCode extends smA_DefaultRequestHandler
+public class syncCode extends A_DefaultRequestHandler
 {
 	private static final Logger s_logger = Logger.getLogger(syncCode.class.getName());
 	
-	protected boolean isSandBox(smServerCellAddressMapping mapping)
+	protected boolean isSandBox(ServerCellAddressMapping mapping)
 	{
 		return false;
 	}
 	
-	private boolean isAuthorized(smI_BlobManager blobManager, smServerCellAddressMapping mapping, smTransactionRequest request, smTransactionResponse response)
+	private boolean isAuthorized(I_BlobManager blobManager, ServerCellAddressMapping mapping, TransactionRequest request, TransactionResponse response)
 	{
-		if( !m_serverContext.sessionMngr.isAuthorized(request, response, smE_Role.USER) )
+		if( !m_serverContext.sessionMngr.isAuthorized(request, response, E_Role.USER) )
 		{
 			return false;
 		}
 
 		//--- DRK > Have to do a further checking here to make sure user owns this cell.
-		smUserSession session = m_serverContext.sessionMngr.getSession(request, response);
+		UserSession session = m_serverContext.sessionMngr.getSession(request, response);
 		
 		//--- DRK > Used to have this check here...don't see why we shouldn't also
 		//---		force admins to own their own cells too.
 		//if( session.getRole().ordinal() == smE_Role.USER.ordinal() )
 		{
-			smServerUser user = null;
+			ServerUser user = null;
 			
 			try
 			{
-				user = blobManager.getBlob(session, smServerUser.class);
+				user = blobManager.getBlob(session, ServerUser.class);
 			}
-			catch(smBlobException e)
+			catch(BlobException e)
 			{
-				response.setError(smE_ResponseError.SERVICE_EXCEPTION);
+				response.setError(E_ResponseError.SERVICE_EXCEPTION);
 				
 				return false;
 			}
 			
 			//TODO: When flag system is in place, will have to check if this cell's been flagged or not, and check if user has editing permissions for that.
 			boolean isCellOwner = user.isCellOwner(mapping.getCoordinate());
-			boolean isAllPowerful = user.getEditingPermission() == smE_EditingPermission.ALL_CELLS;
+			boolean isAllPowerful = user.getEditingPermission() == E_EditingPermission.ALL_CELLS;
 			
 			if( user == null || user != null && !isCellOwner && !isAllPowerful )
 			{
-				response.setError(smE_ResponseError.NOT_AUTHORIZED);
+				response.setError(E_ResponseError.NOT_AUTHORIZED);
 				
 				return false;
 			}
@@ -84,13 +84,13 @@ public class syncCode extends smA_DefaultRequestHandler
 	}
 	
 	@Override
-	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
+	public void handleRequest(TransactionContext context, TransactionRequest request, TransactionResponse response)
 	{
-		smServerCellAddressMapping mapping = new smServerCellAddressMapping(smE_GridType.ACTIVE);
+		ServerCellAddressMapping mapping = new ServerCellAddressMapping(E_GridType.ACTIVE);
 		mapping.readJson(m_serverContext.jsonFactory, request.getJsonArgs());
 		boolean isSandbox = isSandBox(mapping);
-		smI_BlobManager blobManager = m_serverContext.blobMngrFactory.create(smE_BlobCacheLevel.PERSISTENT);
-		smI_BlobManager cachingBlobManager = m_serverContext.blobMngrFactory.create(smE_BlobCacheLevel.MEMCACHE);
+		I_BlobManager blobManager = m_serverContext.blobMngrFactory.create(E_BlobCacheLevel.PERSISTENT);
+		I_BlobManager cachingBlobManager = m_serverContext.blobMngrFactory.create(E_BlobCacheLevel.MEMCACHE);
 		
 		if( !isSandbox )
 		{
@@ -104,13 +104,13 @@ public class syncCode extends smA_DefaultRequestHandler
 			}
 		}
 		
-		smServerCell persistedCell = smU_CellCode.getCellForCompile(blobManager, mapping, response);
+		ServerCell persistedCell = U_CellCode.getCellForCompile(blobManager, mapping, response);
 		
 		if( persistedCell == null )  return;
 		
-		smServerCode sourceCode = new smServerCode(m_serverContext.jsonFactory, request.getJsonArgs(), smE_CodeType.SOURCE);
+		ServerCode sourceCode = new ServerCode(m_serverContext.jsonFactory, request.getJsonArgs(), E_CodeType.SOURCE);
 		
-		smCompilerResult result = smU_CellCode.compileCell(m_serverContext.codeCompiler, persistedCell, sourceCode, mapping, m_serverContext.config.appId);
+		CompilerResult result = U_CellCode.compileCell(m_serverContext.codeCompiler, persistedCell, sourceCode, mapping, m_serverContext.config.appId);
 		
 		//--- DRK > This write could obviously cause contention if user was saving from multiple clients,
 		//---		but if a user wants to do that for whatever reason, it's their own problem.
@@ -119,7 +119,7 @@ public class syncCode extends smA_DefaultRequestHandler
 		//---			  But if it does, valid contention cases could definitely happen.
 		if( isSandbox == false)
 		{
-			smU_CellCode.saveBackCompiledCell(blobManager, cachingBlobManager, mapping, persistedCell, response);
+			U_CellCode.saveBackCompiledCell(blobManager, cachingBlobManager, mapping, persistedCell, response);
 		}
 		
 		result.writeJson(m_serverContext.jsonFactory, response.getJsonArgs());

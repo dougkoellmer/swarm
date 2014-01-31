@@ -1,81 +1,81 @@
 package swarm.client.states;
 
-import swarm.client.app.smAppContext;
-import swarm.client.app.smPlatformInfo;
-import swarm.client.entities.smA_ClientUser;
-import swarm.client.managers.smClientAccountManager;
-import swarm.client.managers.smGridManager;
-import swarm.client.managers.smUserManager;
-import swarm.client.transaction.smE_RequestSynchronicity;
-import swarm.client.transaction.smE_TransactionAction;
-import swarm.client.transaction.smE_ResponseErrorControl;
-import swarm.client.transaction.smE_ResponseSuccessControl;
-import swarm.client.transaction.smI_TransactionResponseHandler;
-import swarm.client.transaction.smClientTransactionManager;
-import swarm.client.transaction.smInlineRequestDispatcher;
+import swarm.client.app.AppContext;
+import swarm.client.app.PlatformInfo;
+import swarm.client.entities.A_ClientUser;
+import swarm.client.managers.ClientAccountManager;
+import swarm.client.managers.GridManager;
+import swarm.client.managers.UserManager;
+import swarm.client.transaction.E_RequestSynchronicity;
+import swarm.client.transaction.E_TransactionAction;
+import swarm.client.transaction.E_ResponseErrorControl;
+import swarm.client.transaction.E_ResponseSuccessControl;
+import swarm.client.transaction.I_TransactionResponseHandler;
+import swarm.client.transaction.ClientTransactionManager;
+import swarm.client.transaction.InlineRequestDispatcher;
 
-import swarm.shared.debugging.smU_Debug;
-import swarm.shared.reflection.smI_Callback;
-import swarm.shared.statemachine.smA_State;
-import swarm.shared.statemachine.smA_StateConstructor;
-import swarm.shared.transaction.smE_RequestPath;
-import swarm.shared.transaction.smTransactionRequest;
-import swarm.shared.transaction.smTransactionResponse;
+import swarm.shared.debugging.U_Debug;
+import swarm.shared.reflection.I_Callback;
+import swarm.shared.statemachine.A_State;
+import swarm.shared.statemachine.A_StateConstructor;
+import swarm.shared.transaction.E_RequestPath;
+import swarm.shared.transaction.TransactionRequest;
+import swarm.shared.transaction.TransactionResponse;
 
 
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.user.client.Window;
 
-public class State_Initializing extends smA_State implements smI_TransactionResponseHandler
+public class State_Initializing extends A_State implements I_TransactionResponseHandler
 {
 	private int m_successCount = 0;
 	
 	private int m_requiredSuccessCount = 0;
 	
-	private final smAppContext m_appContext;
+	private final AppContext m_appContext;
 	
-	public State_Initializing(smAppContext appContext)
+	public State_Initializing(AppContext appContext)
 	{
 		m_appContext = appContext;
 	}
 	
 	@Override
-	public smE_ResponseSuccessControl onResponseSuccess(smTransactionRequest request, smTransactionResponse response)
+	public E_ResponseSuccessControl onResponseSuccess(TransactionRequest request, TransactionResponse response)
 	{
-		smE_ResponseSuccessControl control = smE_ResponseSuccessControl.CONTINUE;
+		E_ResponseSuccessControl control = E_ResponseSuccessControl.CONTINUE;
 		
-		if ( request.getPath() == smE_RequestPath.getUserData )
+		if ( request.getPath() == E_RequestPath.getUserData )
 		{
 			m_successCount++;
 		}
-		else if ( request.getPath() == smE_RequestPath.getGridData )
+		else if ( request.getPath() == E_RequestPath.getGridData )
 		{
 			m_successCount++;
 		}
-		else if ( request.getPath() == smE_RequestPath.getStartingPosition )
+		else if ( request.getPath() == E_RequestPath.getStartingPosition )
 		{
 			m_successCount++;
 		}
 		
-		return smE_ResponseSuccessControl.CONTINUE;
+		return E_ResponseSuccessControl.CONTINUE;
 	}
 	
 	@Override
-	public smE_ResponseErrorControl onResponseError(smTransactionRequest request, smTransactionResponse response)
+	public E_ResponseErrorControl onResponseError(TransactionRequest request, TransactionResponse response)
 	{
-		return smE_ResponseErrorControl.CONTINUE; // bubble all errors up to base controller for error dialog.
+		return E_ResponseErrorControl.CONTINUE; // bubble all errors up to base controller for error dialog.
 	}
 	
 	@Override
-	protected void didEnter(smA_StateConstructor constructor)
+	protected void didEnter(A_StateConstructor constructor)
 	{
-		final smClientAccountManager accountManager = m_appContext.accountMngr;
-		final smUserManager userManager = m_appContext.userMngr;
-		final smGridManager gridManager = m_appContext.gridMngr;
-		final smClientTransactionManager transactionManager = m_appContext.txnMngr;
+		final ClientAccountManager accountManager = m_appContext.accountMngr;
+		final UserManager userManager = m_appContext.userMngr;
+		final GridManager gridManager = m_appContext.gridMngr;
+		final ClientTransactionManager transactionManager = m_appContext.txnMngr;
 		
 		//--- DRK > Do an initial transaction to see if user is signed in.
-		accountManager.init(new smI_Callback()
+		accountManager.init(new I_Callback()
 		{
 			@Override
 			public void invoke(Object ... args)
@@ -85,12 +85,12 @@ public class State_Initializing extends smA_State implements smI_TransactionResp
 				
 				transactionManager.addHandler(State_Initializing.this);
 				
-				gridManager.getGridData(smE_TransactionAction.QUEUE_REQUEST);
-				userManager.getPosition(smE_TransactionAction.QUEUE_REQUEST);
+				gridManager.getGridData(E_TransactionAction.QUEUE_REQUEST);
+				userManager.getPosition(E_TransactionAction.QUEUE_REQUEST);
 				
 				if( accountManager.isSignedIn() )
 				{
-					userManager.populateUser(smE_TransactionAction.QUEUE_REQUEST);
+					userManager.populateUser(E_TransactionAction.QUEUE_REQUEST);
 					
 					//m_requiredSuccessCount++;
 				}
@@ -101,7 +101,7 @@ public class State_Initializing extends smA_State implements smI_TransactionResp
 	}
 	
 	@Override
-	protected void didForeground(Class<? extends smA_State> revealingState, Object[] argsFromRevealingState)
+	protected void didForeground(Class<? extends A_State> revealingState, Object[] argsFromRevealingState)
 	{
 		if( revealingState != null )
 		{
@@ -119,10 +119,10 @@ public class State_Initializing extends smA_State implements smI_TransactionResp
 			
 			StateMachine_Base baseController = getContext().getEnteredState(StateMachine_Base.class);
 			
-			smClientAccountManager accountManager = m_appContext.accountMngr;
-			smClientAccountManager.E_PasswordChangeTokenState resetTokenState = accountManager.getPasswordChangeTokenState();
+			ClientAccountManager accountManager = m_appContext.accountMngr;
+			ClientAccountManager.E_PasswordChangeTokenState resetTokenState = accountManager.getPasswordChangeTokenState();
 			
-			if( resetTokenState == smClientAccountManager.E_PasswordChangeTokenState.INVALID )
+			if( resetTokenState == ClientAccountManager.E_PasswordChangeTokenState.INVALID )
 			{
 				State_GenericDialog.Constructor constructor = new State_GenericDialog.Constructor
 				(
@@ -134,7 +134,7 @@ public class State_Initializing extends smA_State implements smI_TransactionResp
 					
 				return;
 			}
-			else if( resetTokenState == smClientAccountManager.E_PasswordChangeTokenState.VALID )
+			else if( resetTokenState == ClientAccountManager.E_PasswordChangeTokenState.VALID )
 			{
 				State_GenericDialog.Constructor constructor = new State_GenericDialog.Constructor
 				(
@@ -159,7 +159,7 @@ public class State_Initializing extends smA_State implements smI_TransactionResp
 	}
 	
 	@Override
-	protected void willBackground(Class<? extends smA_State> blockingState)
+	protected void willBackground(Class<? extends A_State> blockingState)
 	{
 		
 	}
@@ -167,7 +167,7 @@ public class State_Initializing extends smA_State implements smI_TransactionResp
 	@Override
 	protected void willExit()
 	{
-		final smClientTransactionManager transactionManager = m_appContext.txnMngr;
+		final ClientTransactionManager transactionManager = m_appContext.txnMngr;
 		transactionManager.removeHandler(this);
 		
 		m_successCount = 0;

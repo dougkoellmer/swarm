@@ -1,12 +1,12 @@
 package swarm.client.states.camera;
 
 import swarm.client.states.camera.StateMachine_Camera.PendingSnap;
-import swarm.shared.statemachine.smA_State;
-import swarm.shared.structs.smCellAddress;
-import swarm.shared.structs.smCellAddressMapping;
+import swarm.shared.statemachine.A_State;
+import swarm.shared.structs.CellAddress;
+import swarm.shared.structs.CellAddressMapping;
 import swarm.client.managers.*;
 
-class smCellAddressManagerListener implements smCellAddressManager.I_Listener
+class smCellAddressManagerListener implements CellAddressManager.I_Listener
 {
 	private final StateMachine_Camera m_machine;
 	
@@ -19,9 +19,9 @@ class smCellAddressManagerListener implements smCellAddressManager.I_Listener
 		m_snapToCoordArgs.userData = Action_Camera_SnapToAddress.class;
 	}
 	
-	private boolean dispatchGotMappingEvent(Event_GettingMapping_OnResponse.E_Type type, smCellAddress address, smCellAddressMapping mapping)
+	private boolean dispatchGotMappingEvent(Event_GettingMapping_OnResponse.E_Type type, CellAddress address, CellAddressMapping mapping)
 	{
-		smA_State currentState = m_machine.getCurrentState();
+		A_State currentState = m_machine.getCurrentState();
 		if( currentState instanceof State_GettingMapping )
 		{
 			State_GettingMapping gettingAddy = ((State_GettingMapping)currentState);
@@ -40,11 +40,11 @@ class smCellAddressManagerListener implements smCellAddressManager.I_Listener
 		return false;
 	}
 	
-	private void dispatchGotAddressEvent(Event_Camera_OnAddressResponse.E_Type type, smCellAddress address, smCellAddressMapping mapping)
+	private void dispatchGotAddressEvent(Event_Camera_OnAddressResponse.E_Type type, CellAddress address, CellAddressMapping mapping)
 	{
 		boolean dispatch = false;
 		
-		smA_State currentState = m_machine.getCurrentState();
+		A_State currentState = m_machine.getCurrentState();
 		if( currentState instanceof State_CameraSnapping )
 		{
 			State_CameraSnapping snappingState = m_machine.getCurrentState();
@@ -72,7 +72,7 @@ class smCellAddressManagerListener implements smCellAddressManager.I_Listener
 	}
 	
 	@Override
-	public void onMappingFound(smCellAddress address, smCellAddressMapping mapping)
+	public void onMappingFound(CellAddress address, CellAddressMapping mapping)
 	{
 		if( dispatchGotMappingEvent(Event_GettingMapping_OnResponse.E_Type.ON_FOUND, address, mapping) )
 		{
@@ -82,31 +82,31 @@ class smCellAddressManagerListener implements smCellAddressManager.I_Listener
 	}
 
 	@Override
-	public void onMappingNotFound(smCellAddress address)
+	public void onMappingNotFound(CellAddress address)
 	{
 		dispatchGotMappingEvent(Event_GettingMapping_OnResponse.E_Type.ON_NOT_FOUND, address, null);
 	}
 
 	@Override
-	public void onResponseError(smCellAddress address)
+	public void onResponseError(CellAddress address)
 	{
 		dispatchGotMappingEvent(Event_GettingMapping_OnResponse.E_Type.ON_RESPONSE_ERROR, address, null);
 	}
 	
 	@Override
-	public void onAddressFound(smCellAddressMapping mapping, smCellAddress address)
+	public void onAddressFound(CellAddressMapping mapping, CellAddress address)
 	{
 		dispatchGotAddressEvent(Event_Camera_OnAddressResponse.E_Type.ON_FOUND, address, mapping);
 	}
 
 	@Override
-	public void onAddressNotFound(smCellAddressMapping mapping)
+	public void onAddressNotFound(CellAddressMapping mapping)
 	{
 		dispatchGotAddressEvent(Event_Camera_OnAddressResponse.E_Type.ON_NOT_FOUND, null, mapping);
 	}
 
 	@Override
-	public void onResponseError(smCellAddressMapping mapping)
+	public void onResponseError(CellAddressMapping mapping)
 	{
 		dispatchGotAddressEvent(Event_Camera_OnAddressResponse.E_Type.ON_RESPONSE_ERROR, null, mapping);
 	}

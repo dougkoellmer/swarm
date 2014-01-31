@@ -1,14 +1,14 @@
 package swarm.client.states.account;
 
 
-import swarm.client.app.smAppContext;
-import swarm.client.managers.smClientAccountManager;
-import swarm.shared.account.smSignInCredentials;
-import swarm.shared.account.smSignInValidator;
-import swarm.shared.debugging.smU_Debug;
-import swarm.shared.statemachine.smA_Action;
-import swarm.shared.statemachine.smA_State;
-import swarm.shared.statemachine.smA_StateConstructor;
+import swarm.client.app.AppContext;
+import swarm.client.managers.ClientAccountManager;
+import swarm.shared.account.SignInCredentials;
+import swarm.shared.account.SignInValidator;
+import swarm.shared.debugging.U_Debug;
+import swarm.shared.statemachine.A_Action;
+import swarm.shared.statemachine.A_State;
+import swarm.shared.statemachine.A_StateConstructor;
 
 
 
@@ -16,15 +16,15 @@ import swarm.shared.statemachine.smA_StateConstructor;
  * ...
  * @author 
  */
-public class State_ManageAccount extends smA_State
+public class State_ManageAccount extends A_State
 {
-	public State_ManageAccount(smClientAccountManager accountMngr)
+	public State_ManageAccount(ClientAccountManager accountMngr)
 	{
 		registerAction(new Action_ManageAccount_SignOut(accountMngr));
 	}
 	
 	@Override
-	protected void didEnter(smA_StateConstructor constructor)
+	protected void didEnter(A_StateConstructor constructor)
 	{
 	}
 }

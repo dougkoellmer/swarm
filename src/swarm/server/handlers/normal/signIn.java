@@ -1,31 +1,31 @@
 package swarm.server.handlers.normal;
 
-import swarm.server.account.smServerAccountManager;
-import swarm.server.account.smUserSession;
+import swarm.server.account.ServerAccountManager;
+import swarm.server.account.UserSession;
 
-import swarm.server.session.smSessionManager;
-import swarm.server.transaction.smA_DefaultRequestHandler;
-import swarm.server.transaction.smI_RequestHandler;
-import swarm.server.transaction.smTransactionContext;
-import swarm.shared.account.smSignInCredentials;
-import swarm.shared.account.smSignInValidationResult;
-import swarm.shared.account.smSignInValidator;
-import swarm.shared.app.smSharedAppContext;
-import swarm.shared.json.smE_JsonKey;
-import swarm.shared.json.smJsonHelper;
-import swarm.shared.transaction.smTransactionRequest;
-import swarm.shared.transaction.smTransactionResponse;
+import swarm.server.session.SessionManager;
+import swarm.server.transaction.A_DefaultRequestHandler;
+import swarm.server.transaction.I_RequestHandler;
+import swarm.server.transaction.TransactionContext;
+import swarm.shared.account.SignInCredentials;
+import swarm.shared.account.SignInValidationResult;
+import swarm.shared.account.SignInValidator;
+import swarm.shared.app.BaseAppContext;
+import swarm.shared.json.E_JsonKey;
+import swarm.shared.json.JsonHelper;
+import swarm.shared.transaction.TransactionRequest;
+import swarm.shared.transaction.TransactionResponse;
 
-public class signIn extends smA_DefaultRequestHandler
+public class signIn extends A_DefaultRequestHandler
 {
 	@Override
-	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
+	public void handleRequest(TransactionContext context, TransactionRequest request, TransactionResponse response)
 	{
-		smSignInCredentials creds = new smSignInCredentials(m_serverContext.jsonFactory, request.getJsonArgs());
-		smSignInValidationResult result = new smSignInValidationResult();
-		String passwordChangeToken = m_serverContext.jsonFactory.getHelper().getString(request.getJsonArgs(), smE_JsonKey.passwordChangeToken);
+		SignInCredentials creds = new SignInCredentials(m_serverContext.jsonFactory, request.getJsonArgs());
+		SignInValidationResult result = new SignInValidationResult();
+		String passwordChangeToken = m_serverContext.jsonFactory.getHelper().getString(request.getJsonArgs(), E_JsonKey.passwordChangeToken);
 		
-		smUserSession userSession = null;
+		UserSession userSession = null;
 		
 		if( passwordChangeToken != null )
 		{

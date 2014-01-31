@@ -8,97 +8,97 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 
-import swarm.shared.app.smSharedAppContext;
+import swarm.shared.app.BaseAppContext;
 
-import swarm.server.data.blob.smBlobException;
-import swarm.server.data.blob.smBlobManagerFactory;
-import swarm.server.data.blob.smE_BlobCacheLevel;
-import swarm.server.data.blob.smI_Blob;
-import swarm.server.data.blob.smI_BlobKey;
-import swarm.server.data.blob.smI_BlobManager;
-import swarm.server.entities.smE_GridType;
-import swarm.server.entities.smServerCell;
-import swarm.server.structs.smServerCellAddressMapping;
-import swarm.server.structs.smServerGridCoordinate;
-import swarm.server.transaction.smA_DefaultRequestHandler;
-import swarm.server.transaction.smI_DeferredRequestHandler;
-import swarm.server.transaction.smI_RequestHandler;
-import swarm.server.transaction.smServerTransactionManager;
-import swarm.server.transaction.smTransactionBatch;
-import swarm.server.transaction.smTransactionContext;
-import swarm.shared.utils.smU_Bits;
-import swarm.shared.entities.smA_Cell;
-import swarm.shared.entities.smE_CodeSafetyLevel;
-import swarm.shared.entities.smE_CodeType;
-import swarm.shared.json.smA_JsonFactory;
-import swarm.shared.json.smE_JsonKey;
-import swarm.shared.json.smJsonHelper;
-import swarm.shared.structs.smCode;
-import swarm.shared.structs.smCodePrivileges;
-import swarm.shared.transaction.smE_RequestPath;
-import swarm.shared.transaction.smE_ResponseError;
-import swarm.shared.transaction.smTransactionRequest;
-import swarm.shared.transaction.smTransactionResponse;
+import swarm.server.data.blob.BlobException;
+import swarm.server.data.blob.BlobManagerFactory;
+import swarm.server.data.blob.E_BlobCacheLevel;
+import swarm.server.data.blob.I_Blob;
+import swarm.server.data.blob.I_BlobKey;
+import swarm.server.data.blob.I_BlobManager;
+import swarm.server.entities.E_GridType;
+import swarm.server.entities.ServerCell;
+import swarm.server.structs.ServerCellAddressMapping;
+import swarm.server.structs.ServerGridCoordinate;
+import swarm.server.transaction.A_DefaultRequestHandler;
+import swarm.server.transaction.I_DeferredRequestHandler;
+import swarm.server.transaction.I_RequestHandler;
+import swarm.server.transaction.ServerTransactionManager;
+import swarm.server.transaction.TransactionBatch;
+import swarm.server.transaction.TransactionContext;
+import swarm.shared.utils.U_Bits;
+import swarm.shared.entities.A_Cell;
+import swarm.shared.entities.E_CodeSafetyLevel;
+import swarm.shared.entities.E_CodeType;
+import swarm.shared.json.A_JsonFactory;
+import swarm.shared.json.E_JsonKey;
+import swarm.shared.json.JsonHelper;
+import swarm.shared.structs.Code;
+import swarm.shared.structs.CodePrivileges;
+import swarm.shared.transaction.E_RequestPath;
+import swarm.shared.transaction.E_ResponseError;
+import swarm.shared.transaction.TransactionRequest;
+import swarm.shared.transaction.TransactionResponse;
 
-public class getCode extends smA_DefaultRequestHandler implements smI_DeferredRequestHandler
+public class getCode extends A_DefaultRequestHandler implements I_DeferredRequestHandler
 {
 	private static final Logger s_logger = Logger.getLogger(getCode.class.getName());
 	
-	private HashMap<smI_BlobKey, Class<? extends smI_Blob>> getBlobCoordSet(smTransactionContext context, boolean forceCreate)
+	private HashMap<I_BlobKey, Class<? extends I_Blob>> getBlobCoordSet(TransactionContext context, boolean forceCreate)
 	{
-		HashMap<smI_BlobKey, Class<? extends smI_Blob>> set = (HashMap<smI_BlobKey, Class<? extends smI_Blob>>) context.getUserData(smE_RequestPath.getCode);
+		HashMap<I_BlobKey, Class<? extends I_Blob>> set = (HashMap<I_BlobKey, Class<? extends I_Blob>>) context.getUserData(E_RequestPath.getCode);
 		
 		if( set == null && forceCreate)
 		{
-			set = new HashMap<smI_BlobKey, Class<? extends smI_Blob>>();
-			context.setUserData(smE_RequestPath.getCode, set);
+			set = new HashMap<I_BlobKey, Class<? extends I_Blob>>();
+			context.setUserData(E_RequestPath.getCode, set);
 		}
 		
 		return set;
 	}
 	
 	@Override
-	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
+	public void handleRequest(TransactionContext context, TransactionRequest request, TransactionResponse response)
 	{
 		//smU_Servlet.simulateException(true);
 		
-		smServerCellAddressMapping mapping = new smServerCellAddressMapping(smE_GridType.ACTIVE);
+		ServerCellAddressMapping mapping = new ServerCellAddressMapping(E_GridType.ACTIVE);
 		mapping.readJson(m_serverContext.jsonFactory, request.getJsonArgs());
 		
-		if( context.getRequestCount(smE_RequestPath.getCode) > 1 )
+		if( context.getRequestCount(E_RequestPath.getCode) > 1 )
 		{
-			HashMap<smI_BlobKey, Class<? extends smI_Blob>> blobCoordSet = this.getBlobCoordSet(context, true);
+			HashMap<I_BlobKey, Class<? extends I_Blob>> blobCoordSet = this.getBlobCoordSet(context, true);
 			
-			blobCoordSet.put(mapping, smServerCell.class);
+			blobCoordSet.put(mapping, ServerCell.class);
 			
-			response.setError(smE_ResponseError.DEFERRED);
+			response.setError(E_ResponseError.DEFERRED);
 			
 			return;
 		}
 		
-		smI_BlobManager blobManager = m_serverContext.blobMngrFactory.create(smE_BlobCacheLevel.values());
+		I_BlobManager blobManager = m_serverContext.blobMngrFactory.create(E_BlobCacheLevel.values());
 		
-		smServerCell persistedCell = null;
+		ServerCell persistedCell = null;
 		
 		try
 		{
-			persistedCell = blobManager.getBlob(mapping, smServerCell.class);
+			persistedCell = blobManager.getBlob(mapping, ServerCell.class);
 		}
-		catch(smBlobException e)
+		catch(BlobException e)
 		{
-			response.setError(smE_ResponseError.SERVICE_EXCEPTION);
+			response.setError(E_ResponseError.SERVICE_EXCEPTION);
 			
 			return;
 		}
 
-		smE_CodeType eCodeType = m_serverContext.jsonFactory.getHelper().getEnum(request.getJsonArgs(), smE_JsonKey.codeType, smE_CodeType.values());
+		E_CodeType eCodeType = m_serverContext.jsonFactory.getHelper().getEnum(request.getJsonArgs(), E_JsonKey.codeType, E_CodeType.values());
 		
 		writeResponse(eCodeType, persistedCell, response);
 	}
 	
-	private smCode writeResponse(smE_CodeType eCodeType, smServerCell persistedCell, smTransactionResponse response)
+	private Code writeResponse(E_CodeType eCodeType, ServerCell persistedCell, TransactionResponse response)
 	{
-		smCode responseCode = null;
+		Code responseCode = null;
 		
 		if( persistedCell == null )
 		{
@@ -114,7 +114,7 @@ public class getCode extends smA_DefaultRequestHandler implements smI_DeferredRe
 				
 				if( responseCode /*still*/== null )
 				{
-					responseCode = new smCode("", smE_CodeType.values());
+					responseCode = new Code("", E_CodeType.values());
 				}
 			}
 		}
@@ -122,12 +122,12 @@ public class getCode extends smA_DefaultRequestHandler implements smI_DeferredRe
 		//--- DRK > Figure out what privileges information to send down to client, if anything.
 		//---		Just piggy-backing here cause it will be needed anyway for source.
 		//---		If this turns out to be null, no privileges information is sent down.
-		smCodePrivileges privileges = null;
-		if( responseCode!= null && (responseCode.isStandInFor(smE_CodeType.SOURCE) || responseCode.getSafetyLevel() == smE_CodeSafetyLevel.VIRTUAL_DYNAMIC_SANDBOX) )
+		CodePrivileges privileges = null;
+		if( responseCode!= null && (responseCode.isStandInFor(E_CodeType.SOURCE) || responseCode.getSafetyLevel() == E_CodeSafetyLevel.VIRTUAL_DYNAMIC_SANDBOX) )
 		{
 			if( persistedCell == null )
 			{
-				privileges = new smCodePrivileges();
+				privileges = new CodePrivileges();
 			}
 			else
 			{
@@ -138,56 +138,56 @@ public class getCode extends smA_DefaultRequestHandler implements smI_DeferredRe
 		//--- DRK > Create the response cell and send'er back to client.
 		//---		We create a new cell here so that we can set code only for the desired type,
 		//---		and don't send down all the other code types that the persisted cell might have.
-		smA_Cell responseCell = new smA_Cell(privileges){};
+		A_Cell responseCell = new A_Cell(privileges){};
 		responseCell.setCode(eCodeType, responseCode);
 		responseCell.writeJson(m_serverContext.jsonFactory, response.getJsonArgs());
-		response.setError(smE_ResponseError.NO_ERROR);
+		response.setError(E_ResponseError.NO_ERROR);
 		
 		return responseCode;
 	}
 
 	@Override
-	public void handleDeferredRequests(smTransactionContext context, smTransactionBatch batch)
+	public void handleDeferredRequests(TransactionContext context, TransactionBatch batch)
 	{
-		HashMap<smI_BlobKey, Class<? extends smI_Blob>> query = this.getBlobCoordSet(context, false);
+		HashMap<I_BlobKey, Class<? extends I_Blob>> query = this.getBlobCoordSet(context, false);
 		
 		if( query == null )
 		{
 			return;
 		}
 
-		smI_BlobManager blobManager = m_serverContext.blobMngrFactory.create(smE_BlobCacheLevel.values());
+		I_BlobManager blobManager = m_serverContext.blobMngrFactory.create(E_BlobCacheLevel.values());
 		
-		Map<smI_BlobKey, smI_Blob> result = null;
-		smE_ResponseError error = smE_ResponseError.NO_ERROR;
+		Map<I_BlobKey, I_Blob> result = null;
+		E_ResponseError error = E_ResponseError.NO_ERROR;
 		
 		try
 		{
 			result = blobManager.getBlobs(query);
 		}
-		catch(smBlobException e)
+		catch(BlobException e)
 		{
 			result = null;
-			error = smE_ResponseError.SERVICE_EXCEPTION;
+			error = E_ResponseError.SERVICE_EXCEPTION;
 		}
 		
-		HashMap<smServerCellAddressMapping, Integer> allTypesAlreadyReturned = new HashMap<smServerCellAddressMapping, Integer>();
+		HashMap<ServerCellAddressMapping, Integer> allTypesAlreadyReturned = new HashMap<ServerCellAddressMapping, Integer>();
 		
 		for( int i = 0; i < batch.getCount(); i++ )
 		{
-			smTransactionRequest request = batch.getRequest(i);
-			smTransactionResponse response = batch.getResponse(i);
+			TransactionRequest request = batch.getRequest(i);
+			TransactionResponse response = batch.getResponse(i);
 			
-			if( request.getPath() != smE_RequestPath.getCode )  continue;
+			if( request.getPath() != E_RequestPath.getCode )  continue;
 			
-			if( error != smE_ResponseError.NO_ERROR )
+			if( error != E_ResponseError.NO_ERROR )
 			{
 				response.setError(error);
 
 				continue;
 			}
 			
-			smE_CodeType eCodeType = m_serverContext.jsonFactory.getHelper().getEnum(request.getJsonArgs(), smE_JsonKey.codeType, smE_CodeType.values());
+			E_CodeType eCodeType = m_serverContext.jsonFactory.getHelper().getEnum(request.getJsonArgs(), E_JsonKey.codeType, E_CodeType.values());
 
 			if( result == null )
 			{
@@ -196,10 +196,10 @@ public class getCode extends smA_DefaultRequestHandler implements smI_DeferredRe
 				continue;
 			}
 			
-			smServerCellAddressMapping mapping = new smServerCellAddressMapping(smE_GridType.ACTIVE);
+			ServerCellAddressMapping mapping = new ServerCellAddressMapping(E_GridType.ACTIVE);
 			mapping.readJson(m_serverContext.jsonFactory, request.getJsonArgs());
 			
-			smServerCell persistedCell = (smServerCell) result.get(mapping);
+			ServerCell persistedCell = (ServerCell) result.get(mapping);
 			
 			if( persistedCell == null )
 			{
@@ -212,16 +212,16 @@ public class getCode extends smA_DefaultRequestHandler implements smI_DeferredRe
 			
 			if( typesAlreadyReturnedForCoord != null )
 			{
-				int typeBit = smU_Bits.calcOrdinalBit(eCodeType.ordinal());
+				int typeBit = U_Bits.calcOrdinalBit(eCodeType.ordinal());
 				if( (typesAlreadyReturnedForCoord & typeBit) != 0 )
 				{
-					response.setError(smE_ResponseError.REDUNDANT);
+					response.setError(E_ResponseError.REDUNDANT);
 					
 					continue;
 				}
 			}
 
-			smCode code = this.writeResponse(eCodeType, persistedCell, response);
+			Code code = this.writeResponse(eCodeType, persistedCell, response);
 			
 			typesAlreadyReturnedForCoord = typesAlreadyReturnedForCoord == null ? 0 : typesAlreadyReturnedForCoord;
 			

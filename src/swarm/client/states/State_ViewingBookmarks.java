@@ -1,17 +1,17 @@
 package swarm.client.states;
 
-import swarm.shared.statemachine.smA_State;
-import swarm.shared.statemachine.smA_StateConstructor;
+import swarm.shared.statemachine.A_State;
+import swarm.shared.statemachine.A_StateConstructor;
 
 
 /**
  * ...
  * @author 
  */
-public class State_ViewingBookmarks extends smA_State
+public class State_ViewingBookmarks extends A_State
 {
 	@Override
-	protected void didEnter(smA_StateConstructor constructor)
+	protected void didEnter(A_StateConstructor constructor)
 	{
 	}
 }

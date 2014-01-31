@@ -6,66 +6,66 @@ import java.util.logging.Logger;
 
 import javax.servlet.ServletContext;
 
-import swarm.server.account.smE_Role;
-import swarm.server.account.smUserSession;
+import swarm.server.account.E_Role;
+import swarm.server.account.UserSession;
 
-import swarm.server.blobxn.smBlobTransaction_CreateUser;
-import swarm.server.data.blob.smBlobException;
-import swarm.server.data.blob.smBlobManagerFactory;
-import swarm.server.data.blob.smE_BlobCacheLevel;
-import swarm.server.data.blob.smE_BlobTransactionType;
-import swarm.server.data.blob.smI_Blob;
-import swarm.server.data.blob.smI_BlobKey;
-import swarm.server.data.blob.smI_BlobManager;
-import swarm.server.entities.smE_GridType;
-import swarm.server.entities.smServerGrid;
-import swarm.server.entities.smServerUser;
-import swarm.server.handlers.smU_Handler;
-import swarm.server.session.smSessionManager;
-import swarm.server.structs.smServerCellAddress;
-import swarm.server.structs.smServerCodePrivileges;
-import swarm.server.transaction.smA_DefaultRequestHandler;
-import swarm.server.transaction.smI_RequestHandler;
-import swarm.server.transaction.smServerTransactionManager;
-import swarm.server.transaction.smTransactionContext;
-import swarm.shared.entities.smA_User;
-import swarm.shared.entities.smE_CodeType;
-import swarm.shared.structs.smCode;
-import swarm.shared.structs.smE_NetworkPrivilege;
-import swarm.shared.structs.smGridCoordinate;
-import swarm.shared.transaction.smE_RequestPath;
-import swarm.shared.transaction.smE_ResponseError;
-import swarm.shared.transaction.smTransactionRequest;
-import swarm.shared.transaction.smTransactionResponse;
+import swarm.server.blobxn.BlobTransaction_CreateUser;
+import swarm.server.data.blob.BlobException;
+import swarm.server.data.blob.BlobManagerFactory;
+import swarm.server.data.blob.E_BlobCacheLevel;
+import swarm.server.data.blob.E_BlobTransactionType;
+import swarm.server.data.blob.I_Blob;
+import swarm.server.data.blob.I_BlobKey;
+import swarm.server.data.blob.I_BlobManager;
+import swarm.server.entities.E_GridType;
+import swarm.server.entities.BaseServerGrid;
+import swarm.server.entities.ServerUser;
+import swarm.server.handlers.U_Handler;
+import swarm.server.session.SessionManager;
+import swarm.server.structs.ServerCellAddress;
+import swarm.server.structs.ServerCodePrivileges;
+import swarm.server.transaction.A_DefaultRequestHandler;
+import swarm.server.transaction.I_RequestHandler;
+import swarm.server.transaction.ServerTransactionManager;
+import swarm.server.transaction.TransactionContext;
+import swarm.shared.entities.A_User;
+import swarm.shared.entities.E_CodeType;
+import swarm.shared.structs.Code;
+import swarm.shared.structs.E_NetworkPrivilege;
+import swarm.shared.structs.GridCoordinate;
+import swarm.shared.transaction.E_RequestPath;
+import swarm.shared.transaction.E_ResponseError;
+import swarm.shared.transaction.TransactionRequest;
+import swarm.shared.transaction.TransactionResponse;
 
-public class createGrid extends smA_DefaultRequestHandler
+public class createGrid extends A_DefaultRequestHandler
 {
 	private static final Logger s_logger = Logger.getLogger(createGrid.class.getName());
 	
 	// TEMPORARY
-	private final Class<? extends smServerGrid> m_T_grid;
+	private final Class<? extends BaseServerGrid> m_T_grid;
 
-	public createGrid(Class<? extends smServerGrid> T_grid)
+	public createGrid(Class<? extends BaseServerGrid> T_grid)
 	{
 		m_T_grid = T_grid;
 	}
 	
 	@Override
-	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
+	public void handleRequest(TransactionContext context, TransactionRequest request, TransactionResponse response)
 	{		
-		smUserSession session = m_serverContext.sessionMngr.getSession(request, response);
+		UserSession session = m_serverContext.sessionMngr.getSession(request, response);
 		
-		smI_BlobManager blobManager = m_serverContext.blobMngrFactory.create(smE_BlobCacheLevel.values());
+		I_BlobManager blobManager = m_serverContext.blobMngrFactory.create(E_BlobCacheLevel.values());
 		
-		smServerGrid activeGrid = null;
+		BaseServerGrid activeGrid = null;
 		
 		try
 		{
-			activeGrid = blobManager.getBlob(smE_GridType.ACTIVE, smServerGrid.class);
+			activeGrid = blobManager.getBlob(E_GridType.ACTIVE, BaseServerGrid.class);
 		}
-		catch( smBlobException e)
+		catch( BlobException e)
 		{
-			response.setError(smE_ResponseError.SERVICE_EXCEPTION);
+			response.setError(E_ResponseError.SERVICE_EXCEPTION);
 			
 			s_logger.severe("Could not see if grid was already created because of exception: " + e);
 			
@@ -74,7 +74,7 @@ public class createGrid extends smA_DefaultRequestHandler
 		
 		if( activeGrid != null )
 		{
-			response.setError(smE_ResponseError.BAD_STATE);
+			response.setError(E_ResponseError.BAD_STATE);
 			
 			s_logger.severe("Grid is already made!");
 			
@@ -83,14 +83,14 @@ public class createGrid extends smA_DefaultRequestHandler
 		
 		try
 		{
-			HashMap<smI_BlobKey, smI_Blob> grids = new HashMap<smI_BlobKey, smI_Blob>();
-			activeGrid = smU_Handler.newObjectInstance(m_T_grid, response);
+			HashMap<I_BlobKey, I_Blob> grids = new HashMap<I_BlobKey, I_Blob>();
+			activeGrid = U_Handler.newObjectInstance(m_T_grid, response);
 			
-			blobManager.putBlob(smE_GridType.ACTIVE, activeGrid);
+			blobManager.putBlob(E_GridType.ACTIVE, activeGrid);
 		}
-		catch(smBlobException e)
+		catch(BlobException e)
 		{
-			response.setError(smE_ResponseError.SERVICE_EXCEPTION);
+			response.setError(E_ResponseError.SERVICE_EXCEPTION);
 			
 			s_logger.severe("Could not create grid due to exception: " + e);
 			

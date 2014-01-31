@@ -1,0 +1,79 @@
+package swarm.client.structs;
+
+import swarm.client.entities.BufferCell;
+import swarm.client.view.cell.VisualCell;
+import swarm.shared.entities.A_Grid;
+import swarm.shared.memory.ObjectPool;
+import swarm.shared.reflection.I_Class;
+
+/**
+ * ...
+ * @author 
+ */
+public class CellPool
+{	
+	private final I_Class<BufferCell> m_bufferCellClass = new I_Class<BufferCell>()
+	{
+		@Override
+		public BufferCell newInstance()
+		{
+			return new BufferCell();
+		}
+	};
+	
+	private I_CellPoolDelegate m_delegate = null;
+	
+	private final ObjectPool<BufferCell> m_pool = new ObjectPool<BufferCell>(m_bufferCellClass);
+	
+	public CellPool() 
+	{
+	}
+	
+	public void setDelegate(I_CellPoolDelegate delegate)
+	{
+		m_delegate = delegate;
+	}
+	
+	public I_CellPoolDelegate getDelegate()
+	{
+		return m_delegate;
+	}
+	
+	public int getAllocCount()
+	{
+		return m_pool.getAllocCount();
+	}
+	
+	public BufferCell allocCell(A_Grid grid, int subCellDimension, boolean createVisualization)
+	{
+		BufferCell cell = m_pool.allocate();
+		
+		if( createVisualization )
+		{
+			cell.setVisualization
+			(
+				m_delegate.createVisualization(grid.getCellWidth(), grid.getCellHeight(), grid.getCellPadding(), subCellDimension)
+			);
+		}
+		else
+		{
+			cell.setVisualization(null); // just to be sure
+		}
+		
+		cell.init(grid);
+		
+		return cell;
+	}
+	
+	public void deallocCell(BufferCell cell)
+	{
+		if( cell.getVisualization() != null )
+		{
+			m_delegate.destroyVisualization(cell.getVisualization());
+		}
+		
+		cell.onCellDestroyed(); // allow gc to do it's thing
+
+		m_pool.deallocate(cell);
+	}
+}

@@ -4,38 +4,38 @@ import java.util.logging.Logger;
 
 
 
-import swarm.server.data.blob.smBlobException;
-import swarm.server.data.blob.smBlobManagerFactory;
-import swarm.server.data.blob.smE_BlobCacheLevel;
-import swarm.server.data.blob.smE_BlobTransactionType;
-import swarm.server.data.blob.smI_BlobManager;
-import swarm.server.entities.smE_GridType;
-import swarm.server.entities.smServerGrid;
-import swarm.server.transaction.smA_DefaultRequestHandler;
-import swarm.server.transaction.smI_RequestHandler;
-import swarm.server.transaction.smTransactionContext;
-import swarm.shared.transaction.smE_ResponseError;
-import swarm.shared.transaction.smTransactionRequest;
-import swarm.shared.transaction.smTransactionResponse;
+import swarm.server.data.blob.BlobException;
+import swarm.server.data.blob.BlobManagerFactory;
+import swarm.server.data.blob.E_BlobCacheLevel;
+import swarm.server.data.blob.E_BlobTransactionType;
+import swarm.server.data.blob.I_BlobManager;
+import swarm.server.entities.E_GridType;
+import swarm.server.entities.BaseServerGrid;
+import swarm.server.transaction.A_DefaultRequestHandler;
+import swarm.server.transaction.I_RequestHandler;
+import swarm.server.transaction.TransactionContext;
+import swarm.shared.transaction.E_ResponseError;
+import swarm.shared.transaction.TransactionRequest;
+import swarm.shared.transaction.TransactionResponse;
 
-public class getGridData extends smA_DefaultRequestHandler
+public class getGridData extends A_DefaultRequestHandler
 {
 	private static final Logger s_logger = Logger.getLogger(getGridData.class.getName());
 	
 	@Override
-	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
+	public void handleRequest(TransactionContext context, TransactionRequest request, TransactionResponse response)
 	{
-		smI_BlobManager blobManager = m_serverContext.blobMngrFactory.create(smE_BlobCacheLevel.values());
+		I_BlobManager blobManager = m_serverContext.blobMngrFactory.create(E_BlobCacheLevel.values());
 		
-		smServerGrid grid = null;
+		BaseServerGrid grid = null;
 		
 		try
 		{
-			grid = blobManager.getBlob(smE_GridType.ACTIVE, smServerGrid.class);
+			grid = blobManager.getBlob(E_GridType.ACTIVE, BaseServerGrid.class);
 		}
-		catch( smBlobException e)
+		catch( BlobException e)
 		{
-			response.setError(smE_ResponseError.SERVICE_EXCEPTION);
+			response.setError(E_ResponseError.SERVICE_EXCEPTION);
 			
 			s_logger.severe("Could not retrieve grid data due to exception: " + e);
 			
@@ -45,7 +45,7 @@ public class getGridData extends smA_DefaultRequestHandler
 		//--- DRK > Should really never be null by this point for practical cases.
 		if( grid == null )
 		{
-			grid = new smServerGrid();
+			grid = new BaseServerGrid();
 			
 			s_logger.severe("Grid came up null when it probably should have been initialized.");
 		}

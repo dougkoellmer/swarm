@@ -1,25 +1,25 @@
 package swarm.client.states.camera;
 
-import swarm.shared.statemachine.smA_Action;
-import swarm.shared.statemachine.smA_State;
-import swarm.shared.statemachine.smA_StateConstructor;
-import swarm.shared.statemachine.smStateEvent;
-import swarm.shared.structs.smGridCoordinate;
-import swarm.shared.structs.smPoint;
+import swarm.shared.statemachine.A_Action;
+import swarm.shared.statemachine.A_State;
+import swarm.shared.statemachine.A_StateConstructor;
+import swarm.shared.statemachine.StateEvent;
+import swarm.shared.structs.GridCoordinate;
+import swarm.shared.structs.Point;
 
-public class State_CameraFloating extends smA_State
+public class State_CameraFloating extends A_State
 {	
 	public State_CameraFloating()
 	{
 	}
 	
 	@Override
-	protected void didEnter(smA_StateConstructor constructor)
+	protected void didEnter(A_StateConstructor constructor)
 	{
 	}
 	
 	@Override
-	protected void didForeground(Class<? extends smA_State> revealingState, Object[] argsFromRevealingState)
+	protected void didForeground(Class<? extends A_State> revealingState, Object[] argsFromRevealingState)
 	{
 		if ( revealingState == null )
 		{
@@ -35,7 +35,7 @@ public class State_CameraFloating extends smA_State
 	}
 	
 	@Override
-	protected void willBackground(Class<? extends smA_State> blockingState)
+	protected void willBackground(Class<? extends A_State> blockingState)
 	{
 		
 	}

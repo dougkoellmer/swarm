@@ -1,15 +1,15 @@
 package swarm.client.states.camera;
 
-import swarm.client.entities.smCamera;
-import swarm.client.managers.smCameraManager;
-import swarm.shared.statemachine.smA_Action;
-import swarm.shared.statemachine.smA_ActionArgs;
-import swarm.shared.statemachine.smA_State;
-import swarm.shared.structs.smPoint;
+import swarm.client.entities.Camera;
+import swarm.client.managers.CameraManager;
+import swarm.shared.statemachine.A_Action;
+import swarm.shared.statemachine.A_ActionArgs;
+import swarm.shared.statemachine.A_State;
+import swarm.shared.structs.Point;
 
-public class Action_Camera_SetViewSize extends smA_Action
+public class Action_Camera_SetViewSize extends A_Action
 {
-	public static class Args extends smA_ActionArgs
+	public static class Args extends A_ActionArgs
 	{
 		private final double[] m_dimensions = new double[2];
 		private boolean m_updateBuffer = true;
@@ -29,21 +29,21 @@ public class Action_Camera_SetViewSize extends smA_Action
 		}
 	}
 	
-	private final smPoint m_utilPoint1 = new smPoint();
+	private final Point m_utilPoint1 = new Point();
 	
-	private final smCameraManager m_cameraMngr;
+	private final CameraManager m_cameraMngr;
 	
-	public Action_Camera_SetViewSize(smCameraManager cameraMngr)
+	public Action_Camera_SetViewSize(CameraManager cameraMngr)
 	{
 		m_cameraMngr = cameraMngr;
 	}
 	
 	@Override
-	public void perform(smA_ActionArgs args)
+	public void perform(A_ActionArgs args)
 	{
 		Args args_cast = (Args) args;
 		StateMachine_Camera machine = this.getState();
-		smCamera camera = m_cameraMngr.getCamera();
+		Camera camera = m_cameraMngr.getCamera();
 		
 		double deltaX = args_cast.m_dimensions[0] - camera.getViewWidth();
 		double deltaY = args_cast.m_dimensions[1] - camera.getViewHeight();

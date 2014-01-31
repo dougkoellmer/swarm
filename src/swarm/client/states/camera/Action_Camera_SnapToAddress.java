@@ -1,18 +1,18 @@
 package swarm.client.states.camera;
 
-import swarm.client.app.smAppContext;
-import swarm.client.managers.smCellAddressManager;
-import swarm.shared.statemachine.smA_Action;
-import swarm.shared.statemachine.smA_ActionArgs;
-import swarm.shared.statemachine.smA_State;
-import swarm.shared.structs.smCellAddress;
-import swarm.shared.structs.smE_CellAddressParseError;
+import swarm.client.app.AppContext;
+import swarm.client.managers.CellAddressManager;
+import swarm.shared.statemachine.A_Action;
+import swarm.shared.statemachine.A_ActionArgs;
+import swarm.shared.statemachine.A_State;
+import swarm.shared.structs.CellAddress;
+import swarm.shared.structs.E_CellAddressParseError;
 
-public class Action_Camera_SnapToAddress extends smA_Action
+public class Action_Camera_SnapToAddress extends A_Action
 {
-	public static class Args extends smA_ActionArgs
+	public static class Args extends A_ActionArgs
 	{
-		private smCellAddress m_address;
+		private CellAddress m_address;
 		private boolean m_onlyCausedRefresh = false;
 		
 		public Args()
@@ -20,12 +20,12 @@ public class Action_Camera_SnapToAddress extends smA_Action
 			m_address = null;
 		}
 		
-		public Args(smCellAddress address)
+		public Args(CellAddress address)
 		{
 			m_address = address;
 		}
 		
-		public void init(smCellAddress address)
+		public void init(CellAddress address)
 		{
 			m_address = address;
 		}
@@ -36,23 +36,23 @@ public class Action_Camera_SnapToAddress extends smA_Action
 		}
 	}
 	
-	private final smCellAddressManager m_addressMngr;
+	private final CellAddressManager m_addressMngr;
 	
-	Action_Camera_SnapToAddress(smCellAddressManager addressMngr)
+	Action_Camera_SnapToAddress(CellAddressManager addressMngr)
 	{
 		m_addressMngr = addressMngr;
 	}
 	
 	@Override
-	public void perform(smA_ActionArgs args)
+	public void perform(A_ActionArgs args)
 	{
-		smCellAddress address = ((Args) args).m_address;
+		CellAddress address = ((Args) args).m_address;
 		StateMachine_Camera machine = this.getState();
-		smA_State currentState = machine.getCurrentState();
+		A_State currentState = machine.getCurrentState();
 		
 		if( currentState instanceof State_ViewingCell )
 		{
-			smCellAddress viewingAddress = ((State_ViewingCell)currentState).getCell().getCellAddress();
+			CellAddress viewingAddress = ((State_ViewingCell)currentState).getCell().getCellAddress();
 			if( viewingAddress != null )
 			{
 				if( viewingAddress.isEqualTo(address) )
@@ -70,11 +70,11 @@ public class Action_Camera_SnapToAddress extends smA_Action
 	}
 	
 	@Override
-	public boolean isPerformable(smA_ActionArgs args)
+	public boolean isPerformable(A_ActionArgs args)
 	{
-		smCellAddress address = ((Args) args).m_address;
+		CellAddress address = ((Args) args).m_address;
 		
-		if( address.getParseError() != smE_CellAddressParseError.NO_ERROR )
+		if( address.getParseError() != E_CellAddressParseError.NO_ERROR )
 		{
 			return false;
 		}
@@ -85,11 +85,11 @@ public class Action_Camera_SnapToAddress extends smA_Action
 		}
 		
 		StateMachine_Camera machine = this.getState();
-		smA_State currentState = machine.getCurrentState();
+		A_State currentState = machine.getCurrentState();
 		
 		if( currentState instanceof State_CameraSnapping )
 		{
-			smCellAddress snapTargetAddress = ((State_CameraSnapping)currentState).getTargetAddress();
+			CellAddress snapTargetAddress = ((State_CameraSnapping)currentState).getTargetAddress();
 			if( snapTargetAddress == null )
 			{
 				return true;

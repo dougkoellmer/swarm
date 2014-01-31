@@ -5,47 +5,47 @@ import java.util.logging.Logger;
 
 import javax.servlet.ServletContext;
 
-import swarm.server.account.smE_Role;
-import swarm.server.account.smUserSession;
-import swarm.server.blobxn.smBlobTransaction_ClearCell;
-import swarm.server.data.blob.smBlobException;
-import swarm.server.data.blob.smBlobManagerFactory;
-import swarm.server.data.blob.smE_BlobCacheLevel;
-import swarm.server.data.blob.smE_BlobTransactionType;
-import swarm.server.data.blob.smI_BlobManager;
-import swarm.server.entities.smServerCell;
-import swarm.server.entities.smServerUser;
-import swarm.server.session.smSessionManager;
-import swarm.server.structs.smServerCellAddress;
-import swarm.server.structs.smServerCellAddressMapping;
-import swarm.server.transaction.smA_DefaultRequestHandler;
-import swarm.server.transaction.smI_RequestHandler;
-import swarm.server.transaction.smTransactionContext;
-import swarm.shared.json.smJsonHelper;
-import swarm.shared.structs.smE_GetCellAddressError;
-import swarm.shared.structs.smGetCellAddressResult;
-import swarm.shared.transaction.smE_ResponseError;
-import swarm.shared.transaction.smTransactionRequest;
-import swarm.shared.transaction.smTransactionResponse;
+import swarm.server.account.E_Role;
+import swarm.server.account.UserSession;
+import swarm.server.blobxn.BlobTransaction_ClearCell;
+import swarm.server.data.blob.BlobException;
+import swarm.server.data.blob.BlobManagerFactory;
+import swarm.server.data.blob.E_BlobCacheLevel;
+import swarm.server.data.blob.E_BlobTransactionType;
+import swarm.server.data.blob.I_BlobManager;
+import swarm.server.entities.ServerCell;
+import swarm.server.entities.ServerUser;
+import swarm.server.session.SessionManager;
+import swarm.server.structs.ServerCellAddress;
+import swarm.server.structs.ServerCellAddressMapping;
+import swarm.server.transaction.A_DefaultRequestHandler;
+import swarm.server.transaction.I_RequestHandler;
+import swarm.server.transaction.TransactionContext;
+import swarm.shared.json.JsonHelper;
+import swarm.shared.structs.E_GetCellAddressError;
+import swarm.shared.structs.GetCellAddressResult;
+import swarm.shared.transaction.E_ResponseError;
+import swarm.shared.transaction.TransactionRequest;
+import swarm.shared.transaction.TransactionResponse;
 
-public class clearCell extends smA_DefaultRequestHandler
+public class clearCell extends A_DefaultRequestHandler
 {
 	private static final Logger s_logger = Logger.getLogger(clearCell.class.getName());
 	
 	@Override
-	public void handleRequest(smTransactionContext context, smTransactionRequest request, smTransactionResponse response)
+	public void handleRequest(TransactionContext context, TransactionRequest request, TransactionResponse response)
 	{		
-		smServerCellAddress address = new smServerCellAddress(m_serverContext.jsonFactory, request.getJsonArgs());
+		ServerCellAddress address = new ServerCellAddress(m_serverContext.jsonFactory, request.getJsonArgs());
 		
-		smBlobTransaction_ClearCell transaction = new smBlobTransaction_ClearCell(address);
+		BlobTransaction_ClearCell transaction = new BlobTransaction_ClearCell(address);
 		
 		try
 		{
-			transaction.perform(m_serverContext.blobMngrFactory, smE_BlobTransactionType.MULTI_BLOB_TYPE, 1);
+			transaction.perform(m_serverContext.blobMngrFactory, E_BlobTransactionType.MULTI_BLOB_TYPE, 1);
 		}
-		catch (smBlobException e)
+		catch (BlobException e)
 		{
-			response.setError(smE_ResponseError.SERVICE_EXCEPTION);
+			response.setError(E_ResponseError.SERVICE_EXCEPTION);
 			
 			s_logger.log(Level.SEVERE, "Could not clear cell because of exception.", e);
 		}

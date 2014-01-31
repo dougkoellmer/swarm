@@ -1,13 +1,13 @@
 package swarm.client.states.camera;
 
-import swarm.client.app.smAppContext;
-import swarm.client.managers.smGridManager;
-import swarm.shared.entities.smA_Grid;
-import swarm.shared.statemachine.smA_ActionArgs;
-import swarm.shared.statemachine.smA_State;
-import swarm.shared.structs.smCellAddress;
-import swarm.shared.structs.smGridCoordinate;
-import swarm.shared.structs.smPoint;
+import swarm.client.app.AppContext;
+import swarm.client.managers.GridManager;
+import swarm.shared.entities.A_Grid;
+import swarm.shared.statemachine.A_ActionArgs;
+import swarm.shared.statemachine.A_State;
+import swarm.shared.structs.CellAddress;
+import swarm.shared.structs.GridCoordinate;
+import swarm.shared.structs.Point;
 
 public class Action_Camera_SnapToCoordinate extends smA_CameraAction
 {
@@ -18,11 +18,11 @@ public class Action_Camera_SnapToCoordinate extends smA_CameraAction
 		void setTargetPoint(Args args);
 	}
 	
-	public static class Args extends smA_ActionArgs
+	public static class Args extends A_ActionArgs
 	{
-		private smGridCoordinate m_coordinate;
-		private smCellAddress m_address;
-		private final smPoint m_point = new smPoint();
+		private GridCoordinate m_coordinate;
+		private CellAddress m_address;
+		private final Point m_point = new Point();
 		private boolean m_hasTargetPoint;
 		
 		private boolean m_onlyCausedRefresh = false;
@@ -32,7 +32,7 @@ public class Action_Camera_SnapToCoordinate extends smA_CameraAction
 			init(null);
 		}
 		
-		public void init(smGridCoordinate coordinate)
+		public void init(GridCoordinate coordinate)
 		{
 			m_coordinate = coordinate;
 			m_address = null;
@@ -40,7 +40,7 @@ public class Action_Camera_SnapToCoordinate extends smA_CameraAction
 			m_hasTargetPoint = false;
 		}
 		
-		public void init(smGridCoordinate coordinate, smPoint point)
+		public void init(GridCoordinate coordinate, Point point)
 		{
 			m_coordinate = coordinate;
 			m_point.copy(point);
@@ -49,7 +49,7 @@ public class Action_Camera_SnapToCoordinate extends smA_CameraAction
 			m_hasTargetPoint = true;
 		}
 		
-		void init(smCellAddress address, smGridCoordinate coordinate)
+		void init(CellAddress address, GridCoordinate coordinate)
 		{
 			m_address = address;
 			m_coordinate = coordinate;
@@ -57,12 +57,12 @@ public class Action_Camera_SnapToCoordinate extends smA_CameraAction
 			m_hasTargetPoint = false;
 		}
 		
-		public smGridCoordinate getTargetCoordinate()
+		public GridCoordinate getTargetCoordinate()
 		{
 			return this.m_coordinate;
 		}
 		
-		public smPoint getTargetPoint()
+		public Point getTargetPoint()
 		{
 			return this.m_point;
 		}
@@ -80,17 +80,17 @@ public class Action_Camera_SnapToCoordinate extends smA_CameraAction
 		}
 	}
 	
-	private final smGridManager m_gridMngr;
+	private final GridManager m_gridMngr;
 	private final I_Filter m_filter;
 	
-	Action_Camera_SnapToCoordinate(I_Filter filter_nullable, smGridManager gridMngr)
+	Action_Camera_SnapToCoordinate(I_Filter filter_nullable, GridManager gridMngr)
 	{
 		m_gridMngr = gridMngr;
 		m_filter = filter_nullable;
 	}
 	
 	@Override
-	public void prePerform(smA_ActionArgs args)
+	public void prePerform(A_ActionArgs args)
 	{
 		super.prePerform(args);
 		
@@ -110,12 +110,12 @@ public class Action_Camera_SnapToCoordinate extends smA_CameraAction
 	}
 	
 	@Override
-	public void perform(smA_ActionArgs args)
+	public void perform(A_ActionArgs args)
 	{
-		smGridCoordinate coordinate = ((Args) args).m_coordinate;
-		smPoint point = ((Args) args).m_point;
+		GridCoordinate coordinate = ((Args) args).m_coordinate;
+		Point point = ((Args) args).m_point;
 		StateMachine_Camera machine = this.getState();
-		smA_State currentState = machine.getCurrentState();
+		A_State currentState = machine.getCurrentState();
 		
 		if( currentState instanceof State_ViewingCell )
 		{
@@ -135,11 +135,11 @@ public class Action_Camera_SnapToCoordinate extends smA_CameraAction
 	}
 	
 	@Override
-	public boolean isPerformable(smA_ActionArgs args)
+	public boolean isPerformable(A_ActionArgs args)
 	{
-		smGridCoordinate coordinate = ((Args) args).m_coordinate;
+		GridCoordinate coordinate = ((Args) args).m_coordinate;
 		
-		smA_Grid grid = m_gridMngr.getGrid();
+		A_Grid grid = m_gridMngr.getGrid();
 		
 		if( !grid.isInBounds(coordinate) )
 		{
@@ -152,7 +152,7 @@ public class Action_Camera_SnapToCoordinate extends smA_CameraAction
 		}
 		
 		StateMachine_Camera machine = this.getState();
-		smA_State currentState = machine.getCurrentState();
+		A_State currentState = machine.getCurrentState();
 
 		return true;
 	}
