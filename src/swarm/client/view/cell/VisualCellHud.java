@@ -239,19 +239,18 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 	private void updatePositionFromScreenPoint(A_Grid grid, Point screenPoint)
 	{
 		Camera camera = m_viewContext.appContext.cameraMngr.getCamera();
-		camera.calcWorldPoint(screenPoint, m_lastWorldPosition);
+		s_utilPoint1.copy(screenPoint);
+		if( m_viewContext.stateContext.isEntered(State_ViewingCell.class) )
+		{
+			Element scrollElement = this.getParent().getElement();
+			double scrollX = scrollElement.getScrollLeft();
+			s_utilPoint1.incX(-scrollX);
+		}
+		camera.calcWorldPoint(s_utilPoint1, m_lastWorldPosition);
 		
 		boolean has3dTransforms = m_viewContext.appContext.platformInfo.has3dTransforms();
 		m_lastTranslation = U_Css.createTranslateTransform(screenPoint.getX(), screenPoint.getY(), has3dTransforms);
 		
-		double scaling = m_viewContext.cellMngr.getLastScaling();
-		String scaleProperty = U_Css.createScaleTransform(scaling, has3dTransforms);
-		U_Css.setTransform(this.getElement(), m_lastTranslation + " " + scaleProperty);
-	}
-	
-	private void updateScalingOnly()
-	{
-		boolean has3dTransforms = m_viewContext.appContext.platformInfo.has3dTransforms();
 		double scaling = m_viewContext.cellMngr.getLastScaling();
 		String scaleProperty = U_Css.createScaleTransform(scaling, has3dTransforms);
 		U_Css.setTransform(this.getElement(), m_lastTranslation + " " + scaleProperty);
@@ -273,6 +272,27 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 		this.updatePositionFromScreenPoint(grid, s_utilPoint2);
 	}
 	
+	private double calcScrollOffset(A_Grid grid)
+	{
+		Camera camera = m_viewContext.appContext.cameraMngr.getCamera();
+		Element scrollElement = this.getParent().getElement();
+		double scrollX = scrollElement.getScrollLeft();
+		double toReturn = 0;
+		
+		double viewWidth = getViewWidth(camera, grid);
+		double hudWidth = Math.max(m_width, m_minWidth);
+		if( hudWidth > viewWidth && m_viewContext.stateContext.isEntered(State_ViewingCell.class) )
+		{
+			double scrollWidth = scrollElement.getScrollWidth();
+			double clientWidth = scrollElement.getClientWidth();
+			double diff = (hudWidth - viewWidth) +  U_CameraViewport.getViewPadding(grid)/2.0;
+			double scrollRatio = scrollX / (scrollWidth-clientWidth);
+			toReturn -= diff * scrollRatio;
+		}
+		
+		return toReturn;
+	}
+	
 	private void calcScreenPositionFromCoord(A_Grid grid, GridCoordinate coord, Point point_out)
 	{
 		Camera camera = m_viewContext.appContext.cameraMngr.getCamera();
@@ -284,18 +304,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 		double scrollX = scrollElement.getScrollLeft();
 		double scrollY = scrollElement.getScrollTop();
 		
-		double x = point_out.getX() + scrollX*2;
-		
-		double viewWidth = getViewWidth(camera, grid);
-		double hudWidth = Math.max(m_width, m_minWidth);
-		if( hudWidth > viewWidth && m_viewContext.stateContext.isEntered(State_ViewingCell.class) )
-		{
-			double scrollWidth = scrollElement.getScrollWidth();
-			double clientWidth = scrollElement.getClientWidth();
-			double diff = (hudWidth - viewWidth) +  U_CameraViewport.getViewPadding(grid)/2.0;
-			double scrollRatio = scrollX / (scrollWidth-clientWidth);
-			x -= diff * scrollRatio;
-		}
+		double x = (point_out.getX() + scrollX*2) + this.calcScrollOffset(grid);
 		
 		double scaling = m_viewContext.cellMngr.getLastScaling();
 		double y = point_out.getY()-(m_appConfig.cellHudHeight+grid.getCellPadding())*scaling;
