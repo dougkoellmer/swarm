@@ -18,7 +18,9 @@ import swarm.client.states.camera.Action_Camera_SnapToAddress;
 import swarm.client.states.camera.Action_Camera_SnapToCoordinate;
 import swarm.client.states.camera.Action_ViewingCell_Refresh;
 import swarm.client.states.camera.StateMachine_Camera;
+import swarm.client.states.camera.State_CameraFloating;
 import swarm.client.states.camera.State_CameraSnapping;
+import swarm.client.states.camera.State_GettingMapping;
 import swarm.client.states.camera.State_ViewingCell;
 import swarm.client.states.code.Action_EditingCode_Preview;
 import swarm.client.states.code.Action_EditingCode_Save;
@@ -481,7 +483,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 							}
 						}
 					}
-					else if( !(event.getState() instanceof State_ViewingCell) )
+					else if( event.getState() instanceof State_CameraFloating )
 					{
 						if( m_alpha <= 1 )
 						{
