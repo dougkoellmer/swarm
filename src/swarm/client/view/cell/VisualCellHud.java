@@ -11,6 +11,7 @@ import swarm.client.input.ClickManager;
 import swarm.client.input.I_ClickHandler;
 import swarm.client.managers.CameraManager;
 import swarm.client.navigation.BrowserNavigator;
+import swarm.client.navigation.BrowserNavigator.I_StateChangeListener;
 import swarm.client.navigation.U_CameraViewport;
 import swarm.client.states.camera.Action_Camera_SnapToPoint;
 import swarm.client.states.camera.Action_Camera_SetViewSize;
@@ -105,7 +106,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 	
 	private final Rect m_utilRect = new Rect();
 	
-	private boolean m_performedDoubleSnap;
+	private boolean m_performedSnap;
 	
 	public VisualCellHud(ViewContext viewContext, ClientAppConfig appConfig)
 	{
@@ -142,6 +143,15 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 		m_innerContainer.setCellHorizontalAlignment(m_rightDock, HasHorizontalAlignment.ALIGN_RIGHT);
 		
 		this.add(m_innerContainer);
+		
+		m_viewContext.browserNavigator.addStateChangeListener(new I_StateChangeListener()
+		{
+			@Override
+			public void onStateChange()
+			{
+				updateHistoryButtons();
+			}
+		});
 		
 		m_viewContext.clickMngr.addClickHandler(m_back, new I_ClickHandler()
 		{
@@ -382,7 +392,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 	private void onDoubleSnap()
 	{
 		m_lastWorldPositionOnDoubleSnap.copy(m_lastWorldPosition);
-		m_performedDoubleSnap = true;
+		m_performedSnap = true;
 	}
 	
 	@Override
@@ -464,7 +474,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 								this.setAlpha(m_baseAlpha + (1-m_baseAlpha) * cameraSnapping.getOverallSnapProgress());
 							}
 					
-							if( !m_performedDoubleSnap && cameraSnapping.getPreviousState() != State_ViewingCell.class)
+							if( !m_performedSnap && cameraSnapping.getPreviousState() != State_ViewingCell.class)
 							{
 								this.updatePositionFromState((State_CameraSnapping)event.getState());
 							}

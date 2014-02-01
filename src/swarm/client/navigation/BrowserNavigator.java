@@ -1,5 +1,6 @@
 package swarm.client.navigation;
 
+import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import com.google.gwt.dom.client.Document;
@@ -40,6 +41,7 @@ import swarm.shared.structs.E_GetCellAddressMappingError;
 import swarm.shared.structs.GetCellAddressMappingResult;
 import swarm.shared.structs.GridCoordinate;
 import swarm.shared.structs.Point;
+import swarm.shared.utils.ListenerManager;
 
 /**
  * Responsible for piping user navigation to the state machine via the browser back/forward/refresh buttons and address bar.
@@ -49,6 +51,11 @@ import swarm.shared.structs.Point;
  */
 public class BrowserNavigator implements I_StateEventListener
 {
+	public interface I_StateChangeListener
+	{
+		void onStateChange();
+	}
+	
 	private static final Logger s_logger = Logger.getLogger(BrowserNavigator.class.getName());
 	
 	private final static String FLOATING_STATE_PATH = "/";
@@ -79,6 +86,8 @@ public class BrowserNavigator implements I_StateEventListener
 	private final ViewContext m_viewContext;
 	
 	private final Point m_utilPoint1 = new Point();
+	
+	private final ListenerManager<I_StateChangeListener> m_listenerManager = new ListenerManager<I_StateChangeListener>();
 	
 	public BrowserNavigator(ViewContext viewContext, String defaultPageTitle, double floatingHistoryUpdateRate_seconds)
 	{
@@ -156,11 +165,27 @@ public class BrowserNavigator implements I_StateEventListener
 					//---		pressed backwards (or whatever) while still snapping to blahblah, then pressed forward
 					//---		once again.
 				}
+				
+				dispatchStateChange();
 			}
 		};
 		
 		m_addressManager = new BrowserAddressManager();
 		m_historyManager = new HistoryStateManager(m_viewContext.appContext.jsonFactory, defaultPageTitle, m_historyStateListener, m_addressManager);
+	}
+	
+	public void addStateChangeListener(I_StateChangeListener listener)
+	{
+		m_listenerManager.addListenerToBack(listener);
+	}
+	
+	private void dispatchStateChange()
+	{
+		ArrayList<I_StateChangeListener> m_listeners = m_listenerManager.getListeners();
+		for( int i = 0; i < m_listeners.size(); i++ )
+		{
+			m_listeners.get(i).onStateChange();
+		}
 	}
 	
 	public void go(int offset)
