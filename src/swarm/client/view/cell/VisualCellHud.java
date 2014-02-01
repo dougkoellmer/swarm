@@ -151,6 +151,8 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 				if( !m_back.isEnabled() )  return;
 				
 				m_viewContext.browserNavigator.go(-1);
+				
+				updateHistoryButtons();
 			}
 		});
 		
@@ -162,6 +164,8 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 				if( !m_forward.isEnabled() )  return;
 				
 				m_viewContext.browserNavigator.go(1);
+				
+				updateHistoryButtons();
 			}
 		});
 		
