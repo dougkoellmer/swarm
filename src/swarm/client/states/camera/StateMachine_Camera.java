@@ -74,7 +74,7 @@ public class StateMachine_Camera extends A_StateMachine implements I_StateEventL
 
 	private final LocalCodeRepositoryWrapper m_codeRepo = new LocalCodeRepositoryWrapper();
 	
-	private final smCellAddressManagerListener m_addressManagerListener = new smCellAddressManagerListener(this);
+	private final CellAddressManagerListener m_addressManagerListener = new CellAddressManagerListener(this);
 	private final Action_Camera_SnapToCoordinate.Args m_snapToCoordArgs = new Action_Camera_SnapToCoordinate.Args();
 	
 	private final AppContext m_appContext;

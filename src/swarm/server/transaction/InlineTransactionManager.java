@@ -61,7 +61,8 @@ public class InlineTransactionManager
 	
 	public void beginBatch(Writer out, HttpServletRequest request, HttpServletResponse response) throws IOException
 	{
-		out.write("var "+m_appId+"_rl = [];");
+		String requestListVar = m_appId+"_rl";
+		out.write("window."+requestListVar+" = window."+requestListVar+" || [];");
 		m_context.set(new Context(out, request, response));
 		
 		m_jsonFactory.startScope(m_verboseTransactions);
@@ -97,7 +98,6 @@ public class InlineTransactionManager
 		String requestJsonString = requestJson.writeString();
 		String responseJsonString = responseJson.writeString();
 		
-		//TODO: Make this non application specific somehow, so the "sm" prefix is retreived from somewhere.
 		m_context.get().m_out.write(m_appId+"_rl.push(['"+requestJsonString+"', '"+responseJsonString+"']);");
 	}
 	

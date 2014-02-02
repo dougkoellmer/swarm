@@ -22,6 +22,12 @@ public class GetCellAddressMappingResult extends A_JsonEncodable
 		setError(error);
 	}
 	
+	public GetCellAddressMappingResult(CellAddressMapping mapping, E_GetCellAddressMappingError error)
+	{
+		setMapping(mapping);
+		setError(error);
+	}
+	
 	public void setMapping(CellAddressMapping mapping)
 	{
 		m_mapping = mapping;

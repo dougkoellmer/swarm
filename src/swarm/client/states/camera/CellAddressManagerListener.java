@@ -6,14 +6,14 @@ import swarm.shared.structs.CellAddress;
 import swarm.shared.structs.CellAddressMapping;
 import swarm.client.managers.*;
 
-class smCellAddressManagerListener implements CellAddressManager.I_Listener
+class CellAddressManagerListener implements CellAddressManager.I_Listener
 {
 	private final StateMachine_Camera m_machine;
 	
 	private final Event_Camera_OnAddressResponse.Args m_onAddressResponseArgs = new Event_Camera_OnAddressResponse.Args();
 	private final Action_Camera_SnapToCoordinate.Args m_snapToCoordArgs = new Action_Camera_SnapToCoordinate.Args();
 	
-	smCellAddressManagerListener(StateMachine_Camera machine)
+	CellAddressManagerListener(StateMachine_Camera machine)
 	{
 		m_machine = machine;
 		m_snapToCoordArgs.userData = Action_Camera_SnapToAddress.class;

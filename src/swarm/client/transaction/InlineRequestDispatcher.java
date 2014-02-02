@@ -84,7 +84,7 @@ public class InlineRequestDispatcher implements I_SyncRequestDispatcher
 			}
 		}
 		
-		//--- DRK > Release memory to GC.
+		//--- DRK > Release memory.
 		U_Native.setGlobalObject(m_appId+"_rl", null);
 	}
 	
