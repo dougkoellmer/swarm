@@ -15,4 +15,4 @@ sh ./minify_history.sh
 sh ./minify_fastclick_js.sh
 sh ./minify_utils_js.sh
 
-cat $FASTCLICK_DIR/utils.min.js $FASTCLICK_DIR/fastclick.min.js $HISTORY_DIR/native.history_min.js $MODERNIZR_DIR/modernizr.custom.90450.js $CM_DIR/cm_min.js $CAJA_DIR/caja-minified.js > $OUT_DIR/dependencies.min.js
+cat $UTILS_DIR/utils.min.js $FASTCLICK_DIR/fastclick.min.js $HISTORY_DIR/native.history_min.js $MODERNIZR_DIR/modernizr.custom.90450.js $CM_DIR/cm_min.js $CAJA_DIR/caja-minified.js > $OUT_DIR/dependencies.min.js

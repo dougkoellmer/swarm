@@ -52,6 +52,10 @@ import swarm.client.view.S_UI;
 import swarm.client.view.ViewConfig;
 import swarm.client.view.ViewContext;
 import swarm.client.view.ViewController;
+import swarm.client.view.cell.B33Spinner;
+import swarm.client.view.cell.I_CellSpinner;
+import swarm.client.view.cell.I_CellSpinnerFactory;
+import swarm.client.view.cell.SpritePlateSpinner;
 import swarm.client.view.sandbox.SandboxManager;
 import swarm.client.view.tooltip.E_ToolTipType;
 import swarm.client.view.tooltip.ToolTipManager;
@@ -274,6 +278,15 @@ public class A_ClientApp extends A_App implements I_TimeSource
 			m_viewContext.toolTipMngr.setDefaultZIndex(E_ToolTipType.values()[j], i);
 		}
 		m_viewContext.toolTipMngr.setDefaultPadding(S_UI.TOOl_TIP_PADDING);
+		
+		m_viewContext.spinnerFactory = new I_CellSpinnerFactory()
+		{
+			@Override
+			public I_CellSpinner newSpinner()
+			{
+				return new B33Spinner();
+			}
+		};
 	}
 	
 	protected void stage_registerStateMachine(I_StateEventListener stateEventListener, Class<? extends A_State> consoleState_T_null)

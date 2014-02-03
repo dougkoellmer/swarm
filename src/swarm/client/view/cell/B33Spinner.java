@@ -23,9 +23,9 @@ public class B33Spinner extends FlowPanel implements I_CellSpinner
 	private double m_timeProgressed = 0;
 	private int m_currentB33 = 0;
 	
-	public B33Spinner(double rotationRate)
+	public B33Spinner()
 	{
-		m_rotationRate = rotationRate;
+		m_rotationRate = 0;
 		
 		m_inner.getElement().getStyle().setDisplay(Display.INLINE_BLOCK);
 		m_inner.setSize("100%", "100%");
