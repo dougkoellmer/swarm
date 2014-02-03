@@ -80,6 +80,8 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	
 	private E_CodeSafetyLevel m_codeSafetyLevel;
 	
+	private boolean m_isFocused = false;
+	
 	public VisualCell(I_CellSpinner spinner, SandboxManager sandboxMngr)
 	{
 		m_spinner = spinner;
@@ -208,6 +210,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		 //--- DRK > NOTE: for some reason this gets reset somehow...at least in hosted mode, so can't put it in constructor.
 		this.getElement().getStyle().setPosition(Position.ABSOLUTE);
 		
+		m_isFocused = false;
 		m_isValidated = false;
 		m_subCellDimension = subCellDimension;
 		m_width = width;
@@ -221,6 +224,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	
 	public void onDestroy()
 	{
+		m_isFocused = false;
 		m_subCellDimension = -1;
 		
 		if( m_currentImageIndex != -1 )
@@ -241,6 +245,8 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	@Override
 	public void onFocusGained()
 	{
+		m_isFocused = true;
+		
 		E_ZIndex.CELL_FOCUSED.assignTo(this);
 		
 		this.m_glassPanel.setVisible(false);
@@ -254,6 +260,8 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	@Override
 	public void onFocusLost()
 	{
+		m_isFocused = false;
+		
 		this.m_glassPanel.setVisible(true);
 		
 		this.removeStyleName("visual_cell_focused");
@@ -270,7 +278,15 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	
 	public void popUp()
 	{
-		E_ZIndex.CELL_POPPED.assignTo(this);
+		//--- DRK > Added this conditional because for fringe case of instant snap,
+		//--- 		onFocusGained can be called before popUp. I thought this case wasn't
+		//---		a problem before, but may not have tested it, or something might have changed.
+		//---		It does make sense that it's needed though, because onFocusGained call originates
+		//---		in state machine, and popUp is invoked from a UI handler of the state event, so comes later.
+		if( !m_isFocused )
+		{
+			E_ZIndex.CELL_POPPED.assignTo(this);
+		}
 	}
 	
 	public void pushDown()
@@ -281,6 +297,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	@Override
 	public void onCellRecycled(int cellSize)
 	{
+		m_isFocused = false;
 		if( cellSize != m_subCellDimension )
 		{
 			m_isValidated = false;

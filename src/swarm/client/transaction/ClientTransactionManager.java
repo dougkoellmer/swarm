@@ -37,7 +37,7 @@ import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.rpc.RpcRequestBuilder;
 
 /**
- * TODO(DRK):	Need to have stricter runtime handling of when you can cancel requests.
+ * TODO(DRK):	Need to have stricter rules for when you can cancel requests.
  *				For example, it's now possible to cancel a request inside success and error handlers.
  *				Should this be allowed in any way?  If so, how should it work?.
  */
