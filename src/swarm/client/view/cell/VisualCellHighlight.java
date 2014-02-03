@@ -125,8 +125,9 @@ public class VisualCellHighlight extends FlowPanel implements I_UIElement
 			y += scrollElement.getScrollTop();
 		}
 		
-		String size = (cell.getGrid().getCellWidth() * highlightScaling) + "px";
-		this.setSize(size, size);
+		String width = (cell.getGrid().getCellWidth() * highlightScaling) + "px";
+		String height = (cell.getGrid().getCellHeight() * highlightScaling) + "px";
+		this.setSize(width, height);
 		this.getElement().getStyle().setProperty("top", y + "px");
 		this.getElement().getStyle().setProperty("left", basePoint.getX() + "px");
 		
