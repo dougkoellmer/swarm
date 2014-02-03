@@ -101,19 +101,21 @@ public class VisualCellHighlight extends FlowPanel implements I_UIElement
 		int deltaN = mouseCoord.getN() - bufferN;
 		
 		//TODO: Assuming square cell size.
-		double apparentCellPixels = 0;
+		double apparentCellPixelsX = 0, apparentCellPixelsY = 0;
 		
 		if( buffer.getSubCellCount() > 1 )
 		{
-			apparentCellPixels = ((cell.getGrid().getCellWidth() / ((double) subCellDim)) * lastScaling);
+			apparentCellPixelsX = ((cell.getGrid().getCellWidth() / ((double) subCellDim)) * lastScaling);
+			apparentCellPixelsY = ((cell.getGrid().getCellHeight() / ((double) subCellDim)) * lastScaling);
 		}
 		else
 		{
-			apparentCellPixels = (cell.getGrid().getCellWidth() + cell.getGrid().getCellPadding()) * lastScaling;
+			apparentCellPixelsX = (cell.getGrid().getCellWidth() + cell.getGrid().getCellPadding()) * lastScaling;
+			apparentCellPixelsY = (cell.getGrid().getCellWidth() + cell.getGrid().getCellPadding()) * lastScaling;
 		}
 		
-		double deltaPixelsX = apparentCellPixels * deltaM;
-		double deltaPixelsY = apparentCellPixels * deltaN;
+		double deltaPixelsX = apparentCellPixelsX * deltaM;
+		double deltaPixelsY = apparentCellPixelsY * deltaN;
 
 		basePoint.copy(lastBasePoint);
 		basePoint.inc(deltaPixelsX, deltaPixelsY, 0);
