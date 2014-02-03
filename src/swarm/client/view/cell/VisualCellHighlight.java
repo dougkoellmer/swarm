@@ -111,7 +111,7 @@ public class VisualCellHighlight extends FlowPanel implements I_UIElement
 		else
 		{
 			apparentCellPixelsX = (cell.getGrid().getCellWidth() + cell.getGrid().getCellPadding()) * lastScaling;
-			apparentCellPixelsY = (cell.getGrid().getCellWidth() + cell.getGrid().getCellPadding()) * lastScaling;
+			apparentCellPixelsY = (cell.getGrid().getCellHeight() + cell.getGrid().getCellPadding()) * lastScaling;
 		}
 		
 		double deltaPixelsX = apparentCellPixelsX * deltaM;
