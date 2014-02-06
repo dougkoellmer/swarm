@@ -52,7 +52,7 @@ public class Action_Camera_SetViewSize extends A_Action
 		
 		if( machine.getCurrentState() instanceof State_CameraFloating )
 		{
-			m_cameraMngr.setTargetPosition(m_cameraMngr.getTargetPosition(), false); // refreshes Z-constraints if necessary.
+			m_cameraMngr.setTargetPosition(m_cameraMngr.getTargetPosition(), false, true); // refreshes Z-constraints if necessary.
 		}
 		else if( machine.getCurrentState() == null )
 		{

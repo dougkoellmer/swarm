@@ -163,7 +163,7 @@ public class State_CameraSnapping extends A_State implements I_StateEventListene
 			m_snapProgressBase = this.getOverallSnapProgress();
 		}
 		
-		manager.setTargetPosition(targetPoint, false);
+		manager.setTargetPosition(targetPoint, false, !sameCoordinateAsLastTime);
 	}
 	
 	public double getOverallSnapProgress()

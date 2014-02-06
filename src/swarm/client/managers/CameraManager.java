@@ -27,14 +27,15 @@ public class CameraManager
 	private double m_xProgress = 0;
 	private double m_exponent = 0.0;
 	private double m_snapTime = 0.0;
+	private double m_minSnapTime = 0;
+	private double m_snapTimeRange = 0;
+	private double m_weightedProgress = 0;
 	
 	private int m_cameraAtRestFrameCount = 1;
 	
 	private final Camera m_camera;
 	private final GridManager m_gridMngr;
 	
-	private double m_minSnapTime = 0;
-	private double m_snapTimeRange = 0;
 	
 	public CameraManager(GridManager gridMngr, Camera camera, double minSnapTime, double snapTimeRange)
 	{
@@ -74,10 +75,7 @@ public class CameraManager
 	
 	public double getWeightedSnapProgress()
 	{
-		double progressRatio = calcY(m_xProgress);
-		progressRatio = 1 - progressRatio / m_startY;
-		
-		return progressRatio;
+		return m_weightedProgress;
 	}
 	
 	public void update(double timeStep)
@@ -101,6 +99,7 @@ public class CameraManager
 		
 		double progressRatio = calcY(m_xProgress);
 		progressRatio = 1 - progressRatio / m_startY;
+		m_weightedProgress = progressRatio;
 		
 		m_utilVector.copy(m_diffVector);
 		m_utilVector.scaleByNumber(progressRatio);
@@ -133,7 +132,7 @@ public class CameraManager
 		m_cameraOrigin.inc(deltaX, deltaY, 0);
 	}
 	
-	public void setTargetPosition(Point point, boolean instant)
+	public void setTargetPosition(Point point, boolean instant, boolean resetSnapTime)
 	{
 		A_Grid grid = m_gridMngr.getGrid();
 		
@@ -199,33 +198,24 @@ public class CameraManager
 		
 		if( !instant )
 		{
-			double timeToTravel = m_minSnapTime + distanceRatio * m_snapTimeRange;
-			
-			m_snapTime = timeToTravel;
+			if( resetSnapTime )
+			{
+				double timeToTravel = m_minSnapTime + distanceRatio * m_snapTimeRange;
+				
+				m_snapTime = timeToTravel;
+			}
 		}
-		else
-		{
-			//m_snapTime = 0.01;
-		}
-		
-		//timeToTravel = smU_Math.clamp(timeToTravel, smS_App.MIN_SNAP_TIME, smS_App.MAX_SNAP_TIME);
-
-		
 		
 		final double MIN_EXPONENT = 3;
 		final double MAX_EXPONENT = 5;
 		final double EXPONENT_RANGE = MAX_EXPONENT - MIN_EXPONENT;
 		
 		m_exponent = MIN_EXPONENT + distanceRatio * EXPONENT_RANGE;
-		//m_exponent = smU_Math.clamp(m_exponent, MIN_EXPONENT, MAX_EXPONENT);
 
 		m_startY = calcY(m_snapTime);
 		
 		m_xProgress = m_snapTime;
-		
-		//s_logger.info(m_exponent + " " + m_snapTime + " " + m_startY);
-		//s_logger.info(m_lengthToTravel + " " + distanceRatio + " distanceRatio");
-		
+		m_weightedProgress = 0;
 		m_cameraAtRestFrameCount = 0;
 	}
 	
@@ -246,6 +236,7 @@ public class CameraManager
 		m_cameraOrigin.copy(m_targetPosition);
 		
 		m_xProgress = 0;
+		m_weightedProgress = 1;
 	}
 	
 	public boolean didCameraJustComeToRest()

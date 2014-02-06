@@ -72,7 +72,7 @@ public class Action_Camera_SnapToPoint extends smA_CameraAction
 		
 		if( point == null )  return;
 		
-		m_cameraMngr.setTargetPosition(point, instant);
+		m_cameraMngr.setTargetPosition(point, instant, true);
 		
 		//--- DRK > If it's instant, it means the view layer's input is requesting a positional change,
 		//---		and then will immediately draw the buffer with the assumption that the positional change

@@ -111,7 +111,7 @@ public class StateMachine_Camera extends A_StateMachine implements I_StateEventL
 				machine_setState(this, State_CameraFloating.class);
 				
 				//TODO: Might want to ease the camera instead of stopping it short.
-				m_appContext.cameraMngr.setTargetPosition(m_appContext.cameraMngr.getCamera().getPosition(), false);
+				m_appContext.cameraMngr.setTargetPosition(m_appContext.cameraMngr.getCamera().getPosition(), false, true);
 			}
 			
 			State_GettingMapping.Constructor constructor = new State_GettingMapping.Constructor(address);
