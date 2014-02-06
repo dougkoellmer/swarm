@@ -203,7 +203,13 @@ public class CameraManager
 				
 				m_snapTime = timeToTravel;
 			}
+			else
+			{
+				m_snapTime = m_xProgress;
+			}
 		}
+		
+		//s_logger.severe(m_snapTime + "");
 		
 		final double MIN_EXPONENT = 3;
 		final double MAX_EXPONENT = 5;
