@@ -66,7 +66,6 @@ public class BrowserNavigator implements I_StateEventListener
 	private Event_Camera_OnAddressResponse.Args 		m_args_OnAddressResponse	= null;
 	private Event_GettingMapping_OnResponse.Args	 	m_args_OnMappingResponse	= null;
 	private final Action_Camera_SnapToPoint.Args		m_args_SnapToPoint			= new Action_Camera_SnapToPoint.Args();
-	private final Action_Camera_SetInitialPosition.Args	m_args_SetInitialPosition 	= new Action_Camera_SetInitialPosition.Args();
 	private final Action_Camera_SnapToAddress.Args 		m_args_SnapToAddress		= new Action_Camera_SnapToAddress.Args();
 	private final Action_Camera_SnapToCoordinate.Args 	m_args_SnapToCoordinate		= new Action_Camera_SnapToCoordinate.Args();
 
@@ -209,6 +208,18 @@ public class BrowserNavigator implements I_StateEventListener
 		}
 	}
 	
+	private void setViewingEnterHistory(CellAddress address, CellAddressMapping mapping)
+	{
+		if( m_stateAlreadyPushedForViewingExit )
+		{
+			m_historyManager.setState(address, mapping);
+		}
+		else
+		{
+			m_historyManager.pushState(address, mapping);
+		}
+	}
+	
 	@Override
 	public void onStateEvent(StateEvent event)
 	{
@@ -268,6 +279,8 @@ public class BrowserNavigator implements I_StateEventListener
 				}
 				else if( event.getState() instanceof State_ViewingCell )
 				{
+					State_ViewingCell viewingState = event.getState();
+					
 					if( m_lastSnapAction == null )
 					{
 						//--- DRK > This case implies that browser navigation (pressing forward/backward)
@@ -275,9 +288,9 @@ public class BrowserNavigator implements I_StateEventListener
 						//---		There is a case where you can manually snap to a cell, get there, but 
 						//---		address hasn't come in yet, then you navigate away, then the address comes in.  If you press the back
 						//---		button to return to the cell, the address won't show unless we manually set it here.
-						State_ViewingCell state = event.getState();
-						BufferCell cell = state.getCell();
-						CellAddress address = cell.getCellAddress();
+						
+						BufferCell cell = viewingState.getCell();
+						CellAddress address = cell.getAddress();
 						if( address != null )
 						{
 							m_historyManager.setState(address, new CellAddressMapping(cell.getCoordinate()));
@@ -290,23 +303,13 @@ public class BrowserNavigator implements I_StateEventListener
 							U_Debug.ASSERT(m_args_OnMappingResponse == null, "sm_bro_nav_112387");
 							
 							boolean pushEmptyState = false;
-							CellAddressMapping mapping = null;
+							BufferCell cell = viewingState.getCell();
+							CellAddressMapping mapping = new CellAddressMapping(cell.getCoordinate());
 							if( m_args_OnAddressResponse != null )
 							{
-								mapping = m_args_OnAddressResponse.getMapping();
-							
 								if( m_args_OnAddressResponse.getType() == Event_Camera_OnAddressResponse.E_Type.ON_FOUND )
 								{
-									HistoryState state = new HistoryState(m_args_OnAddressResponse.getMapping());
-									
-									if( m_stateAlreadyPushedForViewingExit )
-									{
-										m_historyManager.setState(m_args_OnAddressResponse.getAddress(), state);
-									}
-									else
-									{
-										m_historyManager.pushState(m_args_OnAddressResponse.getAddress(), state);
-									}
+									this.setViewingEnterHistory(m_args_OnAddressResponse.getAddress(), mapping);
 								}
 								else
 								{
@@ -315,9 +318,14 @@ public class BrowserNavigator implements I_StateEventListener
 							}
 							else
 							{
-								mapping = new CellAddressMapping(((State_ViewingCell)event.getState()).getCell().getCoordinate());
-								
-								pushEmptyState = true;
+								if( cell.getAddress() != null )
+								{
+									this.setViewingEnterHistory(cell.getAddress(), mapping);
+								}
+								else
+								{
+									pushEmptyState = true;
+								}
 							}
 							
 							if( pushEmptyState )
@@ -354,14 +362,7 @@ public class BrowserNavigator implements I_StateEventListener
 									}
 									else
 									{
-										if( m_stateAlreadyPushedForViewingExit )
-										{
-											m_historyManager.setState(m_args_OnMappingResponse.getAddress(), m_args_OnMappingResponse.getMapping());
-										}
-										else
-										{
-											m_historyManager.pushState(m_args_OnMappingResponse.getAddress(), m_args_OnMappingResponse.getMapping());
-										}
+										this.setViewingEnterHistory(m_args_OnMappingResponse.getAddress(), m_args_OnMappingResponse.getMapping());
 									}
 								}
 								else

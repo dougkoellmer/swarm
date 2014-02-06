@@ -50,7 +50,7 @@ public class BufferCell extends A_Cell
 		return m_grid;
 	}
 	
-	public CellAddress getCellAddress()
+	public CellAddress getAddress()
 	{
 		return m_address;
 	}

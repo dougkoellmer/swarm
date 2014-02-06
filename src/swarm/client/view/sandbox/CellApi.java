@@ -345,7 +345,7 @@ public class CellApi
 	
 	private String getAddress()
 	{
-		return getCurrentCell().getCellAddress().getRawAddress();
+		return getCurrentCell().getAddress().getRawAddress();
 	}
 	
 	private String getUsername()

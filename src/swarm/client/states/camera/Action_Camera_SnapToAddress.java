@@ -52,7 +52,7 @@ public class Action_Camera_SnapToAddress extends A_Action
 		
 		if( currentState instanceof State_ViewingCell )
 		{
-			CellAddress viewingAddress = ((State_ViewingCell)currentState).getCell().getCellAddress();
+			CellAddress viewingAddress = ((State_ViewingCell)currentState).getCell().getAddress();
 			if( viewingAddress != null )
 			{
 				if( viewingAddress.isEqualTo(address) )

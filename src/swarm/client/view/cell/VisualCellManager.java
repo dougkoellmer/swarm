@@ -100,7 +100,7 @@ public class VisualCellManager implements I_UIElement
 				
 				if( bufferCell != null )
 				{
-					CellAddress address = bufferCell.getCellAddress();
+					CellAddress address = bufferCell.getAddress();
 					String title = "Cell says...";
 					
 					if( message.length() > S_Client.MAX_ALERT_CHARACTERS )

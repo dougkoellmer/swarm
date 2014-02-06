@@ -82,7 +82,7 @@ public class State_ViewingCell extends A_State implements I_StateEventListener
 			this.m_hasRequestedSourceCode = false;
 		}
 		
-		if( cell.getCellAddress() == null )
+		if( cell.getAddress() == null )
 		{
 			//--- DRK > Try to get address ourselves...very well could turn up null.
 			CellAddressMapping mapping = new CellAddressMapping(cell.getCoordinate());

@@ -212,9 +212,9 @@ public class CellAddressManager implements I_TransactionResponseHandler
 				
 				if( cell != null )
 				{
-					if( cell.getCellAddress() != null )
+					if( cell.getAddress() != null )
 					{
-						if( cell.getCellAddress().isEqualTo(address) )
+						if( cell.getAddress().isEqualTo(address) )
 						{
 							return new CellAddressMapping(cell.getCoordinate());
 						}
@@ -235,7 +235,7 @@ public class CellAddressManager implements I_TransactionResponseHandler
 			
 			if( cell != null )
 			{
-				cell.getCellAddress();
+				cell.getAddress();
 			}
 		}
 		

@@ -36,7 +36,6 @@ public class CameraManager
 	private final Camera m_camera;
 	private final GridManager m_gridMngr;
 	
-	
 	public CameraManager(GridManager gridMngr, Camera camera, double minSnapTime, double snapTimeRange)
 	{
 		m_gridMngr = gridMngr;
