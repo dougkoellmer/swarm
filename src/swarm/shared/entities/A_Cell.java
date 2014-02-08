@@ -8,17 +8,22 @@ import swarm.shared.json.E_JsonKey;
 import swarm.shared.json.I_JsonKeySource;
 import swarm.shared.json.I_JsonObject;
 import swarm.shared.json.JsonHelper;
+import swarm.shared.structs.CellSize;
 import swarm.shared.structs.CodePrivileges;
 import swarm.shared.structs.Code;
 import swarm.shared.structs.GridCoordinate;
 
 public abstract class A_Cell extends A_JsonEncodable
 {
+	protected final int DEFAULT_DIMENSION = -1;
+	
 	private final GridCoordinate m_coordinate;
 
 	protected final Code m_code[] = new Code[E_CodeType.values().length];
 	
 	protected CodePrivileges m_codePrivileges;
+	
+	protected final CellSize m_focusedCellSize = newCellSize();
 	
 	protected A_Cell()
 	{
@@ -46,6 +51,11 @@ public abstract class A_Cell extends A_JsonEncodable
 		m_coordinate = coordinate;
 		
 		m_codePrivileges = privileges;
+	}
+	
+	public CellSize getFocusedCellSize()
+	{
+		return m_focusedCellSize;
 	}
 	
 	public GridCoordinate getCoordinate()
@@ -118,6 +128,11 @@ public abstract class A_Cell extends A_JsonEncodable
 		{
 			return code;
 		}
+	}
+	
+	protected CellSize newCellSize()
+	{
+		return new CellSize();
 	}
 	
 	public Code getCode(E_CodeType eType)

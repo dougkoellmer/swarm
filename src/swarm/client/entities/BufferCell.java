@@ -111,9 +111,6 @@ public class BufferCell extends A_Cell
 		m_address = address;
 	}
 	
-	/**
-	 * Should only be called from smCellDataManager.
-	 */
 	public void onServerRequest(E_CodeType eType)
 	{
 		m_codeStatus[eType.ordinal()] = E_CodeStatus.WAITING_ON_CODE;
@@ -204,7 +201,7 @@ public class BufferCell extends A_Cell
 			}
 			else
 			{
-				//--- DRK > This block was hit once when looking at the "terms" cell from afar, signing in, then focusing the cell.
+				//--- DRK > This block was hit once when looking at the b33hive "terms" cell from afar, signing in, then focusing the cell.
 				//---		It was in local release mode (pretty sure about release), and probably after local cache expired.
 				//---		At the time, a "showLoading" call was made to the visualization instead of an error, and basically prevented
 				//---		the cell from being updated again...I didn't try panning away from the cell and coming back though.
@@ -415,6 +412,7 @@ public class BufferCell extends A_Cell
 		super.clearCode();
 		
 		this.setStatusAll(E_CodeStatus.NEEDS_CODE);
+		this.m_focusedCellSize.setToDefaults();
 		
 		U_Debug.ASSERT(!m_isFocused);
 		

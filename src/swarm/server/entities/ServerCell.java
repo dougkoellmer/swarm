@@ -12,10 +12,12 @@ import swarm.server.data.blob.I_Blob;
 import swarm.server.data.blob.U_Serialization;
 import swarm.server.structs.SerializableDate;
 import swarm.server.structs.ServerCellAddress;
+import swarm.server.structs.ServerCellSize;
 import swarm.server.structs.ServerCodePrivileges;
 import swarm.server.structs.ServerCode;
 import swarm.shared.entities.A_Cell;
 import swarm.shared.entities.E_CodeType;
+import swarm.shared.structs.CellSize;
 import swarm.shared.structs.CodePrivileges;
 import swarm.shared.structs.Code;
 
@@ -28,7 +30,7 @@ public class ServerCell extends A_Cell implements I_Blob
 {
 	private static final int STARTING_CODE_VERSION = 0;
 	
-	private static final int EXTERNAL_VERSION = 2;
+	private static final int EXTERNAL_VERSION = 3;
 	
 	private final ArrayList<ServerCellAddress> m_addresses = new ArrayList<ServerCellAddress>();
 	
@@ -114,6 +116,8 @@ public class ServerCell extends A_Cell implements I_Blob
 		out.writeInt(m_codeVersion);
 		
 		((ServerCodePrivileges)m_codePrivileges).writeExternal(out);
+		
+		((ServerCellSize)m_focusedCellSize).writeExternal(out);
 	}
 
 	@Override
@@ -148,6 +152,21 @@ public class ServerCell extends A_Cell implements I_Blob
 		m_codeVersion = in.readInt();
 		
 		((ServerCodePrivileges)m_codePrivileges).readExternal(in);
+		
+		if( externalVersion >= 3 )
+		{
+			((ServerCellSize)m_focusedCellSize).readExternal(in);
+		}
+		else
+		{
+			m_focusedCellSize.setToDefaults();
+		}
+	}
+	
+	@Override
+	protected CellSize newCellSize()
+	{
+		return new ServerCellSize();
 	}
 
 	@Override

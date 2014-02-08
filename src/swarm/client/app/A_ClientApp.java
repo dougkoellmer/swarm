@@ -15,6 +15,7 @@ import swarm.client.managers.CameraManager;
 import swarm.client.managers.CellAddressManager;
 import swarm.client.managers.CellBufferManager;
 import swarm.client.managers.CellCodeManager;
+import swarm.client.managers.CellSizeManager;
 import swarm.client.managers.ClientAccountManager;
 import swarm.client.managers.GridManager;
 import swarm.client.managers.UserManager;
@@ -102,15 +103,17 @@ public class A_ClientApp extends A_App implements I_TimeSource
 		m_viewContext = new ViewContext();
 		m_viewContext.appConfig = m_appConfig;
 		m_viewContext.viewConfig = viewConfig;
-		
+		m_appContext.config = m_appConfig;
 		m_viewContext.appContext = m_appContext;
+		
+		m_appContext.timeSource = this;
 	}
 	
 	protected void startUp(E_StartUpStage stage)
 	{
 		switch(stage)
 		{
-			case CHECK_BROWSER_SUPPORT:// this case goes async, so can't recurse immediately.
+			case CHECK_BROWSER_SUPPORT:// this case may go async with caja init...if so can't recurse immediately.
 			{
 				stage_browserSupportCheck();		return;
 			}
@@ -140,9 +143,9 @@ public class A_ClientApp extends A_App implements I_TimeSource
 				stage_registerStateMachine(null, null);	break;
 			}
 			
-			case ESTABLISH_TIMING:
+			case START_UPDATE_LOOP:
 			{
-				stage_establishTiming();			break;
+				stage_startUpdateLoop();			break;
 			}
 			
 			case GUNSHOT_SOUND:
@@ -258,7 +261,8 @@ public class A_ClientApp extends A_App implements I_TimeSource
 		m_appContext.addressMngr = new CellAddressManager(m_appContext, m_appConfig.addressCacheSize, m_appConfig.addressCacheExpiration_seconds, this);
 		m_appContext.accountMngr = new ClientAccountManager(signInValidator, signUpValidator, m_appContext.txnMngr, m_appContext.jsonFactory);
 		m_appContext.codeMngr = new CellCodeManager(m_appContext);
-		m_appContext.cellBufferMngr = new CellBufferManager(m_appContext.codeMngr);
+		m_appContext.cellSizeMngr = new CellSizeManager(m_appContext);
+		m_appContext.cellBufferMngr = new CellBufferManager(m_appContext.codeMngr, m_appContext.cellSizeMngr);
 		
 		//--- DRK > Configure transaction stuff.
 		m_appContext.requestPathMngr.register(E_RequestPath.values());
@@ -334,11 +338,11 @@ public class A_ClientApp extends A_App implements I_TimeSource
 		}
 	}
 	
-	protected void stage_establishTiming()
+	protected void stage_startUpdateLoop()
 	{
-		//--- DRK > Get timing and update loop going.
-		/*smU_Time.startUp();
-		Timer timer = new Timer()
+		U_Time.startUp();
+		
+		/*Timer timer = new Timer()
 		{
 			@Override
 			public void run()
@@ -413,6 +417,7 @@ public class A_ClientApp extends A_App implements I_TimeSource
 		m_lastTime = currentTime;
 
 		m_appContext.txnMngr.flushSyncResponses();
+		m_appContext.txnMngr.flushAsyncRequestQueue();
 	}
 
 	@Override

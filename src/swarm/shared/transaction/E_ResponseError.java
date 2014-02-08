@@ -22,7 +22,7 @@ public enum E_ResponseError
 	NOT_AUTHORIZED,
 	SERVICE_EXCEPTION, // when some backend service fails unexpectedly, like database, email, etc.
 	BAD_INPUT, // set when invalid/missing data is given to a request handler
-	BAD_STATE, // set when request assumes something is in a certain state, but server disagrees.
+	BAD_STATE, // set when client assumes something is in a certain state, but server disagrees.
 	DEPENDENCY_PROBLEM,
 	
 	//--- DRK > Set only by request handlers on server, indicating a "soft" error that is recoverable.

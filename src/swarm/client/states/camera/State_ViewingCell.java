@@ -94,7 +94,7 @@ public class State_ViewingCell extends A_State implements I_StateEventListener
 		codeManager.populateCell(cell, localCodeRepo, 1, false, true, E_CodeType.COMPILED);
 		
 		ClientTransactionManager txnMngr = m_appContext.txnMngr;
-		txnMngr.flushRequestQueue();
+		txnMngr.flushAsyncRequestQueue();
 	}
 
 	public BufferCell getCell()

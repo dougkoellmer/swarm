@@ -25,6 +25,7 @@ import swarm.server.handlers.normal.getAccountInfo;
 import swarm.server.handlers.normal.getCellAddress;
 import swarm.server.handlers.normal.getCellAddressMapping;
 import swarm.server.handlers.normal.getCode;
+import swarm.server.handlers.normal.getFocusedCellSize;
 import swarm.server.handlers.normal.getGridData;
 import swarm.server.handlers.normal.getHashedPassword;
 import swarm.server.handlers.normal.getPasswordChangeToken;
@@ -190,7 +191,8 @@ public abstract class A_ServerApp extends A_App
 		setNormalHandler(new setNewDesiredPassword(),	E_RequestPath.setNewDesiredPassword);
 		setNormalHandler(new getPasswordChangeToken(),	E_RequestPath.getPasswordChangeToken);
 		setNormalHandler(new getServerVersion(),		E_RequestPath.getServerVersion);
-		setNormalHandler(new getHashedPassword(),		E_RequestPath.getHashedPassword);
+		//setNormalHandler(new getHashedPassword(),		E_RequestPath.getHashedPassword);
+		setNormalHandler(new getFocusedCellSize(),		E_RequestPath.getFocusedCellSize);
 		
 		m_context.txnMngr.addDeferredHandler(getCodeHandler);
 	}
@@ -209,11 +211,11 @@ public abstract class A_ServerApp extends A_App
 	{
 		m_context.requestPathMngr.register(E_AdminRequestPath.values());
 		
-		setAdminHandler(new createGrid(BaseServerGrid.class),						E_AdminRequestPath.createGrid);
-		setAdminHandler(new deactivateUserCells(),								E_AdminRequestPath.deactivateUserCells);
-		setAdminHandler(new refreshHomeCells(T_homeCellCreator),				E_AdminRequestPath.refreshHomeCells);
-		setAdminHandler(new clearCell(),										E_AdminRequestPath.clearCell);
-		setAdminHandler(new recompileCells(),									E_AdminRequestPath.recompileCells);
+		setAdminHandler(new createGrid(BaseServerGrid.class),				E_AdminRequestPath.createGrid);
+		setAdminHandler(new deactivateUserCells(),							E_AdminRequestPath.deactivateUserCells);
+		setAdminHandler(new refreshHomeCells(T_homeCellCreator),			E_AdminRequestPath.refreshHomeCells);
+		setAdminHandler(new clearCell(),									E_AdminRequestPath.clearCell);
+		setAdminHandler(new recompileCells(),								E_AdminRequestPath.recompileCells);
 		setAdminHandler(new deleteHomeCells(),								E_AdminRequestPath.deleteHomeCells);
 	}
 	

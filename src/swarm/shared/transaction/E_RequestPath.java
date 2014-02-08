@@ -26,7 +26,8 @@ public enum E_RequestPath implements I_RequestPath
 	getStartingPosition		(E_HttpMethod.GET),
 	getServerVersion		(E_HttpMethod.GET),
 	getHashedPassword		(E_HttpMethod.GET),
-	getPasswordChangeToken	(E_HttpMethod.GET);
+	getPasswordChangeToken	(E_HttpMethod.GET),
+	getFocusedCellSize		(E_HttpMethod.GET);
 	
 	private final E_HttpMethod m_method;
 	

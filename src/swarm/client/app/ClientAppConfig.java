@@ -19,6 +19,9 @@ public class ClientAppConfig extends AppConfig
 	public int addressCacheSize = 1024;
 	public double addressCacheExpiration_seconds = 60 * 5;
 	
+	public int cellSizeCacheSize = 1024;
+	public double cellSizeCacheExpiration_seconds = 60 * 5;
+	
 	public int codeCacheSize = 128;
 	public double codeCacheExpiration_seconds = 60 * 5;
 	

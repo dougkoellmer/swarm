@@ -213,6 +213,7 @@ public class StateMachine_Camera extends A_StateMachine implements I_StateEventL
 		});
 		
 		m_appContext.addressMngr.start(m_addressManagerListener);
+		m_appContext.cellSizeMngr.start();
 	}
 	
 	@Override
@@ -293,8 +294,8 @@ public class StateMachine_Camera extends A_StateMachine implements I_StateEventL
 	{
 		m_appContext.unregisterBufferMngr(m_appContext.cellBufferMngr);
 		
+		m_appContext.cellSizeMngr.stop();
 		m_appContext.addressMngr.stop();
-		
 		m_appContext.codeMngr.stop();
 	}
 

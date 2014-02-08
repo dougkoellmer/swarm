@@ -74,7 +74,9 @@ public enum E_JsonKey implements I_JsonKeySource
 	assertMessage,
 	passwordChangeToken,
 	
-	createdUser;
+	createdUser,
+	
+	cellSize;
 
 
 	private final String m_compiledKey;

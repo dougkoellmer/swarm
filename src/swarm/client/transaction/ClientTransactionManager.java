@@ -187,7 +187,7 @@ public class ClientTransactionManager
 		m_transactionRequestBatch.addRequest(request);
 	}
 	
-	public void flushRequestQueue()
+	public void flushAsyncRequestQueue()
 	{
 		if ( m_transactionRequestBatch == null )  return;		
 		
@@ -276,7 +276,7 @@ public class ClientTransactionManager
 			case QUEUE_REQUEST_AND_FLUSH:
 			{
 				this.queueRequest_private(request);
-				this.flushRequestQueue();
+				this.flushAsyncRequestQueue();
 				
 				break;
 			}

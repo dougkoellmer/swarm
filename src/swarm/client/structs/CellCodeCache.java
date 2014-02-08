@@ -13,9 +13,9 @@ import swarm.shared.time.I_TimeSource;
 
 public class CellCodeCache implements I_LocalCodeRepository
 {
-	private static final class smCacheCell extends A_Cell
+	private static final class CacheCell extends A_Cell
 	{
-		smCacheCell()
+		CacheCell()
 		{
 		}
 	}
@@ -30,7 +30,7 @@ public class CellCodeCache implements I_LocalCodeRepository
 	
 	public void cacheCell(A_Cell cell)
 	{
-		smCacheCell cachedCell = this.getOrCreateCell(cell.getCoordinate(), true);
+		CacheCell cachedCell = this.getOrCreateCell(cell.getCoordinate(), true);
 		if( cell.getCodePrivileges() != null )
 		{
 			cachedCell.getCodePrivileges().copy(cell.getCodePrivileges());
@@ -48,14 +48,14 @@ public class CellCodeCache implements I_LocalCodeRepository
 		}
 	}
 	
-	private smCacheCell getOrCreateCell(GridCoordinate coord, boolean forceCreate)
+	private CacheCell getOrCreateCell(GridCoordinate coord, boolean forceCreate)
 	{
 		String coordHash = coord.writeString();
-		smCacheCell cell = (smCacheCell) m_cache.get(coordHash);
+		CacheCell cell = (CacheCell) m_cache.get(coordHash);
 		
 		if( cell == null && forceCreate )
 		{
-			cell = new smCacheCell();
+			cell = new CacheCell();
 			m_cache.put(coordHash, cell);
 		}
 		
@@ -64,11 +64,11 @@ public class CellCodeCache implements I_LocalCodeRepository
 	
 	public void cacheCode(GridCoordinate coord, Code code, E_CodeType eType)
 	{
-		smCacheCell cell = this.getOrCreateCell(coord, true);
+		CacheCell cell = this.getOrCreateCell(coord, true);
 		cacheCode_private(cell, code, eType);
 	}
 	
-	private void cacheCode_private(smCacheCell cell, Code code, E_CodeType eType)
+	private void cacheCode_private(CacheCell cell, Code code, E_CodeType eType)
 	{
 		cell.setCode(eType, code);
 	}
@@ -76,7 +76,7 @@ public class CellCodeCache implements I_LocalCodeRepository
 	@Override
 	public boolean tryPopulatingCell(GridCoordinate coordinate, E_CodeType eType, A_Cell outCell)
 	{
-		smCacheCell cachedCell = this.getOrCreateCell(coordinate, false);
+		CacheCell cachedCell = this.getOrCreateCell(coordinate, false);
 		
 		if( cachedCell == null )
 		{

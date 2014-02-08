@@ -35,12 +35,14 @@ public class CellBuffer
 	private int m_subCellDimension = 1;
 	
 	private final CellCodeManager m_codeMngr;
+	private final CellSizeManager m_cellSizeMngr;
 	private final CellPool m_cellPool;
 	
-	CellBuffer(CellCodeManager codeMngr, CellPool cellPool)
+	CellBuffer(CellCodeManager codeMngr, CellPool cellPool, CellSizeManager cellSizeMngr)
 	{
 		m_codeMngr = codeMngr;
 		m_cellPool = cellPool;
+		m_cellSizeMngr = cellSizeMngr;
 	}
 	
 	public GridCoordinate getCoordinate()
@@ -363,6 +365,7 @@ public class CellBuffer
 					
 					BufferCell imposedCell = getCellAtRelativeCoord(relThisCoord);
 					imposedCell.getCoordinate().copy(absCoord);
+					
 					
 					m_codeMngr.populateCell(otherCell, localCodeSource, m_subCellDimension, cellRecycled, communicateWithServer, E_CodeType.SPLASH);
 				}

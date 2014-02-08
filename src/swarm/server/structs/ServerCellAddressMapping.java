@@ -11,7 +11,8 @@ import swarm.server.data.blob.I_BlobKey;
 import swarm.server.data.blob.U_Blob;
 import swarm.server.data.blob.U_Serialization;
 import swarm.server.entities.E_GridType;
-
+import swarm.shared.json.A_JsonFactory;
+import swarm.shared.json.I_JsonObject;
 import swarm.shared.structs.CellAddressMapping;
 import swarm.shared.structs.GridCoordinate;
 
@@ -41,6 +42,15 @@ public class ServerCellAddressMapping extends CellAddressMapping implements I_Bl
 		super(source);
 		
 		m_gridType = gridType;
+	}
+	
+	public ServerCellAddressMapping(E_GridType gridType, I_JsonObject json, A_JsonFactory jsonFactory)
+	{
+		super();
+		
+		m_gridType = gridType;
+		
+		this.readJson(jsonFactory, json);
 	}
 	
 	public E_GridType getGridType()

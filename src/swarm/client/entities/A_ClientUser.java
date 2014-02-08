@@ -32,12 +32,12 @@ public class A_ClientUser extends A_User implements I_LocalCodeRepository
 {
 	private static final Logger s_logger = Logger.getLogger(CellCodeManager.class.getName());
 	
-	private class smCellIterator implements Iterator<UserCell>
+	private class CellIterator implements Iterator<UserCell>
 	{
 		private ArrayList<UserCell> m_cells = null;
 		private int m_currentIndex = 0;
 		
-		private smCellIterator(ArrayList<UserCell> cells)
+		private CellIterator(ArrayList<UserCell> cells)
 		{
 			m_cells = cells;
 		}
@@ -319,6 +319,11 @@ public class A_ClientUser extends A_User implements I_LocalCodeRepository
 		return getCellLenient(coord);
 	}
 	
+	public UserCell getCell(CellAddressMapping mapping)
+	{
+		return this.getCell(mapping.getCoordinate());
+	}
+	
 	protected UserCell getCellLenient(GridCoordinate coord)
 	{
 		for( int i = 0; i < m_cells.size(); i++ )
@@ -383,7 +388,7 @@ public class A_ClientUser extends A_User implements I_LocalCodeRepository
 	
 	public Iterator<? extends UserCell> getCells()
 	{
-		return new smCellIterator(m_cells);
+		return new CellIterator(m_cells);
 	}
 
 	@Override
@@ -397,6 +402,11 @@ public class A_ClientUser extends A_User implements I_LocalCodeRepository
 	public boolean isCellOwner(GridCoordinate coordinate)
 	{
 		return this.getCellLenient(coordinate) != null;
+	}
+	
+	public boolean isCellOwner(CellAddressMapping mapping)
+	{
+		return this.isCellOwner(mapping.getCoordinate());
 	}
 	
 	@Override

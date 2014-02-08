@@ -95,7 +95,7 @@ public class State_Initializing extends A_State implements I_TransactionResponse
 					//m_requiredSuccessCount++;
 				}
 
-				transactionManager.flushRequestQueue();
+				transactionManager.flushAsyncRequestQueue();
 			}
 		});
 	}

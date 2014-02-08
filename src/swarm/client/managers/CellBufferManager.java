@@ -70,12 +70,12 @@ public class CellBufferManager implements I_LocalCodeRepository
 	
 	private final CellPool m_cellPool;
 	
-	public CellBufferManager(CellCodeManager codeMngr) 
+	public CellBufferManager(CellCodeManager codeMngr, CellSizeManager cellSizeMngr) 
 	{
 		m_cellPool = new CellPool();
 		
-		m_displayBuffer = new CellBuffer(codeMngr, m_cellPool);
-		m_backBuffer = new CellBuffer(codeMngr, m_cellPool);
+		m_displayBuffer = new CellBuffer(codeMngr, m_cellPool, cellSizeMngr);
+		m_backBuffer = new CellBuffer(codeMngr, m_cellPool, cellSizeMngr);
 	}
 	
 	public CellPool getCellPool()

@@ -22,6 +22,7 @@ import swarm.shared.json.E_JsonKey;
 import swarm.shared.json.JsonHelper;
 import swarm.shared.statemachine.A_State;
 import swarm.shared.structs.CellAddress;
+import swarm.shared.structs.CellAddressMapping;
 import swarm.shared.structs.Code;
 import swarm.shared.structs.GridCoordinate;
 import swarm.shared.structs.Point;
@@ -51,6 +52,7 @@ public class UserManager implements I_TransactionResponseHandler, ClientAccountM
 	
 	private final A_ClientUser m_user;
 	private final AppContext m_appContext;
+	private final CellAddressMapping m_utilMapping = new CellAddressMapping();
 	
 	public UserManager(AppContext context, A_ClientUser user)
 	{
@@ -325,9 +327,14 @@ public class UserManager implements I_TransactionResponseHandler, ClientAccountM
 					}
 				}
 				
-				//--- DRK > Just dumping all we can into other local code repositories
+				//--- DRK > Just dumping all we can into other local stores
 				//---		because it won't be available in user object anymore.
 				m_appContext.codeCache.cacheCell(userCell);
+				if( !userCell.getFocusedCellSize().isDefault() )
+				{
+					m_utilMapping.getCoordinate().copy(coord);
+					m_appContext.cellSizeMngr.forceCache(m_utilMapping, userCell.getFocusedCellSize());
+				}
 			}
 			
 			user.onSignOut();

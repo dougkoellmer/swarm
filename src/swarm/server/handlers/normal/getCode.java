@@ -59,9 +59,7 @@ public class getCode extends A_DefaultRequestHandler implements I_DeferredReques
 	
 	@Override
 	public void handleRequest(TransactionContext context, TransactionRequest request, TransactionResponse response)
-	{
-		//smU_Servlet.simulateException(true);
-		
+	{		
 		ServerCellAddressMapping mapping = new ServerCellAddressMapping(E_GridType.ACTIVE);
 		mapping.readJson(m_serverContext.jsonFactory, request.getJsonArgs());
 		

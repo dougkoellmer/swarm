@@ -282,7 +282,8 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		//--- 		onFocusGained can be called before popUp. I thought this case wasn't
 		//---		a problem before, but may not have tested it, or something might have changed.
 		//---		It does make sense that it's needed though, because onFocusGained call originates
-		//---		in state machine, and popUp is invoked from a UI handler of the state event, so comes later.
+		//---		in state machine, and popUp is invoked from a UI handler of the state event,
+		//---		so comes later if the snap is instant.
 		if( !m_isFocused )
 		{
 			E_ZIndex.CELL_POPPED.assignTo(this);

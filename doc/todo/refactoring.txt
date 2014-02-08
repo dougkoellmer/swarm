@@ -2,4 +2,8 @@
 
 - give scroll navigator an implemented interface in order to get/set scroll properties, not the element itself
 
+- move all event listener code out of view components and into some kind of wrapper/manager class
+
+- consider making all events queued and then flushed by default, as opposed to providing the option to make request immediately...just more transparent and usable, and separate classes don't need to know any implementation details about each other.
+
 - reimpliment split panel
