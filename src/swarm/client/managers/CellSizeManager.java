@@ -183,6 +183,30 @@ public class CellSizeManager implements I_TransactionResponseHandler
 	{
 		if( request.getPath() == E_RequestPath.getFocusedCellSize )
 		{
+			m_utilMapping.readJson(request.getJsonArgs(), m_appContext.jsonFactory);
+			
+			CellBufferManager.Iterator iterator = m_appContext.getRegisteredBufferMngrs();
+			for( CellBufferManager manager = null; (manager = iterator.next()) != null; )
+			{
+				CellBuffer buffer = manager.getDisplayBuffer();
+				
+				//--- DRK > Cell data is only requested if we're close enough to see individually rendered cells.
+				//---		If we've since zoomed out, we cache the data as above, but otherwise ignore it.
+				if( buffer.getSubCellCount() == 1 )
+				{
+					if ( buffer.isInBoundsAbsolute(m_utilMapping.getCoordinate()) )
+					{
+						BufferCell cell = buffer.getCellAtAbsoluteCoord(m_utilMapping.getCoordinate());
+
+						if( !cell.getFocusedCellSize().isValid() ) // should be "pending", but covering all cases here.
+						{
+							cell.getFocusedCellSize().setToDefaults();
+						}
+					}
+				}
+			}
+			
+			
 			return E_ResponseErrorControl.BREAK;
 		}
 		

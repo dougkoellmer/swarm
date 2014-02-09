@@ -21,6 +21,16 @@ public class CellSize implements I_ReadsJson, I_WritesJson
 		
 	}
 	
+	public int getWidth()
+	{
+		return m_width;
+	}
+	
+	public int getHeight()
+	{
+		return m_height;
+	}
+	
 	public CellSize(CellSize value_copied)
 	{
 		this.copy(value_copied);
