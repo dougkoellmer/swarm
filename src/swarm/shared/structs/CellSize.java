@@ -9,6 +9,7 @@ import swarm.shared.json.I_WritesJson;
 
 public class CellSize implements I_ReadsJson, I_WritesJson
 {
+	protected static final int INVALID_DIMENSION = -2;
 	protected static final int DEFAULT_DIMENSION = -1;
 	
 	protected int m_width = DEFAULT_DIMENSION;
@@ -32,6 +33,16 @@ public class CellSize implements I_ReadsJson, I_WritesJson
 	public boolean isDefault()
 	{
 		return m_width == DEFAULT_DIMENSION && m_height == DEFAULT_DIMENSION;
+	}
+	
+	public boolean isInvalid()
+	{
+		return m_width == INVALID_DIMENSION && m_height == INVALID_DIMENSION;
+	}
+	
+	public void setToInvalid()
+	{
+		m_width = m_height = INVALID_DIMENSION;
 	}
 	
 	public void setToDefaults()
@@ -69,7 +80,7 @@ public class CellSize implements I_ReadsJson, I_WritesJson
 		}
 		else
 		{
-			this.setToDefaults();
+			this.setToInvalid();
 		}
 	}
 

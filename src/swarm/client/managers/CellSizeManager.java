@@ -128,8 +128,14 @@ public class CellSizeManager implements I_TransactionResponseHandler
 	{
 		if( request.getPath() == E_RequestPath.getFocusedCellSize )
 		{
-			m_utilMapping.readJson(m_appContext.jsonFactory, request.getJsonArgs());
 			m_utilCellSize.readJson(m_appContext.jsonFactory, response.getJsonArgs());
+			
+			if( m_utilCellSize.isInvalid() )
+			{
+				return E_ResponseSuccessControl.BREAK;
+			}
+			
+			m_utilMapping.readJson(m_appContext.jsonFactory, request.getJsonArgs());
 			
 			A_Grid grid = m_appContext.gridMngr.getGrid();
 			A_ClientUser user = m_appContext.userMngr.getUser();
