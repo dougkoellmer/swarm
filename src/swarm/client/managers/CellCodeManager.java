@@ -234,7 +234,7 @@ public class CellCodeManager implements I_TransactionResponseHandler
 							I_WritesJson codeTypeWrapper = new I_WritesJson()
 							{
 								@Override
-								public void writeJson(A_JsonFactory factory, I_JsonObject json_out)
+								public void writeJson(I_JsonObject json_out, A_JsonFactory factory)
 								{
 									factory.getHelper().putInt(json_out, E_JsonKey.codeType, eType.ordinal());
 								}
@@ -258,8 +258,8 @@ public class CellCodeManager implements I_TransactionResponseHandler
 	
 	private void onGetCellDataSuccess(TransactionRequest request, TransactionResponse response)
 	{
-		m_utilCell.readJson(this.m_appContext.jsonFactory, response.getJsonArgs());
-		m_utilCoord.readJson(this.m_appContext.jsonFactory, request.getJsonArgs());
+		m_utilCell.readJson(response.getJsonArgs(), this.m_appContext.jsonFactory);
+		m_utilCoord.readJson(request.getJsonArgs(), this.m_appContext.jsonFactory);
 		m_utilCell.getCoordinate().copy(m_utilCoord);
 
 		UserManager userManager = m_appContext.userMngr;
@@ -338,7 +338,7 @@ public class CellCodeManager implements I_TransactionResponseHandler
 		{
 			UserManager userManager = m_appContext.userMngr;
 			A_ClientUser user = userManager.getUser();
-			m_utilCoord.readJson(m_appContext.jsonFactory, request.getJsonArgs());
+			m_utilCoord.readJson(request.getJsonArgs(), m_appContext.jsonFactory);
 			
 			if( isSyncing(m_utilCoord) )
 			{
@@ -461,7 +461,7 @@ public class CellCodeManager implements I_TransactionResponseHandler
 		int typeOrdinal = m_appContext.jsonFactory.getHelper().getInt(request.getJsonArgs(), E_JsonKey.codeType);
 		E_CodeType eCodeType = E_CodeType.values()[typeOrdinal];
 		
-		m_utilCoord.readJson(m_appContext.jsonFactory, request.getJsonArgs());
+		m_utilCoord.readJson(request.getJsonArgs(), m_appContext.jsonFactory);
 
 		if( eCodeType == E_CodeType.SOURCE )
 		{
@@ -498,7 +498,7 @@ public class CellCodeManager implements I_TransactionResponseHandler
 			UserManager userManager = m_appContext.userMngr;
 			A_ClientUser user = userManager.getUser();
 			
-			m_utilCoord.readJson(m_appContext.jsonFactory, request.getJsonArgs());
+			m_utilCoord.readJson(request.getJsonArgs(), m_appContext.jsonFactory);
 			
 			CompilerResult result = new CompilerResult();
 			result.onFailure(E_CompilationStatus.RESPONSE_ERROR);

@@ -43,13 +43,13 @@ public class FileRange extends A_JsonEncodable
 	}
 	
 	@Override
-	public void writeJson(A_JsonFactory factory, I_JsonObject json_out)
+	public void writeJson(I_JsonObject json_out, A_JsonFactory factory)
 	{
 		factory.getHelper().putJavaVarArgs(factory, json_out, E_JsonKey.fileRange, (Object[])m_range);
 	}
 
 	@Override
-	public void readJson(A_JsonFactory factory, I_JsonObject json)
+	public void readJson(I_JsonObject json, A_JsonFactory factory)
 	{
 		m_range = new Integer[4];
 		I_JsonArray range = factory.getHelper().getJsonArray(json, E_JsonKey.fileRange);

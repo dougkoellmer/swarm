@@ -337,12 +337,12 @@ public class ClientAccountManager implements I_TransactionResponseHandler
 				
 				if( signInResponse.getError() == E_ResponseError.NO_ERROR )
 				{
-					result.readJson(this.m_jsonFactory, signInResponse.getJsonArgs());
+					result.readJson(signInResponse.getJsonArgs(), this.m_jsonFactory);
 					
 					if( result.isEverythingOk() )
 					{
 						m_accountInfo = new AccountInfo();
-						m_accountInfo.readJson(this.m_jsonFactory, response.getJsonArgs());
+						m_accountInfo.readJson(response.getJsonArgs(), this.m_jsonFactory);
 						
 						onResponse(E_ResponseType.SIGN_IN_SUCCESS);
 					}
@@ -363,7 +363,7 @@ public class ClientAccountManager implements I_TransactionResponseHandler
 			{
 				m_isSignedIn = true;
 				m_accountInfo = new AccountInfo();
-				m_accountInfo.readJson(m_jsonFactory, response.getJsonArgs());
+				m_accountInfo.readJson(response.getJsonArgs(), m_jsonFactory);
 			}
 			
 			return E_ResponseSuccessControl.BREAK;
@@ -453,7 +453,7 @@ public class ClientAccountManager implements I_TransactionResponseHandler
 				
 				if( previousResponse.getError() == E_ResponseError.NO_ERROR )
 				{
-					m_latestBadSignInResult.readJson(this.m_jsonFactory, previousResponse.getJsonArgs());
+					m_latestBadSignInResult.readJson(previousResponse.getJsonArgs(), this.m_jsonFactory);
 				}
 				else
 				{

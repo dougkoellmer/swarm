@@ -36,7 +36,7 @@ public abstract class A_User extends A_JsonEncodable
 	}
 	
 	@Override
-	public void readJson(A_JsonFactory factory, I_JsonObject json)
+	public void readJson(I_JsonObject json, A_JsonFactory factory)
 	{
 		//--- DRK > For now not concerned with last position...not sure how it should behave.
 		//getLastPosition().readJson(json);

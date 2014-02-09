@@ -55,18 +55,18 @@ public class GetCellAddressMappingResult extends A_JsonEncodable
 	}
 	
 	@Override
-	public void writeJson(A_JsonFactory factory, I_JsonObject json_out)
+	public void writeJson(I_JsonObject json_out, A_JsonFactory factory)
 	{
 		if( m_mapping != null && m_error == E_GetCellAddressMappingError.NO_ERROR )
 		{
-			m_mapping.writeJson(factory, json_out);
+			m_mapping.writeJson(json_out, factory);
 		}
 		
 		factory.getHelper().putEnum(json_out, E_JsonKey.getCellAddressMappingError, m_error);
 	}
 
 	@Override
-	public void readJson(A_JsonFactory factory, I_JsonObject json)
+	public void readJson(I_JsonObject json, A_JsonFactory factory)
 	{
 		m_error = factory.getHelper().getEnum(json, E_JsonKey.getCellAddressMappingError, E_GetCellAddressMappingError.values());
 		
@@ -74,7 +74,7 @@ public class GetCellAddressMappingResult extends A_JsonEncodable
 		{
 			m_mapping = new CellAddressMapping();
 			
-			m_mapping.readJson(factory, json);
+			m_mapping.readJson(json, factory);
 		}
 		else
 		{

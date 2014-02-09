@@ -57,6 +57,6 @@ public class getCellAddressMapping extends A_DefaultRequestHandler
 			result.setError(E_GetCellAddressMappingError.ADDRESS_PARSE_ERROR);
 		}
 		
-		result.writeJson(m_serverContext.jsonFactory, response.getJsonArgs());
+		result.writeJson(response.getJsonArgs(), m_serverContext.jsonFactory);
 	}
 }

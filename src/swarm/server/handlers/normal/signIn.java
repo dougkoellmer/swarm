@@ -41,6 +41,6 @@ public class signIn extends A_DefaultRequestHandler
 			m_serverContext.sessionMngr.startSession(userSession, response, creds.rememberMe());
 		}
 		
-		result.writeJson(m_serverContext.jsonFactory, response.getJsonArgs());
+		result.writeJson(response.getJsonArgs(), m_serverContext.jsonFactory);
 	}
 }

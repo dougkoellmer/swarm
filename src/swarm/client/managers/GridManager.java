@@ -72,7 +72,7 @@ public class GridManager implements I_TransactionResponseHandler
 		int oldWidth = m_grid.getWidth();
 		int oldHeight = m_grid.getHeight();
 		
-		m_grid.readJson(m_jsonFactory, json);
+		m_grid.readJson(json, m_jsonFactory);
 		
 		if( oldWidth != m_grid.getWidth() || oldHeight != m_grid.getHeight() )
 		{

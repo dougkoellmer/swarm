@@ -62,7 +62,7 @@ public class SessionManager implements I_TransactionScopeListener
 		HttpServletResponse nativeResponse = ((HttpServletResponse) response.getNativeResponse());
 		SessionCookieValue cookieValue = new SessionCookieValue(userSession.getAccountId(), type);
 		I_JsonObject jsonObject = m_jsonFactory.createJsonObject();
-		cookieValue.writeJson(m_jsonFactory, jsonObject);
+		cookieValue.writeJson(jsonObject, m_jsonFactory);
 		String cookieValueJson = jsonObject.writeString();
 		
 		try

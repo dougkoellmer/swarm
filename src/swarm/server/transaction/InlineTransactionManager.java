@@ -120,7 +120,7 @@ public class InlineTransactionManager
 		
 		if( writesJson != null )
 		{
-			writesJson.writeJson(m_jsonFactory, request.getJsonArgs());
+			writesJson.writeJson(request.getJsonArgs(), m_jsonFactory);
 		}
 		
 		makeInlineRequest(request, response);
@@ -135,10 +135,10 @@ public class InlineTransactionManager
 		
 		if( requestJsonEncodable != null )
 		{
-			requestJsonEncodable.writeJson(m_jsonFactory, request.getJsonArgs());
+			requestJsonEncodable.writeJson(request.getJsonArgs(), m_jsonFactory);
 		}
 		
-		responseJsonEncodable.writeJson(m_jsonFactory, response.getJsonArgs());
+		responseJsonEncodable.writeJson(response.getJsonArgs(), m_jsonFactory);
 		
 		writeInlineTransaction(request, response);
 	}

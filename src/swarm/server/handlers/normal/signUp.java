@@ -69,6 +69,6 @@ public class signUp extends A_DefaultRequestHandler
 			}
 		}
 		
-		result.writeJson(m_serverContext.jsonFactory, response.getJsonArgs());
+		result.writeJson(response.getJsonArgs(), m_serverContext.jsonFactory);
 	}
 }

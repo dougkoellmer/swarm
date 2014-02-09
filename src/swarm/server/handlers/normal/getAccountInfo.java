@@ -23,6 +23,6 @@ public class getAccountInfo extends A_DefaultRequestHandler
 		
 		UserSession userSession = m_serverContext.sessionMngr.getSession(request, response);
 		AccountInfo accountInfo = new AccountInfo(userSession.getUsername());
-		accountInfo.writeJson(m_serverContext.jsonFactory, response.getJsonArgs());
+		accountInfo.writeJson(response.getJsonArgs(), m_serverContext.jsonFactory);
 	}
 }

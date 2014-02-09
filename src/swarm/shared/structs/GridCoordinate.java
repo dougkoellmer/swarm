@@ -173,7 +173,7 @@ public class GridCoordinate extends A_JsonEncodable implements I_JsonComparable
 	}
 	
 	@Override
-	public void writeJson(A_JsonFactory factory, I_JsonObject json_out)
+	public void writeJson(I_JsonObject json_out, A_JsonFactory factory)
 	{
 		I_JsonArray components = factory.createJsonArray();
 		components.addInt(getM());
@@ -182,7 +182,7 @@ public class GridCoordinate extends A_JsonEncodable implements I_JsonComparable
 	}
 	
 	@Override
-	public void readJson(A_JsonFactory factory, I_JsonObject json)
+	public void readJson(I_JsonObject json, A_JsonFactory factory)
 	{
 		I_JsonArray components = factory.getHelper().getJsonArray(json, E_JsonKey.coordComponents);
 		if( components != null )

@@ -269,9 +269,9 @@ public class CellAddressManager implements I_TransactionResponseHandler
 		if( request.getPath() == E_RequestPath.getCellAddress )
 		{
 			CellAddressMapping mapping = new CellAddressMapping();
-			mapping.readJson(this.m_appContext.jsonFactory, request.getJsonArgs());
+			mapping.readJson(request.getJsonArgs(), this.m_appContext.jsonFactory);
 
-			m_reusedAddressResult.readJson(this.m_appContext.jsonFactory, response.getJsonArgs());
+			m_reusedAddressResult.readJson(response.getJsonArgs(), this.m_appContext.jsonFactory);
 			
 			if( m_reusedAddressResult.getError() == E_GetCellAddressError.NO_ERROR )
 			{
@@ -290,9 +290,9 @@ public class CellAddressManager implements I_TransactionResponseHandler
 		else if( request.getPath() == E_RequestPath.getCellAddressMapping )
 		{
 			CellAddress address = new CellAddress();
-			address.readJson(this.m_appContext.jsonFactory, request.getJsonArgs());
+			address.readJson(request.getJsonArgs(), this.m_appContext.jsonFactory);
 
-			m_reusedMappingResult.readJson(this.m_appContext.jsonFactory, response.getJsonArgs());
+			m_reusedMappingResult.readJson(response.getJsonArgs(), this.m_appContext.jsonFactory);
 			
 			if( m_reusedMappingResult.getError() == E_GetCellAddressMappingError.NO_ERROR )
 			{
@@ -320,7 +320,7 @@ public class CellAddressManager implements I_TransactionResponseHandler
 		if( request.getPath() == E_RequestPath.getCellAddress )
 		{
 			CellAddressMapping mapping = new CellAddressMapping();
-			mapping.readJson(this.m_appContext.jsonFactory, request.getJsonArgs());
+			mapping.readJson(request.getJsonArgs(), this.m_appContext.jsonFactory);
 			
 			if( response.getError() == E_ResponseError.VERSION_MISMATCH )
 			{
@@ -342,7 +342,7 @@ public class CellAddressManager implements I_TransactionResponseHandler
 		else if( request.getPath() == E_RequestPath.getCellAddressMapping )
 		{
 			CellAddress address = new CellAddress();
-			address.readJson(this.m_appContext.jsonFactory, request.getJsonArgs());
+			address.readJson(request.getJsonArgs(), this.m_appContext.jsonFactory);
 			
 			if( response.getError() == E_ResponseError.VERSION_MISMATCH )
 			{

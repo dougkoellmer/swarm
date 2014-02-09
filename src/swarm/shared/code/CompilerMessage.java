@@ -41,15 +41,15 @@ public class CompilerMessage extends A_JsonEncodable
 	}
 	
 	@Override
-	public void writeJson(A_JsonFactory factory, I_JsonObject json_out)
+	public void writeJson(I_JsonObject json_out, A_JsonFactory factory)
 	{
 		factory.getHelper().putString(json_out, E_JsonKey.compilerErrorMessage, m_message);
 		factory.getHelper().putEnum(json_out, E_JsonKey.compilerErrorLevel, m_level);
-		m_range.writeJson(factory, json_out);
+		m_range.writeJson(json_out, factory);
 	}
 
 	@Override
-	public void readJson(A_JsonFactory factory, I_JsonObject json)
+	public void readJson(I_JsonObject json, A_JsonFactory factory)
 	{
 		m_message = factory.getHelper().getString(json, E_JsonKey.compilerErrorMessage);
 		m_level = factory.getHelper().getEnum(json, E_JsonKey.compilerErrorLevel, E_CompilerMessageLevel.values());

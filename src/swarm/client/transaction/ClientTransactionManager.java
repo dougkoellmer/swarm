@@ -165,7 +165,7 @@ public class ClientTransactionManager
 		
 		for( int i = 0; i < writesJson.length; i++ )
 		{
-			writesJson[i].writeJson(m_jsonFactory, request.getJsonArgs());
+			writesJson[i].writeJson(request.getJsonArgs(), m_jsonFactory);
 		}
 
 		queueRequest_private(request);
@@ -211,7 +211,7 @@ public class ClientTransactionManager
 		TransactionRequest request = new TransactionRequest(m_jsonFactory, path);
 		for( int i = 0; i < writesJson.length; i++ )
 		{
-			writesJson[i].writeJson(m_jsonFactory, request.getJsonArgs());
+			writesJson[i].writeJson(request.getJsonArgs(), m_jsonFactory);
 		}
 		
 		makeRequest_private(request);
@@ -246,7 +246,7 @@ public class ClientTransactionManager
 	public void performAction(E_TransactionAction action, E_RequestPath requestPath, I_WritesJson writesJson)
 	{
 		TransactionRequest request = new TransactionRequest(m_jsonFactory, requestPath);
-		writesJson.writeJson(m_jsonFactory, request.getJsonArgs());
+		writesJson.writeJson(request.getJsonArgs(), m_jsonFactory);
 		
 		performAction_private(action, request);
 	}

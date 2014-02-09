@@ -66,7 +66,7 @@ class SessionCookieValue extends A_JsonEncodable implements I_BlobKey
 	}
 	
 	@Override
-	public void writeJson(A_JsonFactory factory, I_JsonObject json_out)
+	public void writeJson(I_JsonObject json_out, A_JsonFactory factory)
 	{
 		factory.getHelper().putString(json_out, JsonKey.TOKEN, m_token);
 		factory.getHelper().putInt(json_out, JsonKey.ACCOUNT_ID, m_accountId);
@@ -74,7 +74,7 @@ class SessionCookieValue extends A_JsonEncodable implements I_BlobKey
 	}
 
 	@Override
-	public void readJson(A_JsonFactory factory, I_JsonObject json)
+	public void readJson(I_JsonObject json, A_JsonFactory factory)
 	{
 		m_token = factory.getHelper().getString(json, JsonKey.TOKEN);
 		m_accountId = factory.getHelper().getInt(json, JsonKey.ACCOUNT_ID);

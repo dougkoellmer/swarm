@@ -209,7 +209,7 @@ public abstract class A_Grid extends A_JsonEncodable
 	}
 	
 	@Override
-	public void readJson(A_JsonFactory factory, I_JsonObject json)
+	public void readJson(I_JsonObject json, A_JsonFactory factory)
 	{
 		Integer width = factory.getHelper().getInt(json, E_JsonKey.gridWidth);
 		Integer height = factory.getHelper().getInt(json, E_JsonKey.gridHeight);
@@ -228,7 +228,7 @@ public abstract class A_Grid extends A_JsonEncodable
 		{
 			m_ownership = m_ownership != null ? m_ownership : createBitArray();
 			
-			m_ownership.readJson(factory, json);
+			m_ownership.readJson(json, factory);
 			
 			m_width = newWidth;
 			m_height = newHeight;
@@ -243,7 +243,7 @@ public abstract class A_Grid extends A_JsonEncodable
 	}
 	
 	@Override
-	public void writeJson(A_JsonFactory factory, I_JsonObject json_out)
+	public void writeJson(I_JsonObject json_out, A_JsonFactory factory)
 	{
 		factory.getHelper().putInt(json_out, E_JsonKey.gridWidth, m_width);
 		factory.getHelper().putInt(json_out, E_JsonKey.gridHeight, m_height);
@@ -253,7 +253,7 @@ public abstract class A_Grid extends A_JsonEncodable
 		
 		if( m_ownership != null )
 		{
-			m_ownership.writeJson(factory, json_out);
+			m_ownership.writeJson(json_out, factory);
 		}
 	}
 }

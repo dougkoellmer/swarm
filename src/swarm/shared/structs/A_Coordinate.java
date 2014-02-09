@@ -193,7 +193,7 @@ public abstract class A_Coordinate extends A_JsonEncodable
 	}
 	
 	@Override
-	public void writeJson(A_JsonFactory factory, I_JsonObject json_out)
+	public void writeJson(I_JsonObject json_out, A_JsonFactory factory)
 	{
 		I_JsonArray components = factory.createJsonArray();
 		components.addDouble(getX());
@@ -203,7 +203,7 @@ public abstract class A_Coordinate extends A_JsonEncodable
 	}
 	
 	@Override
-	public void readJson(A_JsonFactory factory, I_JsonObject json)
+	public void readJson(I_JsonObject json, A_JsonFactory factory)
 	{
 		I_JsonArray components = factory.getHelper().getJsonArray(json, E_JsonKey.pointComponents);
 		if( components != null )

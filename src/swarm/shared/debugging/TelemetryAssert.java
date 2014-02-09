@@ -21,18 +21,18 @@ public class TelemetryAssert extends A_JsonEncodable
 	
 	public TelemetryAssert(A_JsonFactory jsonFactory, I_JsonObject json)
 	{
-		this.readJson(jsonFactory, json);
+		this.readJson(json, jsonFactory);
 	}
 	
 	@Override
-	public void writeJson(A_JsonFactory factory, I_JsonObject json_out)
+	public void writeJson(I_JsonObject json_out, A_JsonFactory factory)
 	{
 		factory.getHelper().putString(json_out, E_JsonKey.assertMessage, m_message);
 		factory.getHelper().putString(json_out, E_JsonKey.platform, m_platform);
 	}
 
 	@Override
-	public void readJson(A_JsonFactory factory, I_JsonObject json)
+	public void readJson(I_JsonObject json, A_JsonFactory factory)
 	{
 		m_message = factory.getHelper().getString(json, E_JsonKey.assertMessage);
 		m_platform = factory.getHelper().getString(json, E_JsonKey.platform);

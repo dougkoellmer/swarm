@@ -360,11 +360,11 @@ public class A_ClientUser extends A_User implements I_LocalCodeRepository
 	}
 	
 	@Override
-	public void readJson(A_JsonFactory factory, I_JsonObject json)
+	public void readJson(I_JsonObject json, A_JsonFactory factory)
 	{
 		m_cells.clear();
 		
-		super.readJson(factory, json);
+		super.readJson(json, factory);
 		
 		m_isPopulated = true;
 	}
@@ -410,7 +410,7 @@ public class A_ClientUser extends A_User implements I_LocalCodeRepository
 	}
 	
 	@Override
-	public void writeJson(A_JsonFactory factory, I_JsonObject json_out)
+	public void writeJson(I_JsonObject json_out, A_JsonFactory factory)
 	{
 		throw new RuntimeException("Client user should never write json.");
 	}

@@ -101,7 +101,7 @@ public class UserManager implements I_TransactionResponseHandler, ClientAccountM
 	private void onGetUserDataSuccess(TransactionResponse response)
 	{
 		A_ClientUser user = m_user;
-		user.readJson(m_appContext.jsonFactory, response.getJsonArgs());
+		user.readJson(response.getJsonArgs(), m_appContext.jsonFactory);
 		Boolean createdUser = m_appContext.jsonFactory.getHelper().getBoolean(response.getJsonArgs(), E_JsonKey.createdUser);
 		createdUser = createdUser != null ? createdUser : false; // can be null when reading inline transaction from the page and the user is already created.
 		
@@ -182,7 +182,7 @@ public class UserManager implements I_TransactionResponseHandler, ClientAccountM
 		if( request.getPath() == E_RequestPath.getStartingPosition )
 		{
 			Point startingPosition = new Point();
-			startingPosition.readJson(m_appContext.jsonFactory, response.getJsonArgs());
+			startingPosition.readJson(response.getJsonArgs(), m_appContext.jsonFactory);
 			
 			m_user.getLastPosition().copy(startingPosition);
 			

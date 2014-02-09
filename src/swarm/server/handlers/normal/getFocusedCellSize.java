@@ -50,7 +50,7 @@ public class getFocusedCellSize extends A_DefaultRequestHandler
 		
 		if( persistedCell != null )
 		{
-			persistedCell.getFocusedCellSize().writeJson(m_serverContext.jsonFactory, response.getJsonArgs());
+			persistedCell.getFocusedCellSize().writeJson(response.getJsonArgs(), m_serverContext.jsonFactory);
 		}
 	}
 }

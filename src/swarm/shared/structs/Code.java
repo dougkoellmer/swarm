@@ -90,7 +90,7 @@ public class Code extends A_JsonEncodable
 	}
 
 	@Override
-	public void writeJson(A_JsonFactory factory, I_JsonObject json_out)
+	public void writeJson(I_JsonObject json_out, A_JsonFactory factory)
 	{
 		factory.getHelper().putString(json_out, E_JsonKey.rawCode, m_rawCode);
 		factory.getHelper().putInt(json_out, E_JsonKey.standInFlags, m_standInFlags);
@@ -98,7 +98,7 @@ public class Code extends A_JsonEncodable
 	}
 
 	@Override
-	public void readJson(A_JsonFactory factory, I_JsonObject json)
+	public void readJson(I_JsonObject json, A_JsonFactory factory)
 	{
 		m_standInFlags = 0x0;
 		

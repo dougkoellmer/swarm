@@ -12,8 +12,8 @@ import swarm.shared.app.BaseAppContext;
  */
 public abstract class A_JsonEncodable implements I_ReadsJson, I_WritesJson
 {
-	public abstract void writeJson(A_JsonFactory factory, I_JsonObject json_out);
-	public abstract void readJson(A_JsonFactory factory, I_JsonObject json);
+	public abstract void writeJson(I_JsonObject json_out, A_JsonFactory factory);
+	public abstract void readJson(I_JsonObject json, A_JsonFactory factory);
 	
 	public A_JsonEncodable()
 	{
@@ -21,6 +21,6 @@ public abstract class A_JsonEncodable implements I_ReadsJson, I_WritesJson
 	
 	public A_JsonEncodable(A_JsonFactory factory, I_JsonObject json)
 	{
-		this.readJson(factory, json);
+		this.readJson(json, factory);
 	}
 }

@@ -50,7 +50,7 @@ public class BrowserHistoryManager
 		if( state == null )  return null;
 		
 		GwtJsonObject jsonObject = (GwtJsonObject) m_jsonFactory.createJsonObject();
-		state.writeJson(m_jsonFactory, jsonObject);
+		state.writeJson(jsonObject, m_jsonFactory);
 		return jsonObject.getNative().getJavaScriptObject();
 	}
 	

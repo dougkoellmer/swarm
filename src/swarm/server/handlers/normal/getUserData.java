@@ -89,7 +89,7 @@ public class getUserData extends A_DefaultRequestHandler
 					A_Grid dummyGrid = new A_Grid(createUserTransaction.getGridWidth(), createUserTransaction.getGridHeight())
 					{
 						@Override
-						public void writeJson(A_JsonFactory factory, I_JsonObject json_out)
+						public void writeJson(I_JsonObject json_out, A_JsonFactory factory)
 						{
 							//--- DRK > Only sending down width and height so we don't overwrite other properties.
 							factory.getHelper().putInt(json_out, E_JsonKey.gridWidth, this.getWidth());
@@ -97,7 +97,7 @@ public class getUserData extends A_DefaultRequestHandler
 						}
 					};
 					
-					dummyGrid.writeJson(m_serverContext.jsonFactory, response.getJsonArgs());
+					dummyGrid.writeJson(response.getJsonArgs(), m_serverContext.jsonFactory);
 				}
 				
 				user = createUserTransaction.getUser();
@@ -124,6 +124,6 @@ public class getUserData extends A_DefaultRequestHandler
 		}
 
 		m_serverContext.jsonFactory.getHelper().putBoolean(response.getJsonArgs(), E_JsonKey.createdUser, createdUser);
-		user.writeJson(m_serverContext.jsonFactory, response.getJsonArgs());
+		user.writeJson(response.getJsonArgs(), m_serverContext.jsonFactory);
 	}
 }

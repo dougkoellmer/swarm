@@ -167,7 +167,7 @@ public class JsonHelper
 		{
 			I_WritesJson writesJson = ((I_WritesJson)object);
 			I_JsonObject jsonObject = factory.createJsonObject();
-			writesJson.writeJson(factory, jsonObject);
+			writesJson.writeJson(jsonObject, factory);
 			array.addObject(jsonObject);
 		}
 		else if( object instanceof Integer )

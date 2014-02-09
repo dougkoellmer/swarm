@@ -67,15 +67,15 @@ public class CellAddressMapping extends A_JsonEncodable implements I_JsonCompara
 	}
 
 	@Override
-	public void writeJson(A_JsonFactory factory, I_JsonObject json_out)
+	public void writeJson(I_JsonObject json_out, A_JsonFactory factory)
 	{
-		m_coordinate.writeJson(factory, json_out);
+		m_coordinate.writeJson(json_out, factory);
 	}
 
 	@Override
-	public void readJson(A_JsonFactory factory, I_JsonObject json)
+	public void readJson(I_JsonObject json, A_JsonFactory factory)
 	{
-		m_coordinate.readJson(factory, json);
+		m_coordinate.readJson(json, factory);
 	}
 	
 	@Override

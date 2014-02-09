@@ -50,7 +50,7 @@ public class ServerCellAddressMapping extends CellAddressMapping implements I_Bl
 		
 		m_gridType = gridType;
 		
-		this.readJson(jsonFactory, json);
+		this.readJson(json, jsonFactory);
 	}
 	
 	public E_GridType getGridType()

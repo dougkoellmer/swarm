@@ -17,7 +17,7 @@ public class U_User
 		{
 			try
 			{
-				mapping_out.readJson(factory, jsonCells.getObject(i));
+				mapping_out.readJson(jsonCells.getObject(i), factory);
 				
 				callback.invoke();
 			}

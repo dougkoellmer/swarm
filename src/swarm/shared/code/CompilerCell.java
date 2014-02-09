@@ -12,9 +12,9 @@ class CompilerCell extends A_Cell
 	}
 	
 	@Override
-	public void readJson(A_JsonFactory factory, I_JsonObject json)
+	public void readJson(I_JsonObject json, A_JsonFactory factory)
 	{
-		super.readJson(factory, json);
+		super.readJson(json, factory);
 		
 		
 	}

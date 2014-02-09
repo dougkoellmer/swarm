@@ -69,9 +69,9 @@ public class SignInCredentials extends A_AccountCredentials
 	}
 
 	@Override
-	public void writeJson(A_JsonFactory factory, I_JsonObject json_out)
+	public void writeJson(I_JsonObject json_out, A_JsonFactory factory)
 	{
-		super.writeJson(factory, json_out);
+		super.writeJson(json_out, factory);
 		
 		U_Account.cropPassword(m_credentials, E_SignInCredentialType.PASSWORD.ordinal());
 		
@@ -91,11 +91,11 @@ public class SignInCredentials extends A_AccountCredentials
 	}
 
 	@Override
-	public void readJson(A_JsonFactory factory, I_JsonObject json)
+	public void readJson(I_JsonObject json, A_JsonFactory factory)
 	{
 		init();
 		
-		super.readJson(factory, json);
+		super.readJson(json, factory);
 		
 		I_JsonArray creds = factory.getHelper().getJsonArray(json, E_JsonKey.signInCredentials);
 		

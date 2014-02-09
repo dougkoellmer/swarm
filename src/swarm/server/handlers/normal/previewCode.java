@@ -48,6 +48,6 @@ public class previewCode extends A_DefaultRequestHandler
 		
 		CompilerResult result = m_serverContext.codeCompiler.compile(sourceCode, privileges, coordinate.writeString(), m_serverContext.config.appId);
 		
-		result.writeJson(m_serverContext.jsonFactory, response.getJsonArgs());
+		result.writeJson(response.getJsonArgs(), m_serverContext.jsonFactory);
 	}
 }

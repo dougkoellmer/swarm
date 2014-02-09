@@ -66,7 +66,7 @@ public class SignInValidationResult extends A_JsonEncodable
 	}
 
 	@Override
-	public void writeJson(A_JsonFactory factory, I_JsonObject json_out)
+	public void writeJson(I_JsonObject json_out, A_JsonFactory factory)
 	{
 		I_JsonArray errors = factory.createJsonArray();
 		
@@ -79,7 +79,7 @@ public class SignInValidationResult extends A_JsonEncodable
 	}
 
 	@Override
-	public void readJson(A_JsonFactory factory, I_JsonObject json)
+	public void readJson(I_JsonObject json, A_JsonFactory factory)
 	{
 		init();
 		

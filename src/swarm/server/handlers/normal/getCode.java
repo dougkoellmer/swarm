@@ -61,7 +61,7 @@ public class getCode extends A_DefaultRequestHandler implements I_DeferredReques
 	public void handleRequest(TransactionContext context, TransactionRequest request, TransactionResponse response)
 	{		
 		ServerCellAddressMapping mapping = new ServerCellAddressMapping(E_GridType.ACTIVE);
-		mapping.readJson(m_serverContext.jsonFactory, request.getJsonArgs());
+		mapping.readJson(request.getJsonArgs(), m_serverContext.jsonFactory);
 		
 		if( context.getRequestCount(E_RequestPath.getCode) > 1 )
 		{
@@ -138,7 +138,7 @@ public class getCode extends A_DefaultRequestHandler implements I_DeferredReques
 		//---		and don't send down all the other code types that the persisted cell might have.
 		A_Cell responseCell = new A_Cell(privileges){};
 		responseCell.setCode(eCodeType, responseCode);
-		responseCell.writeJson(m_serverContext.jsonFactory, response.getJsonArgs());
+		responseCell.writeJson(response.getJsonArgs(), m_serverContext.jsonFactory);
 		response.setError(E_ResponseError.NO_ERROR);
 		
 		return responseCode;
@@ -195,7 +195,7 @@ public class getCode extends A_DefaultRequestHandler implements I_DeferredReques
 			}
 			
 			ServerCellAddressMapping mapping = new ServerCellAddressMapping(E_GridType.ACTIVE);
-			mapping.readJson(m_serverContext.jsonFactory, request.getJsonArgs());
+			mapping.readJson(request.getJsonArgs(), m_serverContext.jsonFactory);
 			
 			ServerCell persistedCell = (ServerCell) result.get(mapping);
 			

@@ -28,7 +28,7 @@ public class CellSize implements I_ReadsJson, I_WritesJson
 	
 	public CellSize(I_JsonObject json, A_JsonFactory jsonFactory)
 	{
-		this.readJson(jsonFactory, json);
+		this.readJson(json, jsonFactory);
 	}
 	
 	public boolean isPending()
@@ -85,7 +85,7 @@ public class CellSize implements I_ReadsJson, I_WritesJson
 	}
 	
 	@Override
-	public void readJson(A_JsonFactory factory, I_JsonObject json)
+	public void readJson(I_JsonObject json, A_JsonFactory factory)
 	{
 		I_JsonArray sizeArray = factory.getHelper().getJsonArray(json, E_JsonKey.cellSize);
 		
@@ -101,7 +101,7 @@ public class CellSize implements I_ReadsJson, I_WritesJson
 	}
 
 	@Override
-	public void writeJson(A_JsonFactory factory, I_JsonObject json_out)
+	public void writeJson(I_JsonObject json_out, A_JsonFactory factory)
 	{
 		I_JsonArray sizeArray = factory.createJsonArray();
 		

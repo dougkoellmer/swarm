@@ -100,11 +100,11 @@ public class ServerUser extends A_User implements I_Blob
 	}
 	
 	@Override
-	public void readJson(A_JsonFactory factory, I_JsonObject json)
+	public void readJson(I_JsonObject json, A_JsonFactory factory)
 	{
 		m_ownedCells.clear();
 		
-		super.readJson(factory, json);
+		super.readJson(json, factory);
 	}
 
 	@Override
@@ -146,7 +146,7 @@ public class ServerUser extends A_User implements I_Blob
 	}
 	
 	@Override
-	public void writeJson(A_JsonFactory factory, I_JsonObject json_out)
+	public void writeJson(I_JsonObject json_out, A_JsonFactory factory)
 	{
 		A_JsonFactory jsonFactory = factory;
 		I_JsonArray ownedCoordinates = jsonFactory.createJsonArray();
@@ -160,7 +160,7 @@ public class ServerUser extends A_User implements I_Blob
 			}
 			
 			I_JsonObject coordJson = factory.createJsonObject();
-			m_ownedCells.get(i).getCoordinate().writeJson(factory, coordJson);
+			m_ownedCells.get(i).getCoordinate().writeJson(coordJson, factory);
 			ownedCoordinates.addObject(coordJson);
 		}
 		

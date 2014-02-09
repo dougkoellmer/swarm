@@ -87,7 +87,7 @@ public class syncCode extends A_DefaultRequestHandler
 	public void handleRequest(TransactionContext context, TransactionRequest request, TransactionResponse response)
 	{
 		ServerCellAddressMapping mapping = new ServerCellAddressMapping(E_GridType.ACTIVE);
-		mapping.readJson(m_serverContext.jsonFactory, request.getJsonArgs());
+		mapping.readJson(request.getJsonArgs(), m_serverContext.jsonFactory);
 		boolean isSandbox = isSandBox(mapping);
 		I_BlobManager blobManager = m_serverContext.blobMngrFactory.create(E_BlobCacheLevel.PERSISTENT);
 		I_BlobManager cachingBlobManager = m_serverContext.blobMngrFactory.create(E_BlobCacheLevel.MEMCACHE);
@@ -122,6 +122,6 @@ public class syncCode extends A_DefaultRequestHandler
 			U_CellCode.saveBackCompiledCell(blobManager, cachingBlobManager, mapping, persistedCell, response);
 		}
 		
-		result.writeJson(m_serverContext.jsonFactory, response.getJsonArgs());
+		result.writeJson(response.getJsonArgs(), m_serverContext.jsonFactory);
 	}
 }

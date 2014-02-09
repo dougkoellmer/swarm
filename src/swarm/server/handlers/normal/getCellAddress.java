@@ -23,7 +23,7 @@ public class getCellAddress extends A_DefaultRequestHandler
 	public void handleRequest(TransactionContext context, TransactionRequest request, TransactionResponse response)
 	{
 		ServerCellAddressMapping mapping = new ServerCellAddressMapping(E_GridType.ACTIVE);
-		mapping.readJson(m_serverContext.jsonFactory, request.getJsonArgs());
+		mapping.readJson(request.getJsonArgs(), m_serverContext.jsonFactory);
 		GetCellAddressResult result = new GetCellAddressResult();
 		
 		I_BlobManager blobManager = m_serverContext.blobMngrFactory.create(E_BlobCacheLevel.values());
@@ -49,6 +49,6 @@ public class getCellAddress extends A_DefaultRequestHandler
 			return;
 		}
 		
-		result.writeJson(m_serverContext.jsonFactory, response.getJsonArgs());
+		result.writeJson(response.getJsonArgs(), m_serverContext.jsonFactory);
 	}
 }

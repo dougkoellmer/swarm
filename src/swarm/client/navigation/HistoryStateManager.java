@@ -46,7 +46,7 @@ public class HistoryStateManager
 				if( json != null )
 				{
 					state = new HistoryState();
-					state.readJson(m_jsonFactory, json);
+					state.readJson(json, m_jsonFactory);
 					
 					int id = state.getId();
 					
@@ -158,7 +158,7 @@ public class HistoryStateManager
 		if( json != null )
 		{
 			HistoryState state = new HistoryState();
-			state.readJson(m_jsonFactory, json);
+			state.readJson(json, m_jsonFactory);
 			
 			if( m_highestId == -1 )
 			{

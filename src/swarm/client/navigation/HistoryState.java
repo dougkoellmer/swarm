@@ -69,18 +69,18 @@ class HistoryState extends A_JsonEncodable
 	}*/
 	
 	@Override
-	public void writeJson(A_JsonFactory factory, I_JsonObject json_out)
+	public void writeJson(I_JsonObject json_out, A_JsonFactory factory)
 	{
 		//smU_Json.putInt(json, smE_JsonKey.HISTORY_STATE_INDEX, m_index);
 		
 		if( m_mapping != null )
 		{
-			m_mapping.writeJson(factory, json_out);
+			m_mapping.writeJson(json_out, factory);
 		}
 		
 		if( m_point != null )
 		{
-			m_point.writeJson(factory, json_out);
+			m_point.writeJson(json_out, factory);
 		}
 		
 		json_out.putInt(ID_KEY, m_id);
@@ -88,7 +88,7 @@ class HistoryState extends A_JsonEncodable
 	}
 
 	@Override
-	public void readJson(A_JsonFactory factory, I_JsonObject json)
+	public void readJson(I_JsonObject json, A_JsonFactory factory)
 	{
 		/*m_index = smU_Json.getInt(json, smE_JsonKey.HISTORY_STATE_INDEX);
 		
@@ -100,12 +100,12 @@ class HistoryState extends A_JsonEncodable
 		if( CellAddressMapping.isReadable(factory, json) )
 		{
 			m_mapping = new CellAddressMapping();
-			m_mapping.readJson(factory, json);
+			m_mapping.readJson(json, factory);
 		}
 		else if( Point.isReadable(factory, json) )
 		{
 			m_point = new Point();
-			m_point.readJson(factory, json);
+			m_point.readJson(json, factory);
 		}
 		
 		m_id = json.containsKey(ID_KEY) ? json.getInt(ID_KEY) : 0;

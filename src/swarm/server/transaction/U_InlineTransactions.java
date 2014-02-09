@@ -188,7 +188,7 @@ public class U_InlineTransactions
 			{
 				TransactionResponse response = transactionManager.makeInlineRequest(E_RequestPath.getGridData);
 				grid = new A_Grid(){};
-				grid.readJson(context.jsonFactory, response.getJsonArgs());
+				grid.readJson(response.getJsonArgs(), context.jsonFactory);
 			}
 	
 			Point startingPosition = new Point();

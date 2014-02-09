@@ -166,11 +166,11 @@ public abstract class A_Cell extends A_JsonEncodable
 	}*/
 	
 	@Override
-	public void writeJson(A_JsonFactory factory, I_JsonObject json_out)
+	public void writeJson(I_JsonObject json_out, A_JsonFactory factory)
 	{
 		if( m_codePrivileges != null )
 		{
-			m_codePrivileges.writeJson(factory, json_out);
+			m_codePrivileges.writeJson(json_out, factory);
 		}
 		
 		for( int i = 0; i < E_CodeType.values().length; i++ )
@@ -178,14 +178,14 @@ public abstract class A_Cell extends A_JsonEncodable
 			if( m_code[i] != null )
 			{
 				I_JsonObject codeJson = factory.createJsonObject();
-				m_code[i].writeJson(factory, codeJson);
+				m_code[i].writeJson(codeJson, factory);
 				factory.getHelper().putJsonObject(json_out, E_CodeType.values()[i].getJsonKey(), codeJson);
 			}
 		}
 	}
 
 	@Override
-	public void readJson(A_JsonFactory factory, I_JsonObject json)
+	public void readJson(I_JsonObject json, A_JsonFactory factory)
 	{
 		if( CodePrivileges.isReadable(factory, json) )
 		{
@@ -194,7 +194,7 @@ public abstract class A_Cell extends A_JsonEncodable
 				m_codePrivileges = new CodePrivileges();
 			}
 			
-			m_codePrivileges.readJson(factory, json);
+			m_codePrivileges.readJson(json, factory);
 		}
 		else
 		{

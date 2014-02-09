@@ -50,6 +50,6 @@ public class getGridData extends A_DefaultRequestHandler
 			s_logger.severe("Grid came up null when it probably should have been initialized.");
 		}
 		
-		grid.writeJson(m_serverContext.jsonFactory, response.getJsonArgs());
+		grid.writeJson(response.getJsonArgs(), m_serverContext.jsonFactory);
 	}
 }

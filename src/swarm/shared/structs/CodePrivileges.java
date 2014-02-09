@@ -67,14 +67,14 @@ public class CodePrivileges extends A_JsonEncodable
 	}
 
 	@Override
-	public void writeJson(A_JsonFactory factory, I_JsonObject json_out)
+	public void writeJson(I_JsonObject json_out, A_JsonFactory factory)
 	{
 		factory.getHelper().putEnum(json_out, E_JsonKey.networkPrivilege, m_network);
 		factory.getHelper().putEnum(json_out, E_JsonKey.characterQuota, m_characterQuota);
 	}
 
 	@Override
-	public void readJson(A_JsonFactory factory, I_JsonObject json)
+	public void readJson(I_JsonObject json, A_JsonFactory factory)
 	{
 		E_NetworkPrivilege network = factory.getHelper().getEnum(json, E_JsonKey.networkPrivilege, E_NetworkPrivilege.values());
 		m_network = network != null ? network : E_NetworkPrivilege.IMAGES;

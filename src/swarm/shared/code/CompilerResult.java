@@ -127,11 +127,11 @@ public class CompilerResult extends A_JsonEncodable
 	}
 
 	@Override
-	public void writeJson(A_JsonFactory factory, I_JsonObject json_out)
+	public void writeJson(I_JsonObject json_out, A_JsonFactory factory)
 	{
 		if( m_codeCell != null )
 		{
-			m_codeCell.writeJson(factory, json_out);
+			m_codeCell.writeJson(json_out, factory);
 		}
 		
 		if( m_compilerMessages != null )
@@ -154,11 +154,11 @@ public class CompilerResult extends A_JsonEncodable
 	}
 
 	@Override
-	public void readJson(A_JsonFactory factory, I_JsonObject json)
+	public void readJson(I_JsonObject json, A_JsonFactory factory)
 	{
 		initCell();
 		
-		m_codeCell.readJson(factory, json);
+		m_codeCell.readJson(json, factory);
 		
 		m_status = factory.getHelper().getEnum(json, E_JsonKey.compilationStatusCode, E_CompilationStatus.values());
 		
