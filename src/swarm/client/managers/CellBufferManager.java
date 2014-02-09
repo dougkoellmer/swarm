@@ -74,8 +74,8 @@ public class CellBufferManager implements I_LocalCodeRepository
 	{
 		m_cellPool = new CellPool();
 		
-		m_displayBuffer = new CellBuffer(codeMngr, m_cellPool, cellSizeMngr);
-		m_backBuffer = new CellBuffer(codeMngr, m_cellPool, cellSizeMngr);
+		m_displayBuffer = new CellBuffer(this, codeMngr, m_cellPool, cellSizeMngr);
+		m_backBuffer = new CellBuffer(this, codeMngr, m_cellPool, cellSizeMngr);
 	}
 	
 	public CellPool getCellPool()

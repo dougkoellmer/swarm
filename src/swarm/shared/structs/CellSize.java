@@ -51,6 +51,12 @@ public class CellSize implements I_ReadsJson, I_WritesJson
 		m_height = value.m_height;
 	}
 	
+	public void copyIfDefault(CellSize value)
+	{
+		m_width = m_width == DEFAULT_DIMENSION ? value.m_width : m_width;
+		m_height = m_height == DEFAULT_DIMENSION ? value.m_height : m_height;
+	}
+	
 	@Override
 	public void readJson(A_JsonFactory factory, I_JsonObject json)
 	{

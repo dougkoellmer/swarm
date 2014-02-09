@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 import swarm.client.app.AppContext;
 import swarm.client.entities.A_ClientUser;
 import swarm.client.entities.BufferCell;
+import swarm.client.entities.UserCell;
 import swarm.client.managers.CellCodeManager.I_SyncOrPreviewDelegate;
 import swarm.client.transaction.ClientTransactionManager;
 import swarm.client.transaction.E_ResponseErrorControl;
@@ -21,6 +22,11 @@ import swarm.shared.transaction.TransactionResponse;
 
 public class CellSizeManager implements I_TransactionResponseHandler
 {
+	public static interface I_Listener
+	{
+		void onCellSizeFound(CellAddressMapping mapping, CellSize cellSize);
+	}
+	
 	private static final Logger s_logger = Logger.getLogger(CellSizeManager.class.getName());
 	
 	private final MutableJsonQuery m_jsonQuery = new MutableJsonQuery();
@@ -30,6 +36,8 @@ public class CellSizeManager implements I_TransactionResponseHandler
 	private final CellSize m_utilCellSize = new CellSize();
 	private final CellAddressMapping m_utilMapping = new CellAddressMapping();
 	
+	private I_Listener m_listener = null;
+	
 	public CellSizeManager(AppContext appContext)
 	{
 		m_appContext = appContext;
@@ -38,16 +46,20 @@ public class CellSizeManager implements I_TransactionResponseHandler
 		m_jsonQuery.addCondition(null);
 	}
 	
-	public void start()
+	public void start(I_Listener listener)
 	{
 		ClientTransactionManager txnMngr = m_appContext.txnMngr;
 		txnMngr.addHandler(this);
+		
+		m_listener = listener;
 	}
 	
 	public void stop()
 	{
 		ClientTransactionManager txnMngr = m_appContext.txnMngr;
 		txnMngr.removeHandler(this);
+		
+		m_listener = null;
 	}
 	
 	public void forceCache(CellAddressMapping mapping, CellSize cellSize_copied)
@@ -55,12 +67,50 @@ public class CellSizeManager implements I_TransactionResponseHandler
 		m_cache.put(mapping, cellSize_copied);
 	}
 	
-	public void getCellSize(CellAddressMapping mapping, CellBuffer targetBuffer)
+	public void populateCellSize(CellAddressMapping mapping, CellBufferManager targetBufferMngr, BufferCell cell)
 	{
+		if( !cell.getFocusedCellSize().isDefault() )  return;
 		
+		A_ClientUser user = m_appContext.userMngr.getUser();
+		UserCell userCell = user.getCell(mapping);
+		if( userCell != null && !userCell.getFocusedCellSize().isDefault() )
+		{
+			cell.getFocusedCellSize().copy(userCell.getFocusedCellSize());
+			return;
+		}
+		
+		CellBufferManager.Iterator iterator = m_appContext.getRegisteredBufferMngrs();
+		for( CellBufferManager manager = null; (manager = iterator.next()) != null; )
+		{
+			if( manager == targetBufferMngr )  continue;
+			
+			CellBuffer buffer = manager.getDisplayBuffer();
+			
+			if( buffer.getSubCellCount() == 1 )
+			{
+				if ( buffer.isInBoundsAbsolute(mapping.getCoordinate()) )
+				{
+					BufferCell cellFromOtherBuffer = buffer.getCellAtAbsoluteCoord(mapping.getCoordinate());
+					
+					if( !cellFromOtherBuffer.getFocusedCellSize().isDefault() )
+					{
+						cell.getFocusedCellSize().copy(cellFromOtherBuffer.getFocusedCellSize());
+					}
+				}
+			}
+			
+			return;
+		}
+		
+		if( m_cache.get(mapping, cell.getFocusedCellSize()) )
+		{
+			return;
+		}
+		
+		this.getCellSizeFromServer(mapping);
 	}
 	
-	public void getCellSizeFromServer(CellAddressMapping mapping)
+	private void getCellSizeFromServer(CellAddressMapping mapping)
 	{
 		m_jsonQuery.setCondition(0, mapping);
 		
@@ -80,7 +130,6 @@ public class CellSizeManager implements I_TransactionResponseHandler
 		{
 			m_utilMapping.readJson(m_appContext.jsonFactory, request.getJsonArgs());
 			m_utilCellSize.readJson(m_appContext.jsonFactory, response.getJsonArgs());
-			
 			
 			A_Grid grid = m_appContext.gridMngr.getGrid();
 			A_ClientUser user = m_appContext.userMngr.getUser();

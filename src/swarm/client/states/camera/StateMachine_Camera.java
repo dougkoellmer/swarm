@@ -12,6 +12,7 @@ import swarm.client.managers.CameraManager;
 import swarm.client.managers.CellAddressManager;
 import swarm.client.managers.CellBuffer;
 import swarm.client.managers.CellBufferManager;
+import swarm.client.managers.CellSizeManager;
 import swarm.client.managers.ClientAccountManager;
 import swarm.client.managers.UserManager;
 import swarm.client.entities.A_ClientUser;
@@ -42,6 +43,8 @@ import swarm.shared.statemachine.I_StateEventListener;
 import swarm.shared.statemachine.A_StateConstructor;
 import swarm.shared.statemachine.StateEvent;
 import swarm.shared.structs.CellAddress;
+import swarm.shared.structs.CellAddressMapping;
+import swarm.shared.structs.CellSize;
 import swarm.shared.structs.GridCoordinate;
 import swarm.shared.structs.Point;
 import swarm.shared.structs.Tolerance;
@@ -76,6 +79,7 @@ public class StateMachine_Camera extends A_StateMachine implements I_StateEventL
 	
 	private final CellAddressManagerListener m_addressManagerListener = new CellAddressManagerListener(this);
 	private final Action_Camera_SnapToCoordinate.Args m_snapToCoordArgs = new Action_Camera_SnapToCoordinate.Args();
+	private final Event_Camera_OnCellSizeFound.Args m_onCellSizeFoundArgs = new Event_Camera_OnCellSizeFound.Args();
 	
 	private final AppContext m_appContext;
 	
@@ -91,6 +95,7 @@ public class StateMachine_Camera extends A_StateMachine implements I_StateEventL
 		registerAction(new Action_Camera_SnapToAddress(m_appContext.addressMngr));
 		registerAction(new Action_Camera_SnapToCoordinate(snapFilter, m_appContext.gridMngr));
 		registerAction(new Event_Camera_OnAddressResponse());
+		registerAction(new Event_Camera_OnCellSizeFound());
 		registerAction(new Action_Camera_SnapToPoint(m_appContext.cameraMngr));
 		registerAction(new Action_Camera_SetInitialPosition(m_appContext.cameraMngr));
 	}
@@ -211,9 +216,22 @@ public class StateMachine_Camera extends A_StateMachine implements I_StateEventL
 				}
 			}
 		});
-		
+
 		m_appContext.addressMngr.start(m_addressManagerListener);
-		m_appContext.cellSizeMngr.start();
+		
+		m_appContext.cellSizeMngr.start(new CellSizeManager.I_Listener()
+		{
+			@Override
+			public void onCellSizeFound(CellAddressMapping mapping, CellSize cellSize)
+			{
+				A_State currentState = StateMachine_Camera.this.getCurrentState();
+				if( currentState instanceof State_CameraSnapping || currentState instanceof State_ViewingCell )
+				{
+					StateMachine_Camera.this.m_onCellSizeFoundArgs.init(cellSize, mapping);
+					StateMachine_Camera.this.performAction(Event_Camera_OnCellSizeFound.class, StateMachine_Camera.this.m_onCellSizeFoundArgs);
+				}
+			}
+		});
 	}
 	
 	@Override

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.logging.Logger;
 
 
+
 import swarm.client.entities.BufferCell;
 import swarm.client.structs.CellPool;
 import swarm.client.structs.I_LocalCodeRepository;
@@ -12,6 +13,7 @@ import swarm.shared.utils.U_Bits;
 import swarm.shared.debugging.U_Debug;
 import swarm.shared.entities.A_Grid;
 import swarm.shared.entities.E_CodeType;
+import swarm.shared.structs.CellAddressMapping;
 import swarm.shared.structs.GridCoordinate;
 
 
@@ -26,6 +28,7 @@ public class CellBuffer
 	private static final GridCoordinate s_utilCoord1 = new GridCoordinate();
 	private static final GridCoordinate s_utilCoord2 = new GridCoordinate();
 	private static final GridCoordinate s_utilCoord3 = new GridCoordinate();
+	private static final CellAddressMapping s_utilMapping = new CellAddressMapping();
 	
 	private final GridCoordinate m_coordinate = new GridCoordinate();
 	private final ArrayList<BufferCell> m_cells = new ArrayList<BufferCell>();
@@ -34,15 +37,17 @@ public class CellBuffer
 	
 	private int m_subCellDimension = 1;
 	
+	private final CellBufferManager m_parent;
 	private final CellCodeManager m_codeMngr;
 	private final CellSizeManager m_cellSizeMngr;
 	private final CellPool m_cellPool;
 	
-	CellBuffer(CellCodeManager codeMngr, CellPool cellPool, CellSizeManager cellSizeMngr)
+	CellBuffer(CellBufferManager parent, CellCodeManager codeMngr, CellPool cellPool, CellSizeManager cellSizeMngr)
 	{
 		m_codeMngr = codeMngr;
 		m_cellPool = cellPool;
 		m_cellSizeMngr = cellSizeMngr;
+		m_parent = parent;
 	}
 	
 	public GridCoordinate getCoordinate()
@@ -366,8 +371,10 @@ public class CellBuffer
 					BufferCell imposedCell = getCellAtRelativeCoord(relThisCoord);
 					imposedCell.getCoordinate().copy(absCoord);
 					
+					m_codeMngr.populateCell(imposedCell, localCodeSource, m_subCellDimension, cellRecycled, communicateWithServer, E_CodeType.SPLASH);
 					
-					m_codeMngr.populateCell(otherCell, localCodeSource, m_subCellDimension, cellRecycled, communicateWithServer, E_CodeType.SPLASH);
+					s_utilMapping.getCoordinate().copy(imposedCell.getCoordinate());
+					m_cellSizeMngr.populateCellSize(s_utilMapping, this.m_parent, imposedCell);
 				}
 			}
 			
