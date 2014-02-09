@@ -69,11 +69,12 @@ public class CellSizeManager implements I_TransactionResponseHandler
 	
 	public void populateCellSize(CellAddressMapping mapping, CellBufferManager targetBufferMngr, BufferCell cell)
 	{
-		if( !cell.getFocusedCellSize().isDefault() )  return;
+		if( cell.getFocusedCellSize().isValid() )  return;
+		if( cell.getFocusedCellSize().isPending() )  return;
 		
 		A_ClientUser user = m_appContext.userMngr.getUser();
 		UserCell userCell = user.getCell(mapping);
-		if( userCell != null && !userCell.getFocusedCellSize().isDefault() )
+		if( userCell != null && !userCell.getFocusedCellSize().isValid() )
 		{
 			cell.getFocusedCellSize().copy(userCell.getFocusedCellSize());
 			return;
@@ -108,6 +109,7 @@ public class CellSizeManager implements I_TransactionResponseHandler
 		}
 		
 		this.getCellSizeFromServer(mapping);
+		cell.getFocusedCellSize().setToPending();
 	}
 	
 	private void getCellSizeFromServer(CellAddressMapping mapping)
