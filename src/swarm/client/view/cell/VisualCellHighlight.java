@@ -92,6 +92,7 @@ public class VisualCellHighlight extends FlowPanel implements I_UIElement
 		//---		out enough that it doesn't really matter...you'd really have to look for it to notice a discrepancy.
 		
 		VisualCellManager cellManager = m_viewContext.cellMngr;
+		VisualCell visualCell = (VisualCell) cell.getVisualization();
 		double lastScaling = cellManager.getLastScaling();
 		Point lastBasePoint = cellManager.getLastBasePoint();
 		
@@ -103,15 +104,20 @@ public class VisualCellHighlight extends FlowPanel implements I_UIElement
 		//TODO: Assuming square cell size.
 		double apparentCellPixelsX = 0, apparentCellPixelsY = 0;
 		
+		int defaultCellWidth = cell.getGrid().getCellWidth();
+		int defaultCellHeight = cell.getGrid().getCellHeight();
+		int visualCellWidth = visualCell.getWidth();
+		int visualCellHeight = visualCell.getHeight();
+		
 		if( buffer.getSubCellCount() > 1 )
 		{
-			apparentCellPixelsX = ((cell.getGrid().getCellWidth() / ((double) subCellDim)) * lastScaling);
-			apparentCellPixelsY = ((cell.getGrid().getCellHeight() / ((double) subCellDim)) * lastScaling);
+			apparentCellPixelsX = ((defaultCellWidth / ((double) subCellDim)) * lastScaling);
+			apparentCellPixelsY = ((defaultCellHeight / ((double) subCellDim)) * lastScaling);
 		}
 		else
 		{
-			apparentCellPixelsX = (cell.getGrid().getCellWidth() + cell.getGrid().getCellPadding()) * lastScaling;
-			apparentCellPixelsY = (cell.getGrid().getCellHeight() + cell.getGrid().getCellPadding()) * lastScaling;
+			apparentCellPixelsX = (defaultCellWidth + cell.getGrid().getCellPadding()) * lastScaling;
+			apparentCellPixelsY = (defaultCellHeight + cell.getGrid().getCellPadding()) * lastScaling;
 		}
 		
 		double deltaPixelsX = apparentCellPixelsX * deltaM;
@@ -119,6 +125,8 @@ public class VisualCellHighlight extends FlowPanel implements I_UIElement
 
 		basePoint.copy(lastBasePoint);
 		basePoint.inc(deltaPixelsX, deltaPixelsY, 0);
+		basePoint.incX(-((visualCellWidth - defaultCellWidth)/2)*lastScaling);
+		//basePoint.incY(-((visualCellHeight - defaultCellHeight)/2)*lastScaling);
 		double y = basePoint.getY();
 		
 		if( m_viewContext.stateContext.isEntered(State_ViewingCell.class) )
@@ -127,8 +135,8 @@ public class VisualCellHighlight extends FlowPanel implements I_UIElement
 			y += scrollElement.getScrollTop();
 		}
 		
-		String width = (cell.getGrid().getCellWidth() * highlightScaling) + "px";
-		String height = (cell.getGrid().getCellHeight() * highlightScaling) + "px";
+		String width = (visualCellWidth * highlightScaling) + "px";
+		String height = (visualCellHeight * highlightScaling) + "px";
 		this.setSize(width, height);
 		this.getElement().getStyle().setProperty("top", y + "px");
 		this.getElement().getStyle().setProperty("left", basePoint.getX() + "px");

@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 
 import swarm.client.app.AppContext;
 import swarm.client.entities.I_BufferCellListener;
+import swarm.client.managers.CameraManager;
 import swarm.client.view.E_ZIndex;
 import swarm.client.view.S_UI;
 import swarm.client.view.U_Css;
@@ -13,6 +14,7 @@ import swarm.client.view.tabs.code.I_CodeLoadListener;
 import swarm.client.view.widget.UIBlocker;
 import swarm.shared.app.S_CommonApp;
 import swarm.shared.utils.U_Bits;
+import swarm.shared.utils.U_Math;
 import swarm.shared.debugging.U_Debug;
 import swarm.shared.entities.E_CodeSafetyLevel;
 import swarm.shared.entities.E_CodeType;
@@ -22,6 +24,7 @@ import swarm.shared.structs.MutableCode;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.dom.client.Style.Position;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
@@ -30,6 +33,13 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 {
+	static enum SizeChangeState
+	{
+		NOT_CHANGING,
+		CHANGING_FROM_TIME,
+		CHANGING_FROM_SNAP
+	};
+	
 	private static final Logger s_logger = Logger.getLogger(VisualCell.class.getName());
 	
 	//private static final String SPINNER_HTML = "<img src='/r.img/spinner.gif?v=1' />";
@@ -54,45 +64,57 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	
 	private int m_id;
 	private final AbsolutePanel m_contentPanel = new AbsolutePanel();
-	//private final AbsolutePanel //m_backgroundPanel = new AbsolutePanel();
 	private final UIBlocker	m_statusPanel = new UIBlocker();
 	private final AbsolutePanel m_glassPanel = new AbsolutePanel();
-	//private final smCellSpinner m_spinner	= new smCellSpinner(smS_UI.SPINNER_ROTATION_RATE);
 	private final I_CellSpinner m_spinner;
 	private final MutableCode m_utilCode = new MutableCode(E_CodeType.values());
 	
 	//private final ArrayList<Image> //m_backgroundImages = new ArrayList<Image>();
 	private int m_currentImageIndex = -1;
 	
-	//private static final String CELL_PLUS_SPACING_PIXEL_COUNT = smS_App.CELL_PLUS_SPACING_PIXEL_COUNT + "px";
-	//private static final String CELL_PIXEL_COUNT = smS_App.CELL_PIXEL_COUNT + "px";
-	
 	private int m_subCellDimension = -1;
 	private int m_width = 0;
 	private int m_height = 0;
 	private int m_padding = 0;
+	
+	private int m_defaultWidth = 0;
+	private int m_defaultHeight = 0;
+	private int m_baseWidth = 0;
+	private int m_baseHeight = 0;
+	private double m_widthDelta = 0;
+	private double m_heightDelta = 0;
+	
+	private double m_baseChangeValue = 0;
 	
 	private boolean m_isValidated = false;
 	
 	private final CodeLoadListener m_codeLoadListener = new CodeLoadListener(this);
 	
 	private final SandboxManager m_sandboxMngr;
+	private final CameraManager m_cameraMngr;
 	
 	private E_CodeSafetyLevel m_codeSafetyLevel;
 	
+	private boolean m_isSnapping = false;
 	private boolean m_isFocused = false;
+	private SizeChangeState m_sizeChangeState = SizeChangeState.NOT_CHANGING;
+	private final double m_sizeChangeTime;
 	
-	public VisualCell(I_CellSpinner spinner, SandboxManager sandboxMngr)
+	public VisualCell(I_CellSpinner spinner, SandboxManager sandboxMngr, CameraManager cameraMngr, double sizeChangeTime)
 	{
 		m_spinner = spinner;
+		m_cameraMngr = cameraMngr;
 		m_sandboxMngr = sandboxMngr;
-		m_id = s_currentId; s_currentId++;
+		m_sizeChangeTime = sizeChangeTime;
+		m_id = s_currentId;
+		s_currentId++;
 		
 		this.addStyleName("visual_cell");
 		m_glassPanel.addStyleName("sm_cell_glass");
 
 		//m_backgroundPanel.getElement().getStyle().setPosition(Position.ABSOLUTE);
-		m_statusPanel.getElement().getStyle().setPosition(Position.ABSOLUTE);
+		m_statusPanel.getElement().getStyle().setPosition(Position.RELATIVE);
+		m_statusPanel.getElement().getStyle().setTop(-100, Unit.PCT);
 		m_glassPanel.getElement().getStyle().setPosition(Position.ABSOLUTE);
 		
 		E_ZIndex.CELL_STATUS.assignTo(m_statusPanel);
@@ -100,6 +122,8 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		E_ZIndex.CELL_CONTENT.assignTo(m_contentPanel);
 		
 		m_statusPanel.setVisible(false);
+		
+		m_contentPanel.addStyleName("visual_cell_content");
 		
 		/*int maxImages = smS_App.MAX_CELL_IMAGES;
 		int currentBit = 1;
@@ -114,13 +138,16 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 			currentBit <<= 1;
 		}*/
 		
-		//smU_UI.toggleSelectability(//m_backgroundPanel.getElement(), false);
-		this.allowUserSelect(false);
+		U_Css.allowUserSelect(m_contentPanel.getElement(), false);
 		
-		//this.add(//m_backgroundPanel);
 		this.add(m_contentPanel);
 		this.add(m_statusPanel);
 		this.add(m_glassPanel);
+	}
+	
+	SizeChangeState getSizeChangeState()
+	{
+		return m_sizeChangeState;
 	}
 	
 	int getId()
@@ -128,25 +155,14 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		return m_id;
 	}
 	
-	private void allowUserSelect(boolean selectable)
+	int getWidth()
 	{
-		if( selectable )
-		{
-			m_contentPanel.getElement().getStyle().setProperty("userSelect", "text");
-			m_contentPanel.getElement().getStyle().setProperty("msUserSelect", "text");
-			m_contentPanel.getElement().getStyle().setProperty("WebkitUserSelect", "text");
-			m_contentPanel.getElement().getStyle().setProperty("OUserSelect", "text");
-			m_contentPanel.getElement().getStyle().setProperty("MozUserSelect", "text");
-			
-		}
-		else
-		{
-			m_contentPanel.getElement().getStyle().setProperty("userSelect", "none");
-			m_contentPanel.getElement().getStyle().setProperty("msUserSelect", "none");
-			m_contentPanel.getElement().getStyle().setProperty("WebkitUserSelect", "none");
-			m_contentPanel.getElement().getStyle().setProperty("OUserSelect", "none");
-			m_contentPanel.getElement().getStyle().setProperty("MozUserSelect", "none");
-		}
+		return m_width;
+	}
+	
+	int getHeight()
+	{
+		return m_height;
 	}
 	
 	public void update(double timeStep)
@@ -154,6 +170,39 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		if( m_spinner.asWidget().getParent() != null )
 		{
 			m_spinner.update(timeStep);
+		}
+
+		if( this.m_sizeChangeState == SizeChangeState.CHANGING_FROM_SNAP )
+		{
+			double snapProgress = m_cameraMngr.getWeightedSnapProgress();
+			double mantissa = m_baseChangeValue == 1 ? 1 : (snapProgress - m_baseChangeValue) / (1-m_baseChangeValue);
+			mantissa = U_Math.clampMantissa(mantissa);
+				
+			this.updateSize(mantissa);
+			this.flushSize();
+		}
+		else if( this.m_sizeChangeState == SizeChangeState.CHANGING_FROM_TIME )
+		{
+			m_baseChangeValue += timeStep;
+			double mantissa = m_baseChangeValue / m_sizeChangeTime;
+			mantissa = U_Math.clampMantissa(mantissa);
+			
+			this.updateSize(mantissa);
+			this.flushSize();
+		}
+	}
+	
+	private void updateSize(double progressMantissa)
+	{
+		double widthDelta = m_widthDelta * progressMantissa;
+		m_width = (int) (m_baseWidth + widthDelta);		
+		
+		double heightDelta = m_heightDelta * progressMantissa;
+		m_height = (int) (m_baseHeight + heightDelta);
+		
+		if( progressMantissa >= 1 )
+		{
+			m_sizeChangeState = SizeChangeState.NOT_CHANGING;
 		}
 	}
 	
@@ -168,7 +217,9 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		
 		if( m_subCellDimension == 1 )
 		{
-			this.setSize(m_width+m_padding + "px", m_height+m_padding + "px");
+			this.flushSize();
+			this.getElement().getStyle().setPaddingRight(m_padding, Unit.PX);
+			this.getElement().getStyle().setPaddingBottom(m_padding, Unit.PX);
 			//m_backgroundPanel.setSize(m_width+m_padding + "px", m_height+m_padding + "px");
 			
 			m_currentImageIndex = 0;
@@ -177,12 +228,11 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 			//--- DRK > Rare case of jumping from beyond max imaged zoom to all the way to cell size 1,
 			//---		but could technically happen with bad frame rate or something, so clearing this here just in case.
 			//m_backgroundPanel.getElement().getStyle().clearBackgroundColor();
-			
-			m_contentPanel.addStyleName("visual_cell_content");
 		}
 		else if( m_subCellDimension > 1 )
 		{
-			this.setStatusHtml(null, false); // shouldn't have to be done, but what the hell.
+			U_Debug.ASSERT(false, "not implemented");
+			/*this.setStatusHtml(null, false); // shouldn't have to be done, but what the hell.
 			
 			this.setSize(m_width+"px", m_height+"px");
 			//m_backgroundPanel.setSize(m_width+"px", m_height+"px");
@@ -199,10 +249,15 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 				//m_backgroundImages.get(m_currentImageIndex).getElement().getStyle().setDisplay(Display.BLOCK);
 			}
 			
-			m_contentPanel.removeStyleName("visual_cell_content");
+			m_contentPanel.removeStyleName("visual_cell_content");*/
 		}
 		
 		m_isValidated = true;
+	}
+	
+	private void flushSize()
+	{
+		this.setSize(m_width+m_padding + "px", m_height+m_padding + "px");
 	}
 	
 	public void onCreate(int width, int height, int padding, int subCellDimension)
@@ -210,16 +265,49 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		 //--- DRK > NOTE: for some reason this gets reset somehow...at least in hosted mode, so can't put it in constructor.
 		this.getElement().getStyle().setPosition(Position.ABSOLUTE);
 		
+		m_currentImageIndex = -1;
+		
+		onCreatedOrRecycled(width, height, padding, subCellDimension);
+	}
+	
+	private void onCreatedOrRecycled(int width, int height, int padding, int subCellDimension)
+	{
+		m_widthDelta = 0;
+		m_heightDelta = 0;
+		
+		m_sizeChangeState = SizeChangeState.NOT_CHANGING;
 		m_isFocused = false;
 		m_isValidated = false;
 		m_subCellDimension = subCellDimension;
-		m_width = width;
-		m_height = height;
+		m_defaultWidth = m_baseWidth = m_width = width;
+		m_defaultHeight = m_baseHeight = m_height = height;
 		m_padding = padding;
-		m_currentImageIndex = -1;
+	}
+	
+	public void setTargetSize(int width, int height)
+	{
+		m_baseWidth = this.m_width;
+		m_baseHeight = this.m_height;
 		
-		m_contentPanel.setSize(m_width+"px", m_height+"px");
-		m_statusPanel.setSize(m_width+"px", m_height+"px");
+		m_widthDelta = width - this.m_width;
+		m_heightDelta = height - this.m_height;
+		
+		if( this.m_isSnapping )
+		{
+			m_baseChangeValue = m_cameraMngr.getWeightedSnapProgress();
+			m_sizeChangeState = SizeChangeState.CHANGING_FROM_SNAP;
+		}
+		else if( this.m_isFocused )
+		{
+			//--- If we get the focused cell size while viewing cell,
+			//--- we don't make user wait, and just instantly expand it.
+			//--- Maybe a little jarring, but should be fringe case.
+			m_baseWidth = m_width = width;
+			m_baseHeight = m_height = height;
+			m_sizeChangeState = SizeChangeState.NOT_CHANGING;
+			
+			this.flushSize();
+		}
 	}
 	
 	public void onDestroy()
@@ -245,6 +333,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	@Override
 	public void onFocusGained()
 	{
+		m_isSnapping = false;
 		m_isFocused = true;
 		
 		E_ZIndex.CELL_FOCUSED.assignTo(this);
@@ -252,7 +341,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		this.m_glassPanel.setVisible(false);
 		this.addStyleName("visual_cell_focused");
 
-		this.allowUserSelect(true);
+		U_Css.allowUserSelect(m_contentPanel.getElement(), true);
 		
 		m_sandboxMngr.allowScrolling(m_contentPanel.getElement(), true);
 	}
@@ -265,8 +354,8 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		this.m_glassPanel.setVisible(true);
 		
 		this.removeStyleName("visual_cell_focused");
-		
-		this.allowUserSelect(false);
+
+		U_Css.allowUserSelect(m_contentPanel.getElement(), false);
 		
 		/*if( m_sandboxMngr.isRunning() )
 		{
@@ -274,6 +363,10 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		}*/
 		
 		m_sandboxMngr.allowScrolling(m_contentPanel.getElement(), false);
+		
+		m_sizeChangeState = SizeChangeState.CHANGING_FROM_TIME;
+		m_baseChangeValue = 0;
+		this.setTargetSize(m_defaultWidth, m_defaultHeight);
 	}
 	
 	public void popUp()
@@ -288,6 +381,8 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		{
 			E_ZIndex.CELL_POPPED.assignTo(this);
 		}
+		
+		m_isSnapping = true;
 	}
 	
 	public void pushDown()
@@ -296,15 +391,14 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	}
 
 	@Override
-	public void onCellRecycled(int cellSize)
+	public void onCellRecycled(int width, int height, int padding, int subCellDimension)
 	{
-		m_isFocused = false;
-		if( cellSize != m_subCellDimension )
+		if( subCellDimension != m_subCellDimension )
 		{
 			m_isValidated = false;
 		}
-
-		m_subCellDimension = cellSize;
+		
+		this.onCreatedOrRecycled(width, height, padding, subCellDimension);
 
 		this.insertSafeHtml("");
 		

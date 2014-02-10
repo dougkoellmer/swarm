@@ -101,6 +101,10 @@ public class VisualCellFocuser extends FlowPanel implements I_UIElement
 				BufferCell cell = buffer.getCellAtAbsoluteCoord(targetCoord);
 				VisualCell visualCell = (VisualCell) cell.getVisualization();
 				visualCell.popUp();
+				if( cell.getFocusedCellSize().isValid() )
+				{
+					visualCell.setTargetSize(cell.getFocusedCellSize().getWidth(), cell.getFocusedCellSize().getHeight());
+				}
 				m_poppedCell = visualCell;
 				m_poppedCellCoord.copy(cell.getCoordinate());
 				

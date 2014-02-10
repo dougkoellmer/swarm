@@ -374,6 +374,7 @@ public class CellBuffer
 					m_codeMngr.populateCell(imposedCell, localCodeSource, m_subCellDimension, cellRecycled, communicateWithServer, E_CodeType.SPLASH);
 					
 					s_utilMapping.getCoordinate().copy(imposedCell.getCoordinate());
+					
 					m_cellSizeMngr.populateCellSize(s_utilMapping, this.m_parent, imposedCell);
 				}
 			}

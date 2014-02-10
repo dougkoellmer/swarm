@@ -222,12 +222,12 @@ public class StateMachine_Camera extends A_StateMachine implements I_StateEventL
 		m_appContext.cellSizeMngr.start(new CellSizeManager.I_Listener()
 		{
 			@Override
-			public void onCellSizeFound(CellAddressMapping mapping, CellSize cellSize)
+			public void onCellSizeFound(CellAddressMapping mapping_copied, CellSize cellSize_copied)
 			{
 				A_State currentState = StateMachine_Camera.this.getCurrentState();
 				if( currentState instanceof State_CameraSnapping || currentState instanceof State_ViewingCell )
 				{
-					StateMachine_Camera.this.m_onCellSizeFoundArgs.init(cellSize, mapping);
+					StateMachine_Camera.this.m_onCellSizeFoundArgs.init(cellSize_copied, mapping_copied);
 					StateMachine_Camera.this.performAction(Event_Camera_OnCellSizeFound.class, StateMachine_Camera.this.m_onCellSizeFoundArgs);
 				}
 			}

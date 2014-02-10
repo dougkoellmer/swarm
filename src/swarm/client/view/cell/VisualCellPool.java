@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import com.google.gwt.user.client.ui.Widget;
 
 import swarm.client.entities.I_BufferCellListener;
+import swarm.client.managers.CameraManager;
 import swarm.client.structs.I_CellPoolDelegate;
+import swarm.client.view.ViewContext;
 import swarm.client.view.sandbox.SandboxManager;
 import swarm.shared.debugging.U_Debug;
 import swarm.shared.entities.E_CodeSafetyLevel;
@@ -51,7 +53,7 @@ public class VisualCellPool implements I_CellPoolDelegate
 	
 	private boolean m_poolNeedsCleaning = false;
 	
-	VisualCellPool(final SandboxManager sandboxMngr, Widget cellContainer, final I_CellSpinnerFactory spinnerFactory)
+	VisualCellPool(final SandboxManager sandboxMngr, Widget cellContainer, final I_CellSpinnerFactory spinnerFactory, final ViewContext viewContext)
 	{
 		m_cellContainer = cellContainer;
 		
@@ -60,7 +62,7 @@ public class VisualCellPool implements I_CellPoolDelegate
 			@Override
 			public VisualCell newInstance()
 			{
-				return new VisualCell(spinnerFactory.newSpinner(), sandboxMngr);
+				return new VisualCell(spinnerFactory.newSpinner(), sandboxMngr, viewContext.appContext.cameraMngr, viewContext.viewConfig.cellSizeChangeTime_seconds);
 			}
 		};
 		

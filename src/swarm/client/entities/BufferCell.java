@@ -386,7 +386,7 @@ public class BufferCell extends A_Cell
 		
 		if( this.m_visualization != null )
 		{
-			m_visualization.onCellRecycled(cellSize);
+			m_visualization.onCellRecycled(m_grid.getCellWidth(), m_grid.getCellHeight(), m_grid.getCellPadding(), cellSize);
 		}
 	}
 	

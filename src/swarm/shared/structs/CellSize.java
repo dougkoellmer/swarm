@@ -18,7 +18,7 @@ public class CellSize implements I_ReadsJson, I_WritesJson
 	
 	public CellSize()
 	{
-		
+		this.setToDefaults();
 	}
 	
 	public int getWidth()
@@ -117,5 +117,7 @@ public class CellSize implements I_ReadsJson, I_WritesJson
 		
 		sizeArray.addInt(m_width);
 		sizeArray.addInt(m_height);
+		
+		factory.getHelper().putJsonArray(json_out, E_JsonKey.cellSize, sizeArray);
 	}
 }

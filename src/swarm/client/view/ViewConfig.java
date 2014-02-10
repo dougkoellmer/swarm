@@ -14,5 +14,6 @@ public class ViewConfig
 	public int cellHighlightMaxSize = S_UI.HIGHLIGHT_MAX_SIZE;
 	public double initialBumpDistance = 128;
 	public double extraScrollArea = 50;
+	public double cellSizeChangeTime_seconds = 1;
 	public I_Tab[] tabs;
 }

@@ -24,7 +24,7 @@ public class CellSizeManager implements I_TransactionResponseHandler
 {
 	public static interface I_Listener
 	{
-		void onCellSizeFound(CellAddressMapping mapping, CellSize cellSize);
+		void onCellSizeFound(CellAddressMapping mapping_copied, CellSize cellSize_copied);
 	}
 	
 	private static final Logger s_logger = Logger.getLogger(CellSizeManager.class.getName());
@@ -74,7 +74,7 @@ public class CellSizeManager implements I_TransactionResponseHandler
 		
 		A_ClientUser user = m_appContext.userMngr.getUser();
 		UserCell userCell = user.getCell(mapping);
-		if( userCell != null && !userCell.getFocusedCellSize().isValid() )
+		if( userCell != null && userCell.getFocusedCellSize().isValid() )
 		{
 			cell.getFocusedCellSize().copy(userCell.getFocusedCellSize());
 			return;
@@ -93,7 +93,7 @@ public class CellSizeManager implements I_TransactionResponseHandler
 				{
 					BufferCell cellFromOtherBuffer = buffer.getCellAtAbsoluteCoord(mapping.getCoordinate());
 					
-					if( !cellFromOtherBuffer.getFocusedCellSize().isDefault() )
+					if( cellFromOtherBuffer.getFocusedCellSize().isValid() )
 					{
 						cell.getFocusedCellSize().copy(cellFromOtherBuffer.getFocusedCellSize());
 					}
@@ -166,11 +166,17 @@ public class CellSizeManager implements I_TransactionResponseHandler
 					if ( buffer.isInBoundsAbsolute(m_utilMapping.getCoordinate()) )
 					{
 						BufferCell cell = buffer.getCellAtAbsoluteCoord(m_utilMapping.getCoordinate());
-
-						cell.getFocusedCellSize().copy(m_utilCellSize);
+						
+						//--- DRK > Cell could conceivably be null if it was deleted while this request was out.
+						if( cell != null )
+						{
+							cell.getFocusedCellSize().copy(m_utilCellSize);
+						}
 					}
 				}
 			}
+			
+			m_listener.onCellSizeFound(m_utilMapping, m_utilCellSize);
 			
 			return E_ResponseSuccessControl.BREAK;
 		}

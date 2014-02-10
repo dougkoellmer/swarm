@@ -12,8 +12,10 @@ import swarm.client.managers.CellBufferManager;
 import swarm.client.entities.I_BufferCellListener;
 import swarm.client.states.StateMachine_Base;
 import swarm.client.states.camera.Action_Camera_SetViewSize;
+import swarm.client.states.camera.Action_Camera_SnapToCoordinate;
 import swarm.client.states.camera.Action_Camera_SnapToPoint;
 import swarm.client.states.camera.Action_ViewingCell_Refresh;
+import swarm.client.states.camera.Event_Camera_OnCellSizeFound;
 import swarm.client.states.camera.StateMachine_Camera;
 import swarm.client.states.camera.State_ViewingCell;
 import swarm.client.structs.CellPool;
@@ -31,6 +33,7 @@ import swarm.shared.memory.ObjectPool;
 import swarm.shared.reflection.I_Class;
 import swarm.shared.statemachine.A_Action;
 import swarm.shared.statemachine.A_State;
+import swarm.shared.statemachine.E_StateTimeType;
 import swarm.shared.statemachine.StateEvent;
 import swarm.shared.structs.CellAddress;
 import swarm.shared.structs.GridCoordinate;
@@ -58,8 +61,6 @@ public class VisualCellManager implements I_UIElement
 	
 	private final Point m_lastBasePoint = new Point();
 	
-	private StateMachine_Camera m_cameraController = null;
-	
 	private double m_lastScaling = 0;
 	
 	private final Dialog m_alertDialog;
@@ -74,7 +75,7 @@ public class VisualCellManager implements I_UIElement
 	{
 		m_container = container;
 		m_viewContext = viewContext;
-		m_cellPool = new VisualCellPool(viewContext.appContext.cellSandbox, m_container, m_viewContext.spinnerFactory);
+		m_cellPool = new VisualCellPool(viewContext.appContext.cellSandbox, m_container, m_viewContext.spinnerFactory, viewContext);
 		
 		m_viewContext.appContext.cellBufferMngr.getCellPool().setDelegate(m_cellPool);
 
@@ -145,13 +146,9 @@ public class VisualCellManager implements I_UIElement
 		basePoint = m_utilPoint2;
 		basePoint.round();
 		
-		//s_logger.severe("" + basePoint + " " + camera.getPosition() + " " + camera.getViewWidth() + " " + camera.getViewHeight());
-		
 		m_lastBasePoint.copy(basePoint);
 		
 		double scaling = U_Grid.calcCellScaling(distanceRatio, subCellCount, grid.getCellPadding(), grid.getCellWidth());
-		/*double factor = 1e5; // = 1 * 10^5 = 100000.
-		scaling = Math.round(scaling * factor) / factor;*/
 		
 		double cellWidthPlusPadding = -1;
 		double cellHeightPlusPadding = -1;
@@ -200,10 +197,11 @@ public class VisualCellManager implements I_UIElement
 				double offsetX = (ix * (cellWidthPlusPadding));
 				double offsetY = (iy * (cellHeightPlusPadding));
 				
-				VisualCell ithVisualCell = (VisualCell) ithBufferCell.getVisualization();
-				
+				VisualCell ithVisualCell = (VisualCell) ithBufferCell.getVisualization();	
+				ithVisualCell.update(timeStep);
 				ithVisualCell.validate();
 				
+				offsetX -= ((ithVisualCell.getWidth() - grid.getCellWidth())/2)*scaling;	
 				
 				double translateX = basePoint.getX() + offsetX + scrollX;
 				double translateY = basePoint.getY() + offsetY + scrollY;
@@ -211,8 +209,6 @@ public class VisualCellManager implements I_UIElement
 				String transform = scaleProperty != null ? translateProperty + " " + scaleProperty : translateProperty;
 				String transformProperty = m_viewContext.appContext.platformInfo.getTransformProperty();
 				ithVisualCell.getElement().getStyle().setProperty(transformProperty, transform);
-				
-				ithVisualCell.update(timeStep);
 				
 				if( ithVisualCell.getParent() == null )
 				{
@@ -269,7 +265,18 @@ public class VisualCellManager implements I_UIElement
 					{
 						m_cellPool.cleanPool();
 						
-						this.updateCellsIndividually(event.getState().getLastTimeStep());
+						//--- DRK > This first condition ensures that we're still updating cell positions as they're potentially shrinking
+						//---		after exiting viewing state. There's probably a more efficient way to determine if they're actually shrinking.
+						//---		This is just a catch-all.
+						if( event.getState().getPreviousState() == State_ViewingCell.class &&
+							event.getState().getTimeInState(E_StateTimeType.TOTAL) <= m_viewContext.viewConfig.cellSizeChangeTime_seconds )
+						{
+							this.updateCellTransforms(event.getState().getLastTimeStep());
+						}
+						else
+						{
+							this.updateCellsIndividually(event.getState().getLastTimeStep());
+						}
 					}
 					else
 					{
@@ -280,23 +287,9 @@ public class VisualCellManager implements I_UIElement
 				break;
 			}
 			
-			case DID_ENTER:
-			{
-				if( event.getState() instanceof StateMachine_Camera )
-				{
-					m_cameraController = (StateMachine_Camera) event.getState();
-				}
-				
-				break;
-			}
-			
 			case DID_EXIT:
 			{
-				if( event.getState() instanceof StateMachine_Camera )
-				{
-					m_cameraController = null;
-				}
-				else if( event.getState() instanceof State_ViewingCell )
+				if( event.getState() instanceof State_ViewingCell )
 				{
 					clearAlerts();
 				}
@@ -342,7 +335,20 @@ public class VisualCellManager implements I_UIElement
 					//---		we get a chance to remove the alerts...might be order-dependent strangeness there.
 					//clearAlerts();
 				}
-				
+				else if (event.getAction() == Event_Camera_OnCellSizeFound.class )
+				{
+					Event_Camera_OnCellSizeFound.Args args = event.getActionArgs();
+					
+					CellBufferManager cellManager = m_viewContext.appContext.cellBufferMngr;
+					CellBuffer cellBuffer = cellManager.getDisplayBuffer();
+					if( cellBuffer.isInBoundsAbsolute(args.getMapping().getCoordinate()) )
+					{
+						BufferCell bufferCell = cellBuffer.getCellAtAbsoluteCoord(args.getMapping().getCoordinate());
+						VisualCell visualCell = (VisualCell) bufferCell.getVisualization();
+						visualCell.setTargetSize(args.getCellSize().getWidth(), args.getCellSize().getHeight());
+						
+					}
+				}
 				
 				break;
 			}

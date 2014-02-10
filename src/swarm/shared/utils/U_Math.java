@@ -32,4 +32,9 @@ public final class U_Math
 	{
 		return value < lowerLimit ? lowerLimit : (value > upperLimit ? upperLimit : value);
 	}
+	
+	public static double clampMantissa(double mantissa)
+	{
+		return clamp(mantissa, 0, 1);
+	}
 }
