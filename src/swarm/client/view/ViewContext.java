@@ -19,7 +19,7 @@ public class ViewContext
 	public StateContext stateContext;
 	
 	public ClientAppConfig appConfig;
-	public ViewConfig viewConfig;
+	public ViewConfig config;
 	
 	public SplitPanel splitPanel;
 	public VisualCellManager cellMngr;

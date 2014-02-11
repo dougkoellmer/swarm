@@ -9,6 +9,7 @@ import swarm.client.entities.Camera;
 import swarm.client.entities.BufferCell;
 import swarm.client.managers.CellBuffer;
 import swarm.client.managers.CellBufferManager;
+import swarm.client.navigation.U_CameraViewport;
 import swarm.client.entities.I_BufferCellListener;
 import swarm.client.states.StateMachine_Base;
 import swarm.client.states.camera.Action_Camera_SetViewSize;
@@ -201,7 +202,7 @@ public class VisualCellManager implements I_UIElement
 				ithVisualCell.update(timeStep);
 				ithVisualCell.validate();
 				
-				offsetX -= ((ithVisualCell.getWidth() - grid.getCellWidth())/2)*scaling;	
+				offsetX += U_CameraViewport.calcXOffset(ithBufferCell)*scaling;	
 				
 				double translateX = basePoint.getX() + offsetX + scrollX;
 				double translateY = basePoint.getY() + offsetY + scrollY;
@@ -269,7 +270,7 @@ public class VisualCellManager implements I_UIElement
 						//---		after exiting viewing state. There's probably a more efficient way to determine if they're actually shrinking.
 						//---		This is just a catch-all.
 						if( event.getState().getPreviousState() == State_ViewingCell.class &&
-							event.getState().getTimeInState(E_StateTimeType.TOTAL) <= m_viewContext.viewConfig.cellSizeChangeTime_seconds )
+							event.getState().getTimeInState(E_StateTimeType.TOTAL) <= m_viewContext.config.cellSizeChangeTime_seconds )
 						{
 							this.updateCellTransforms(event.getState().getLastTimeStep());
 						}

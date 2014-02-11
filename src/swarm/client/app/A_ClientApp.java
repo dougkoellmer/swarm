@@ -102,7 +102,7 @@ public class A_ClientApp extends A_App implements I_TimeSource
 		m_appContext = new AppContext();
 		m_viewContext = new ViewContext();
 		m_viewContext.appConfig = m_appConfig;
-		m_viewContext.viewConfig = viewConfig;
+		m_viewContext.config = viewConfig;
 		m_appContext.config = m_appConfig;
 		m_viewContext.appContext = m_appContext;
 		

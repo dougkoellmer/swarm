@@ -20,7 +20,7 @@ public class Action_Camera_SnapToCoordinate extends smA_CameraAction
 	
 	public static class Args extends A_ActionArgs
 	{
-		private GridCoordinate m_coordinate;
+		private final GridCoordinate m_coordinate = new GridCoordinate();
 		private CellAddress m_address;
 		private final Point m_point = new Point();
 		private boolean m_hasTargetPoint;
@@ -34,7 +34,15 @@ public class Action_Camera_SnapToCoordinate extends smA_CameraAction
 		
 		public void init(GridCoordinate coordinate)
 		{
-			m_coordinate = coordinate;
+			if( coordinate != null )
+			{
+				m_coordinate.copy(coordinate);
+			}
+			else
+			{
+				m_coordinate.set(-1, -1);
+			}
+			
 			m_address = null;
 			
 			m_hasTargetPoint = false;
@@ -42,7 +50,7 @@ public class Action_Camera_SnapToCoordinate extends smA_CameraAction
 		
 		public void init(GridCoordinate coordinate, Point point)
 		{
-			m_coordinate = coordinate;
+			m_coordinate.copy(coordinate);
 			m_point.copy(point);
 			m_address = null;
 			
@@ -52,7 +60,7 @@ public class Action_Camera_SnapToCoordinate extends smA_CameraAction
 		void init(CellAddress address, GridCoordinate coordinate)
 		{
 			m_address = address;
-			m_coordinate = coordinate;
+			m_coordinate.copy(coordinate);
 			
 			m_hasTargetPoint = false;
 		}
@@ -70,7 +78,6 @@ public class Action_Camera_SnapToCoordinate extends smA_CameraAction
 		private void clear()
 		{
 			m_address = null;
-			m_coordinate = null;
 			m_hasTargetPoint = false;
 		}
 		

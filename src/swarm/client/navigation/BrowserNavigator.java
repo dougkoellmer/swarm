@@ -253,7 +253,7 @@ public class BrowserNavigator implements I_StateEventListener
 							
 							//--- DRK > Give the camera a little bump to let new users know they're in a 3d environment.
 							m_utilPoint1.copy(m_cameraMngr.getCamera().getPosition());
-							m_utilPoint1.incZ(-m_viewContext.viewConfig.initialBumpDistance);
+							m_utilPoint1.incZ(-m_viewContext.config.initialBumpDistance);
 							m_args_SnapToPoint.init(m_utilPoint1, false, false);
 							event.getState().performAction(Action_Camera_SnapToPoint.class, m_args_SnapToPoint);
 						}

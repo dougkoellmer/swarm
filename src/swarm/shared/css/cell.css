@@ -72,9 +72,11 @@
 .sm_cell_hud
 {
 	position:absolute;
+	padding:4px;
     padding-top: 3px;
-    padding-left: 4px;
-    padding-right: 4px;
+	
+	box-sizing:border-box;
+	-moz-box-sizing:border-box;
     
    /* margin-top: -18px;
     margin-left: -1px;*/
@@ -86,7 +88,7 @@
 	background: #CCCCCC;
     
     width: 503px;
-    height: 44px;
+    height: 47px;
     
    -webkit-border-top-left-radius: 8px;
     -moz-border-radius-topleft: 8px;

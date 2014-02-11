@@ -14,6 +14,7 @@ import swarm.client.states.camera.State_ViewingCell;
 import swarm.client.view.E_ZIndex;
 import swarm.client.view.I_UIElement;
 import swarm.client.view.S_UI;
+import swarm.client.view.ViewContext;
 import swarm.shared.app.S_CommonApp;
 import swarm.shared.debugging.U_Debug;
 import swarm.shared.statemachine.A_Action;
@@ -23,6 +24,7 @@ import swarm.shared.statemachine.StateContext;
 import swarm.shared.statemachine.StateEvent;
 import swarm.shared.structs.GridCoordinate;
 import swarm.shared.structs.Point;
+
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Panel;
 
@@ -52,10 +54,13 @@ public class VisualCellFocuser extends FlowPanel implements I_UIElement
 	private final AppContext m_appContext;
 	private final StateContext m_stateContext;
 	
-	public VisualCellFocuser(StateContext stateContext, AppContext appContext)
+	private final double m_fadeOutTime_seconds;
+	
+	public VisualCellFocuser(ViewContext viewContext)
 	{
-		m_appContext = appContext;
-		m_stateContext = stateContext;
+		m_appContext = viewContext.appContext;
+		m_stateContext = viewContext.stateContext;
+		m_fadeOutTime_seconds = viewContext.config.focuserFadeOutTime_seconds;
 		
 		this.addStyleName("cell_focuser");
 		
@@ -100,11 +105,7 @@ public class VisualCellFocuser extends FlowPanel implements I_UIElement
 			{
 				BufferCell cell = buffer.getCellAtAbsoluteCoord(targetCoord);
 				VisualCell visualCell = (VisualCell) cell.getVisualization();
-				visualCell.popUp();
-				if( cell.getFocusedCellSize().isValid() )
-				{
-					visualCell.setTargetSize(cell.getFocusedCellSize().getWidth(), cell.getFocusedCellSize().getHeight());
-				}
+				popUp(visualCell);
 				m_poppedCell = visualCell;
 				m_poppedCellCoord.copy(cell.getCoordinate());
 				
@@ -113,6 +114,16 @@ public class VisualCellFocuser extends FlowPanel implements I_UIElement
 		}
 		
 		return false;
+	}
+	
+	private static void popUp(VisualCell visualCell)
+	{
+		BufferCell bufferCell = visualCell.getBufferCell();
+		visualCell.popUp();
+		if( bufferCell.getFocusedCellSize().isValid() )
+		{
+			visualCell.setTargetSize(bufferCell.getFocusedCellSize().getWidth(), bufferCell.getFocusedCellSize().getHeight());
+		}
 	}
 	
 	private void setAnimationState(AnimationState state)
@@ -146,8 +157,24 @@ public class VisualCellFocuser extends FlowPanel implements I_UIElement
 						if( this.m_poppedCell != null )
 						{
 							State_CameraSnapping snappingState = m_stateContext.getEnteredState(State_CameraSnapping.class);
+							boolean pushDown = false;
+							if( snappingState == null )
+							{
+								pushDown = true;
+							}
+							else
+							{
+								if( !snappingState.getTargetCoordinate().isEqualTo(m_poppedCellCoord))
+								{
+									pushDown = true;
+								}
+								else
+								{
+									popUp(this.m_poppedCell);
+								}
+							}
 							
-							if( snappingState == null || !snappingState.getTargetCoordinate().isEqualTo(m_poppedCellCoord))
+							if( pushDown )
 							{
 								this.m_poppedCell.pushDown();
 								this.m_poppedCell = null;
@@ -178,6 +205,8 @@ public class VisualCellFocuser extends FlowPanel implements I_UIElement
 							else
 							{
 								m_startCameraDistance = this.calcCameraDistanceToTarget();
+								
+								popUp(this.m_poppedCell);// re-poppingUp after cancelPop in FADE_OUT case.
 							}
 						}
 						
@@ -219,6 +248,18 @@ public class VisualCellFocuser extends FlowPanel implements I_UIElement
 				
 				m_fadeStartTime = cameraController.getTimeInState(E_StateTimeType.TOTAL);
 				m_startAlpha = m_alpha;
+				
+				if( oldState == AnimationState.FADING_IN )
+				{
+					if( m_poppedCell != null )
+					{
+						m_poppedCell.cancelPopUp();
+					}
+					else
+					{
+						U_Debug.ASSERT(false, "expected popped cell");
+					}
+				}
 				
 				break;
 			}
@@ -284,7 +325,7 @@ public class VisualCellFocuser extends FlowPanel implements I_UIElement
 				}
 				
 				double elapsed = currentState.getParent().getTimeInState(E_StateTimeType.TOTAL) - m_fadeStartTime;
-				double ratio = elapsed / S_UI.CELL_FOCUSER_FADE_OUT_TIME;
+				double ratio = elapsed / m_fadeOutTime_seconds;
 				
 				if( ratio >= 1 )
 				{

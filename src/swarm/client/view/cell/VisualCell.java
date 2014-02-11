@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import swarm.client.app.AppContext;
+import swarm.client.entities.BufferCell;
 import swarm.client.entities.I_BufferCellListener;
 import swarm.client.managers.CameraManager;
 import swarm.client.view.E_ZIndex;
@@ -68,6 +69,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	private final AbsolutePanel m_glassPanel = new AbsolutePanel();
 	private final I_CellSpinner m_spinner;
 	private final MutableCode m_utilCode = new MutableCode(E_CodeType.values());
+	private BufferCell m_bufferCell = null;
 	
 	//private final ArrayList<Image> //m_backgroundImages = new ArrayList<Image>();
 	private int m_currentImageIndex = -1;
@@ -81,8 +83,8 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	private int m_defaultHeight = 0;
 	private int m_baseWidth = 0;
 	private int m_baseHeight = 0;
-	private double m_widthDelta = 0;
-	private double m_heightDelta = 0;
+	private int m_targetWidth = 0;
+	private int m_targetHeight = 0;
 	
 	private double m_baseChangeValue = 0;
 	
@@ -145,6 +147,11 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		this.add(m_glassPanel);
 	}
 	
+	public BufferCell getBufferCell()
+	{
+		return m_bufferCell;
+	}
+	
 	SizeChangeState getSizeChangeState()
 	{
 		return m_sizeChangeState;
@@ -155,7 +162,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		return m_id;
 	}
 	
-	int getWidth()
+	public int getWidth()
 	{
 		return m_width;
 	}
@@ -194,10 +201,10 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	
 	private void updateSize(double progressMantissa)
 	{
-		double widthDelta = m_widthDelta * progressMantissa;
+		double widthDelta = (m_targetWidth - m_baseWidth) * progressMantissa;
 		m_width = (int) (m_baseWidth + widthDelta);		
 		
-		double heightDelta = m_heightDelta * progressMantissa;
+		double heightDelta = (m_targetHeight - m_baseHeight) * progressMantissa;
 		m_height = (int) (m_baseHeight + heightDelta);
 		
 		if( progressMantissa >= 1 )
@@ -260,8 +267,10 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		this.setSize(m_width+m_padding + "px", m_height+m_padding + "px");
 	}
 	
-	public void onCreate(int width, int height, int padding, int subCellDimension)
+	public void onCreate(BufferCell bufferCell, int width, int height, int padding, int subCellDimension)
 	{
+		m_bufferCell = bufferCell;
+		
 		 //--- DRK > NOTE: for some reason this gets reset somehow...at least in hosted mode, so can't put it in constructor.
 		this.getElement().getStyle().setPosition(Position.ABSOLUTE);
 		
@@ -271,16 +280,13 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	}
 	
 	private void onCreatedOrRecycled(int width, int height, int padding, int subCellDimension)
-	{
-		m_widthDelta = 0;
-		m_heightDelta = 0;
-		
+	{		
 		m_sizeChangeState = SizeChangeState.NOT_CHANGING;
 		m_isFocused = false;
 		m_isValidated = false;
 		m_subCellDimension = subCellDimension;
-		m_defaultWidth = m_baseWidth = m_width = width;
-		m_defaultHeight = m_baseHeight = m_height = height;
+		m_targetWidth = m_defaultWidth = m_baseWidth = m_width = width;
+		m_targetHeight = m_defaultHeight = m_baseHeight = m_height = height;
 		m_padding = padding;
 	}
 	
@@ -288,9 +294,9 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	{
 		m_baseWidth = this.m_width;
 		m_baseHeight = this.m_height;
-		
-		m_widthDelta = width - this.m_width;
-		m_heightDelta = height - this.m_height;
+
+		m_targetWidth = width;
+		m_targetHeight = height;
 		
 		if( this.m_isSnapping )
 		{
@@ -299,19 +305,25 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		}
 		else if( this.m_isFocused )
 		{
-			//--- If we get the focused cell size while viewing cell,
-			//--- we don't make user wait, and just instantly expand it.
-			//--- Maybe a little jarring, but should be fringe case.
-			m_baseWidth = m_width = width;
-			m_baseHeight = m_height = height;
-			m_sizeChangeState = SizeChangeState.NOT_CHANGING;
-			
-			this.flushSize();
+			this.ensureExpandedSize();
 		}
+	}
+	
+	private void ensureExpandedSize()
+	{
+		//--- If we get the focused cell size while viewing cell,
+		//--- we don't make user wait, and just instantly expand it.
+		//--- Maybe a little jarring, but should be fringe case.
+		m_baseWidth = m_width = m_targetWidth;
+		m_baseHeight = m_height = m_targetHeight;
+		m_sizeChangeState = SizeChangeState.NOT_CHANGING;
+		
+		this.flushSize();
 	}
 	
 	public void onDestroy()
 	{
+		m_bufferCell = null;
 		m_isFocused = false;
 		m_subCellDimension = -1;
 		
@@ -337,6 +349,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		m_isFocused = true;
 		
 		E_ZIndex.CELL_FOCUSED.assignTo(this);
+		this.ensureExpandedSize();
 		
 		this.m_glassPanel.setVisible(false);
 		this.addStyleName("visual_cell_focused");
@@ -352,18 +365,21 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		m_isFocused = false;
 		
 		this.m_glassPanel.setVisible(true);
-		
 		this.removeStyleName("visual_cell_focused");
-
 		U_Css.allowUserSelect(m_contentPanel.getElement(), false);
+		m_sandboxMngr.allowScrolling(m_contentPanel.getElement(), false);
+		E_ZIndex.CELL_POPPED.assignTo(this);
 		
 		/*if( m_sandboxMngr.isRunning() )
 		{
 			m_sandboxMngr.stop(m_contentPanel.getElement());
 		}*/
 		
-		m_sandboxMngr.allowScrolling(m_contentPanel.getElement(), false);
-		
+		this.setToTargetSizeDefault();
+	}
+	
+	private void setToTargetSizeDefault()
+	{
 		m_sizeChangeState = SizeChangeState.CHANGING_FROM_TIME;
 		m_baseChangeValue = 0;
 		this.setTargetSize(m_defaultWidth, m_defaultHeight);
@@ -383,6 +399,19 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		}
 		
 		m_isSnapping = true;
+	}
+	
+	public void cancelPopUp()
+	{
+		boolean wasSnapping = m_isSnapping;
+		m_isSnapping = false;
+		
+		if( m_sizeChangeState == SizeChangeState.CHANGING_FROM_SNAP )
+		{
+			this.setToTargetSizeDefault();
+			
+			U_Debug.ASSERT(wasSnapping, "expected cell to know it was snapping");
+		}
 	}
 	
 	public void pushDown()

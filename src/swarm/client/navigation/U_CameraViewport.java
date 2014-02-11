@@ -1,6 +1,8 @@
 package swarm.client.navigation;
 
+import swarm.client.entities.BufferCell;
 import swarm.client.managers.CameraManager;
+import swarm.client.view.cell.VisualCell;
 import swarm.shared.entities.A_Grid;
 import swarm.shared.structs.GridCoordinate;
 import swarm.shared.structs.Point;
@@ -29,6 +31,19 @@ public class U_CameraViewport
 	public static double calcViewWindowWidth(A_Grid grid)
 	{
 		return grid.getCellWidth() + getViewPadding(grid)*2;
+	}
+	
+	public static double calcXOffset(int cellWidth, int defaultCellWidth)
+	{
+		return -((cellWidth - defaultCellWidth)/2);
+	}
+	
+	public static double calcXOffset(BufferCell cell)
+	{
+		A_Grid grid = cell.getGrid();
+		VisualCell visualCell = (VisualCell) cell.getVisualization();
+		
+		return calcXOffset(visualCell.getWidth(), grid.getCellWidth());
 	}
 	
 	public static double calcViewWindowHeight(A_Grid grid, double cellHudHeight)

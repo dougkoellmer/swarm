@@ -213,7 +213,7 @@ public class MouseNavigator implements I_UIElement, Mouse.I_Listener
 					
 					if( scrollNavigator.isScrollingX() || scrollNavigator.isScrollingY() )
 					{
-						extraPadding = m_viewContext.viewConfig.extraScrollArea;
+						extraPadding = m_viewContext.config.extraScrollArea;
 					}
 					
 					if( U_CameraViewport.isPointInViewport(grid, cell.getCoordinate(), m_utilPoint2, m_viewContext.appConfig.cellHudHeight, extraPadding))

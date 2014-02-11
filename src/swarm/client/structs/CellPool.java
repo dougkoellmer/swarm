@@ -52,7 +52,7 @@ public class CellPool
 		{
 			cell.setVisualization
 			(
-				m_delegate.createVisualization(grid.getCellWidth(), grid.getCellHeight(), grid.getCellPadding(), subCellDimension)
+				m_delegate.createVisualization(cell, grid.getCellWidth(), grid.getCellHeight(), grid.getCellPadding(), subCellDimension)
 			);
 		}
 		else

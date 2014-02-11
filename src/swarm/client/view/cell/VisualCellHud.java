@@ -10,6 +10,8 @@ import swarm.client.entities.E_CodeStatus;
 import swarm.client.input.ClickManager;
 import swarm.client.input.I_ClickHandler;
 import swarm.client.managers.CameraManager;
+import swarm.client.managers.CellBuffer;
+import swarm.client.managers.CellBufferManager;
 import swarm.client.navigation.BrowserNavigator;
 import swarm.client.navigation.BrowserNavigator.I_StateChangeListener;
 import swarm.client.navigation.U_CameraViewport;
@@ -106,14 +108,14 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 	
 	private final Rect m_utilRect = new Rect();
 	
-	private boolean m_performedSnap;
+	private final GridCoordinate m_lastTargetCoord = new GridCoordinate();
 	
 	public VisualCellHud(ViewContext viewContext, ClientAppConfig appConfig)
 	{
 		m_viewContext = viewContext;
 		
 		m_appConfig = appConfig;
-		m_fadeOutTime_seconds = m_viewContext.viewConfig.hudFadeOutTime_seconds;
+		m_fadeOutTime_seconds = m_viewContext.config.hudFadeOutTime_seconds;
 		
 		m_alpha = m_baseAlpha = 0.0;
 		
@@ -256,12 +258,17 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 	{
 		Camera camera = m_viewContext.appContext.cameraMngr.getCamera();
 		s_utilPoint1.copy(screenPoint);
+		double xOffset = U_CameraViewport.calcXOffset((int) Math.ceil(m_width), grid.getCellWidth());
+		
 		if( m_viewContext.stateContext.isEntered(State_ViewingCell.class) )
 		{
 			Element scrollElement = this.getParent().getElement();
 			double scrollX = scrollElement.getScrollLeft();
 			s_utilPoint1.incX(-scrollX);
+			//s_utilPoint1.incX(xOffset);
 		}
+		
+		screenPoint.incX(xOffset);
 		camera.calcWorldPoint(s_utilPoint1, m_lastWorldPosition);
 		
 		boolean has3dTransforms = m_viewContext.appContext.platformInfo.has3dTransforms();
@@ -324,7 +331,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 		
 		double scaling = m_viewContext.cellMngr.getLastScaling();
 		double y = point_out.getY()-(m_appConfig.cellHudHeight+grid.getCellPadding())*scaling;
-		y -= 1*scaling; // account for margin...sigh
+		y -= 1*scaling; // account for margin...sigh, TODO: Shouldn't be using arbitrary constant here.
 		y += scrollY * scaling;
 		
 		point_out.set(x, y, 0);
@@ -373,26 +380,43 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 		return viewWidth;
 	}
 	
-	private void updateSize(A_Grid grid)
+	private void updateSize(int cellWidth, A_Grid grid)
 	{
 		Camera camera = m_viewContext.appContext.cameraMngr.getCamera();
-		
 		double viewWidth = getViewWidth(camera, grid);
-		double cellWidth = grid.getCellWidth();
 		double hudWidth = Math.min(viewWidth, cellWidth);
-		
-		m_width = hudWidth - 9; // TODO: GHETTO...takes into account padding or something.
-		//m_width = Math.max(m_width, m_minWidth);
-		
-		//s_logger.severe("hud width: " + m_width);
+		m_width = hudWidth;
 		
 		this.getElement().getStyle().setWidth(m_width, Unit.PX);
+	}
+	
+	private void updateSize(BufferCell cell)
+	{
+		VisualCell visualCell = (VisualCell) cell.getVisualization();
+		int cellWidth = visualCell.getWidth();
+		
+		this.updateSize(cellWidth, cell.getGrid());
+	}
+	
+	private void updateSize(State_CameraSnapping state)
+	{
+		this.updateSize(state.getTargetCoordinate());
+	}
+	
+	private void updateSize(GridCoordinate coord)
+	{
+		CellBufferManager bufferMngr = m_viewContext.appContext.cellBufferMngr;
+		CellBuffer displayBuffer = bufferMngr.getDisplayBuffer();
+		if( displayBuffer.isInBoundsAbsolute(coord) )
+		{
+			BufferCell bufferCell = displayBuffer.getCellAtAbsoluteCoord(coord);
+			this.updateSize(bufferCell);
+		}
 	}
 	
 	private void onDoubleSnap()
 	{
 		m_lastWorldPositionOnDoubleSnap.copy(m_lastWorldPosition);
-		m_performedSnap = true;
 	}
 	
 	@Override
@@ -404,7 +428,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 			{
 				if( event.getState() instanceof State_ViewingCell )
 				{
-					this.updateSize(((State_ViewingCell) event.getState()).getCell().getGrid());
+					this.updateSize(((State_ViewingCell) event.getState()).getCell());
 					this.updatePositionFromState((State_ViewingCell) event.getState());
 					this.updateCloseButton();
 					this.updateHistoryButtons();
@@ -413,11 +437,12 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 					m_baseAlpha = m_alpha;
 				}
 				else if( event.getState() instanceof State_CameraSnapping )
-				{
-					this.updateSize(m_viewContext.appContext.gridMngr.getGrid()); // just in case 
-					
+				{					
 					if( event.getState().getPreviousState() != State_ViewingCell.class )
 					{
+						A_Grid grid = m_viewContext.appContext.gridMngr.getGrid();
+						this.updateSize(grid.getCellWidth(), grid); // just in case 
+						
 						if( m_alpha <= 0 )
 						{
 							this.updatePositionFromState((State_CameraSnapping)event.getState());
@@ -425,14 +450,10 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 						
 						this.setVisible(true);
 						m_baseAlpha = m_alpha;
-						
-					//	s_logger.severe("BASE ALPHA: " + m_baseAlpha);
 					}
 					
 					this.updateCloseButton();
 					this.updateHistoryButtons();
-					
-					//m_performedDoubleSnap = false;
 				}
 				
 				break;
@@ -466,15 +487,17 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 					}
 					else if( event.getState() instanceof State_CameraSnapping )
 					{
-						State_CameraSnapping cameraSnapping = m_viewContext.stateContext.getEnteredState(State_CameraSnapping.class);
-						if( cameraSnapping != null )
+						State_CameraSnapping cameraSnapping = event.getState();
+						if( cameraSnapping.isEntered() )
 						{
 							if( cameraSnapping.getPreviousState() != State_ViewingCell.class )
 							{
 								this.setAlpha(m_baseAlpha + (1-m_baseAlpha) * cameraSnapping.getOverallSnapProgress());
 							}
+							
+							this.updateSize(cameraSnapping);
 					
-							if( !m_performedSnap && cameraSnapping.getPreviousState() != State_ViewingCell.class)
+							if( cameraSnapping.getPreviousState() != State_ViewingCell.class)
 							{
 								this.updatePositionFromState((State_CameraSnapping)event.getState());
 							}
@@ -510,6 +533,8 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 									
 									this.setAlpha(m_baseAlpha * (1-timeMantissa));
 									A_Grid grid = m_viewContext.appContext.gridMngr.getGrid();
+									
+									this.updateSize(m_lastTargetCoord);
 									this.updatePositionFromWorldPoint(grid, m_lastWorldPosition);
 									
 									if( m_alpha <= 0 )
@@ -554,7 +579,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 					
 					if( viewingState != null )
 					{
-						this.updateSize(viewingState.getCell().getGrid());
+						this.updateSize(viewingState.getCell());
 						
 						Action_Camera_SetViewSize.Args args = event.getActionArgs();
 						if( args.updateBuffer() )
@@ -564,7 +589,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 					}
 					else if( snappingState != null )
 					{
-						this.updateSize(m_viewContext.appContext.gridMngr.getGrid());
+						this.updateSize(snappingState);
 						
 						this.onDoubleSnap();
 					}
@@ -585,9 +610,13 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 				else if( event.getAction() == Action_Camera_SnapToCoordinate.class )
 				{
 					State_CameraSnapping state = event.getContext().getEnteredState(State_CameraSnapping.class);
+					Action_Camera_SnapToCoordinate.Args args = event.getActionArgs();
+					m_lastTargetCoord.copy(args.getTargetCoordinate());
 					
 					if( m_alpha <= 0 )
 					{
+						A_Grid grid = m_viewContext.appContext.gridMngr.getGrid();
+						this.updateSize(grid.getCellWidth(), grid);
 						this.updatePositionFromState(state);
 					}
 					

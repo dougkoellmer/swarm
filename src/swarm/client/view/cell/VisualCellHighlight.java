@@ -6,6 +6,7 @@ import swarm.client.entities.Camera;
 import swarm.client.managers.CellBuffer;
 import swarm.client.managers.CellBufferManager;
 import swarm.client.navigation.MouseNavigator;
+import swarm.client.navigation.U_CameraViewport;
 import swarm.client.input.Mouse;
 import swarm.client.states.camera.Action_Camera_SetViewSize;
 import swarm.client.states.camera.Action_Camera_SnapToPoint;
@@ -125,8 +126,7 @@ public class VisualCellHighlight extends FlowPanel implements I_UIElement
 
 		basePoint.copy(lastBasePoint);
 		basePoint.inc(deltaPixelsX, deltaPixelsY, 0);
-		basePoint.incX(-((visualCellWidth - defaultCellWidth)/2)*lastScaling);
-		//basePoint.incY(-((visualCellHeight - defaultCellHeight)/2)*lastScaling);
+		basePoint.incX(U_CameraViewport.calcXOffset(cell)*lastScaling);
 		double y = basePoint.getY();
 		
 		if( m_viewContext.stateContext.isEntered(State_ViewingCell.class) )
@@ -141,7 +141,7 @@ public class VisualCellHighlight extends FlowPanel implements I_UIElement
 		this.getElement().getStyle().setProperty("top", y + "px");
 		this.getElement().getStyle().setProperty("left", basePoint.getX() + "px");
 		
-		ViewConfig viewConfig = m_viewContext.viewConfig;
+		ViewConfig viewConfig = m_viewContext.config;
 		
 		if( m_lastScaling != highlightScaling )
 		{
@@ -150,7 +150,7 @@ public class VisualCellHighlight extends FlowPanel implements I_UIElement
 			int shadowSize = (int) (((double)viewConfig.cellHighlightMaxSize) * (scale));
 			shadowSize = (shadowSize < viewConfig.cellHighlightMinSize ? viewConfig.cellHighlightMinSize : shadowSize);
 			
-			U_Css.setBoxShadow(this.getElement(), "0 0 "+(shadowSize/2)+"px "+(shadowSize/2)+"px " + m_viewContext.viewConfig.cellHighlightColor);
+			U_Css.setBoxShadow(this.getElement(), "0 0 "+(shadowSize/2)+"px "+(shadowSize/2)+"px " + m_viewContext.config.cellHighlightColor);
 		}
 		
 		m_lastScaling = highlightScaling;

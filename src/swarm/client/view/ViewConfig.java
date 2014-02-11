@@ -7,6 +7,7 @@ public class ViewConfig
 {
 	public double magFadeInTime_seconds = .5;
 	public double hudFadeOutTime_seconds = magFadeInTime_seconds;
+	public double focuserFadeOutTime_seconds = .25;
 	public int magnifierTickCount;
 	public String defaultPageTitle;
 	public String cellHighlightColor = S_UI.HIGHLIGHT_COLOR;

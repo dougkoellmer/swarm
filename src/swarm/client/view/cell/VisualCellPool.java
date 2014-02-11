@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.google.gwt.user.client.ui.Widget;
 
+import swarm.client.entities.BufferCell;
 import swarm.client.entities.I_BufferCellListener;
 import swarm.client.managers.CameraManager;
 import swarm.client.structs.I_CellPoolDelegate;
@@ -62,14 +63,14 @@ public class VisualCellPool implements I_CellPoolDelegate
 			@Override
 			public VisualCell newInstance()
 			{
-				return new VisualCell(spinnerFactory.newSpinner(), sandboxMngr, viewContext.appContext.cameraMngr, viewContext.viewConfig.cellSizeChangeTime_seconds);
+				return new VisualCell(spinnerFactory.newSpinner(), sandboxMngr, viewContext.appContext.cameraMngr, viewContext.config.cellSizeChangeTime_seconds);
 			}
 		};
 		
 		m_pool = new CustomPool(m_visualCellClass);
 	}
 	
-	public I_BufferCellListener createVisualization(int width, int height, int padding, int subCellDim)
+	public I_BufferCellListener createVisualization(BufferCell bufferCell, int width, int height, int padding, int subCellDim)
 	{
 		VisualCell newVisualCell = m_pool.allocate();
 		newVisualCell.setVisible(true);
@@ -82,7 +83,7 @@ public class VisualCellPool implements I_CellPoolDelegate
 			//smU_Debug.ASSERT(false, "createVisualization1");
 		}
 		
-		newVisualCell.onCreate(width, height, padding, subCellDim);
+		newVisualCell.onCreate(bufferCell, width, height, padding, subCellDim);
 		
 		return newVisualCell;
 	}
