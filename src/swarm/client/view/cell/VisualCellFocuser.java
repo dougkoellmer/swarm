@@ -55,12 +55,14 @@ public class VisualCellFocuser extends FlowPanel implements I_UIElement
 	private final StateContext m_stateContext;
 	
 	private final double m_fadeOutTime_seconds;
+	private final double m_maxAlpha;
 	
 	public VisualCellFocuser(ViewContext viewContext)
 	{
 		m_appContext = viewContext.appContext;
 		m_stateContext = viewContext.stateContext;
 		m_fadeOutTime_seconds = viewContext.config.focuserFadeOutTime_seconds;
+		m_maxAlpha = viewContext.config.focuserMaxAlpha;
 		
 		this.addStyleName("cell_focuser");
 		
@@ -226,7 +228,7 @@ public class VisualCellFocuser extends FlowPanel implements I_UIElement
 			
 			case FOCUSED:
 			{
-				this.setAlpha(S_UI.CELL_FOCUSER_MAX_ALPHA); // just to be sure.
+				this.setAlpha(m_maxAlpha); // just to be sure.
 				
 				if( m_poppedCell == null )
 				{
@@ -280,7 +282,7 @@ public class VisualCellFocuser extends FlowPanel implements I_UIElement
 		{
 			case FADING_IN:
 			{
-				if( m_alpha == S_UI.CELL_FOCUSER_MAX_ALPHA )
+				if( m_alpha == m_maxAlpha )
 				{
 					if( m_poppedCell == null )
 					{
@@ -302,7 +304,7 @@ public class VisualCellFocuser extends FlowPanel implements I_UIElement
 					if( m_poppedCell != null )
 					{
 						double alphaRatio = (1 - (cameraDistance / m_startCameraDistance));
-						double alpha = m_startAlpha + alphaRatio * (S_UI.CELL_FOCUSER_MAX_ALPHA - m_startAlpha);
+						double alpha = m_startAlpha + alphaRatio * (m_maxAlpha - m_startAlpha);
 						
 						this.setAlpha(alpha);
 					}
@@ -319,7 +321,10 @@ public class VisualCellFocuser extends FlowPanel implements I_UIElement
 					
 					if( buffer.getSubCellCount() != 1 || !buffer.isInBoundsAbsolute(m_poppedCellCoord) )
 					{
-						m_poppedCell.pushDown();
+						//--- DRK > Used to push down cell here, but strictly speaking it shouldn't be necessary,
+						//---		and might actually be dangerous, like if the cell is recycled, popped up, then
+						//---		here we push it down right after that.
+						//m_poppedCell.pushDown();
 						m_poppedCell = null;
 					}
 				}

@@ -18,8 +18,6 @@ public class S_UI
 	
 	public static final int TOOL_TIP_NOTIFICATION_DURATION = 3; // seconds
 	
-	public static final double CELL_FOCUSER_MAX_ALPHA = .85;
-	
 	public static final int HIGHLIGHT_MIN_SIZE = 4;
 	
 	public static final int HIGHLIGHT_MAX_SIZE = 16;
