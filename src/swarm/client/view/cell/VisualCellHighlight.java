@@ -11,6 +11,7 @@ import swarm.client.input.Mouse;
 import swarm.client.states.camera.Action_Camera_SetViewSize;
 import swarm.client.states.camera.Action_Camera_SnapToPoint;
 import swarm.client.states.camera.StateMachine_Camera;
+import swarm.client.states.camera.State_CameraSnapping;
 import swarm.client.states.camera.State_ViewingCell;
 import swarm.client.view.E_ZIndex;
 import swarm.client.view.I_UIElement;
@@ -84,6 +85,17 @@ public class VisualCellHighlight extends FlowPanel implements I_UIElement
 			
 			return;
 		}
+
+		State_CameraSnapping snappingState = m_viewContext.stateContext.getEnteredState(State_CameraSnapping.class);
+		if( snappingState != null )
+		{
+			if( mouseCoord.isEqualTo(snappingState.getTargetCoordinate()) )
+			{
+				this.setVisible(false);
+				
+				return;
+			}
+		}
 		
 		basePoint = m_utilPoint1;
 		
@@ -126,7 +138,8 @@ public class VisualCellHighlight extends FlowPanel implements I_UIElement
 
 		basePoint.copy(lastBasePoint);
 		basePoint.inc(deltaPixelsX, deltaPixelsY, 0);
-		basePoint.incX(U_CameraViewport.calcXOffset(cell)*lastScaling);
+		basePoint.incX(((double)visualCell.getXOffset())*lastScaling);
+		basePoint.incY(((double)visualCell.getYOffset())*lastScaling);
 		double y = basePoint.getY();
 		
 		if( m_viewContext.stateContext.isEntered(State_ViewingCell.class) )

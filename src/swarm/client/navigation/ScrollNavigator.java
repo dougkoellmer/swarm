@@ -10,16 +10,22 @@ import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+import swarm.client.entities.BufferCell;
 import swarm.client.entities.Camera;
 import swarm.client.managers.CameraManager;
+import swarm.client.managers.CellBuffer;
+import swarm.client.managers.CellBufferManager;
 import swarm.client.states.camera.Action_Camera_SetViewSize;
 import swarm.client.states.camera.Action_Camera_SnapToCoordinate;
 import swarm.client.states.camera.Action_Camera_SnapToPoint;
+import swarm.client.states.camera.Event_Camera_OnCellSizeFound;
 import swarm.client.states.camera.Event_GettingMapping_OnResponse;
 import swarm.client.states.camera.StateMachine_Camera;
 import swarm.client.states.camera.State_CameraSnapping;
 import swarm.client.states.camera.State_ViewingCell;
+import swarm.client.view.U_Css;
 import swarm.client.view.ViewContext;
+import swarm.client.view.cell.VisualCell;
 import swarm.client.view.cell.VisualCellContainer;
 import swarm.shared.debugging.U_Debug;
 import swarm.shared.entities.A_Grid;
@@ -52,8 +58,6 @@ public class ScrollNavigator implements I_StateEventListener
 	
 	private A_Grid m_currentGrid = null;
 	
-	private double m_scrollHeight = 0;
-	
 	private final Boolean m_utilBool1 = new Boolean();
 	private final Boolean m_utilBool2 = new Boolean();
 	private final Rect m_utilRect1 = new Rect();
@@ -65,7 +69,7 @@ public class ScrollNavigator implements I_StateEventListener
 		m_scrollContainerParent = scrollContainer.getParent();
 		m_scrollContainerInner = scrollee;
 		m_mouseLayer = mouseLayer;
-		m_scrollBarWidthDiv2 = (int) Math.floor(((double)this.getScrollBarWidth())/2);
+		m_scrollBarWidthDiv2 = (int) Math.floor(((double)U_Css.getScrollBarWidth())/2);
 		m_cellHudHeight = viewContext.appConfig.cellHudHeight;
 		
 		m_args_SnapToCoord.userData = this.getClass();
@@ -74,17 +78,7 @@ public class ScrollNavigator implements I_StateEventListener
 		{
 			@Override
 			public void onScroll(ScrollEvent event)
-			{//s_logger.severe(m_scrollContainer.getElement().getScrollTop() + " " + m_scrollContainer.getElement().getScrollHeight());
-				/*int maxScrollTop = (int)m_scrollHeight - m_scrollContainer.getElement().getClientHeight();
-				int overY = m_scrollContainer.getElement().getScrollTop() - maxScrollTop;
-				if( overY > 0 )
-				{
-					m_scrollContainer.getElement().setScrollTop(overY);
-					event.preventDefault();
-					
-					return;
-				}*/
-				
+			{
 				updateCameraFromScrollBars();
 			}
 			
@@ -127,11 +121,14 @@ public class ScrollNavigator implements I_StateEventListener
 			
 			m_args_SnapToCoord.init(snappingState.getTargetCoordinate(), m_utilPoint1);
 			snappingState.getParent().performAction(Action_Camera_SnapToCoordinate.class, m_args_SnapToCoord);
+			
+			this.updateLayout(snappingState.getTargetCoordinate());
 		}
 		else if( viewingState != null )
 		{
 			this.updateCameraViewRect(false, false);
 			updateCameraFromScrollBars();
+			this.updateLayout((VisualCell)viewingState.getCell().getVisualization());
 		}
 		else
 		{
@@ -160,9 +157,9 @@ public class ScrollNavigator implements I_StateEventListener
 		
 		A_Grid grid = viewingState.getCell().getGrid();
 		
-		double minViewWidth = U_CameraViewport.calcViewWindowWidth(grid);
+		double minViewWidth = U_CameraViewport.calcCellWidthRequirement(grid);
 		double windowWidth = this.getWindowWidth();
-		double minViewHeight = U_CameraViewport.calcViewWindowHeight(grid, m_cellHudHeight);
+		double minViewHeight = U_CameraViewport.calcCellHeightRequirement(grid, m_cellHudHeight);
 		double windowHeight = this.getWindowHeight();
 		GridCoordinate coord = viewingState.getCell().getCoordinate();
 		Point centerPoint = m_utilPoint1;
@@ -210,8 +207,6 @@ public class ScrollNavigator implements I_StateEventListener
 		innerStyle.clearProperty("height");
 		mouseLayerStyle.clearProperty("height");
 		m_scrollContainer.getElement().setScrollTop(0);
-		
-		m_scrollHeight = 0;
 	}
 	
 	private void setInitialScrollbarPosX(State_ViewingCell viewingState)
@@ -220,7 +215,7 @@ public class ScrollNavigator implements I_StateEventListener
 		Point cameraPoint = m_viewContext.appContext.cameraMngr.getCamera().getPosition();
 		Point centerPoint = m_utilPoint1;
 		U_CameraViewport.calcViewWindowCenter(grid, viewingState.getCell().getCoordinate(), m_cellHudHeight, centerPoint);
-		double minViewWidth = U_CameraViewport.calcViewWindowWidth(grid);
+		double minViewWidth = U_CameraViewport.calcCellWidthRequirement(grid);
 		double windowWidth = this.getWindowWidth();
 		
 		double delta = (minViewWidth - windowWidth)/2;
@@ -235,7 +230,7 @@ public class ScrollNavigator implements I_StateEventListener
 		Point cameraPoint = m_viewContext.appContext.cameraMngr.getCamera().getPosition();
 		Point centerPoint = m_utilPoint1;
 		U_CameraViewport.calcViewWindowCenter(grid, viewingState.getCell().getCoordinate(), m_cellHudHeight, centerPoint);
-		double minViewHeight = U_CameraViewport.calcViewWindowHeight(grid, m_cellHudHeight);
+		double minViewHeight = U_CameraViewport.calcCellHeightRequirement(grid, m_cellHudHeight);
 		double windowHeight = this.getWindowHeight();
 		
 		double delta = (minViewHeight - windowHeight)/2;
@@ -259,8 +254,6 @@ public class ScrollNavigator implements I_StateEventListener
 			String widthProperty = minViewWidth+"px";
 			innerStyle.setProperty("width", widthProperty);
 			mouseLayerStyle.setProperty("width", widthProperty);
-			//innerStyle.setProperty("maxWidth", widthProperty);
-			//mouseLayerStyle.setProperty("maxWidth", widthProperty);
 		}
 		else
 		{
@@ -282,10 +275,6 @@ public class ScrollNavigator implements I_StateEventListener
 			String heightProperty = minViewHeight+"px";
 			innerStyle.setProperty("height", heightProperty);
 			mouseLayerStyle.setProperty("height", heightProperty);
-			//innerStyle.setProperty("maxHeight", heightProperty);
-			//mouseLayerStyle.setProperty("maxHeight", heightProperty);
-			
-			m_scrollHeight = minViewHeight;
 		}
 		else
 		{
@@ -302,8 +291,8 @@ public class ScrollNavigator implements I_StateEventListener
 			Point centerPoint = m_utilPoint1;
 			U_CameraViewport.calcViewWindowCenter(grid, viewingState_nullable.getCell().getCoordinate(), m_cellHudHeight, centerPoint);
 			
-			double minViewWidth = U_CameraViewport.calcViewWindowWidth(grid);
-			double minViewHeight = U_CameraViewport.calcViewWindowHeight(grid, m_cellHudHeight);
+			double minViewWidth = U_CameraViewport.calcCellWidthRequirement(grid);
+			double minViewHeight = U_CameraViewport.calcCellHeightRequirement(grid, m_cellHudHeight);
 			
 			toggleScrollBarX(viewingState_nullable, minViewWidth, cameraPoint, centerPoint);
 			toggleScrollBarY(viewingState_nullable, minViewHeight, cameraPoint, centerPoint);
@@ -372,8 +361,8 @@ public class ScrollNavigator implements I_StateEventListener
 		State_ViewingCell viewingState = m_viewContext.stateContext.getEnteredState(State_ViewingCell.class);
 		A_Grid grid = this.m_viewContext.appContext.gridMngr.getGrid();
 		
-		double minViewWidth = U_CameraViewport.calcViewWindowWidth(grid);
-		double minViewHeight = U_CameraViewport.calcViewWindowHeight(grid, m_cellHudHeight);
+		double minViewWidth = U_CameraViewport.calcCellWidthRequirement(grid);
+		double minViewHeight = U_CameraViewport.calcCellHeightRequirement(grid, m_cellHudHeight);
 		rect_out.set(this.getWindowWidth(), this.getWindowHeight());
 
 		widthSmaller_out.value = false;
@@ -414,7 +403,7 @@ public class ScrollNavigator implements I_StateEventListener
 	{
 		if( m_currentGrid == null )  return false;
 		
-		double minViewWidth = U_CameraViewport.calcViewWindowWidth(m_currentGrid);
+		double minViewWidth = U_CameraViewport.calcCellWidthRequirement(m_currentGrid);
 		double windowWidth = this.getWindowWidth();
 		
 		return windowWidth < minViewWidth;
@@ -424,7 +413,7 @@ public class ScrollNavigator implements I_StateEventListener
 	{
 		if( m_currentGrid == null )  return false;
 		
-		double minViewHeight = U_CameraViewport.calcViewWindowHeight(m_currentGrid, m_cellHudHeight);
+		double minViewHeight = U_CameraViewport.calcCellHeightRequirement(m_currentGrid, m_cellHudHeight);
 		double windowHeight = this.getWindowHeight();
 		
 		return windowHeight < minViewHeight;
@@ -472,6 +461,10 @@ public class ScrollNavigator implements I_StateEventListener
 			
 			newWindowWidth = 0;
 			
+			U_CameraViewport.calcConstrainedCameraPoint(grid, targetCoord, point_out, newWindowWidth, newWindowHeight, m_cellHudHeight, point_out);
+		}
+		else
+		{
 			U_CameraViewport.calcConstrainedCameraPoint(grid, targetCoord, point_out, newWindowWidth, newWindowHeight, m_cellHudHeight, point_out);
 		}
 	}
@@ -547,24 +540,45 @@ public class ScrollNavigator implements I_StateEventListener
 			
 			case DID_PERFORM_ACTION:
 			{
+				if (event.getAction() == Event_Camera_OnCellSizeFound.class )
+				{
+					Event_Camera_OnCellSizeFound.Args args = event.getActionArgs();
+					
+					this.updateLayout(args.getMapping().getCoordinate());
+				}
 				
 				break;
 			}
 		}
 	}
 	
-	private static native double getScrollBarWidth()
-	/*-{
-			var scrollDiv = $doc.createElement("div");
-			scrollDiv.className = "sm_scrollbar_query";
-			$doc.body.appendChild(scrollDiv);
-			
-			// Get the scrollbar width
-			var scrollBarWidth = scrollDiv.offsetWidth - scrollDiv.clientWidth;
-			
-			// Delete the DIV 
-			$doc.body.removeChild(scrollDiv);
-			
-			return scrollBarWidth;
-	}-*/;
+	private void updateLayout(GridCoordinate gridCoord)
+	{
+		CellBufferManager cellManager = m_viewContext.appContext.cellBufferMngr;
+		CellBuffer cellBuffer = cellManager.getDisplayBuffer();
+		if( cellBuffer.isInBoundsAbsolute(gridCoord) )
+		{
+			BufferCell bufferCell = cellBuffer.getCellAtAbsoluteCoord(gridCoord);
+			VisualCell visualCell = (VisualCell) bufferCell.getVisualization();
+			this.updateLayout(visualCell);		
+		}
+	}
+	
+	public void updateLayout(VisualCell visualCell)
+	{
+		BufferCell bufferCell = visualCell.getBufferCell();
+		
+		if( !bufferCell.getFocusedCellSize().isValid() )  return;
+		
+		A_Grid grid = bufferCell.getGrid();
+		this.getScrollableWindow(m_utilRect1);
+		double widthReq = U_CameraViewport.calcCellWidthRequirement(grid);
+		double heightReq = U_CameraViewport.calcCellHeightRequirement(grid, m_cellHudHeight);
+		double roomToTheLeft = (m_utilRect1.getWidth() - widthReq)/2;
+		roomToTheLeft = Math.max(roomToTheLeft, 0);
+		double roomToTheTop = (m_utilRect1.getHeight() - heightReq)/2;
+		roomToTheTop = Math.max(roomToTheTop, 0);
+		
+		visualCell.setTargetLayout(bufferCell.getFocusedCellSize().getWidth(), bufferCell.getFocusedCellSize().getHeight(), (int)roomToTheLeft, (int)roomToTheTop);
+	}
 }

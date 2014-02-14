@@ -15,8 +15,8 @@ public class U_CameraViewport
 	public static boolean isPointInViewport(A_Grid grid, GridCoordinate coord, Point point, double cellHudHeight, double extraPadding)
 	{
 		U_CameraViewport.calcViewWindowCenter(grid, coord, cellHudHeight, s_utilPoint1);
-		double spaceX = calcViewWindowWidth(grid)/2 + extraPadding;
-		double spaceY = calcViewWindowHeight(grid, cellHudHeight)/2 + extraPadding;
+		double spaceX = calcCellWidthRequirement(grid)/2 + extraPadding;
+		double spaceY = calcCellHeightRequirement(grid, cellHudHeight)/2 + extraPadding;
 
 		return
 			U_Math.isWithin(point.getX(), s_utilPoint1.getX()-spaceX, s_utilPoint1.getX() + spaceX) &&
@@ -28,25 +28,12 @@ public class U_CameraViewport
 		return grid.getCellPadding();
 	}
 	
-	public static double calcViewWindowWidth(A_Grid grid)
+	public static double calcCellWidthRequirement(A_Grid grid)
 	{
 		return grid.getCellWidth() + getViewPadding(grid)*2;
 	}
 	
-	public static double calcXOffset(int cellWidth, int defaultCellWidth)
-	{
-		return -((cellWidth - defaultCellWidth)/2);
-	}
-	
-	public static double calcXOffset(BufferCell cell)
-	{
-		A_Grid grid = cell.getGrid();
-		VisualCell visualCell = (VisualCell) cell.getVisualization();
-		
-		return calcXOffset(visualCell.getWidth(), grid.getCellWidth());
-	}
-	
-	public static double calcViewWindowHeight(A_Grid grid, double cellHudHeight)
+	public static double calcCellHeightRequirement(A_Grid grid, double cellHudHeight)
 	{
 		if( cellHudHeight > 0 )
 		{
@@ -73,16 +60,16 @@ public class U_CameraViewport
 	public static void calcViewWindowTopLeft(A_Grid grid, GridCoordinate coord, double cellHudHeight, Point point_out)
 	{
 		calcViewWindowCenter(grid, coord, cellHudHeight, point_out);
-		point_out.incX(-calcViewWindowWidth(grid));
-		point_out.incY(-calcViewWindowHeight(grid, cellHudHeight));
+		point_out.incX(-calcCellWidthRequirement(grid));
+		point_out.incY(-calcCellHeightRequirement(grid, cellHudHeight));
 	}
 	
 	public static void calcConstrainedCameraPoint(A_Grid grid, GridCoordinate coord, Point cameraPoint, double viewWidth, double viewHeight, double cellHudHeight, Point point_out)
 	{
 		s_utilPoint1.copy(cameraPoint); // in case cameraPoint and point_out are the same reference.
 		
-		double minViewWidth = calcViewWindowWidth(grid);
-		double minViewHeight = calcViewWindowHeight(grid, cellHudHeight);
+		double minViewWidth = calcCellWidthRequirement(grid);
+		double minViewHeight = calcCellHeightRequirement(grid, cellHudHeight);
 		
 		calcViewWindowCenter(grid, coord, cellHudHeight, point_out);
 

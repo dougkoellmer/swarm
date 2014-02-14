@@ -37,6 +37,21 @@ public class U_Css
 	{
 
 	}
+	
+	public static native double getScrollBarWidth()
+	/*-{
+			var scrollDiv = $doc.createElement("div");
+			scrollDiv.className = "sm_scrollbar_query";
+			$doc.body.appendChild(scrollDiv);
+			
+			// Get the scrollbar width
+			var scrollBarWidth = scrollDiv.offsetWidth - scrollDiv.clientWidth;
+			
+			// Delete the DIV 
+			$doc.body.removeChild(scrollDiv);
+			
+			return scrollBarWidth;
+	}-*/;
 
 	public static void setSize(com.google.gwt.dom.client.Element element, double width, double height)
 	{

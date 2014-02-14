@@ -258,7 +258,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 	{
 		Camera camera = m_viewContext.appContext.cameraMngr.getCamera();
 		s_utilPoint1.copy(screenPoint);
-		double xOffset = U_CameraViewport.calcXOffset((int) Math.ceil(m_width), grid.getCellWidth());
+		double xOffset = 0;//U_CameraViewport.calcXOffset((int) Math.ceil(m_width), grid.getCellWidth());
 		
 		if( m_viewContext.stateContext.isEntered(State_ViewingCell.class) )
 		{
