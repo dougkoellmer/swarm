@@ -68,8 +68,6 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 	private static final Point s_utilPoint2 = new Point();
 	private static final Vector s_utilVector = new Vector();
 	
-	
-	
 	private final ViewContext m_viewContext;
 	
 	private final ClientAppConfig m_appConfig;
@@ -280,8 +278,6 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 				{
 					this.updateSize(((State_ViewingCell) event.getState()).getCell());
 					this.updatePositionFromState((State_ViewingCell) event.getState());
-					m_innerContainer.updateCloseButton();
-					m_innerContainer.updateHistoryButtons();
 					
 					this.setAlpha(1);
 					m_baseAlpha = m_alpha;
@@ -301,20 +297,6 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 						this.setVisible(true);
 						m_baseAlpha = m_alpha;
 					}
-					
-					m_innerContainer.updateCloseButton();
-					m_innerContainer.updateHistoryButtons();
-				}
-				
-				break;
-			}
-			
-			case DID_FOREGROUND:
-			{
-				if( event.getState() instanceof State_ViewingCell )
-				{
-					m_innerContainer.updateHistoryButtons();
-					m_innerContainer.updateRefreshButton();
 				}
 				
 				break;

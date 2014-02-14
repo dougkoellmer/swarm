@@ -145,7 +145,7 @@ public class VisualCellHudInner extends HorizontalPanel implements I_StateEventL
 		toolTipper.addTip(m_close, new ToolTipConfig(E_ToolTipType.MOUSE_OVER, "Back off."));
 	}
 	
-	void updateCloseButton()
+	private void updateCloseButton()
 	{
 		State_ViewingCell viewingState = m_viewContext.stateContext.getEnteredState(State_ViewingCell.class);
 		State_CameraSnapping snappingState = m_viewContext.stateContext.getEnteredState(State_CameraSnapping.class);
@@ -160,7 +160,7 @@ public class VisualCellHudInner extends HorizontalPanel implements I_StateEventL
 		}
 	}
 	
-	void updateRefreshButton()
+	private void updateRefreshButton()
 	{
 		boolean canRefresh = m_viewContext.stateContext.isActionPerformable(Action_ViewingCell_Refresh.class);
 		m_refresh.setEnabled(canRefresh);
@@ -175,7 +175,7 @@ public class VisualCellHudInner extends HorizontalPanel implements I_StateEventL
 		}
 	}
 	
-	void updateHistoryButtons()
+	private void updateHistoryButtons()
 	{
 		State_ViewingCell viewingState = m_viewContext.stateContext.getEnteredState(State_ViewingCell.class);
 		State_CameraSnapping snappingState = m_viewContext.stateContext.getEnteredState(State_CameraSnapping.class);
@@ -197,6 +197,28 @@ public class VisualCellHudInner extends HorizontalPanel implements I_StateEventL
 	{
 		switch( event.getType() )
 		{
+			case DID_ENTER:
+			{
+				if( event.getState() instanceof State_ViewingCell || event.getState() instanceof State_CameraSnapping )
+				{
+					this.updateCloseButton();
+					this.updateHistoryButtons();
+				}
+				
+				break;
+			}
+			
+			case DID_FOREGROUND:
+			{
+				if( event.getState() instanceof State_ViewingCell )
+				{
+					this.updateHistoryButtons();
+					this.updateRefreshButton();
+				}
+				
+				break;
+			}
+			
 			case DID_UPDATE:
 			{
 				if( event.getState().getParent() instanceof StateMachine_Camera )
