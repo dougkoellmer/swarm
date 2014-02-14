@@ -17,10 +17,12 @@ import swarm.shared.app.S_CommonApp;
 import swarm.shared.utils.U_Bits;
 import swarm.shared.utils.U_Math;
 import swarm.shared.debugging.U_Debug;
+import swarm.shared.entities.A_Grid;
 import swarm.shared.entities.E_CodeSafetyLevel;
 import swarm.shared.entities.E_CodeType;
 import swarm.shared.structs.Code;
 import swarm.shared.structs.MutableCode;
+import swarm.shared.structs.Point;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style.Display;
@@ -34,7 +36,7 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 {
-	static enum SizeChangeState
+	static enum LayoutState
 	{
 		NOT_CHANGING,
 		CHANGING_FROM_TIME,
@@ -86,6 +88,13 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	private int m_targetWidth = 0;
 	private int m_targetHeight = 0;
 	
+	private int m_targetXOffset = 0;
+	private int m_targetYOffset = 0;
+	private int m_xOffset = 0;
+	private int m_yOffset = 0;
+	private int m_baseXOffset = 0;
+	private int m_baseYOffset = 0;
+	
 	private double m_baseChangeValue = 0;
 	
 	private boolean m_isValidated = false;
@@ -99,7 +108,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	
 	private boolean m_isSnapping = false;
 	private boolean m_isFocused = false;
-	private SizeChangeState m_sizeChangeState = SizeChangeState.NOT_CHANGING;
+	private LayoutState m_layoutState = LayoutState.NOT_CHANGING;
 	private final double m_sizeChangeTime;
 	
 	public VisualCell(I_CellSpinner spinner, SandboxManager sandboxMngr, CameraManager cameraMngr, double sizeChangeTime)
@@ -152,9 +161,9 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		return m_bufferCell;
 	}
 	
-	SizeChangeState getSizeChangeState()
+	LayoutState getSizeChangeState()
 	{
-		return m_sizeChangeState;
+		return m_layoutState;
 	}
 	
 	int getId()
@@ -179,27 +188,25 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 			m_spinner.update(timeStep);
 		}
 
-		if( this.m_sizeChangeState == SizeChangeState.CHANGING_FROM_SNAP )
+		if( this.m_layoutState == LayoutState.CHANGING_FROM_SNAP )
 		{
 			double snapProgress = m_cameraMngr.getWeightedSnapProgress();
 			double mantissa = m_baseChangeValue == 1 ? 1 : (snapProgress - m_baseChangeValue) / (1-m_baseChangeValue);
 			mantissa = U_Math.clampMantissa(mantissa);
 				
-			this.updateSize(mantissa);
-			this.flushSize();
+			this.updateLayout(mantissa);
 		}
-		else if( this.m_sizeChangeState == SizeChangeState.CHANGING_FROM_TIME )
+		else if( this.m_layoutState == LayoutState.CHANGING_FROM_TIME )
 		{
 			m_baseChangeValue += timeStep;
 			double mantissa = m_baseChangeValue / m_sizeChangeTime;
 			mantissa = U_Math.clampMantissa(mantissa);
 			
-			this.updateSize(mantissa);
-			this.flushSize();
+			this.updateLayout(mantissa);
 		}
 	}
 	
-	private void updateSize(double progressMantissa)
+	private void updateLayout(double progressMantissa)
 	{
 		double widthDelta = (m_targetWidth - m_baseWidth) * progressMantissa;
 		m_width = (int) (m_baseWidth + widthDelta);		
@@ -207,9 +214,21 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		double heightDelta = (m_targetHeight - m_baseHeight) * progressMantissa;
 		m_height = (int) (m_baseHeight + heightDelta);
 		
+		double xOffsetDelta = (m_targetXOffset - m_baseXOffset) * progressMantissa;
+		m_xOffset = (int) (m_baseXOffset + xOffsetDelta);
+		
+		double yOffsetDelta = (m_targetYOffset - m_baseYOffset) * progressMantissa;
+		m_yOffset = (int) (m_baseYOffset + yOffsetDelta);
+		
+		//s_logger.severe(m_xOffset + " " + m_targetXOffset + " " + m_baseXOffset);
+		
 		if( progressMantissa >= 1 )
 		{
-			m_sizeChangeState = SizeChangeState.NOT_CHANGING;
+			this.ensureTargetLayout();
+		}
+		else
+		{
+			this.flushLayout();
 		}
 	}
 	
@@ -224,7 +243,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		
 		if( m_subCellDimension == 1 )
 		{
-			this.flushSize();
+			this.flushLayout();
 			this.getElement().getStyle().setPaddingRight(m_padding, Unit.PX);
 			this.getElement().getStyle().setPaddingBottom(m_padding, Unit.PX);
 			//m_backgroundPanel.setSize(m_width+m_padding + "px", m_height+m_padding + "px");
@@ -262,7 +281,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		m_isValidated = true;
 	}
 	
-	private void flushSize()
+	private void flushLayout()
 	{
 		this.setSize(m_width+m_padding + "px", m_height+m_padding + "px");
 	}
@@ -281,7 +300,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	
 	private void onCreatedOrRecycled(int width, int height, int padding, int subCellDimension)
 	{		
-		m_sizeChangeState = SizeChangeState.NOT_CHANGING;
+		m_layoutState = LayoutState.NOT_CHANGING;
 		m_isFocused = false;
 		m_isValidated = false;
 		m_subCellDimension = subCellDimension;
@@ -290,35 +309,44 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		m_padding = padding;
 	}
 	
-	public void setTargetSize(int width, int height)
+	public void setTargetLayout(int width, int height, int maxRoomToTheLeft, int maxRoomToTheTop)
 	{
+		m_baseXOffset = m_xOffset;
+		m_baseYOffset = m_yOffset;
 		m_baseWidth = this.m_width;
 		m_baseHeight = this.m_height;
 
 		m_targetWidth = width;
 		m_targetHeight = height;
 		
+		int sideWidth = (m_targetWidth - m_defaultWidth)/2;
+		m_targetXOffset = -Math.min(sideWidth, maxRoomToTheLeft);
+		int topHeight = (m_targetHeight - m_defaultHeight)/2;
+		m_targetYOffset = -Math.min(topHeight, maxRoomToTheTop);
+		
 		if( this.m_isSnapping )
 		{
 			m_baseChangeValue = m_cameraMngr.getWeightedSnapProgress();
-			m_sizeChangeState = SizeChangeState.CHANGING_FROM_SNAP;
+			m_layoutState = LayoutState.CHANGING_FROM_SNAP;
 		}
 		else if( this.m_isFocused )
 		{
-			this.ensureExpandedSize();
+			this.ensureTargetLayout();
 		}
 	}
 	
-	private void ensureExpandedSize()
+	private void ensureTargetLayout()
 	{
 		//--- If we get the focused cell size while viewing cell,
 		//--- we don't make user wait, and just instantly expand it.
 		//--- Maybe a little jarring, but should be fringe case.
 		m_baseWidth = m_width = m_targetWidth;
 		m_baseHeight = m_height = m_targetHeight;
-		m_sizeChangeState = SizeChangeState.NOT_CHANGING;
+		m_baseXOffset = m_xOffset = m_targetXOffset;
+		m_baseYOffset = m_yOffset = m_targetYOffset;
+		m_layoutState = LayoutState.NOT_CHANGING;
 		
-		this.flushSize();
+		this.flushLayout();
 	}
 	
 	public void onDestroy()
@@ -349,7 +377,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		m_isFocused = true;
 		
 		E_ZIndex.CELL_FOCUSED.assignTo(this);
-		this.ensureExpandedSize();
+		this.ensureTargetLayout();
 		
 		this.m_glassPanel.setVisible(false);
 		this.addStyleName("visual_cell_focused");
@@ -378,11 +406,45 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		this.setToTargetSizeDefault();
 	}
 	
+	public int getXOffset()
+	{
+		return m_xOffset;
+	}
+	
+	public int getYOffset()
+	{
+		return m_yOffset;
+	}
+	
+	public void getTopLeft(Point point_out)
+	{
+		A_Grid grid = m_bufferCell.getGrid();
+		m_bufferCell.getCoordinate().calcPoint(point_out, grid.getCellWidth(), grid.getCellHeight(), grid.getCellPadding(), 1);
+		point_out.inc(m_xOffset, m_yOffset, 0);
+	}
+	
+	public void getTargetTopLeft(Point point_out)
+	{
+		A_Grid grid = m_bufferCell.getGrid();
+		m_bufferCell.getCoordinate().calcPoint(point_out, grid.getCellWidth(), grid.getCellHeight(), grid.getCellPadding(), 1);
+		point_out.inc(m_targetXOffset, m_targetYOffset, 0);
+	}
+	
+	public int getTargetWidth()
+	{
+		return m_targetWidth;
+	}
+	
+	public int getTargetHeight()
+	{
+		return m_targetHeight;
+	}
+	
 	private void setToTargetSizeDefault()
 	{
-		m_sizeChangeState = SizeChangeState.CHANGING_FROM_TIME;
+		m_layoutState = LayoutState.CHANGING_FROM_TIME;
 		m_baseChangeValue = 0;
-		this.setTargetSize(m_defaultWidth, m_defaultHeight);
+		this.setTargetLayout(m_defaultWidth, m_defaultHeight, 0, 0);
 	}
 	
 	public void popUp()
@@ -406,7 +468,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		boolean wasSnapping = m_isSnapping;
 		m_isSnapping = false;
 		
-		if( m_sizeChangeState == SizeChangeState.CHANGING_FROM_SNAP )
+		if( m_layoutState == LayoutState.CHANGING_FROM_SNAP )
 		{
 			this.setToTargetSizeDefault();
 			

@@ -53,12 +53,14 @@ public class VisualCellFocuser extends FlowPanel implements I_UIElement
 	
 	private final AppContext m_appContext;
 	private final StateContext m_stateContext;
+	private final ViewContext m_viewContext;
 	
 	private final double m_fadeOutTime_seconds;
 	private final double m_maxAlpha;
 	
 	public VisualCellFocuser(ViewContext viewContext)
 	{
+		m_viewContext = viewContext;
 		m_appContext = viewContext.appContext;
 		m_stateContext = viewContext.stateContext;
 		m_fadeOutTime_seconds = viewContext.config.focuserFadeOutTime_seconds;
@@ -118,14 +120,10 @@ public class VisualCellFocuser extends FlowPanel implements I_UIElement
 		return false;
 	}
 	
-	private static void popUp(VisualCell visualCell)
+	private void popUp(VisualCell visualCell)
 	{
-		BufferCell bufferCell = visualCell.getBufferCell();
 		visualCell.popUp();
-		if( bufferCell.getFocusedCellSize().isValid() )
-		{
-			visualCell.setTargetSize(bufferCell.getFocusedCellSize().getWidth(), bufferCell.getFocusedCellSize().getHeight());
-		}
+		m_viewContext.scrollNavigator.updateLayout(visualCell);
 	}
 	
 	private void setAnimationState(AnimationState state)

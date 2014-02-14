@@ -18,6 +18,7 @@ import swarm.client.states.camera.Action_Camera_SnapToPoint;
 import swarm.client.states.camera.Action_ViewingCell_Refresh;
 import swarm.client.states.camera.Event_Camera_OnCellSizeFound;
 import swarm.client.states.camera.StateMachine_Camera;
+import swarm.client.states.camera.State_CameraSnapping;
 import swarm.client.states.camera.State_ViewingCell;
 import swarm.client.structs.CellPool;
 import swarm.client.structs.I_CellPoolDelegate;
@@ -181,11 +182,6 @@ public class VisualCellManager implements I_UIElement
 		//--	NOTE: Well, not ALL manipulation is in here, there are a few odds and ends done outside this...but most should be here.
 		m_container.getElement().getStyle().setDisplay(Display.NONE);
 		{
-			//--- DRK > Serious malfunction here if hit.
-			//--- NOTE: Now cell buffer can have null cells (i.e. if they aren't owned).
-			//---		So this assert is now invalid...keeping for historical reference.
-			//smU_Debug.ASSERT(cellBuffer.getCellCount() == m_pool.getAllocCount(), "smVisualCellManager::update1");
-			
 			for ( int i = 0; i < bufferSize; i++ )
 			{
 				BufferCell ithBufferCell = cellBuffer.getCellAtIndex(i);
@@ -202,7 +198,8 @@ public class VisualCellManager implements I_UIElement
 				ithVisualCell.update(timeStep);
 				ithVisualCell.validate();
 				
-				offsetX += U_CameraViewport.calcXOffset(ithBufferCell)*scaling;	
+				offsetX += ((double)ithVisualCell.getXOffset())*scaling;
+				offsetY += ((double)ithVisualCell.getYOffset())*scaling;
 				
 				double translateX = basePoint.getX() + offsetX + scrollX;
 				double translateY = basePoint.getY() + offsetY + scrollY;
@@ -267,9 +264,9 @@ public class VisualCellManager implements I_UIElement
 						m_cellPool.cleanPool();
 						
 						//--- DRK > This first condition ensures that we're still updating cell positions as they're potentially shrinking
-						//---		after exiting viewing state. There's probably a more efficient way to determine if they're actually shrinking.
+						//---		after exiting viewing or snapping state. There's probably a more efficient way to determine if they're actually shrinking.
 						//---		This is just a catch-all.
-						if( event.getState().getPreviousState() == State_ViewingCell.class &&
+						if( (event.getState().getPreviousState() == State_ViewingCell.class || event.getState().getPreviousState() == State_CameraSnapping.class) &&
 							event.getState().getTimeInState(E_StateTimeType.TOTAL) <= m_viewContext.config.cellSizeChangeTime_seconds )
 						{
 							this.updateCellTransforms(event.getState().getLastTimeStep());
@@ -335,20 +332,6 @@ public class VisualCellManager implements I_UIElement
 					//--- 		Probably safe here, but refresh might instantly update the cell's code, before
 					//---		we get a chance to remove the alerts...might be order-dependent strangeness there.
 					//clearAlerts();
-				}
-				else if (event.getAction() == Event_Camera_OnCellSizeFound.class )
-				{
-					Event_Camera_OnCellSizeFound.Args args = event.getActionArgs();
-					
-					CellBufferManager cellManager = m_viewContext.appContext.cellBufferMngr;
-					CellBuffer cellBuffer = cellManager.getDisplayBuffer();
-					if( cellBuffer.isInBoundsAbsolute(args.getMapping().getCoordinate()) )
-					{
-						BufferCell bufferCell = cellBuffer.getCellAtAbsoluteCoord(args.getMapping().getCoordinate());
-						VisualCell visualCell = (VisualCell) bufferCell.getVisualization();
-						visualCell.setTargetSize(args.getCellSize().getWidth(), args.getCellSize().getHeight());
-						
-					}
 				}
 				
 				break;
