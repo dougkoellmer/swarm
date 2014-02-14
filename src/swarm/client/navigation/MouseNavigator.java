@@ -399,11 +399,10 @@ public class MouseNavigator implements I_UIElement, Mouse.I_Listener
 		//mousePointToWorld(m_utilPoint1);
 		grid.calcCoordTopLeftPoint(m_mouseGridCoord, 1, m_utilPoint1);
 		
-		/*double cellHudHeight = m_viewContext.appConfig.cellHudHeight;
+		double cellHudHeight = m_viewContext.appConfig.cellHudHeight;
 		double viewWidth = m_cameraMngr.getCamera().getViewWidth();
 		double viewHeight = m_cameraMngr.getCamera().getViewHeight();
-		
-		//U_CameraViewport.calcConstrainedCameraPoint(grid, m_mouseGridCoord, m_utilPoint1, viewWidth, viewHeight, cellHudHeight, m_utilPoint2);*/
+		U_CameraViewport.calcConstrainedCameraPoint(grid, m_mouseGridCoord, m_utilPoint1, viewWidth, viewHeight, cellHudHeight, m_utilPoint2);
 		
 		m_args_SnapToCoord.init(m_mouseGridCoord, m_utilPoint2);
 		m_cameraMachine.performAction(Action_Camera_SnapToCoordinate.class, m_args_SnapToCoord);

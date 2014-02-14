@@ -127,9 +127,8 @@ public class ScrollNavigator implements I_StateEventListener
 		else if( viewingState != null )
 		{
 			this.updateCameraViewRect(false, false);
-			this.updateLayout((VisualCell)viewingState.getCell().getVisualization());
 			updateCameraFromScrollBars();
-			
+			this.updateLayout((VisualCell)viewingState.getCell().getVisualization());
 		}
 		else
 		{
@@ -462,10 +461,6 @@ public class ScrollNavigator implements I_StateEventListener
 			
 			newWindowWidth = 0;
 			
-			U_CameraViewport.calcConstrainedCameraPoint(grid, targetCoord, point_out, newWindowWidth, newWindowHeight, m_cellHudHeight, point_out);
-		}
-		else
-		{
 			U_CameraViewport.calcConstrainedCameraPoint(grid, targetCoord, point_out, newWindowWidth, newWindowHeight, m_cellHudHeight, point_out);
 		}
 	}
