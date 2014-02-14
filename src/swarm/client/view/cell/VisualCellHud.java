@@ -68,35 +68,16 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 	private static final Point s_utilPoint2 = new Point();
 	private static final Vector s_utilVector = new Vector();
 	
-	private class smHudButton extends SpriteButton
-	{
-		private smHudButton(String spriteId)
-		{
-			super(spriteId);
-			
-			this.addStyleName("sm_hud_button");
-		}
-	}
 	
-	private final HorizontalPanel m_innerContainer = new HorizontalPanel();
-	private final HorizontalPanel m_leftDock = new HorizontalPanel();
-	private final HorizontalPanel m_rightDock = new HorizontalPanel();
-	
-	private final smHudButton m_back		= new smHudButton("back");
-	private final smHudButton m_forward		= new smHudButton("forward");
-	private final smHudButton m_refresh		= new smHudButton("refresh");
-	private final smHudButton m_close		= new smHudButton("close");
-
-	private boolean m_waitingForBeingRefreshableAgain = false;
 	
 	private final ViewContext m_viewContext;
 	
 	private final ClientAppConfig m_appConfig;
 	
-	private final Action_Camera_SnapToPoint.Args m_args_SetCameraTarget = new Action_Camera_SnapToPoint.Args();
-	
 	private final double m_minWidth = 169;// TODO: GHETTO
 	private double m_width = 0;
+	private double m_baseWidth = 0;
+	private double m_targetWidth = 0;
 	
 	private double m_baseAlpha;
 	private double m_alpha;
@@ -110,8 +91,12 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 	
 	private final GridCoordinate m_lastTargetCoord = new GridCoordinate();
 	
+	private final VisualCellHudInner m_innerContainer;
+	
 	public VisualCellHud(ViewContext viewContext, ClientAppConfig appConfig)
 	{
+		m_innerContainer = new VisualCellHudInner(viewContext);
+		
 		m_viewContext = viewContext;
 		
 		m_appConfig = appConfig;
@@ -124,134 +109,16 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 		E_ZIndex.CELL_HUD.assignTo(this);
 		
 		this.setVisible(false);
-		
-		m_innerContainer.setWidth("100%");
 		this.getElement().getStyle().setProperty("minWidth", m_minWidth + "px");
 		U_Css.setTransformOrigin(this.getElement(), "0% 0%");
 		
-		m_innerContainer.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-		m_leftDock.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-		m_rightDock.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-		
-		m_leftDock.add(m_back);
-		m_leftDock.add(m_forward);
-		m_leftDock.add(m_refresh);
-		
-		m_rightDock.add(m_close);
-		
-		m_innerContainer.add(m_leftDock);
-		m_innerContainer.add(m_rightDock);
-		
-		m_innerContainer.setCellHorizontalAlignment(m_rightDock, HasHorizontalAlignment.ALIGN_RIGHT);
-		
 		this.add(m_innerContainer);
-		
-		m_viewContext.browserNavigator.addStateChangeListener(new I_StateChangeListener()
-		{
-			@Override
-			public void onStateChange()
-			{
-				updateHistoryButtons();
-			}
-		});
-		
-		m_viewContext.clickMngr.addClickHandler(m_back, new I_ClickHandler()
-		{
-			@Override
-			public void onClick(int x, int y)
-			{
-				if( !m_back.isEnabled() )  return;
-				
-				m_viewContext.browserNavigator.go(-1);
-				
-				updateHistoryButtons();
-			}
-		});
-		
-		m_viewContext.clickMngr.addClickHandler(m_forward, new I_ClickHandler()
-		{
-			@Override
-			public void onClick(int x, int y)
-			{
-				if( !m_forward.isEnabled() )  return;
-				
-				m_viewContext.browserNavigator.go(1);
-				
-				updateHistoryButtons();
-			}
-		});
-		
-		m_viewContext.clickMngr.addClickHandler(m_refresh, new I_ClickHandler()
-		{
-			@Override
-			public void onClick(int x, int y)
-			{
-				if( !m_refresh.isEnabled() )  return;
-				
-				VisualCellHud.this.m_viewContext.cellMngr.clearAlerts();
-				
-				m_viewContext.stateContext.performAction(Action_ViewingCell_Refresh.class);
-			}
-		});
-		
-		m_viewContext.clickMngr.addClickHandler(m_close, new I_ClickHandler()
-		{
-			@Override
-			public void onClick(int x, int y)
-			{
-				if( !m_close.isEnabled() )  return;
-
-				s_utilPoint1.copy(VisualCellHud.this.m_viewContext.appContext.cameraMngr.getCamera().getPosition());
-				s_utilPoint1.incZ(m_appConfig.backOffDistance);
-				
-				m_args_SetCameraTarget.init(s_utilPoint1, false, true);
-				m_viewContext.stateContext.performAction(Action_Camera_SnapToPoint.class, m_args_SetCameraTarget);
-			}
-		});
-		
-		ToolTipManager toolTipper = m_viewContext.toolTipMngr;
-		
-		toolTipper.addTip(m_back, new ToolTipConfig(E_ToolTipType.MOUSE_OVER, "Go back."));
-		toolTipper.addTip(m_forward, new ToolTipConfig(E_ToolTipType.MOUSE_OVER, "Go forward."));
-		toolTipper.addTip(m_refresh, new ToolTipConfig(E_ToolTipType.MOUSE_OVER, "Refresh this cell."));
-		toolTipper.addTip(m_close, new ToolTipConfig(E_ToolTipType.MOUSE_OVER, "Back off."));
 	}
 	
 	private void setAlpha(double alpha)
 	{
 		m_alpha = alpha <= 0 ? 0 : alpha;
-		//s_logger.severe(m_alpha + "");
 		this.getElement().getStyle().setOpacity(m_alpha);
-	}
-	
-	private void updateCloseButton()
-	{
-		State_ViewingCell viewingState = m_viewContext.stateContext.getEnteredState(State_ViewingCell.class);
-		State_CameraSnapping snappingState = m_viewContext.stateContext.getEnteredState(State_CameraSnapping.class);
-		
-		if( viewingState != null || snappingState != null && snappingState.getPreviousState() == State_ViewingCell.class )
-		{
-			m_close.setEnabled(true);
-		}
-		else
-		{
-			m_close.setEnabled(false);
-		}
-	}
-	
-	private void updateRefreshButton()
-	{
-		boolean canRefresh = m_viewContext.stateContext.isActionPerformable(Action_ViewingCell_Refresh.class);
-		m_refresh.setEnabled(canRefresh);
-		
-		if( !canRefresh )
-		{
-			m_waitingForBeingRefreshableAgain = true;
-		}
-		else
-		{
-			m_waitingForBeingRefreshableAgain = false;
-		}
 	}
 	
 	private void updatePositionFromScreenPoint(A_Grid grid, Point screenPoint)
@@ -354,23 +221,6 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 		this.updatePosition(grid, coord);
 	}
 	
-	private void updateHistoryButtons()
-	{
-		State_ViewingCell viewingState = m_viewContext.stateContext.getEnteredState(State_ViewingCell.class);
-		State_CameraSnapping snappingState = m_viewContext.stateContext.getEnteredState(State_CameraSnapping.class);
-		
-		if( viewingState != null || snappingState != null && snappingState.getPreviousState() == State_ViewingCell.class )
-		{
-			m_back.setEnabled(m_viewContext.browserNavigator.hasBack());
-			m_forward.setEnabled(m_viewContext.browserNavigator.hasForward());
-		}
-		else
-		{
-			m_back.setEnabled(false);
-			m_forward.setEnabled(false);
-		}
-	}
-	
 	private double getViewWidth(Camera camera, A_Grid grid)
 	{
 		m_viewContext.scrollNavigator.getScrollableWindow(m_utilRect);
@@ -430,8 +280,8 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 				{
 					this.updateSize(((State_ViewingCell) event.getState()).getCell());
 					this.updatePositionFromState((State_ViewingCell) event.getState());
-					this.updateCloseButton();
-					this.updateHistoryButtons();
+					m_innerContainer.updateCloseButton();
+					m_innerContainer.updateHistoryButtons();
 					
 					this.setAlpha(1);
 					m_baseAlpha = m_alpha;
@@ -452,8 +302,8 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 						m_baseAlpha = m_alpha;
 					}
 					
-					this.updateCloseButton();
-					this.updateHistoryButtons();
+					m_innerContainer.updateCloseButton();
+					m_innerContainer.updateHistoryButtons();
 				}
 				
 				break;
@@ -463,8 +313,8 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 			{
 				if( event.getState() instanceof State_ViewingCell )
 				{
-					this.updateHistoryButtons();
-					this.updateRefreshButton();
+					m_innerContainer.updateHistoryButtons();
+					m_innerContainer.updateRefreshButton();
 				}
 				
 				break;
@@ -474,18 +324,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 			{
 				if( event.getState().getParent() instanceof StateMachine_Camera )
 				{
-					if( event.getState() instanceof State_ViewingCell )
-					{
-						State_ViewingCell viewingState = (State_ViewingCell) event.getState();
-						if( m_waitingForBeingRefreshableAgain )
-						{
-							if( viewingState.isForegrounded() )
-							{
-								updateRefreshButton();
-							}
-						}
-					}
-					else if( event.getState() instanceof State_CameraSnapping )
+					if( event.getState() instanceof State_CameraSnapping )
 					{
 						State_CameraSnapping cameraSnapping = event.getState();
 						if( cameraSnapping.isEntered() )
@@ -555,16 +394,6 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 				if( event.getState() instanceof State_ViewingCell || event.getState() instanceof State_CameraSnapping )
 				{
 					m_baseAlpha = m_alpha;
-					Camera camera = m_viewContext.appContext.cameraMngr.getCamera();
-					
-					if( event.getState() instanceof State_ViewingCell )
-					{
-						m_waitingForBeingRefreshableAgain = false;
-						
-						this.updateCloseButton();
-						this.updateHistoryButtons();
-						this.updateRefreshButton();
-					}
 				}
 				
 				break;
@@ -628,20 +457,11 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 						}
 					}
 				}
-				else if((	event.getAction() == Action_ViewingCell_Refresh.class		||
-							event.getAction() == Action_EditingCode_Save.class			||
-							event.getAction() == Action_EditingCode_Preview.class		||
-				
-							//--- DRK > These two cover the case of if we snap to a cell that we're already visiting.
-							//---		This effectively refreshes the cell in this case.
-							event.getAction() == Action_Camera_SnapToAddress.class		||
-							event.getAction() == Action_Camera_SnapToCoordinate.class	))
-				{
-					updateRefreshButton();
-				}
 				
 				break;
 			}
 		}
+		
+		m_innerContainer.onStateEvent(event);
 	}
 }
