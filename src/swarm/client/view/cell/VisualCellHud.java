@@ -20,6 +20,7 @@ import swarm.client.states.camera.Action_Camera_SetViewSize;
 import swarm.client.states.camera.Action_Camera_SnapToAddress;
 import swarm.client.states.camera.Action_Camera_SnapToCoordinate;
 import swarm.client.states.camera.Action_ViewingCell_Refresh;
+import swarm.client.states.camera.Event_Camera_OnCellSizeFound;
 import swarm.client.states.camera.StateMachine_Camera;
 import swarm.client.states.camera.State_CameraFloating;
 import swarm.client.states.camera.State_CameraSnapping;
@@ -43,6 +44,8 @@ import swarm.shared.statemachine.A_Action;
 import swarm.shared.statemachine.A_State;
 import swarm.shared.statemachine.E_StateTimeType;
 import swarm.shared.statemachine.StateEvent;
+import swarm.shared.structs.CellAddressMapping;
+import swarm.shared.structs.CellSize;
 import swarm.shared.structs.GridCoordinate;
 import swarm.shared.structs.Point;
 import swarm.shared.structs.Rect;
@@ -76,6 +79,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 	private double m_width = 0;
 	private double m_baseWidth = 0;
 	private double m_targetWidth = 0;
+	private double m_baseProgressValue = 0;
 	
 	private double m_baseAlpha;
 	private double m_alpha;
@@ -85,7 +89,9 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 	private final Point m_lastWorldPositionOnDoubleSnap = new Point();
 	private final Point m_lastWorldPosition = new Point();
 	
+	private final CellAddressMapping m_utilMapping = new CellAddressMapping();
 	private final Rect m_utilRect = new Rect();
+	private final CellSize m_utilCellSize = new CellSize();
 	
 	private final GridCoordinate m_lastTargetCoord = new GridCoordinate();
 	
@@ -228,40 +234,6 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 		return viewWidth;
 	}
 	
-	private void updateSize(int cellWidth, A_Grid grid)
-	{
-		Camera camera = m_viewContext.appContext.cameraMngr.getCamera();
-		double viewWidth = getViewWidth(camera, grid);
-		double hudWidth = Math.min(viewWidth, cellWidth);
-		m_width = hudWidth;
-		
-		this.getElement().getStyle().setWidth(m_width, Unit.PX);
-	}
-	
-	private void updateSize(BufferCell cell)
-	{
-		VisualCell visualCell = (VisualCell) cell.getVisualization();
-		int cellWidth = visualCell.getWidth();
-		
-		this.updateSize(cellWidth, cell.getGrid());
-	}
-	
-	private void updateSize(State_CameraSnapping state)
-	{
-		this.updateSize(state.getTargetCoordinate());
-	}
-	
-	private void updateSize(GridCoordinate coord)
-	{
-		CellBufferManager bufferMngr = m_viewContext.appContext.cellBufferMngr;
-		CellBuffer displayBuffer = bufferMngr.getDisplayBuffer();
-		if( displayBuffer.isInBoundsAbsolute(coord) )
-		{
-			BufferCell bufferCell = displayBuffer.getCellAtAbsoluteCoord(coord);
-			this.updateSize(bufferCell);
-		}
-	}
-	
 	private void onDoubleSnap()
 	{
 		m_lastWorldPositionOnDoubleSnap.copy(m_lastWorldPosition);
@@ -274,29 +246,28 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 		{
 			case DID_ENTER:
 			{
-				if( event.getState() instanceof State_ViewingCell )
+				if( event.getState() instanceof State_CameraSnapping )
 				{
-					this.updateSize(((State_ViewingCell) event.getState()).getCell());
+					if( event.getState().getPreviousState() != State_ViewingCell.class )
+					{						
+						this.setVisible(true);
+						m_baseAlpha = m_alpha;
+					}
+				}
+				else if( event.getState() instanceof State_ViewingCell )
+				{
+					this.ensureTargetWidth();
+					this.flushWidth();
+					
 					this.updatePositionFromState((State_ViewingCell) event.getState());
 					
 					this.setAlpha(1);
 					m_baseAlpha = m_alpha;
 				}
-				else if( event.getState() instanceof State_CameraSnapping )
-				{					
-					if( event.getState().getPreviousState() != State_ViewingCell.class )
-					{
-						A_Grid grid = m_viewContext.appContext.gridMngr.getGrid();
-						this.updateSize(grid.getCellWidth(), grid); // just in case 
-						
-						if( m_alpha <= 0 )
-						{
-							this.updatePositionFromState((State_CameraSnapping)event.getState());
-						}
-						
-						this.setVisible(true);
-						m_baseAlpha = m_alpha;
-					}
+				else if( event.getState() instanceof State_CameraFloating )
+				{
+					A_Grid grid = m_viewContext.appContext.gridMngr.getGrid();
+					this.setTargetWidth(grid.getCellWidth());
 				}
 				
 				break;
@@ -316,7 +287,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 								this.setAlpha(m_baseAlpha + (1-m_baseAlpha) * cameraSnapping.getOverallSnapProgress());
 							}
 							
-							this.updateSize(cameraSnapping);
+							this.updateWidth();
 					
 							if( cameraSnapping.getPreviousState() != State_ViewingCell.class)
 							{
@@ -349,13 +320,11 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 							{
 								if( m_alpha > 0 )
 								{
+									A_Grid grid = m_viewContext.appContext.gridMngr.getGrid();
 									double timeMantissa = event.getState().getTimeInState(E_StateTimeType.TOTAL) / m_fadeOutTime_seconds;
 									timeMantissa = U_Math.clamp(timeMantissa, 0, 1);
-									
 									this.setAlpha(m_baseAlpha * (1-timeMantissa));
-									A_Grid grid = m_viewContext.appContext.gridMngr.getGrid();
-									
-									this.updateSize(m_lastTargetCoord);
+									this.updateWidth();
 									this.updatePositionFromWorldPoint(grid, m_lastWorldPosition);
 									
 									if( m_alpha <= 0 )
@@ -373,10 +342,6 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 			
 			case DID_EXIT:
 			{
-				if( event.getState() instanceof State_ViewingCell || event.getState() instanceof State_CameraSnapping )
-				{
-					m_baseAlpha = m_alpha;
-				}
 				
 				break;
 			}
@@ -390,7 +355,9 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 					
 					if( viewingState != null )
 					{
-						this.updateSize(viewingState.getCell());
+						this.setTargetWidth(viewingState.getCell().getCoordinate());
+						this.ensureTargetWidth();
+						this.flushWidth();
 						
 						Action_Camera_SetViewSize.Args args = event.getActionArgs();
 						if( args.updateBuffer() )
@@ -400,7 +367,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 					}
 					else if( snappingState != null )
 					{
-						this.updateSize(snappingState);
+						this.setTargetWidth(snappingState.getTargetCoordinate());
 						
 						this.onDoubleSnap();
 					}
@@ -426,17 +393,28 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 					
 					if( m_alpha <= 0 )
 					{
+						//--- Ensure that cell hud is the default size of grid cells.
 						A_Grid grid = m_viewContext.appContext.gridMngr.getGrid();
-						this.updateSize(grid.getCellWidth(), grid);
+						this.setTargetWidth(grid.getCellWidth());
+						this.ensureTargetWidth();
+						this.flushWidth();
+						
 						this.updatePositionFromState(state);
 					}
+
+					this.setTargetWidth(args.getTargetCoordinate());
 					
-					//if( state != null && (state.getUpdateCount() > 0 )
+					this.onDoubleSnap();
+				}
+				else if( event.getAction() == Event_Camera_OnCellSizeFound.class )
+				{
+					Event_Camera_OnCellSizeFound.Args args = event.getActionArgs();
+					this.setTargetWidth(args.getCellSize().getWidth());
+					
+					if( event.getContext().isEntered(State_ViewingCell.class) )
 					{
-						//if( !m_lastSnapCoord.isEqualTo(state.getTargetCoordinate()) )
-						{//s_logger.severe("double");
-							this.onDoubleSnap();
-						}
+						this.ensureTargetWidth();
+						this.flushWidth();
 					}
 				}
 				
@@ -445,5 +423,77 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 		}
 		
 		m_innerContainer.onStateEvent(event);
+	}
+	
+	private void flushWidth()
+	{
+		this.getElement().getStyle().setWidth(m_width, Unit.PX);
+	}
+	
+	private void updateWidth()
+	{
+		if( m_width == m_targetWidth )  return;
+		
+		double mantissa = 0;
+		
+		State_CameraFloating floatingState = m_viewContext.stateContext.getEnteredState(State_CameraFloating.class);
+		if( floatingState != null )
+		{
+			m_baseProgressValue += floatingState.getLastTimeStep();
+			mantissa = m_baseProgressValue / m_viewContext.config.cellSizeChangeTime_seconds;
+		}
+		else
+		{
+			double snapProgress = m_viewContext.appContext.cameraMngr.getWeightedSnapProgress();
+			mantissa = m_baseProgressValue == 1 ? 1 : (snapProgress - m_baseProgressValue) / (1-m_baseProgressValue);
+			mantissa = U_Math.clampMantissa(mantissa);
+		}
+		
+		double widthDelta = (m_targetWidth - m_baseWidth) * mantissa;
+		m_width = (int) (m_baseWidth + widthDelta);
+		
+		if( mantissa >= 1 )
+		{
+			this.ensureTargetWidth();
+		}
+		
+		this.flushWidth();
+	}
+	
+	private void setTargetWidth(GridCoordinate coord)
+	{
+		m_utilMapping.getCoordinate().copy(coord);
+		if( m_viewContext.appContext.cellSizeMngr.getCellSizeFromLocalSource(m_utilMapping, m_utilCellSize) )
+		{
+			this.setTargetWidth(m_utilCellSize.getWidth());
+		}
+		else
+		{
+			A_Grid grid = m_viewContext.appContext.gridMngr.getGrid();
+			//this.setTargetWidth(grid.getCellWidth());
+		}
+	}
+	
+	private void setTargetWidth(double width)
+	{
+		if( m_viewContext.stateContext.isEntered(State_CameraFloating.class) )
+		{
+			m_baseProgressValue = 0;
+		}
+		else
+		{
+			m_baseProgressValue = m_viewContext.appContext.cameraMngr.getWeightedSnapProgress();
+		}
+		
+		A_Grid grid = m_viewContext.appContext.gridMngr.getGrid();
+		Camera camera = m_viewContext.appContext.cameraMngr.getCamera();
+		double viewWidth = getViewWidth(camera, grid);
+		m_targetWidth = Math.min(viewWidth, width);
+		m_baseWidth = m_width;
+	}
+	
+	private void ensureTargetWidth()
+	{
+		m_width = m_baseWidth = m_targetWidth;
 	}
 }

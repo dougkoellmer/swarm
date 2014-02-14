@@ -67,23 +67,26 @@ public class CellSizeManager implements I_TransactionResponseHandler
 		m_cache.put(mapping, cellSize_copied);
 	}
 	
-	public void populateCellSize(CellAddressMapping mapping, CellBufferManager targetBufferMngr, BufferCell cell)
+	public boolean getCellSizeFromLocalSource(CellAddressMapping mapping, CellSize cellSize_out)
 	{
-		if( cell.getFocusedCellSize().isValid() )  return;
-		if( cell.getFocusedCellSize().isPending() )  return;
-		
+		return getCellSizeFromLocalSource(mapping, null, cellSize_out);
+	}
+	
+	private boolean getCellSizeFromLocalSource(CellAddressMapping mapping, CellBufferManager targetBufferMngr_nullable, CellSize cellSize_out)
+	{
 		A_ClientUser user = m_appContext.userMngr.getUser();
 		UserCell userCell = user.getCell(mapping);
 		if( userCell != null && userCell.getFocusedCellSize().isValid() )
 		{
-			cell.getFocusedCellSize().copy(userCell.getFocusedCellSize());
-			return;
+			cellSize_out.copy(userCell.getFocusedCellSize());
+			
+			return true;
 		}
 		
 		CellBufferManager.Iterator iterator = m_appContext.getRegisteredBufferMngrs();
 		for( CellBufferManager manager = null; (manager = iterator.next()) != null; )
 		{
-			if( manager == targetBufferMngr )  continue;
+			if( manager == targetBufferMngr_nullable )  continue;
 			
 			CellBuffer buffer = manager.getDisplayBuffer();
 			
@@ -95,15 +98,28 @@ public class CellSizeManager implements I_TransactionResponseHandler
 					
 					if( cellFromOtherBuffer.getFocusedCellSize().isValid() )
 					{
-						cell.getFocusedCellSize().copy(cellFromOtherBuffer.getFocusedCellSize());
+						cellSize_out.copy(cellFromOtherBuffer.getFocusedCellSize());
+						
+						return true;
 					}
 				}
 			}
-			
-			return;
 		}
 		
-		if( m_cache.get(mapping, cell.getFocusedCellSize()) )
+		if( m_cache.get(mapping, cellSize_out) )
+		{
+			return true;
+		}
+		
+		return false;
+	}
+	
+	public void populateCellSize(CellAddressMapping mapping, CellBufferManager targetBufferMngr, BufferCell cell)
+	{
+		if( cell.getFocusedCellSize().isValid() )  return;
+		if( cell.getFocusedCellSize().isPending() )  return;
+		
+		if( getCellSizeFromLocalSource(mapping, targetBufferMngr, cell.getFocusedCellSize()) )
 		{
 			return;
 		}
