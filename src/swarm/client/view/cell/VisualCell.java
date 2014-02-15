@@ -309,7 +309,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		m_padding = padding;
 	}
 	
-	public void setTargetLayout(int width, int height, int maxRoomToTheLeft, int maxRoomToTheTop)
+	public void setTargetLayout(int width, int height, int xOffset, int yOffset)
 	{
 		m_baseXOffset = m_xOffset;
 		m_baseYOffset = m_yOffset;
@@ -319,10 +319,9 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		m_targetWidth = width;
 		m_targetHeight = height;
 		
-		int sideWidth = (m_targetWidth - m_defaultWidth)/2;
-		m_targetXOffset = -Math.min(sideWidth, maxRoomToTheLeft);
-		int topHeight = (m_targetHeight - m_defaultHeight)/2;
-		m_targetYOffset = -Math.min(topHeight, maxRoomToTheTop);
+		m_targetXOffset = xOffset;
+		m_targetYOffset = yOffset;
+		
 		
 		if( this.m_isSnapping )
 		{

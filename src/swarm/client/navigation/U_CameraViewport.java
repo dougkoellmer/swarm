@@ -28,21 +28,31 @@ public class U_CameraViewport
 		return grid.getCellPadding();
 	}
 	
+	public static double calcCellWidthRequirement(A_Grid grid, double cellWidth)
+	{
+		return cellWidth + getViewPadding(grid)*2;
+	}
+	
 	public static double calcCellWidthRequirement(A_Grid grid)
 	{
-		return grid.getCellWidth() + getViewPadding(grid)*2;
+		return calcCellWidthRequirement(grid, grid.getCellWidth());
+	}
+	
+	public static double calcCellHeightRequirement(A_Grid grid, double cellHeight, double cellHudHeight)
+	{
+		if( cellHudHeight > 0 )
+		{
+			return cellHeight + cellHudHeight + getViewPadding(grid)*3;
+		}
+		else
+		{
+			return cellHeight + cellHudHeight + getViewPadding(grid)*2;
+		}
 	}
 	
 	public static double calcCellHeightRequirement(A_Grid grid, double cellHudHeight)
 	{
-		if( cellHudHeight > 0 )
-		{
-			return grid.getCellHeight() + cellHudHeight + getViewPadding(grid)*3;
-		}
-		else
-		{
-			return grid.getCellHeight() + cellHudHeight + getViewPadding(grid)*2;
-		}
+		return calcCellHeightRequirement(grid, grid.getCellHeight(), cellHudHeight);
 	}
 	
 	public static void calcViewWindowCenter(A_Grid grid, GridCoordinate coord, double cellHudHeight, Point point_out)

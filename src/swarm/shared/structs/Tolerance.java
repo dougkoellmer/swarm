@@ -2,8 +2,8 @@ package swarm.shared.structs;
 
 public class Tolerance
 {
-	public static final Tolerance DEFAULT = new Tolerance();
 	public static final Tolerance EXACT = new Tolerance(0, 0, 0, 0);
+	public static final Tolerance DEFAULT = EXACT;
 	
 	private static final double DEFAULT_VALUE = .00000001;
 	

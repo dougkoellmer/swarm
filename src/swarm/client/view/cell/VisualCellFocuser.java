@@ -123,7 +123,7 @@ public class VisualCellFocuser extends FlowPanel implements I_UIElement
 	private void popUp(VisualCell visualCell)
 	{
 		visualCell.popUp();
-		m_viewContext.scrollNavigator.updateLayout(visualCell);
+		m_viewContext.scrollNavigator.setTargetLayout(visualCell);
 	}
 	
 	private void setAnimationState(AnimationState state)
