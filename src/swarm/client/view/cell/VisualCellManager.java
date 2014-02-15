@@ -126,7 +126,7 @@ public class VisualCellManager implements I_UIElement
 		});
 	}
 	
-	private boolean updateCellTransforms(double timeStep)
+	public boolean updateCellTransforms(double timeStep)
 	{
 		CellBufferManager cellManager = m_viewContext.appContext.cellBufferMngr;
 		CellBuffer cellBuffer = cellManager.getDisplayBuffer();

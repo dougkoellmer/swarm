@@ -322,7 +322,6 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		m_targetXOffset = xOffset;
 		m_targetYOffset = yOffset;
 		
-		
 		if( this.m_isSnapping )
 		{
 			m_baseChangeValue = m_cameraMngr.getWeightedSnapProgress();
@@ -389,6 +388,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	@Override
 	public void onFocusLost()
 	{
+		m_isSnapping = false; // just in case.
 		m_isFocused = false;
 		
 		this.m_glassPanel.setVisible(true);
@@ -457,9 +457,8 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		if( !m_isFocused )
 		{
 			E_ZIndex.CELL_POPPED.assignTo(this);
+			m_isSnapping = true;
 		}
-		
-		m_isSnapping = true;
 	}
 	
 	public void cancelPopUp()

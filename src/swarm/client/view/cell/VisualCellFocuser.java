@@ -176,6 +176,7 @@ public class VisualCellFocuser extends FlowPanel implements I_UIElement
 							
 							if( pushDown )
 							{
+								this.m_poppedCell.cancelPopUp();
 								this.m_poppedCell.pushDown();
 								this.m_poppedCell = null;
 								m_startAlpha = m_alpha;
@@ -254,10 +255,6 @@ public class VisualCellFocuser extends FlowPanel implements I_UIElement
 					if( m_poppedCell != null )
 					{
 						m_poppedCell.cancelPopUp();
-					}
-					else
-					{
-						U_Debug.ASSERT(false, "expected popped cell");
 					}
 				}
 				

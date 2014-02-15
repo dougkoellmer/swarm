@@ -54,7 +54,6 @@ public class ScrollNavigator implements I_StateEventListener
 	private final double m_cellHudHeight;
 	
 	private final Panel m_scrollContainer;
-	private final Widget m_scrollContainerParent;
 	private final Panel m_scrollContainerInner;
 	private final Panel m_mouseLayer;
 	
@@ -73,7 +72,6 @@ public class ScrollNavigator implements I_StateEventListener
 	{
 		m_viewContext = viewContext;
 		m_scrollContainer = scrollContainer;
-		m_scrollContainerParent = scrollContainer.getParent();
 		m_scrollContainerInner = scrollee;
 		m_mouseLayer = mouseLayer;
 		m_scrollBarWidthDiv2 = (int) Math.floor(((double)U_Css.getScrollBarWidth())/2);
@@ -86,12 +84,28 @@ public class ScrollNavigator implements I_StateEventListener
 			@Override
 			public void onScroll(ScrollEvent event)
 			{
-				updateCameraFromScrollBars();
+				State_ViewingCell viewingState =  m_viewContext.stateContext.getEnteredState(State_ViewingCell.class);
+				if( viewingState != null )
+				{
+					setTargetLayout((VisualCell)viewingState.getCell().getVisualization());
+					m_viewContext.cellMngr.updateCellTransforms(0.0);
+				}
+				else
+				{
+					//--- DRK > I guess when we leave viewing state and reset scroll left/top to zero,
+					//---		that fires a scroll event, so valid case here...ASSERT removed for now.
+					//smU_Debug.ASSERT(false, "Expected viewing state to be entered.");
+				}
 			}
 			
 		}, ScrollEvent.getType());
 		
 		this.toggleScrollBars(null);
+	}
+	
+	public Panel getScrollContainer()
+	{
+		return m_scrollContainer;
 	}
 	
 	public int getScrollX()
@@ -149,7 +163,7 @@ public class ScrollNavigator implements I_StateEventListener
 		m_viewContext.stateContext.performAction(Action_Camera_SetViewSize.class, m_args_SetCameraViewSize);
 	}
 	
-	private void updateCameraFromScrollBars()
+	/*private void updateCameraFromScrollBars()
 	{
 		State_ViewingCell viewingState = m_viewContext.stateContext.getEnteredState(State_ViewingCell.class);
 		
@@ -190,7 +204,7 @@ public class ScrollNavigator implements I_StateEventListener
 		
 		m_args_SnapToPoint.init(centerPoint, true, false);
 		m_viewContext.stateContext.performAction(Action_Camera_SnapToPoint.class, m_args_SnapToPoint);
-	}
+	}*/
 	
 	private void clearScrollbarX()
 	{
@@ -622,6 +636,8 @@ public class ScrollNavigator implements I_StateEventListener
 		if( !bufferCell.getFocusedCellSize().isValid() )  return;
 		
 		this.calcTargetLayout(bufferCell.getFocusedCellSize(), bufferCell.getCoordinate(), m_utilPoint1, m_utilRect1);
+		m_utilPoint1.incX(-this.getScrollX());
+		m_utilPoint1.incY(-this.getScrollY());
 		
 		visualCell.setTargetLayout((int)m_utilRect1.getWidth(), (int)m_utilRect1.getHeight(), (int)m_utilPoint1.getX(), (int)m_utilPoint1.getY());
 	}

@@ -56,6 +56,8 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.ScrollEvent;
+import com.google.gwt.event.dom.client.ScrollHandler;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
@@ -75,7 +77,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 	
 	private final ClientAppConfig m_appConfig;
 	
-	private final double m_minWidth = 169;// TODO: GHETTO
+	private final double m_minWidth = 173;// TODO: GHETTO
 	private double m_width = 0;
 	private double m_baseWidth = 0;
 	private double m_targetWidth = 0;
@@ -100,6 +102,9 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 	
 	private double m_height;
 	
+	private int m_scrollX;
+	private int m_scrollY;
+	
 	public VisualCellHud(ViewContext viewContext, ClientAppConfig appConfig)
 	{
 		m_innerContainer = new VisualCellHudInner(viewContext);
@@ -120,6 +125,31 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 		U_Css.setTransformOrigin(this.getElement(), "0% 0%");
 		
 		this.add(m_innerContainer);
+		
+		m_viewContext.scrollNavigator.getScrollContainer().addDomHandler(new ScrollHandler()
+		{
+			@Override
+			public void onScroll(ScrollEvent event)
+			{
+				State_ViewingCell viewingState =  m_viewContext.stateContext.getEnteredState(State_ViewingCell.class);
+				if( viewingState != null )
+				{
+					A_Grid grid = m_viewContext.appContext.gridMngr.getGrid();
+					s_utilPoint1.copy(m_position);
+					s_utilPoint1.incX(calcScrollXOffset(grid));
+					
+					m_scrollX = m_viewContext.scrollNavigator.getScrollX();
+					m_scrollY = m_viewContext.scrollNavigator.getScrollY();
+				}
+				else
+				{
+					//--- DRK > I guess when we leave viewing state and reset scroll left/top to zero,
+					//---		that fires a scroll event, so valid case here...ASSERT removed for now.
+					//smU_Debug.ASSERT(false, "Expected viewing state to be entered.");
+				}
+			}
+			
+		}, ScrollEvent.getType());
 	}
 	
 	private void setAlpha(double alpha)
@@ -147,28 +177,30 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 		return viewWidth;
 	}
 	
-	/*private double calcScrollOffset(A_Grid grid)
+	private double calcScrollXOffset(A_Grid grid)
 	{
+		State_ViewingCell viewingState = m_viewContext.stateContext.getEnteredState(State_ViewingCell.class);
+		
+		if( viewingState == null )  return 0.0;
+		
 		Camera camera = m_viewContext.appContext.cameraMngr.getCamera();
 		Element scrollElement = this.getParent().getElement();
 		double scrollX = scrollElement.getScrollLeft();
 		double toReturn = 0;
 		
-		double viewWidth = calcViewWidth(camera, grid);
+		double viewWidth = calcViewWidth(viewingState.getCell().getCoordinate(), camera, grid);
 		double hudWidth = Math.max(m_width, m_minWidth);
-		if( hudWidth > viewWidth && m_viewContext.stateContext.isEntered(State_ViewingCell.class) )
-		else
+		if( hudWidth > viewWidth )
 		{
 			double scrollWidth = scrollElement.getScrollWidth();
 			double clientWidth = scrollElement.getClientWidth();
 			double diff = (hudWidth - viewWidth) +  U_CameraViewport.getViewPadding(grid)/2.0;
 			double scrollRatio = scrollX / (scrollWidth-clientWidth);
 			toReturn -= diff * scrollRatio;
-			viewWidth = m_viewContext.scrollNavigator.getWindowWidth();
 		}
 		
 		return toReturn;
-	}*/
+	}
 
 	
 	@Override
