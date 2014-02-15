@@ -147,7 +147,7 @@ public class ScrollNavigator implements I_StateEventListener
 		}
 		else if( viewingState != null )
 		{
-			this.updateCameraViewRect(false, false);
+			this.updateCameraViewRect(true, false);
 			//updateCameraFromScrollBars();
 			this.setTargetLayout((VisualCell)viewingState.getCell().getVisualization());
 		}

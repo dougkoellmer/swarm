@@ -77,7 +77,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 	
 	private final ClientAppConfig m_appConfig;
 	
-	private final double m_minWidth = 173;// TODO: GHETTO
+	private final double m_minWidth = 176;// TODO: GHETTO
 	private double m_width = 0;
 	private double m_baseWidth = 0;
 	private double m_targetWidth = 0;
@@ -135,8 +135,14 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 				if( viewingState != null )
 				{
 					A_Grid grid = m_viewContext.appContext.gridMngr.getGrid();
-					s_utilPoint1.copy(m_position);
+					VisualCell visualCell = (VisualCell) viewingState.getCell().getVisualization();
+					visualCell.calcTopLeft(s_utilPoint1);
+					s_utilPoint1.incY(calcYOffsetFromCellTop(grid));
 					s_utilPoint1.incX(calcScrollXOffset(grid));
+					
+					setTargetPosition(s_utilPoint1);
+					ensureTargetPosition();
+					flushPosition();
 					
 					m_scrollX = m_viewContext.scrollNavigator.getScrollX();
 					m_scrollY = m_viewContext.scrollNavigator.getScrollY();
@@ -189,7 +195,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 		double toReturn = 0;
 		
 		double viewWidth = calcViewWidth(viewingState.getCell().getCoordinate(), camera, grid);
-		double hudWidth = Math.max(m_width, m_minWidth);
+		double hudWidth = m_width;
 		if( hudWidth > viewWidth )
 		{
 			double scrollWidth = scrollElement.getScrollWidth();
@@ -197,6 +203,10 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 			double diff = (hudWidth - viewWidth) +  U_CameraViewport.getViewPadding(grid)/2.0;
 			double scrollRatio = scrollX / (scrollWidth-clientWidth);
 			toReturn -= diff * scrollRatio;
+		}
+		else
+		{
+			toReturn = scrollX*2;
 		}
 		
 		return toReturn;
@@ -314,9 +324,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 						Action_Camera_SetViewSize.Args args = event.getActionArgs();
 						if( args.updateBuffer() )
 						{
-							this.setTargetPosition(viewingState.getCell().getCoordinate());
-							this.ensureTargetPosition();
-							this.flushPosition();
+							this.setPositionInstantly(viewingState.getCell().getCoordinate(), true);
 						}
 					}
 					else if( snappingState != null )
@@ -334,9 +342,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 						Action_Camera_SnapToPoint.Args args = event.getActionArgs();
 						if( args.isInstant() )
 						{
-							this.setTargetPosition(state.getCell().getCoordinate());
-							this.ensureTargetPosition();
-							this.flushPosition();
+							this.setPositionInstantly(state.getCell().getCoordinate(), true);
 						}
 					}
 				}
@@ -353,11 +359,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 						this.ensureTargetWidth();
 						this.flushWidth();
 
-						args.getTargetCoordinate().calcPoint(s_utilPoint2, grid.getCellWidth(), grid.getCellHeight(), grid.getCellPadding(), 1);
-						s_utilPoint2.incY(calcYOffsetFromCellTop(grid));
-						this.setTargetPosition(s_utilPoint2);
-						this.ensureTargetPosition();
-						this.flushPosition();
+						this.setPositionInstantly(args.getTargetCoordinate(), false);
 					}
 
 					this.setTargetWidth(args.getTargetCoordinate());
@@ -373,6 +375,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 					{
 						this.ensureTargetWidth();
 						this.flushWidth();
+						
 						this.ensureTargetPosition();
 						this.flushPosition();
 					}
@@ -400,6 +403,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 		else
 		{
 			double snapProgress = m_viewContext.appContext.cameraMngr.getWeightedSnapProgress();
+			s_logger.severe("hud: " + " " + m_baseWidthProgress + " " + snapProgress + " ");
 			mantissa = m_baseWidthProgress == 1 ? 1 : (snapProgress - m_baseWidthProgress) / (1-m_baseWidthProgress);
 		}
 		
@@ -447,8 +451,9 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 		
 		A_Grid grid = m_viewContext.appContext.gridMngr.getGrid();
 		Camera camera = m_viewContext.appContext.cameraMngr.getCamera();
-		double viewWidth = calcViewWidth(coord_nullable, camera, grid);
+		double viewWidth = calcViewWidth(coord_nullable, camera, grid);		
 		m_targetWidth = Math.min(viewWidth, hudWidth);
+		m_targetWidth = Math.max(m_targetWidth, m_minWidth);
 		m_baseWidth = m_width;
 	}
 	
@@ -462,20 +467,28 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 		return -(grid.getCellPadding() + this.m_height);
 	}
 	
-	private void setTargetPosition(GridCoordinate targetCoord)
+	private void calcPosition(GridCoordinate targetCoord, Point point_out, boolean forTargetLayout)
 	{
 		A_Grid grid = m_viewContext.appContext.gridMngr.getGrid();
-		targetCoord.calcPoint(s_utilPoint2, grid.getCellWidth(), grid.getCellHeight(), grid.getCellPadding(), 1);
-		s_utilPoint2.incY(this.calcYOffsetFromCellTop(grid));
+		targetCoord.calcPoint(point_out, grid.getCellWidth(), grid.getCellHeight(), grid.getCellPadding(), 1);
+		point_out.incY(this.calcYOffsetFromCellTop(grid));
 		
-		m_utilMapping.getCoordinate().copy(targetCoord);
-		if( m_viewContext.appContext.cellSizeMngr.getCellSizeFromLocalSource(m_utilMapping, m_utilCellSize) )
+		if( forTargetLayout )
 		{
-			m_viewContext.scrollNavigator.calcTargetLayout(m_utilCellSize, targetCoord, s_utilPoint1, m_utilRect);
-			s_utilPoint2.add(s_utilPoint1);
+			m_utilMapping.getCoordinate().copy(targetCoord);
+			if( m_viewContext.appContext.cellSizeMngr.getCellSizeFromLocalSource(m_utilMapping, m_utilCellSize) )
+			{
+				m_viewContext.scrollNavigator.calcTargetLayout(m_utilCellSize, targetCoord, s_utilPoint2, m_utilRect);
+				point_out.add(s_utilPoint2);
+			}
 		}
+	}
+	
+	private void setTargetPosition(GridCoordinate targetCoord)
+	{
+		calcPosition(targetCoord, s_utilPoint1, true);
 		
-		this.setTargetPosition(s_utilPoint2);
+		this.setTargetPosition(s_utilPoint1);
 	}
 	
 	private void setTargetPosition(Point worldPoint)
@@ -491,6 +504,20 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 		
 		m_basePosition.copy(m_position);
 		m_targetPosition.copy(worldPoint);
+	}
+	
+	private void setPositionInstantly(GridCoordinate targetCoord, boolean forTargetLayout)
+	{
+		calcPosition(targetCoord, s_utilPoint1, forTargetLayout);
+		
+		this.setPositionInstantly(s_utilPoint1);
+	}
+	
+	private void setPositionInstantly(Point worldPoint)
+	{
+		this.setTargetPosition(worldPoint);
+		this.ensureTargetPosition();
+		this.flushPosition();
 	}
 	
 	private void ensureTargetPosition()

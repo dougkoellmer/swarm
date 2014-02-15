@@ -191,6 +191,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		if( this.m_layoutState == LayoutState.CHANGING_FROM_SNAP )
 		{
 			double snapProgress = m_cameraMngr.getWeightedSnapProgress();
+			s_logger.severe("cell: " + " " + m_baseChangeValue + " " + snapProgress + " ");
 			double mantissa = m_baseChangeValue == 1 ? 1 : (snapProgress - m_baseChangeValue) / (1-m_baseChangeValue);
 			mantissa = U_Math.clampMantissa(mantissa);
 				
@@ -209,7 +210,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	private void updateLayout(double progressMantissa)
 	{
 		double widthDelta = (m_targetWidth - m_baseWidth) * progressMantissa;
-		m_width = (int) (m_baseWidth + widthDelta);		
+		m_width = (int) (m_baseWidth + widthDelta);
 		
 		double heightDelta = (m_targetHeight - m_baseHeight) * progressMantissa;
 		m_height = (int) (m_baseHeight + heightDelta);
@@ -415,14 +416,14 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		return m_yOffset;
 	}
 	
-	public void getTopLeft(Point point_out)
+	public void calcTopLeft(Point point_out)
 	{
 		A_Grid grid = m_bufferCell.getGrid();
 		m_bufferCell.getCoordinate().calcPoint(point_out, grid.getCellWidth(), grid.getCellHeight(), grid.getCellPadding(), 1);
 		point_out.inc(m_xOffset, m_yOffset, 0);
 	}
 	
-	public void getTargetTopLeft(Point point_out)
+	public void calcTargetTopLeft(Point point_out)
 	{
 		A_Grid grid = m_bufferCell.getGrid();
 		m_bufferCell.getCoordinate().calcPoint(point_out, grid.getCellWidth(), grid.getCellHeight(), grid.getCellPadding(), 1);

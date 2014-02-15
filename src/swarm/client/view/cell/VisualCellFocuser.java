@@ -354,6 +354,17 @@ public class VisualCellFocuser extends FlowPanel implements I_UIElement
 				else if( event.getState() instanceof State_CameraSnapping )
 				{
 					this.setAnimationState(AnimationState.FADING_IN);
+					this.updateAnimationState(event.getState()); // update once just to pop cell if it's visible
+				}
+				
+				break;
+			}
+			
+			case DID_UPDATE:
+			{
+				if( event.getState().getParent() instanceof StateMachine_Camera )
+				{
+					this.updateAnimationState(event.getState());
 				}
 				
 				break;
@@ -373,16 +384,6 @@ public class VisualCellFocuser extends FlowPanel implements I_UIElement
 					//TODO: Minor thing, but perhaps check here if the viewing state is entered, and if so, don't
 					//		set the animation state.
 					this.setAnimationState(AnimationState.FADING_OUT);
-				}
-				
-				break;
-			}
-			
-			case DID_UPDATE:
-			{
-				if( event.getState().getParent() instanceof StateMachine_Camera )
-				{
-					this.updateAnimationState(event.getState());
 				}
 				
 				break;
