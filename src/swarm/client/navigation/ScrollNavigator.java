@@ -125,32 +125,51 @@ public class ScrollNavigator implements I_StateEventListener
 		
 		this.toggleScrollBars(viewingState);
 		
-		if( snappingState != null )
+		if( viewingState != null || snappingState != null )
 		{
+			GridCoordinate coord = null;
+			
+			if( viewingState != null )
+			{
+				coord = viewingState.getCell().getCoordinate();
+			}
+			else
+			{
+				coord = snappingState.getTargetCoordinate();
+			}
+			
 			this.updateCameraViewRect(false, false);
 			
 			A_Grid grid = m_viewContext.appContext.gridMngr.getGrid();
-			grid.calcCoordTopLeftPoint(snappingState.getTargetCoordinate(), 1, m_utilPoint1);
+			grid.calcCoordTopLeftPoint(coord, 1, m_utilPoint1);
 			
 			double cellHudHeight = m_viewContext.appConfig.cellHudHeight;
 			double viewWidth = m_viewContext.appContext.cameraMngr.getCamera().getViewWidth();
 			double viewHeight = m_viewContext.appContext.cameraMngr.getCamera().getViewHeight();
 			
-			U_CameraViewport.calcConstrainedCameraPoint(grid, snappingState.getTargetCoordinate(), m_utilPoint1, viewWidth, viewHeight, cellHudHeight, m_utilPoint1);
+			U_CameraViewport.calcConstrainedCameraPoint(grid, coord, m_utilPoint1, viewWidth, viewHeight, cellHudHeight, m_utilPoint1);
 			
-			this.adjustSnapTargetPoint_private(snappingState.getTargetCoordinate(), m_utilPoint1);
+			this.adjustSnapTargetPoint_private(coord, m_utilPoint1);
 			
-			m_args_SnapToCoord.init(snappingState.getTargetCoordinate(), m_utilPoint1);
-			snappingState.getParent().performAction(Action_Camera_SnapToCoordinate.class, m_args_SnapToCoord);
+			if( viewingState == null )
+			{
+				m_args_SnapToCoord.init(coord, m_utilPoint1);
+				snappingState.getParent().performAction(Action_Camera_SnapToCoordinate.class, m_args_SnapToCoord);
+			}
+			else
+			{
+				m_args_SnapToPoint.init(m_utilPoint1, true, false);
+				viewingState.getParent().performAction(Action_Camera_SnapToPoint.class, m_args_SnapToPoint);
+			}
 			
-			this.setTargetLayout(snappingState.getTargetCoordinate());
+			this.setTargetLayout(coord);
 		}
-		else if( viewingState != null )
+		/*else if( viewingState != null )
 		{
 			this.updateCameraViewRect(true, false);
 			//updateCameraFromScrollBars();
 			this.setTargetLayout((VisualCell)viewingState.getCell().getVisualization());
-		}
+		}*/
 		else
 		{
 			this.updateCameraViewRect(true, false);
@@ -319,7 +338,7 @@ public class ScrollNavigator implements I_StateEventListener
 			toggleScrollBarX(viewingState_nullable, cellWidthReq, cameraPoint, centerPoint);
 			toggleScrollBarY(viewingState_nullable, cellHeightReq, cameraPoint, centerPoint);
 			
-			//--- DRK > Pretty sure that we have to recheck the x scroll bar to cover fringe
+			//--- DRK > We have to recheck the x scroll bar to cover the
 			//---		cases where the appearance of the y scroll bar diminishes the view width
 			//---		to the point where the X scroll bar is in fact needed after all.
 			toggleScrollBarX(viewingState_nullable, cellWidthReq, cameraPoint, centerPoint);
@@ -628,7 +647,7 @@ public class ScrollNavigator implements I_StateEventListener
 		topLeftOffset_out.set(xOffset, yOffset, 0);
 		size_out.set(targetWidth, targetHeight);
 		
-		s_logger.severe(topLeftOffset_out + " " + size_out);
+		//s_logger.severe(topLeftOffset_out + " " + size_out);
 	}
 	
 	public void setTargetLayout(VisualCell visualCell)

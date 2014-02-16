@@ -200,12 +200,12 @@ public class ClientTransactionManager
 	
 	public void flushSyncResponses()
 	{
-		s_logger.severe("START FLUSHING SYNC");
+		//s_logger.severe("START FLUSHING SYNC");
 		if( m_syncDispatcher != null )
 		{
 			m_syncDispatcher.flushResponses();
 		}
-		s_logger.severe("END FLUSHING SYNC");
+		//s_logger.severe("END FLUSHING SYNC");
 	}
 	
 	public void makeRequest(I_RequestPath path, I_WritesJson ... writesJson)
