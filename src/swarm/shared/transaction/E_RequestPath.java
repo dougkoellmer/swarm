@@ -1,7 +1,7 @@
 package swarm.shared.transaction;
 
 /**
- * Generally I have enums formatted LIKE_THIS, but the camelCase formatting here makes it
+ * Generally enums should be formatted LIKE_THIS, but the camelCase formatting here makes it
  * easier to map these enums to their transaction handler counterparts.
  * 
  * @author Doug

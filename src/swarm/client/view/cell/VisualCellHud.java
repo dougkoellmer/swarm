@@ -403,7 +403,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 		else
 		{
 			double snapProgress = m_viewContext.appContext.cameraMngr.getWeightedSnapProgress();
-			s_logger.severe("hud: " + " " + m_baseWidthProgress + " " + snapProgress + " ");
+			//s_logger.severe("hud: " + " " + m_baseWidthProgress + " " + snapProgress + " ");
 			mantissa = m_baseWidthProgress == 1 ? 1 : (snapProgress - m_baseWidthProgress) / (1-m_baseWidthProgress);
 		}
 		

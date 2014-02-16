@@ -627,6 +627,8 @@ public class ScrollNavigator implements I_StateEventListener
 		
 		topLeftOffset_out.set(xOffset, yOffset, 0);
 		size_out.set(targetWidth, targetHeight);
+		
+		s_logger.severe(topLeftOffset_out + " " + size_out);
 	}
 	
 	public void setTargetLayout(VisualCell visualCell)

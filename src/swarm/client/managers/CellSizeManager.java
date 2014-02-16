@@ -146,6 +146,8 @@ public class CellSizeManager implements I_TransactionResponseHandler
 	{
 		if( request.getPath() == E_RequestPath.getFocusedCellSize )
 		{
+			s_logger.severe("FOUND CELL SIZE");
+			
 			m_utilCellSize.readJson(response.getJsonArgs(), m_appContext.jsonFactory);
 			
 			if( m_utilCellSize.isInvalid() )

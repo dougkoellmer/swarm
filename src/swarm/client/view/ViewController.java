@@ -78,7 +78,6 @@ public class ViewController extends Object implements I_StateEventListener
 		m_viewContext.cellMngr = new VisualCellManager(m_viewContext, cellContainer.getCellContainerInner());
 		VisualCellHighlight highlighter = new VisualCellHighlight(m_viewContext);
 		
-
 		addStateListener(m_viewContext.mouseNavigator);
 		addStateListener(m_viewContext.browserNavigator); 
 		addStateListener(m_viewContext.scrollNavigator);

@@ -39,4 +39,10 @@ public class Rect
 	{
 		m_height += delta;
 	}
+	
+	@Override
+	public String toString()
+	{
+		return "[" + m_width + ", " + m_height + "]";
+	}
 }

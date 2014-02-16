@@ -71,14 +71,15 @@ public class U_InlineTransactions
 			return;
 		}
 		
-		InlineTransactionManager transactionManager = context.inlineTxnMngr;
+		InlineTransactionManager transactionMngr = context.inlineTxnMngr;
 		
 		try
 		{
-			transactionManager.beginBatch(out, nativeRequest, nativeResponse);
+			transactionMngr.beginBatch(out, nativeRequest, nativeResponse);
 			
 			GetCellAddressMappingResult mappingResult = new GetCellAddressMappingResult();
 			boolean getAddressMapping = true;
+			boolean getFocusedCellSize = true;
 			
 			if( parseError != E_CellAddressParseError.NO_ERROR )
 			{
@@ -87,10 +88,11 @@ public class U_InlineTransactions
 				//--- DRK > Only want to send down error if there's stuff after b33hive.net/
 				if( parseError != E_CellAddressParseError.EMPTY )
 				{
-					transactionManager.makeInlineRequestWithResponse(E_RequestPath.getCellAddressMapping, cellAddress, mappingResult);
+					transactionMngr.makeInlineRequestWithResponse(E_RequestPath.getCellAddressMapping, cellAddress, mappingResult);
 				}
 				
 				getAddressMapping = false;
+				getFocusedCellSize = false;
 			}
 			
 			TransactionRequest dummyRequest = new TransactionRequest(context.jsonFactory, nativeRequest);
@@ -98,23 +100,23 @@ public class U_InlineTransactions
 			UserSession session = context.sessionMngr.getSession(dummyRequest, dummyResponse);
 			boolean isSessionActive = session != null;
 			
-			transactionManager.makeInlineRequest(E_RequestPath.getPasswordChangeToken);
-			transactionManager.makeInlineRequest(E_RequestPath.getAccountInfo);
+			transactionMngr.makeInlineRequest(E_RequestPath.getPasswordChangeToken);
+			transactionMngr.makeInlineRequest(E_RequestPath.getAccountInfo);
 		
 			boolean makeUserRequest = true;
 			boolean makeGridRequest = true;
 			
-			Map<I_BlobKey, Class<? extends I_Blob>> batchGet = new HashMap<I_BlobKey, Class<? extends I_Blob>>();
-			batchGet.put(E_GridType.ACTIVE, BaseServerGrid.class);
+			Map<I_BlobKey, Class<? extends I_Blob>> batchGetMap = new HashMap<I_BlobKey, Class<? extends I_Blob>>();
+			batchGetMap.put(E_GridType.ACTIVE, BaseServerGrid.class);
 			
 			if( getAddressMapping )
 			{
-				batchGet.put(cellAddress, ServerCellAddressMapping.class);
+				batchGetMap.put(cellAddress, ServerCellAddressMapping.class);
 			}
 			
 			if( isSessionActive )
 			{
-				batchGet.put(session, ServerUser.class);
+				batchGetMap.put(session, ServerUser.class);
 			}
 			else
 			{
@@ -126,7 +128,7 @@ public class U_InlineTransactions
 			
 			try
 			{
-				blobBatchResult = blobManager.getBlobs(batchGet);
+				blobBatchResult = blobManager.getBlobs(batchGetMap);
 			}
 			catch(BlobException e)
 			{
@@ -140,7 +142,7 @@ public class U_InlineTransactions
 			{
 				if( blobBatchResult.containsKey(session))
 				{
-					transactionManager.makeInlineRequestWithResponse(E_RequestPath.getUserData, (I_WritesJson) blobBatchResult.get(session));
+					transactionMngr.makeInlineRequestWithResponse(E_RequestPath.getUserData, (I_WritesJson) blobBatchResult.get(session));
 					
 					makeUserRequest = false;
 				}
@@ -152,7 +154,7 @@ public class U_InlineTransactions
 				if( blobBatchResult.containsKey(E_GridType.ACTIVE) )
 				{
 					grid = (A_Grid) blobBatchResult.get(E_GridType.ACTIVE);
-					transactionManager.makeInlineRequestWithResponse(E_RequestPath.getGridData, grid);
+					transactionMngr.makeInlineRequestWithResponse(E_RequestPath.getGridData, grid);
 					
 					makeGridRequest = false;
 				}
@@ -176,17 +178,17 @@ public class U_InlineTransactions
 			
 			if( getAddressMapping )
 			{
-				transactionManager.makeInlineRequestWithResponse(E_RequestPath.getCellAddressMapping, cellAddress, mappingResult);
+				transactionMngr.makeInlineRequestWithResponse(E_RequestPath.getCellAddressMapping, cellAddress, mappingResult);
 			}
 			
 			if( makeUserRequest )
 			{
-				transactionManager.makeInlineRequest(E_RequestPath.getUserData);
+				transactionMngr.makeInlineRequest(E_RequestPath.getUserData);
 			}
 			
 			if( makeGridRequest )
 			{
-				TransactionResponse response = transactionManager.makeInlineRequest(E_RequestPath.getGridData);
+				TransactionResponse response = transactionMngr.makeInlineRequest(E_RequestPath.getGridData);
 				grid = new A_Grid(){};
 				grid.readJson(response.getJsonArgs(), context.jsonFactory);
 			}
@@ -195,6 +197,11 @@ public class U_InlineTransactions
 			if( mappingResult.isEverythingOk() )
 			{
 				mappingResult.getMapping().getCoordinate().calcCenterPoint(startingPosition, grid.getCellWidth(), grid.getCellHeight(), grid.getCellPadding(), 1);
+				
+				if( getFocusedCellSize ) // should be redundant check...just being safe.
+				{
+					transactionMngr.makeInlineRequest(E_RequestPath.getFocusedCellSize, mappingResult.getMapping());
+				}
 			}
 			else
 			{
@@ -203,11 +210,11 @@ public class U_InlineTransactions
 			}
 			
 			startingPosition.setZ(A_ServerApp.getInstance().getConfig().startingZ);
-			transactionManager.makeInlineRequestWithResponse(E_RequestPath.getStartingPosition, startingPosition);
+			transactionMngr.makeInlineRequestWithResponse(E_RequestPath.getStartingPosition, startingPosition);
 		}
 		finally
 		{
-			transactionManager.endBatch();
+			transactionMngr.endBatch();
 		}
 	}
 }

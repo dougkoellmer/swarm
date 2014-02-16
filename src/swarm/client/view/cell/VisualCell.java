@@ -191,7 +191,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		if( this.m_layoutState == LayoutState.CHANGING_FROM_SNAP )
 		{
 			double snapProgress = m_cameraMngr.getWeightedSnapProgress();
-			s_logger.severe("cell: " + " " + m_baseChangeValue + " " + snapProgress + " ");
+			//s_logger.severe("cell: " + " " + m_baseChangeValue + " " + snapProgress + " ");
 			double mantissa = m_baseChangeValue == 1 ? 1 : (snapProgress - m_baseChangeValue) / (1-m_baseChangeValue);
 			mantissa = U_Math.clampMantissa(mantissa);
 				
