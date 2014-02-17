@@ -227,8 +227,13 @@ public class StateMachine_Camera extends A_StateMachine implements I_StateEventL
 				A_State currentState = StateMachine_Camera.this.getCurrentState();
 				if( currentState instanceof State_CameraSnapping || currentState instanceof State_ViewingCell )
 				{
-					StateMachine_Camera.this.m_onCellSizeFoundArgs.init(cellSize_copied, mapping_copied);
-					StateMachine_Camera.this.performAction(Event_Camera_OnCellSizeFound.class, StateMachine_Camera.this.m_onCellSizeFoundArgs);
+					I_State_SnappingOrViewing state = (I_State_SnappingOrViewing) currentState;
+					
+					if( state.getTargetCoordinate().isEqualTo(mapping_copied.getCoordinate()) )
+					{
+						StateMachine_Camera.this.m_onCellSizeFoundArgs.init(cellSize_copied, mapping_copied);
+						StateMachine_Camera.this.performAction(Event_Camera_OnCellSizeFound.class, StateMachine_Camera.this.m_onCellSizeFoundArgs);
+					}
 				}
 			}
 		});

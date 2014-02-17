@@ -58,6 +58,7 @@ public class ScrollNavigator implements I_StateEventListener
 	private final Panel m_mouseLayer;
 	
 	private final Point m_utilPoint1 = new Point();
+	private final Point m_utilPoint2 = new Point();
 	
 	private A_Grid m_currentGrid = null;
 	
@@ -151,6 +152,8 @@ public class ScrollNavigator implements I_StateEventListener
 			
 			this.adjustSnapTargetPoint_private(coord, m_utilPoint1);
 			
+			this.setTargetLayout(coord);
+			
 			if( viewingState == null )
 			{
 				m_args_SnapToCoord.init(coord, m_utilPoint1);
@@ -162,7 +165,7 @@ public class ScrollNavigator implements I_StateEventListener
 				viewingState.getParent().performAction(Action_Camera_SnapToPoint.class, m_args_SnapToPoint);
 			}
 			
-			this.setTargetLayout(coord);
+			
 		}
 		/*else if( viewingState != null )
 		{
@@ -598,12 +601,6 @@ public class ScrollNavigator implements I_StateEventListener
 				if (event.getAction() == Event_Camera_OnCellSizeFound.class )
 				{
 					this.onResize();
-					
-					State_ViewingCell viewingState = event.getContext().getEnteredState(State_ViewingCell.class);
-					if( viewingState != null )
-					{
-						this.toggleScrollBars(viewingState);
-					}
 				}
 				
 				break;
@@ -656,10 +653,10 @@ public class ScrollNavigator implements I_StateEventListener
 		
 		if( !bufferCell.getFocusedCellSize().isValid() )  return;
 		
-		this.calcTargetLayout(bufferCell.getFocusedCellSize(), bufferCell.getCoordinate(), m_utilPoint1, m_utilRect1);
-		m_utilPoint1.incX(-this.getScrollX());
-		m_utilPoint1.incY(-this.getScrollY());
+		this.calcTargetLayout(bufferCell.getFocusedCellSize(), bufferCell.getCoordinate(), m_utilPoint2, m_utilRect1);
+		m_utilPoint2.incX(-this.getScrollX());
+		m_utilPoint2.incY(-this.getScrollY());
 		
-		visualCell.setTargetLayout((int)m_utilRect1.getWidth(), (int)m_utilRect1.getHeight(), (int)m_utilPoint1.getX(), (int)m_utilPoint1.getY());
+		visualCell.setTargetLayout((int)m_utilRect1.getWidth(), (int)m_utilRect1.getHeight(), (int)m_utilPoint2.getX(), (int)m_utilPoint2.getY());
 	}
 }

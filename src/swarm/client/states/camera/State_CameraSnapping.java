@@ -38,7 +38,7 @@ import swarm.shared.structs.CellAddressMapping;
 import swarm.shared.structs.GridCoordinate;
 import swarm.shared.structs.Point;
 
-public class State_CameraSnapping extends A_State implements I_StateEventListener
+public class State_CameraSnapping extends A_State implements I_StateEventListener, I_State_SnappingOrViewing
 {
 	private static final GridCoordinate INVALID = new GridCoordinate(-1, -1);
 	

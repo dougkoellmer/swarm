@@ -414,7 +414,7 @@ public class BufferCell extends A_Cell
 		this.setStatusAll(E_CodeStatus.NEEDS_CODE);
 		this.m_focusedCellSize.setToDefaults();
 		
-		U_Debug.ASSERT(!m_isFocused);
+		U_Debug.ASSERT(!m_isFocused, "Cell should not be GCed when focused.");
 		
 		m_isFocused = false;
 		m_address = null;

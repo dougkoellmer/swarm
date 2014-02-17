@@ -32,7 +32,7 @@ import swarm.shared.structs.Point;
  * ...
  * @author 
  */
-public class State_ViewingCell extends A_State implements I_StateEventListener
+public class State_ViewingCell extends A_State implements I_StateEventListener, I_State_SnappingOrViewing
 {
 	static class Constructor extends A_StateConstructor
 	{
@@ -177,5 +177,11 @@ public class State_ViewingCell extends A_State implements I_StateEventListener
 				break;
 			}
 		}
+	}
+
+	@Override
+	public GridCoordinate getTargetCoordinate()
+	{
+		return m_cell.getCoordinate();
 	}
 }
