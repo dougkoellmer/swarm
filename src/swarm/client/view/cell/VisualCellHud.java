@@ -329,8 +329,8 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 					}
 					else if( snappingState != null )
 					{
-						this.setTargetWidth(snappingState.getTargetCoordinate());
-						this.setTargetPosition(snappingState.getTargetCoordinate());
+						this.setTargetWidth(snappingState.getTargetCoord());
+						this.setTargetPosition(snappingState.getTargetCoord());
 					}
 				}
 				else if( event.getAction() == Action_Camera_SnapToPoint.class )

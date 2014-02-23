@@ -49,7 +49,7 @@ class CellAddressManagerListener implements CellAddressManager.I_Listener
 		{
 			State_CameraSnapping snappingState = m_machine.getCurrentState();
 			
-			if( snappingState.getTargetCoordinate().isEqualTo(mapping.getCoordinate()) )
+			if( snappingState.getTargetCoord().isEqualTo(mapping.getCoordinate()) )
 			{
 				dispatch = true;
 			}

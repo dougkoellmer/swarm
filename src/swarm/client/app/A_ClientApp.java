@@ -300,7 +300,7 @@ public class A_ClientApp extends A_App implements I_TimeSource
 			@Override
 			public void adjustTargetPoint(Action_Camera_SnapToCoordinate.Args args)
 			{				
-				m_viewContext.scrollNavigator.adjustSnapTargetPoint(args);
+				m_viewContext.scrollNavigator.adjustTargetSnapPoint(args);
 			}
 			
 			@Override
@@ -312,7 +312,7 @@ public class A_ClientApp extends A_App implements I_TimeSource
 				U_CameraViewport.calcViewWindowTopLeft(grid, args.getTargetCoordinate(), m_appConfig.cellHudHeight, args.getTargetPoint());
 				U_CameraViewport.calcConstrainedCameraPoint(grid, args.getTargetCoordinate(), args.getTargetPoint(), camera.getViewWidth(), camera.getViewHeight(), m_appConfig.cellHudHeight, args.getTargetPoint());
 				
-				m_viewContext.scrollNavigator.adjustSnapTargetPoint(args);
+				m_viewContext.scrollNavigator.adjustTargetSnapPoint(args);
 			}
 		};
 		

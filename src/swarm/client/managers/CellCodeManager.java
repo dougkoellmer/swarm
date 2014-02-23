@@ -320,7 +320,14 @@ public class CellCodeManager implements I_TransactionResponseHandler
 				{
 					BufferCell cell = buffer.getCellAtAbsoluteCoord(m_utilCoord);
 
-					cell.copy(m_utilCell);
+					if( cell != null ) // Cell could conceivably be deleted or something while GET txn is out.
+					{
+						cell.copy(m_utilCell);
+					}
+					else
+					{
+						
+					}
 				}
 			}
 		}

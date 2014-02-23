@@ -180,7 +180,7 @@ public class State_ViewingCell extends A_State implements I_StateEventListener, 
 	}
 
 	@Override
-	public GridCoordinate getTargetCoordinate()
+	public GridCoordinate getTargetCoord()
 	{
 		return m_cell.getCoordinate();
 	}

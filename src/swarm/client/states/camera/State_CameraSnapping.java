@@ -246,7 +246,7 @@ public class State_CameraSnapping extends A_State implements I_StateEventListene
 		return m_snapBufferManager;
 	}
 	
-	public GridCoordinate getTargetCoordinate()
+	public GridCoordinate getTargetCoord()
 	{
 		return m_targetGridCoordinate;
 	}

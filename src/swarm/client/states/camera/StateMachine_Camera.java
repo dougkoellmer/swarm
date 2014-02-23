@@ -229,7 +229,7 @@ public class StateMachine_Camera extends A_StateMachine implements I_StateEventL
 				{
 					I_State_SnappingOrViewing state = (I_State_SnappingOrViewing) currentState;
 					
-					if( state.getTargetCoordinate().isEqualTo(mapping_copied.getCoordinate()) )
+					if( state.getTargetCoord().isEqualTo(mapping_copied.getCoordinate()) )
 					{
 						StateMachine_Camera.this.m_onCellSizeFoundArgs.init(cellSize_copied, mapping_copied);
 						StateMachine_Camera.this.performAction(Event_Camera_OnCellSizeFound.class, StateMachine_Camera.this.m_onCellSizeFoundArgs);
@@ -294,9 +294,9 @@ public class StateMachine_Camera extends A_StateMachine implements I_StateEventL
 			CellBuffer buffer = bufferMngr.getDisplayBuffer();
 			if( buffer.getSubCellCount() == 1 )
 			{
-				if( buffer.isInBoundsAbsolute(snappingState.getTargetCoordinate()) )
+				if( buffer.isInBoundsAbsolute(snappingState.getTargetCoord()) )
 				{
-					BufferCell cell = buffer.getCellAtAbsoluteCoord(snappingState.getTargetCoordinate());
+					BufferCell cell = buffer.getCellAtAbsoluteCoord(snappingState.getTargetCoord());
 					I_LocalCodeRepository targetCellHtmlSource = snappingState.getHtmlSourceForTargetCell();
 
 					m_appContext.codeMngr.populateCell(cell, targetCellHtmlSource, 1, false, false, E_CodeType.COMPILED);

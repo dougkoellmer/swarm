@@ -89,7 +89,7 @@ public class VisualCellHighlight extends FlowPanel implements I_UIElement
 		State_CameraSnapping snappingState = m_viewContext.stateContext.getEnteredState(State_CameraSnapping.class);
 		if( snappingState != null )
 		{
-			if( mouseCoord.isEqualTo(snappingState.getTargetCoordinate()) )
+			if( mouseCoord.isEqualTo(snappingState.getTargetCoord()) )
 			{
 				this.setVisible(false);
 				

@@ -4,5 +4,5 @@ import swarm.shared.structs.GridCoordinate;
 
 public interface I_State_SnappingOrViewing
 {
-	GridCoordinate getTargetCoordinate();
+	GridCoordinate getTargetCoord();
 }

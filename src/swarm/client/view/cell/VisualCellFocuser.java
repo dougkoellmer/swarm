@@ -91,7 +91,7 @@ public class VisualCellFocuser extends FlowPanel implements I_UIElement
 			
 			if( state instanceof State_CameraSnapping )
 			{
-				targetCoord = ((State_CameraSnapping)state).getTargetCoordinate();
+				targetCoord = ((State_CameraSnapping)state).getTargetCoord();
 			}
 			else if( state instanceof State_ViewingCell )
 			{
@@ -164,7 +164,7 @@ public class VisualCellFocuser extends FlowPanel implements I_UIElement
 							}
 							else
 							{
-								if( !snappingState.getTargetCoordinate().isEqualTo(m_poppedCellCoord))
+								if( !snappingState.getTargetCoord().isEqualTo(m_poppedCellCoord))
 								{
 									pushDown = true;
 								}
@@ -196,7 +196,7 @@ public class VisualCellFocuser extends FlowPanel implements I_UIElement
 							
 							State_CameraSnapping snappingState = (State_CameraSnapping) cameraController.getCurrentState();
 							
-							GridCoordinate targetSnapCoord = snappingState.getTargetCoordinate();
+							GridCoordinate targetSnapCoord = snappingState.getTargetCoord();
 							
 							if( !targetSnapCoord.isEqualTo(m_poppedCellCoord) )
 							{
