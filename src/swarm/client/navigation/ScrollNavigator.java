@@ -59,6 +59,8 @@ public class ScrollNavigator implements I_StateEventListener
 	
 	private final Point m_utilPoint1 = new Point();
 	private final Point m_utilPoint2 = new Point();
+	private final Point m_utilPoint3 = new Point();
+	private final Point m_utilPoint4 = new Point();
 	
 	private A_Grid m_currentGrid = null;
 	
@@ -498,11 +500,34 @@ public class ScrollNavigator implements I_StateEventListener
 		{
 			if( viewingState == null )
 			{
-				targetCoord.calcPoint(point_out, grid.getCellWidth(), grid.getCellHeight(), grid.getCellPadding(), 1);
-				double paddingTop = U_CameraViewport.calcCellPaddingTop(grid, m_cellHudHeight);
-				point_out.inc(-grid.getCellPadding(), -paddingTop, 0);
-				point_out.inc(newWindowWidth/2, newWindowHeight/2, 0);
-				point_out.inc(m_scrollBarWidthDiv2, m_scrollBarWidthDiv2, 0);
+				double windowWidthSansScroll = this.getWindowWidthSansScroll();
+				double windowHeightSansScroll = this.getWindowHeightSansScroll();
+				double defaultCellWidthReq = U_CameraViewport.calcCellWidthRequirement(grid);
+				double defaultCellHeightReq = U_CameraViewport.calcCellHeightRequirement(grid, m_cellHudHeight);
+				
+				if( windowHeightSansScroll > defaultCellHeightReq )
+				{
+					targetCoord.calcPoint(m_utilPoint3, grid.getCellWidth(), grid.getCellHeight(), grid.getCellPadding(), 1);
+					double paddingTop = U_CameraViewport.calcCellPaddingTop(grid, m_cellHudHeight);
+					m_utilPoint3.incY(-paddingTop);
+					m_utilPoint3.incY(newWindowHeight/2);
+					m_utilPoint3.incY(m_scrollBarWidthDiv2);
+					
+					double offsetY = Math.min((m_utilRect2.getHeight() - defaultCellHeightReq)/2, (newWindowHeight - defaultCellHeightReq)/2);
+					offsetY = Math.max(0, offsetY);
+					m_utilPoint3.incY(-offsetY);
+					point_out.setY(m_utilPoint3.getY());
+				}
+				
+				if( windowWidthSansScroll > defaultCellWidthReq )
+				{
+					targetCoord.calcPoint(m_utilPoint3, grid.getCellWidth(), grid.getCellHeight(), grid.getCellPadding(), 1);
+					double paddingLeft = grid.getCellPadding();
+					m_utilPoint3.incX(-paddingLeft);
+					m_utilPoint3.incX(newWindowWidth/2);
+					m_utilPoint3.incX(m_scrollBarWidthDiv2);
+					point_out.setX(m_utilPoint3.getY());
+				}
 			}
 		}
 		else if( widthSmaller )
@@ -629,13 +654,20 @@ public class ScrollNavigator implements I_StateEventListener
 	
 	public void calcTargetLayout(CellSize cellSize, GridCoordinate targetCoord, Point topLeftOffset_out, Rect size_out)
 	{
-		A_Grid grid = m_viewContext.appContext.gridMngr.getGrid();
 		this.calcScrollWindowRect(targetCoord, m_utilRect1);
+		
+		this.calcTargetLayout(cellSize, m_utilRect1, topLeftOffset_out, size_out);
+		//s_logger.severe(topLeftOffset_out + " " + size_out);
+	}
+	
+	private void calcTargetLayout(CellSize cellSize, Rect windowSize, Point topLeftOffset_out, Rect size_out)
+	{
+		A_Grid grid = m_viewContext.appContext.gridMngr.getGrid();
 		double defaultWidthReq = U_CameraViewport.calcCellWidthRequirement(grid);
 		double defaultHeightReq = U_CameraViewport.calcCellHeightRequirement(grid, m_cellHudHeight);
-		double roomToTheLeft = (m_utilRect1.getWidth() - defaultWidthReq)/2;
+		double roomToTheLeft = (windowSize.getWidth() - defaultWidthReq)/2;
 		roomToTheLeft = Math.max(roomToTheLeft, 0);
-		double roomToTheTop = (m_utilRect1.getHeight() - defaultHeightReq)/2;
+		double roomToTheTop = (windowSize.getHeight() - defaultHeightReq)/2;
 		roomToTheTop = Math.max(roomToTheTop, 0);
 		
 		int targetWidth = cellSize.getWidth();
@@ -650,8 +682,6 @@ public class ScrollNavigator implements I_StateEventListener
 		
 		topLeftOffset_out.set(xOffset, yOffset, 0);
 		size_out.set(targetWidth, targetHeight);
-		
-		//s_logger.severe(topLeftOffset_out + " " + size_out);
 	}
 	
 	public void setTargetLayout(VisualCell visualCell)

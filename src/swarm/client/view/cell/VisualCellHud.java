@@ -567,6 +567,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 	{
 		Camera camera = m_viewContext.appContext.cameraMngr.getCamera();
 		camera.calcScreenPoint(m_position, s_utilPoint1);
+		s_utilPoint1.round();
 		
 		boolean has3dTransforms = m_viewContext.appContext.platformInfo.has3dTransforms();
 		String translation = U_Css.createTranslateTransform(s_utilPoint1.getX(), s_utilPoint1.getY(), has3dTransforms);
