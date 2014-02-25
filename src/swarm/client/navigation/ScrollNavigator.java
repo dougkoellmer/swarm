@@ -130,7 +130,7 @@ public class ScrollNavigator implements I_StateEventListener
 		
 		if( viewingState != null || snappingState != null )
 		{
-			s_logger.severe(m_viewContext.appContext.cameraMngr.getCamera().getPosition()+"");
+			//s_logger.severe(m_viewContext.appContext.cameraMngr.getCamera().getPosition()+"");
 			
 			GridCoordinate coord = null;
 			
@@ -169,7 +169,7 @@ public class ScrollNavigator implements I_StateEventListener
 				viewingState.getParent().performAction(Action_Camera_SnapToPoint.class, m_args_SnapToPoint);
 			}
 			
-			s_logger.severe(m_viewContext.appContext.cameraMngr.getCamera().getPosition()+"");
+			//s_logger.severe(m_viewContext.appContext.cameraMngr.getCamera().getPosition()+"");
 		}
 		/*else if( viewingState != null )
 		{
@@ -513,9 +513,9 @@ public class ScrollNavigator implements I_StateEventListener
 					m_utilPoint3.incY(newWindowHeight/2);
 					m_utilPoint3.incY(m_scrollBarWidthDiv2);
 					
-					double offsetY = Math.min((m_utilRect2.getHeight() - defaultCellHeightReq)/2, (newWindowHeight - defaultCellHeightReq)/2);
-					offsetY = Math.max(0, offsetY);
-					m_utilPoint3.incY(-offsetY);
+					double offset = Math.min((m_utilRect2.getHeight() - defaultCellHeightReq)/2, (newWindowHeight - defaultCellHeightReq)/2);
+					offset = Math.max(0, offset);
+					m_utilPoint3.incY(-offset);
 					point_out.setY(m_utilPoint3.getY());
 				}
 				
@@ -526,7 +526,11 @@ public class ScrollNavigator implements I_StateEventListener
 					m_utilPoint3.incX(-paddingLeft);
 					m_utilPoint3.incX(newWindowWidth/2);
 					m_utilPoint3.incX(m_scrollBarWidthDiv2);
-					point_out.setX(m_utilPoint3.getY());
+
+					double offset = Math.min((m_utilRect2.getWidth() - defaultCellWidthReq)/2, (newWindowWidth - defaultCellWidthReq)/2);
+					offset = Math.max(0, offset);
+					m_utilPoint3.incX(-offset);
+					point_out.setX(m_utilPoint3.getX());
 				}
 			}
 		}
@@ -552,9 +556,6 @@ public class ScrollNavigator implements I_StateEventListener
 			
 			U_CameraViewport.calcConstrainedCameraPoint(grid, targetCoord, point_out, newWindowWidth, newWindowHeight, m_cellHudHeight, point_out);
 		}
-		
-		//s_logger.severe("adjusted: " + point_out +"");
-		int i = 0;//7088.5
 	}
 	
 	@Override
