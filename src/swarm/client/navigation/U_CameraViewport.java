@@ -38,16 +38,21 @@ public class U_CameraViewport
 		return calcCellWidthRequirement(grid, grid.getCellWidth());
 	}
 	
-	public static double calcCellHeightRequirement(A_Grid grid, double cellHeight, double cellHudHeight)
+	public static double calcCellPaddingTop(A_Grid grid, double cellHudHeight)
 	{
 		if( cellHudHeight > 0 )
 		{
-			return cellHeight + cellHudHeight + getViewPadding(grid)*3;
+			return cellHudHeight + getViewPadding(grid)*2;
 		}
 		else
 		{
-			return cellHeight + cellHudHeight + getViewPadding(grid)*2;
+			return getViewPadding(grid);
 		}
+	}
+	
+	public static double calcCellHeightRequirement(A_Grid grid, double cellHeight, double cellHudHeight)
+	{
+		return cellHeight + getViewPadding(grid) + calcCellPaddingTop(grid, cellHudHeight);
 	}
 	
 	public static double calcCellHeightRequirement(A_Grid grid, double cellHudHeight)
@@ -78,21 +83,21 @@ public class U_CameraViewport
 	{
 		s_utilPoint1.copy(cameraPoint); // in case cameraPoint and point_out are the same reference.
 		
-		double minViewWidth = calcCellWidthRequirement(grid);
-		double minViewHeight = calcCellHeightRequirement(grid, cellHudHeight);
+		double cellWidthReq = calcCellWidthRequirement(grid);
+		double cellHeightReq = calcCellHeightRequirement(grid, cellHudHeight);
 		
 		calcViewWindowCenter(grid, coord, cellHudHeight, point_out);
 
-		if( viewWidth < minViewWidth )
+		if( viewWidth < cellWidthReq )
 		{
-			double diff = (minViewWidth - viewWidth)/2;
+			double diff = (cellWidthReq - viewWidth)/2;
 			double x = U_Math.clamp(s_utilPoint1.getX(), point_out.getX() - diff, point_out.getX() + diff);
 			point_out.setX(x);
 		}
 		
-		if( viewHeight < minViewHeight )
+		if( viewHeight < cellHeightReq )
 		{
-			double diff = (minViewHeight - viewHeight)/2;
+			double diff = (cellHeightReq - viewHeight)/2;
 			double y = U_Math.clamp(s_utilPoint1.getY(), point_out.getY() - diff, point_out.getY() + diff);
 			point_out.setY(y);
 		}

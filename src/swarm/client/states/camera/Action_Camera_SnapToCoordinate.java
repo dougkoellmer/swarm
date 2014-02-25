@@ -1,5 +1,8 @@
 package swarm.client.states.camera;
 
+
+import java.util.logging.Logger;
+
 import swarm.client.app.AppContext;
 import swarm.client.managers.GridManager;
 import swarm.shared.entities.A_Grid;
@@ -11,6 +14,8 @@ import swarm.shared.structs.Point;
 
 public class Action_Camera_SnapToCoordinate extends smA_CameraAction
 {
+	private static final Logger s_logger = Logger.getLogger(Action_Camera_SnapToCoordinate.class.getName());
+	
 	public static interface I_Filter
 	{
 		void adjustTargetPoint(Args args);
@@ -134,7 +139,7 @@ public class Action_Camera_SnapToCoordinate extends smA_CameraAction
 				return;
 			}
 		}
-		
+
 		((Args) args).m_onlyCausedRefresh = false;
 		((StateMachine_Camera)this.getState()).snapToCoordinate(((Args) args).m_address, coordinate, point);
 		
@@ -159,7 +164,6 @@ public class Action_Camera_SnapToCoordinate extends smA_CameraAction
 		}
 		
 		StateMachine_Camera machine = this.getState();
-		A_State currentState = machine.getCurrentState();
 
 		return true;
 	}

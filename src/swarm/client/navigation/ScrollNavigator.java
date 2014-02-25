@@ -128,6 +128,8 @@ public class ScrollNavigator implements I_StateEventListener
 		
 		if( viewingState != null || snappingState != null )
 		{
+			s_logger.severe(m_viewContext.appContext.cameraMngr.getCamera().getPosition()+"");
+			
 			GridCoordinate coord = null;
 			
 			if( viewingState != null )
@@ -165,7 +167,7 @@ public class ScrollNavigator implements I_StateEventListener
 				viewingState.getParent().performAction(Action_Camera_SnapToPoint.class, m_args_SnapToPoint);
 			}
 			
-			
+			s_logger.severe(m_viewContext.appContext.cameraMngr.getCamera().getPosition()+"");
 		}
 		/*else if( viewingState != null )
 		{
@@ -494,7 +496,14 @@ public class ScrollNavigator implements I_StateEventListener
 
 		if( widthSmaller && heightSmaller )
 		{
-			
+			if( viewingState == null )
+			{
+				targetCoord.calcPoint(point_out, grid.getCellWidth(), grid.getCellHeight(), grid.getCellPadding(), 1);
+				double paddingTop = U_CameraViewport.calcCellPaddingTop(grid, m_cellHudHeight);
+				point_out.inc(-grid.getCellPadding(), -paddingTop, 0);
+				point_out.inc(newWindowWidth/2, newWindowHeight/2, 0);
+				point_out.inc(m_scrollBarWidthDiv2, m_scrollBarWidthDiv2, 0);
+			}
 		}
 		else if( widthSmaller )
 		{
