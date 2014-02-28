@@ -54,6 +54,12 @@ public class VisualCellHighlight extends FlowPanel implements I_UIElement
 	
 	private void update()
 	{
+		if( m_viewContext.stateContext.isEntered(State_ViewingCell.class) )
+		{
+			this.setVisible(false);
+			return;
+		}
+		
 		MouseNavigator navManager = m_viewContext.mouseNavigator;
 		boolean isMouseTouchingSnappableCell = navManager.isMouseTouchingSnappableCell();
 		

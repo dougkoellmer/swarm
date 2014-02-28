@@ -399,6 +399,12 @@ public class MouseNavigator implements I_UIElement, Mouse.I_Listener
 		
 		updateMouseGridCoord();
 		
+		if( viewing )
+		{
+			backOff();
+			return;
+		}		
+		
 		if( !m_isMouseTouchingSnappableCell )
 		{
 			if( viewing )  backOff();

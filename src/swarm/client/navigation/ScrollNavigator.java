@@ -623,8 +623,15 @@ public class ScrollNavigator implements I_StateEventListener
 					
 					if( isScrollingX || isScrollingY )
 					{
-						boolean maintainApparentPosition = !event.getContext().isEntered(State_CameraSnapping.class);
+						boolean maintainApparentPosition = true;
 						this.updateCameraViewRect(true, maintainApparentPosition);
+						
+						if( event.getContext().isEntered(State_CameraSnapping.class) )
+						{
+							//--- DRK > Maintaining apparent position shifts (at least currently) the camera target,
+							//---		so this makes sure we stay on track.
+							this.onResize();
+						}
 					}
 				}
 				
