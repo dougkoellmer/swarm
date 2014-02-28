@@ -48,7 +48,7 @@ public class CellAddressMapping extends A_JsonEncodable implements I_JsonCompara
 	@Override
 	public boolean isEqualTo(A_JsonFactory factory, I_JsonObject json)
 	{
-		return m_coordinate.isEqualTo(null, json);
+		return m_coordinate.isEqualTo(factory, json);
 	}
 	
 	public boolean isEqualTo(CellAddressMapping otherMapping)

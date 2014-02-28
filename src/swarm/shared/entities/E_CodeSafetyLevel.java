@@ -25,6 +25,11 @@ public enum E_CodeSafetyLevel implements I_SerializableEnum
 	{
 		return value == NO_SANDBOX_STATIC || value == VIRTUAL_STATIC_SANDBOX;
 	}
+	
+	public boolean isVirtual()
+	{
+		return this == VIRTUAL_STATIC_SANDBOX || this == VIRTUAL_DYNAMIC_SANDBOX;
+	}
 
 	@Override
 	public boolean matchesOldName(String name)

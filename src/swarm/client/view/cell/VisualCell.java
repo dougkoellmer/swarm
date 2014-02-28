@@ -305,8 +305,11 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		m_isFocused = false;
 		m_isValidated = false;
 		m_subCellDimension = subCellDimension;
+		
 		m_targetWidth = m_defaultWidth = m_baseWidth = m_width = width;
 		m_targetHeight = m_defaultHeight = m_baseHeight = m_height = height;
+		m_targetXOffset = m_baseXOffset = m_xOffset = 0;
+		m_targetYOffset = m_baseYOffset = m_yOffset = 0;
 		m_padding = padding;
 		
 		this.flushLayout();

@@ -9,9 +9,9 @@ import swarm.shared.json.I_WritesJson;
 
 public class CellSize implements I_ReadsJson, I_WritesJson
 {
-	protected static final int DEFAULT_DIMENSION = -1;
-	protected static final int INVALID_DIMENSION = -2;
-	protected static final int PENDING_DIMENSION = -3;
+	public static final int DEFAULT_DIMENSION = -1;
+	public static final int INVALID_DIMENSION = -2;
+	public static final int PENDING_DIMENSION = -3;
 	
 	protected int m_width = DEFAULT_DIMENSION;
 	protected int m_height = DEFAULT_DIMENSION;
@@ -21,14 +21,10 @@ public class CellSize implements I_ReadsJson, I_WritesJson
 		this.setToDefaults();
 	}
 	
-	public int getWidth()
+	public CellSize(int width, int height)
 	{
-		return m_width;
-	}
-	
-	public int getHeight()
-	{
-		return m_height;
+		m_width = width;
+		m_height = height;
 	}
 	
 	public CellSize(CellSize value_copied)
@@ -44,6 +40,16 @@ public class CellSize implements I_ReadsJson, I_WritesJson
 	public boolean isPending()
 	{
 		return m_width == PENDING_DIMENSION && m_height == PENDING_DIMENSION;
+	}
+	
+	public int getWidth()
+	{
+		return m_width;
+	}
+	
+	public int getHeight()
+	{
+		return m_height;
 	}
 	
 	public void setToPending()
