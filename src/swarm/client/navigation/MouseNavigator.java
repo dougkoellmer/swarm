@@ -22,6 +22,7 @@ import swarm.client.view.S_UI;
 import swarm.client.view.U_Css;
 import swarm.client.view.ViewContext;
 import swarm.client.view.cell.VisualCell;
+import swarm.client.view.cell.VisualCellHudInner;
 import swarm.shared.utils.U_Math;
 import swarm.shared.app.S_CommonApp;
 import swarm.shared.debugging.U_Debug;
@@ -383,11 +384,27 @@ public class MouseNavigator implements I_UIElement, Mouse.I_Listener
 		m_isMouseTouchingSnappableCell = true;
 	}
 	
+	private void backOff()
+	{
+		m_utilPoint1.copy(m_viewContext.appContext.cameraMngr.getCamera().getPosition());
+		m_utilPoint1.incZ(m_viewContext.appConfig.backOffDistance);
+		
+		m_args_SnapToPoint.init(m_utilPoint1, false, true);
+		m_viewContext.stateContext.performAction(Action_Camera_SnapToPoint.class, m_args_SnapToPoint);
+	}
+	
 	private void onMouseClick()
 	{
+		boolean viewing = m_viewContext.stateContext.isEntered(State_ViewingCell.class);
+		
 		updateMouseGridCoord();
 		
-		if( !m_isMouseTouchingSnappableCell )  return;
+		if( !m_isMouseTouchingSnappableCell )
+		{
+			if( viewing )  backOff();
+			
+			return;
+		}
 		
 		A_Grid grid = m_gridMngr.getGrid();
 		
@@ -405,7 +422,14 @@ public class MouseNavigator implements I_UIElement, Mouse.I_Listener
 		U_CameraViewport.calcConstrainedCameraPoint(grid, m_mouseGridCoord, m_utilPoint1, viewWidth, viewHeight, cellHudHeight, m_utilPoint2);
 		
 		m_args_SnapToCoord.init(m_mouseGridCoord, m_utilPoint2);
-		m_cameraMachine.performAction(Action_Camera_SnapToCoordinate.class, m_args_SnapToCoord);
+		
+		if( !m_cameraMachine.performAction(Action_Camera_SnapToCoordinate.class, m_args_SnapToCoord) )
+		{
+			if( viewing )
+			{
+				backOff();
+			}
+		}
 	}
 	
 	private void updateMouse()

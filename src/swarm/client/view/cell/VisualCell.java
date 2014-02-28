@@ -202,6 +202,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 			m_baseChangeValue += timeStep;
 			double mantissa = m_baseChangeValue / m_sizeChangeTime;
 			mantissa = U_Math.clampMantissa(mantissa);
+			mantissa = Math.sqrt(mantissa);
 			
 			this.updateLayout(mantissa);
 		}

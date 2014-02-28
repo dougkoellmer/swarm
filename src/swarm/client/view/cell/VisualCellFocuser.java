@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 import swarm.client.app.AppContext;
 import swarm.client.entities.Camera;
 import swarm.client.entities.BufferCell;
+import swarm.client.input.I_ClickHandler;
 import swarm.client.managers.CellBuffer;
 import swarm.client.managers.CellBufferManager;
 import swarm.client.states.camera.Action_Camera_SnapToCoordinate;
