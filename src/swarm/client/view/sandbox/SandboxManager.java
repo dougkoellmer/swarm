@@ -66,6 +66,8 @@ public class SandboxManager
 					m_cajaSandboxMngr.stop(host);
 				}
 				
+				host.setInnerHTML("");
+				
 				m_iframeSandboxMngr.start_local(host, code.getRawCode(), listener);  break;
 			}
 			case REMOTE_SANDBOX:
@@ -74,6 +76,8 @@ public class SandboxManager
 				{
 					m_cajaSandboxMngr.stop(host);
 				}
+				
+				host.setInnerHTML("");
 				
 				m_iframeSandboxMngr.start_remote(host, code.getRawCode(), listener);  break;
 			}
@@ -88,6 +92,7 @@ public class SandboxManager
 				
 				break;
 			}
+			
 			case VIRTUAL_STATIC_SANDBOX:
 			{
 				m_iframeSandboxMngr.stop(host);
