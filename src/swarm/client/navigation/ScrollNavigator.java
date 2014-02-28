@@ -60,9 +60,6 @@ public class ScrollNavigator implements I_StateEventListener
 	private final Point m_utilPoint1 = new Point();
 	private final Point m_utilPoint2 = new Point();
 	private final Point m_utilPoint3 = new Point();
-	private final Point m_utilPoint4 = new Point();
-	
-	private A_Grid m_currentGrid = null;
 	
 	private final CellAddressMapping m_utilMapping = new CellAddressMapping();
 	private final Boolean m_utilBool1 = new Boolean();
@@ -487,6 +484,14 @@ public class ScrollNavigator implements I_StateEventListener
 	public void adjustTargetSnapPoint_private(GridCoordinate targetCoord, Point point_out)
 	{
 		State_ViewingCell viewingState = m_viewContext.stateContext.getEnteredState(State_ViewingCell.class);
+		if( viewingState != null )
+		{
+			if( !targetCoord.isEqualTo(viewingState.getCell().getCoordinate()) )
+			{
+				viewingState = null;
+			}
+		}
+		
 		A_Grid grid = this.m_viewContext.appContext.gridMngr.getGrid();
 		
 		this.calcWindowLayout(targetCoord, m_utilRect1, m_utilRect2, m_utilBool1, m_utilBool2);
@@ -580,8 +585,6 @@ public class ScrollNavigator implements I_StateEventListener
 				{
 					State_ViewingCell state = event.getState();
 					
-					m_currentGrid = state.getCell().getGrid();
-					
 					toggleScrollBars(state);
 					
 					boolean isScrollingX = isScrollingX();
@@ -617,13 +620,12 @@ public class ScrollNavigator implements I_StateEventListener
 					boolean isScrollingY = isScrollingY();
 					
 					toggleScrollBars((State_ViewingCell) event.getState());
-
+					
 					if( isScrollingX || isScrollingY )
 					{
-						this.updateCameraViewRect(true, true);
+						boolean maintainApparentPosition = !event.getContext().isEntered(State_CameraSnapping.class);
+						this.updateCameraViewRect(true, maintainApparentPosition);
 					}
-					
-					m_currentGrid = null;
 				}
 				
 				break;
