@@ -399,15 +399,17 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 		{
 			m_baseWidthProgress += floatingState.getLastTimeStep();
 			mantissa = m_baseWidthProgress / m_viewContext.config.cellSizeChangeTime_seconds;
+			mantissa = U_Math.clampMantissa(mantissa);
+			mantissa = Math.sqrt(mantissa);
 		}
 		else
 		{
 			double snapProgress = m_viewContext.appContext.cameraMngr.getWeightedSnapProgress();
 			//s_logger.severe("hud: " + " " + m_baseWidthProgress + " " + snapProgress + " ");
 			mantissa = m_baseWidthProgress == 1 ? 1 : (snapProgress - m_baseWidthProgress) / (1-m_baseWidthProgress);
+			mantissa = U_Math.clampMantissa(mantissa);
 		}
 		
-		mantissa = U_Math.clampMantissa(mantissa);
 		double widthDelta = (m_targetWidth - m_baseWidth) * mantissa;
 		m_width = (int) (m_baseWidth + widthDelta);
 		
@@ -533,6 +535,8 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 			//--- DRK > Still have to flush position cause the 2d screen projection
 			//---		is still moving, even if the world position is stationary.
 			this.flushPosition();
+			
+			return;
 		}
 		
 		double mantissa = 0;
@@ -542,14 +546,16 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 		{
 			m_basePositionProgress += floatingState.getLastTimeStep();
 			mantissa = m_basePositionProgress / m_viewContext.config.cellSizeChangeTime_seconds;
+			mantissa = U_Math.clampMantissa(mantissa);
+			mantissa = Math.sqrt(mantissa);
 		}
 		else
 		{
 			double snapProgress = m_viewContext.appContext.cameraMngr.getWeightedSnapProgress();
 			mantissa = m_basePositionProgress == 1 ? 1 : (snapProgress - m_basePositionProgress) / (1-m_basePositionProgress);
+			mantissa = U_Math.clampMantissa(mantissa);
 		}
 		
-		mantissa = U_Math.clampMantissa(mantissa);
 		m_targetPosition.calcDifference(m_basePosition, s_utilVector);
 		s_utilVector.scaleByNumber(mantissa);
 		m_position.copy(m_basePosition);
