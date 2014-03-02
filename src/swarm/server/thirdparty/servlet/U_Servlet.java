@@ -41,6 +41,12 @@ public class U_Servlet
 		}
 	}
 	
+	public static boolean fileExists(ServletContext context, String file)
+	{
+		InputStream stream = context.getResourceAsStream(file);
+		return stream != null;
+	}
+	
 	public static String getResource(ServletContext context, String file)
 	{
 		InputStream stream = context.getResourceAsStream(file);

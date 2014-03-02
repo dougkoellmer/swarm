@@ -31,6 +31,7 @@ import swarm.client.states.code.Action_EditingCode_Save;
 import swarm.client.view.E_ZIndex;
 import swarm.client.view.I_UIElement;
 import swarm.client.view.U_Css;
+import swarm.client.view.U_View;
 import swarm.client.view.ViewContext;
 import swarm.client.view.tooltip.E_ToolTipType;
 import swarm.client.view.tooltip.ToolTipConfig;
@@ -400,7 +401,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 			m_baseWidthProgress += floatingState.getLastTimeStep();
 			mantissa = m_baseWidthProgress / m_viewContext.config.cellSizeChangeTime_seconds;
 			mantissa = U_Math.clampMantissa(mantissa);
-			mantissa = Math.sqrt(mantissa);
+			mantissa = U_View.easeMantissa(mantissa);
 		}
 		else
 		{
@@ -547,7 +548,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 			m_basePositionProgress += floatingState.getLastTimeStep();
 			mantissa = m_basePositionProgress / m_viewContext.config.cellSizeChangeTime_seconds;
 			mantissa = U_Math.clampMantissa(mantissa);
-			mantissa = Math.sqrt(mantissa);
+			mantissa = U_View.easeMantissa(mantissa);
 		}
 		else
 		{

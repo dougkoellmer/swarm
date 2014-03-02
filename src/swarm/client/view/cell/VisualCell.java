@@ -10,6 +10,7 @@ import swarm.client.managers.CameraManager;
 import swarm.client.view.E_ZIndex;
 import swarm.client.view.S_UI;
 import swarm.client.view.U_Css;
+import swarm.client.view.U_View;
 import swarm.client.view.sandbox.SandboxManager;
 import swarm.client.view.tabs.code.I_CodeLoadListener;
 import swarm.client.view.widget.UIBlocker;
@@ -202,7 +203,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 			m_baseChangeValue += timeStep;
 			double mantissa = m_baseChangeValue / m_sizeChangeTime;
 			mantissa = U_Math.clampMantissa(mantissa);
-			mantissa = Math.sqrt(mantissa);
+			mantissa = U_View.easeMantissa(mantissa);
 			
 			this.updateLayout(mantissa);
 		}
