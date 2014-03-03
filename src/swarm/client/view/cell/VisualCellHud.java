@@ -136,17 +136,10 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 				if( viewingState != null )
 				{
 					A_Grid grid = m_viewContext.appContext.gridMngr.getGrid();
-					VisualCell visualCell = (VisualCell) viewingState.getCell().getVisualization();
-					visualCell.calcTopLeft(s_utilPoint1);
-					s_utilPoint1.incY(calcYOffsetFromCellTop(grid));
-					s_utilPoint1.incX(calcScrollXOffset(grid));
-					
-					setTargetPosition(s_utilPoint1);
-					ensureTargetPosition();
-					flushPosition();
-					
-					m_scrollX = m_viewContext.scrollNavigator.getScrollX();
+					VisualCellHud.this.calcScrollX(grid);
 					m_scrollY = m_viewContext.scrollNavigator.getScrollY();
+					
+					VisualCellHud.this.setPositionInstantly(viewingState.getTargetCoord(), true);					
 				}
 				else
 				{
@@ -184,16 +177,18 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 		return viewWidth;
 	}
 	
-	private double calcScrollXOffset(A_Grid grid)
+	private void calcScrollX(A_Grid grid)
 	{
 		State_ViewingCell viewingState = m_viewContext.stateContext.getEnteredState(State_ViewingCell.class);
 		
-		if( viewingState == null )  return 0.0;
+		if( viewingState == null )
+		{
+			m_scrollX = 0;
+		}
 		
 		Camera camera = m_viewContext.appContext.cameraMngr.getCamera();
 		Element scrollElement = this.getParent().getElement();
-		double scrollX = scrollElement.getScrollLeft();
-		double toReturn = 0;
+		m_scrollX = scrollElement.getScrollLeft();
 		
 		double viewWidth = calcViewWidth(viewingState.getCell().getCoordinate(), camera, grid);
 		double hudWidth = m_width;
@@ -201,16 +196,10 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 		{
 			double scrollWidth = scrollElement.getScrollWidth();
 			double clientWidth = scrollElement.getClientWidth();
-			double diff = (hudWidth - viewWidth) +  U_CameraViewport.getViewPadding(grid)/2.0;
-			double scrollRatio = scrollX / (scrollWidth-clientWidth);
-			toReturn -= diff * scrollRatio;
+			double diff = (hudWidth - viewWidth);// +  U_CameraViewport.getViewPadding(grid);
+			double scrollRatio = m_scrollX / (scrollWidth-clientWidth);
+			m_scrollX -= diff * scrollRatio;
 		}
-		else
-		{
-			toReturn = scrollX*2;
-		}
-		
-		return toReturn;
 	}
 
 	
@@ -470,11 +459,31 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 		return -(grid.getCellPadding() + this.m_height);
 	}
 	
+	private void resetScroll()
+	{
+		m_scrollX = m_scrollY = 0;
+	}
+	
 	private void calcPosition(GridCoordinate targetCoord, Point point_out, boolean forTargetLayout)
 	{
+		if( !m_viewContext.stateContext.isEntered(State_ViewingCell.class) )
+		{
+			resetScroll();
+		}
+		else
+		{
+			if( m_width < m_viewContext.scrollNavigator.getWindowWidth() )
+			{
+				
+			}
+		}
+		
 		A_Grid grid = m_viewContext.appContext.gridMngr.getGrid();
 		targetCoord.calcPoint(point_out, grid.getCellWidth(), grid.getCellHeight(), grid.getCellPadding(), 1);
 		point_out.incY(this.calcYOffsetFromCellTop(grid));
+		
+		point_out.incX(m_scrollX);
+		point_out.incY(m_scrollY);
 		
 		if( forTargetLayout )
 		{

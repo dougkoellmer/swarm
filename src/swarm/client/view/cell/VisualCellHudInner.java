@@ -130,7 +130,17 @@ public class VisualCellHudInner extends HorizontalPanel implements I_StateEventL
 			{
 				if( !m_close.isEnabled() )  return;
 
-				s_utilPoint1.copy(VisualCellHudInner.this.m_viewContext.appContext.cameraMngr.getCamera().getPosition());
+				State_ViewingCell viewingState = m_viewContext.stateContext.getEnteredState(State_ViewingCell.class);
+				if( viewingState == null )
+				{
+					s_utilPoint1.copy(VisualCellHudInner.this.m_viewContext.appContext.cameraMngr.getCamera().getPosition());
+				}
+				else
+				{
+					A_Grid grid = viewingState.getCell().getGrid();
+					viewingState.getTargetCoord().calcCenterPoint(s_utilPoint1, grid.getCellWidth(), grid.getCellHeight(), grid.getCellPadding(), 1);
+				}
+				
 				s_utilPoint1.incZ(VisualCellHudInner.this.m_viewContext.appConfig.backOffDistance);
 				
 				m_args_SetCameraTarget.init(s_utilPoint1, false, true);
