@@ -202,14 +202,16 @@ public class MouseNavigator implements I_UIElement, Mouse.I_Listener
 				//--- Don't allow zoom out if mouse is over a viewed cell.
 				if ( m_cameraState instanceof State_ViewingCell )
 				{
-					//if( m_viewContext.scrollNavigator.isScrolling() )  return;
+					ScrollNavigator scrollNavigator = m_viewContext.scrollNavigator;
+					
+					if( scrollNavigator.isScrollingX() || scrollNavigator.isScrollingY() )  return;
 					
 					BufferCell cell = ((State_ViewingCell) m_cameraState).getCell();
 					A_Grid grid = cell.getGrid();
 					
 					mousePointToWorld(m_utilPoint2);
 					
-					ScrollNavigator scrollNavigator = m_viewContext.scrollNavigator;
+					
 					double extraPadding = 0;
 					
 					if( scrollNavigator.isScrollingX() || scrollNavigator.isScrollingY() )

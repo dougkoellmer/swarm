@@ -17,5 +17,7 @@ public class ViewConfig
 	public double initialBumpDistance = 128;
 	public double extraScrollArea = 50;
 	public double cellSizeChangeTime_seconds = 1;
+	public double cellRetractionEasing = 4;
+	
 	public I_Tab[] tabs;
 }

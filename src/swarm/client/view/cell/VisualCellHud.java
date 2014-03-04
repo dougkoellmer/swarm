@@ -76,8 +76,6 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 	
 	private final ViewContext m_viewContext;
 	
-	private final ClientAppConfig m_appConfig;
-	
 	private final double m_minWidth = 176;// TODO: GHETTO
 	private double m_width = 0;
 	private double m_baseWidth = 0;
@@ -112,7 +110,6 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 		
 		m_viewContext = viewContext;
 		m_height = m_viewContext.appConfig.cellHudHeight;
-		m_appConfig = appConfig;
 		m_fadeOutTime_seconds = m_viewContext.config.hudFadeOutTime_seconds;
 		
 		m_alpha = m_baseAlpha = 0.0;
@@ -136,10 +133,19 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 				if( viewingState != null )
 				{
 					A_Grid grid = m_viewContext.appContext.gridMngr.getGrid();
-					VisualCellHud.this.calcScrollX(grid);
+					m_scrollX = m_viewContext.scrollNavigator.getScrollX();
 					m_scrollY = m_viewContext.scrollNavigator.getScrollY();
 					
-					VisualCellHud.this.setPositionInstantly(viewingState.getTargetCoord(), true);					
+					VisualCellHud.this.setPositionInstantly(viewingState.getTargetCoord(), true);
+					
+					if( m_scrollY >= grid.getCellPadding() )
+					{
+						VisualCellHud.this.setAlpha(.75);
+					}
+					else
+					{
+						VisualCellHud.this.setAlpha(1);
+					}
 				}
 				else
 				{
@@ -177,18 +183,17 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 		return viewWidth;
 	}
 	
-	private void calcScrollX(A_Grid grid)
+	private double calcScrollXOffset(A_Grid grid)
 	{
 		State_ViewingCell viewingState = m_viewContext.stateContext.getEnteredState(State_ViewingCell.class);
 		
 		if( viewingState == null )
 		{
-			m_scrollX = 0;
+			return 0;
 		}
 		
 		Camera camera = m_viewContext.appContext.cameraMngr.getCamera();
 		Element scrollElement = this.getParent().getElement();
-		m_scrollX = scrollElement.getScrollLeft();
 		
 		double viewWidth = calcViewWidth(viewingState.getCell().getCoordinate(), camera, grid);
 		double hudWidth = m_width;
@@ -198,7 +203,11 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 			double clientWidth = scrollElement.getClientWidth();
 			double diff = (hudWidth - viewWidth);// +  U_CameraViewport.getViewPadding(grid);
 			double scrollRatio = m_scrollX / (scrollWidth-clientWidth);
-			m_scrollX -= diff * scrollRatio;
+			return -(diff * scrollRatio);
+		}
+		else
+		{
+			return 0.0;
 		}
 	}
 
@@ -231,6 +240,8 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 				}
 				else if( event.getState() instanceof State_CameraFloating )
 				{
+					resetScrollValues();
+					
 					m_baseAlpha = m_alpha;
 					
 					A_Grid grid = m_viewContext.appContext.gridMngr.getGrid();
@@ -390,7 +401,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 			m_baseWidthProgress += floatingState.getLastTimeStep();
 			mantissa = m_baseWidthProgress / m_viewContext.config.cellSizeChangeTime_seconds;
 			mantissa = U_Math.clampMantissa(mantissa);
-			mantissa = U_View.easeMantissa(mantissa);
+			mantissa = U_View.easeMantissa(mantissa, m_viewContext.config.cellRetractionEasing);
 		}
 		else
 		{
@@ -459,7 +470,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 		return -(grid.getCellPadding() + this.m_height);
 	}
 	
-	private void resetScroll()
+	private void resetScrollValues()
 	{
 		m_scrollX = m_scrollY = 0;
 	}
@@ -468,7 +479,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 	{
 		if( !m_viewContext.stateContext.isEntered(State_ViewingCell.class) )
 		{
-			resetScroll();
+			resetScrollValues();
 		}
 		else
 		{
@@ -482,8 +493,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 		targetCoord.calcPoint(point_out, grid.getCellWidth(), grid.getCellHeight(), grid.getCellPadding(), 1);
 		point_out.incY(this.calcYOffsetFromCellTop(grid));
 		
-		point_out.incX(m_scrollX);
-		point_out.incY(m_scrollY);
+		point_out.incX(this.calcScrollXOffset(grid));
 		
 		if( forTargetLayout )
 		{
@@ -557,7 +567,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 			m_basePositionProgress += floatingState.getLastTimeStep();
 			mantissa = m_basePositionProgress / m_viewContext.config.cellSizeChangeTime_seconds;
 			mantissa = U_Math.clampMantissa(mantissa);
-			mantissa = U_View.easeMantissa(mantissa);
+			mantissa = U_View.easeMantissa(mantissa, m_viewContext.config.cellRetractionEasing);
 		}
 		else
 		{
@@ -583,6 +593,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 	{
 		Camera camera = m_viewContext.appContext.cameraMngr.getCamera();
 		camera.calcScreenPoint(m_position, s_utilPoint1);
+		s_utilPoint1.inc(m_scrollX, m_scrollY, 0);
 		s_utilPoint1.round();
 		
 		boolean has3dTransforms = m_viewContext.appContext.platformInfo.has3dTransforms();

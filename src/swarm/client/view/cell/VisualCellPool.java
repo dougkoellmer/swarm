@@ -63,7 +63,7 @@ public class VisualCellPool implements I_CellPoolDelegate
 			@Override
 			public VisualCell newInstance()
 			{
-				return new VisualCell(spinnerFactory.newSpinner(), sandboxMngr, viewContext.appContext.cameraMngr, viewContext.config.cellSizeChangeTime_seconds);
+				return new VisualCell(spinnerFactory.newSpinner(), sandboxMngr, viewContext.appContext.cameraMngr, viewContext.config.cellRetractionEasing, viewContext.config.cellSizeChangeTime_seconds);
 			}
 		};
 		

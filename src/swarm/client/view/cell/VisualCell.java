@@ -3,6 +3,7 @@ package swarm.client.view.cell;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
+import swarm.client.app.A_ClientApp;
 import swarm.client.app.AppContext;
 import swarm.client.entities.BufferCell;
 import swarm.client.entities.I_BufferCellListener;
@@ -11,6 +12,7 @@ import swarm.client.view.E_ZIndex;
 import swarm.client.view.S_UI;
 import swarm.client.view.U_Css;
 import swarm.client.view.U_View;
+import swarm.client.view.ViewContext;
 import swarm.client.view.sandbox.SandboxManager;
 import swarm.client.view.tabs.code.I_CodeLoadListener;
 import swarm.client.view.widget.UIBlocker;
@@ -111,9 +113,11 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	private boolean m_isFocused = false;
 	private LayoutState m_layoutState = LayoutState.NOT_CHANGING;
 	private final double m_sizeChangeTime;
+	private final double m_retractionEasing;
 	
-	public VisualCell(I_CellSpinner spinner, SandboxManager sandboxMngr, CameraManager cameraMngr, double sizeChangeTime)
+	public VisualCell(I_CellSpinner spinner, SandboxManager sandboxMngr, CameraManager cameraMngr, double retractionEasing, double sizeChangeTime)
 	{
+		m_retractionEasing = retractionEasing;
 		m_spinner = spinner;
 		m_cameraMngr = cameraMngr;
 		m_sandboxMngr = sandboxMngr;
@@ -203,7 +207,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 			m_baseChangeValue += timeStep;
 			double mantissa = m_baseChangeValue / m_sizeChangeTime;
 			mantissa = U_Math.clampMantissa(mantissa);
-			mantissa = U_View.easeMantissa(mantissa);
+			mantissa = U_View.easeMantissa(mantissa, m_retractionEasing);
 			//s_logger.severe(mantissa+"");
 			
 			this.updateLayout(mantissa);
