@@ -2,6 +2,8 @@ package swarm.client.navigation;
 
 import java.util.logging.Logger;
 
+import javax.persistence.criteria.Root;
+
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Overflow;
 import com.google.gwt.event.dom.client.ScrollEvent;
@@ -43,6 +45,11 @@ import swarm.shared.utils.U_Math;
 
 public class ScrollNavigator implements I_StateEventListener
 {
+	public interface I_ScrollListener
+	{
+		void onScroll();
+	}
+	
 	private static final Logger s_logger = Logger.getLogger(ScrollNavigator.class.getName());
 	
 	private final Action_Camera_SnapToPoint.Args m_args_SnapToPoint = new Action_Camera_SnapToPoint.Args();
@@ -68,6 +75,8 @@ public class ScrollNavigator implements I_StateEventListener
 	private final Rect m_utilRect2 = new Rect();
 	private final CellSize m_utilCellSize = new CellSize();
 	
+	private I_ScrollListener m_scrollListener = null;
+	
 	public ScrollNavigator(ViewContext viewContext, Panel scrollContainer, Panel scrollee, Panel mouseLayer)
 	{
 		m_viewContext = viewContext;
@@ -87,7 +96,8 @@ public class ScrollNavigator implements I_StateEventListener
 				State_ViewingCell viewingState =  m_viewContext.stateContext.getEnteredState(State_ViewingCell.class);
 				if( viewingState != null )
 				{
-					setTargetLayout((VisualCell)viewingState.getCell().getVisualization());
+					VisualCell cell = (VisualCell)viewingState.getCell().getVisualization();
+					setTargetLayout(cell);
 					m_viewContext.cellMngr.updateCellTransforms(0.0);
 				}
 				else
@@ -96,11 +106,20 @@ public class ScrollNavigator implements I_StateEventListener
 					//---		that fires a scroll event, so valid case here...ASSERT removed for now.
 					//smU_Debug.ASSERT(false, "Expected viewing state to be entered.");
 				}
+				
+				if( m_scrollListener != null )  m_scrollListener.onScroll();
 			}
 			
 		}, ScrollEvent.getType());
 		
 		this.toggleScrollBars(null);
+	}
+	
+	public void addScrollListener(I_ScrollListener listener)
+	{
+		if( m_scrollListener != null )  throw new Error(); // TODO: allow multiple listeners if necessary
+		
+		m_scrollListener = listener;
 	}
 	
 	public Panel getScrollContainer()
@@ -570,11 +589,13 @@ public class ScrollNavigator implements I_StateEventListener
 		{
 			case DID_UPDATE:
 			{
-				if ( event.getState() instanceof State_ViewingCell )
+				/*if ( event.getState() instanceof State_ViewingCell )
 				{
-					//if( event.getState().getUpdateCount() % 5 == 0 )
-						//s_logger.severe(m_viewContext.appContext.cameraMngr.getCamera().getPosition() + "");
-				}
+					if( event.getState().getUpdateCount() % 5 == 0 )
+					{
+						s_logger.severe(this.getScrollY() +"");
+					}
+				}*/
 				
 				break;
 			}

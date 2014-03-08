@@ -14,6 +14,8 @@ import swarm.client.managers.CellBuffer;
 import swarm.client.managers.CellBufferManager;
 import swarm.client.navigation.BrowserNavigator;
 import swarm.client.navigation.BrowserNavigator.I_StateChangeListener;
+import swarm.client.navigation.ScrollNavigator;
+import swarm.client.navigation.ScrollNavigator.I_ScrollListener;
 import swarm.client.navigation.U_CameraViewport;
 import swarm.client.states.camera.Action_Camera_SnapToPoint;
 import swarm.client.states.camera.Action_Camera_SetViewSize;
@@ -124,10 +126,10 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 		
 		this.add(m_innerContainer);
 		
-		m_viewContext.scrollNavigator.getScrollContainer().addDomHandler(new ScrollHandler()
+		m_viewContext.scrollNavigator.addScrollListener(new I_ScrollListener()
 		{
 			@Override
-			public void onScroll(ScrollEvent event)
+			public void onScroll()
 			{
 				State_ViewingCell viewingState =  m_viewContext.stateContext.getEnteredState(State_ViewingCell.class);
 				if( viewingState != null )
@@ -154,8 +156,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 					//smU_Debug.ASSERT(false, "Expected viewing state to be entered.");
 				}
 			}
-			
-		}, ScrollEvent.getType());
+		});
 	}
 	
 	private void setAlpha(double alpha)
