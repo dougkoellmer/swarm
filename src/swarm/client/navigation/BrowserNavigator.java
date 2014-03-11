@@ -30,7 +30,6 @@ import swarm.shared.json.A_JsonFactory;
 import swarm.shared.json.I_JsonObject;
 import swarm.shared.statemachine.A_Action;
 import swarm.shared.statemachine.A_State;
-import swarm.shared.statemachine.E_StateTimeType;
 import swarm.shared.statemachine.I_StateEventListener;
 import swarm.shared.statemachine.StateContext;
 import swarm.shared.statemachine.StateEvent;
@@ -615,7 +614,7 @@ public class BrowserNavigator implements I_StateEventListener
 	
 	public void setPositionForFloatingState(A_State state, Point point, boolean force)
 	{
-		double timeInState = state.getTimeInState(E_StateTimeType.TOTAL);
+		double timeInState = state.getTotalTimeInState();
 		if( force || timeInState - m_lastTimeFloatingStateSet >= m_floatingHistoryUpdateRate )
 		{
 			m_historyManager.setState(FLOATING_STATE_PATH, point);

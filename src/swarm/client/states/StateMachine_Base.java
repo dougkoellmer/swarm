@@ -217,11 +217,11 @@ public class StateMachine_Base extends A_StateMachine implements I_TransactionRe
 		{
 			DialogData data = m_asyncDialogQueue.get(0);
 			
-			machine_setState(this, data.m_T__extends__State_AsyncDialog, data.m_constructor);
+			setState(this, data.m_T__extends__State_AsyncDialog, data.m_constructor);
 		}
 		else
 		{
-			machine_popState(this);
+			popState(this);
 		}
 	}
 	
@@ -239,7 +239,7 @@ public class StateMachine_Base extends A_StateMachine implements I_TransactionRe
 	{
 		if( m_asyncDialogQueue.size() == 0 )
 		{
-			this.machine_pushState(this, T, constructor);
+			this.pushState(this, T, constructor);
 			
 			m_asyncDialogQueue.add(null);
 		}
@@ -327,7 +327,7 @@ public class StateMachine_Base extends A_StateMachine implements I_TransactionRe
 	{
 		if( this.getCurrentState() == null )
 		{
-			machine_setState(this, State_Initializing.class);
+			setState(this, State_Initializing.class);
 		}
 	}
 	

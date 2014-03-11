@@ -9,7 +9,7 @@ public class Action_Base_ShowSupplementState extends A_Action
 	@Override
 	public void perform(A_ActionArgs args)
 	{
-		container_foregroundState(this.getState(), StateMachine_Tabs.class);
+		foregroundState(this.getState(), StateMachine_Tabs.class);
 	}
 	
 	@Override

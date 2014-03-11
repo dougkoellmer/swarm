@@ -14,37 +14,40 @@ import swarm.shared.debugging.U_Debug;
  */
 public abstract class A_State extends A_BaseStateObject
 {
-	private static final Logger s_logger = Logger.getLogger(A_State.class.getName());
+	//--- DRK > Time and update count trackers.
+	private int m_foregroundedUpdateCount = 0;
+	private int m_totalUpdateCount = 0;
+	private double m_totalTimeInState = 0.0;
+	private double m_foregroundedTimeInState = 0.0;
+	private double m_lastTimeStep = 0;
 	
-	private float m_totalTimeInState = 0.0f;
-	private float m_foregroundedTimeInState = 0.0f;
-	
+	//--- DRK > State lifecycle trackers.
 	private boolean m_isForegrounded = false;
 	private boolean m_isEntered = false;
-	
 	private boolean m_isEntering = false;
 	private boolean m_isForegrounding = false;
 	
-	A_State m_stateBeneath = null;
-	
-	private HashMap<Class<? extends A_Action>, Boolean> m_isPerformableOverrides = new HashMap<Class<? extends A_Action>, Boolean>();
-	
+	//--- DRK > Tree/family relationships.
 	A_State m_parent = null;
-	
+	A_State m_stateBeneath = null;
 	Class<? extends A_State> m_previousState = null;
 	Class<? extends A_State> m_blockingState = null;
-	
 	private Class<? extends A_Action> m_lastActionPerformed = null;
-	
-	private double m_lastTimeStep = 0;
-	
-	private int m_foregroundedUpdateCount = 0;
-	private int m_totalUpdateCount = 0;
-	
 	private ArrayList<A_Action> m_queuedActionsToRegister = null;
 	
 	protected A_State() 
 	{
+	}
+	
+	private void clean()
+	{
+		m_totalUpdateCount = 0;
+		m_foregroundedUpdateCount = 0;
+		m_blockingState = null;
+		m_totalTimeInState = 0.0;
+		m_foregroundedTimeInState = 0.0;
+		m_isForegrounded = false;
+		m_isEntered = false;
 	}
 	
 	void onRegistered()
@@ -60,7 +63,7 @@ public abstract class A_State extends A_BaseStateObject
 		}
 	}
 	
-	protected void queueActionRegistration(A_Action action)
+	private void queueActionRegistration(A_Action action)
 	{
 		m_queuedActionsToRegister = m_queuedActionsToRegister != null ? m_queuedActionsToRegister : new ArrayList<A_Action>();
 		m_queuedActionsToRegister.add(action);
@@ -108,9 +111,29 @@ public abstract class A_State extends A_BaseStateObject
 		return m_isEntered;
 	}
 	
+	public int getForegroundedUpdateCount()
+	{
+		return m_foregroundedUpdateCount;
+	}
+	
 	public int getUpdateCount()
 	{
 		return m_totalUpdateCount;
+	}
+	
+	public double getTotalTimeInState()
+	{
+		return m_totalTimeInState;
+	}
+	
+	public double getForegroundedTimeInState()
+	{
+		return m_foregroundedTimeInState;
+	}
+	
+	public double getBackgroundedTimeInState()
+	{
+		return m_totalTimeInState - m_foregroundedTimeInState;
 	}
 	
 	public Class<? extends A_State> getBlockingState()
@@ -118,19 +141,9 @@ public abstract class A_State extends A_BaseStateObject
 		return m_blockingState;
 	}
 	
-	public int getForegroundedUpdateCount()
-	{
-		return m_foregroundedUpdateCount;
-	}
-	
 	public double getLastTimeStep()
 	{
 		return m_lastTimeStep;
-	}
-	
-	public Class<? extends A_State> getPreviousState()
-	{
-		return m_previousState;
 	}
 	
 	public Class<? extends A_Action> getLastActionPerformed()
@@ -148,41 +161,9 @@ public abstract class A_State extends A_BaseStateObject
 		return m_stateBeneath;
 	}
 	
-	public float getTimeInState(E_StateTimeType eTimeType)
+	public Class<? extends A_State> getPreviousState()
 	{
-		eTimeType = eTimeType == null ? E_StateTimeType.TOTAL : eTimeType;
-		
-		switch(eTimeType)
-		{
-			case FOREGROUNDED:	return m_foregroundedTimeInState;
-			case TOTAL:			return m_totalTimeInState;
-			
-			// TODO: Probably not useful....might need a another member to track this in a useful manner.
-			case BACKGROUNDED:	return m_totalTimeInState - m_foregroundedTimeInState;
-		}
-		
-		return 0.0f;
-	}
-	
-	private void clean()
-	{
-		m_blockingState = null;
-		m_totalTimeInState = 0.0f;
-		m_foregroundedTimeInState = 0.0f;
-		m_isForegrounded = false;
-		m_isEntered = false;
-		m_totalUpdateCount = 0;
-		m_foregroundedUpdateCount = 0;
-
-		m_isPerformableOverrides.clear();
-	}
-	
-	protected void setPerformableOverride(Class<? extends A_Action> T, boolean perfomable)
-	{
-		U_Debug.ASSERT(m_parent != null );
-		U_Debug.ASSERT(m_isEntered);
-		
-		m_isPerformableOverrides.put(T, perfomable);
+		return m_previousState;
 	}
 	
 	public boolean performAction(Class<? extends A_Action> T)
@@ -199,35 +180,28 @@ public abstract class A_State extends A_BaseStateObject
 			return false;
 		}
 		
-		if( !action.suppressLog() )
-		{
-			//s_logger.log(Level.INFO, "Will perform action: " + action.getClass().getName());
-		}
-		
 		boolean performable = this.isActionPerformable_private(action, args);
 		
 		if( !performable )
-		{				
-			//s_logger.log(Level.INFO, "Action not perfomable: " + action.getClass().getName());
-			
+		{
 			return false;
 		}
 		else
 		{
-			this.m_lastActionPerformed = T;
+			m_lastActionPerformed = T;
 			
 			StateContext context = m_context;
 
 			action.m_state = this;
 			context.queueEvent(new StateEvent(this, action, args));
 			{
-				//smA_Action.s_actionStack.add(action);
+				//A_Action.s_actionStack.add(action);
 				
 				action.prePerform(args);
 				
 				action.perform(args);
 			
-				//smA_Action.s_actionStack.remove(smA_Action.s_actionStack.size()-1);
+				//A_Action.s_actionStack.remove(smA_Action.s_actionStack.size()-1);
 			}
 			action.m_state = null;
 
@@ -244,33 +218,12 @@ public abstract class A_State extends A_BaseStateObject
 	
 	private boolean isActionPerformable_private(A_Action action, A_ActionArgs args)
 	{
-		boolean perfomable = true;
-
-		if( !this.isActionLegal(action) )
+		if ( !this.isEntered() )
 		{
-			perfomable = false;
-		}
-		else
-		{
-			action.m_state = this;
-			{
-				perfomable = action.isPerformable(args);
-			}
-			action.m_state = null;
-		}
-		
-		return perfomable;
-	}
-	
-	private boolean isActionLegal(A_Action action)
-	{
-		if ( !this.m_isEntered )
-		{
-			U_Debug.ASSERT(false);
 			return false;
 		}
 		
-		if( !this.m_isForegrounded )
+		if( !m_isForegrounded )
 		{
 			if ( !action.isPerformableInBackground() )
 			{
@@ -278,23 +231,15 @@ public abstract class A_State extends A_BaseStateObject
 			}
 		}
 		
-		Class<? extends A_State> actionState = action.getStateAssociation();
-
-		//if( actionState.isInstance(this) ) // TODO: this check is kinda slow (string comparison) if implemented correctly in GWT, so ignoring for now
+		boolean isPerformable;
+		action.m_state = this;
 		{
-			if ( m_isPerformableOverrides.containsKey(action.getClass()) )
-			{
-				return m_isPerformableOverrides.get(action.getClass());
-			}
-			
-			return true;
+			isPerformable = action.isPerformable(args);
 		}
+		action.m_state = null;
 		
-		//return false;
+		return isPerformable;
 	}
-	
-	
-	
 	
 	void didEnter_internal(A_StateConstructor constructor)
 	{
@@ -308,8 +253,6 @@ public abstract class A_State extends A_BaseStateObject
 		this.clean();
 		
 		m_isEntered = true;
-		
-		//s_logger.log(Level.INFO, "Will enter state: " + this.getClass().getName());
 		
 		root.queueEvent(new StateEvent(E_StateEventType.DID_ENTER, this));
 		
@@ -326,13 +269,11 @@ public abstract class A_State extends A_BaseStateObject
 	{
 		m_isForegrounded = true;
 		
-		m_foregroundedTimeInState = 0.0f;
+		m_foregroundedTimeInState = 0.0;
 		m_foregroundedUpdateCount = 0;
 		m_blockingState = null;
 		
 		StateContext context = m_context;
-		
-		//s_logger.log(Level.INFO, "Will foreground state: " + this.getClass().getName());
 		
 		context.queueEvent(new StateEvent(E_StateEventType.DID_FOREGROUND, this));
 		
@@ -349,8 +290,6 @@ public abstract class A_State extends A_BaseStateObject
 	{
 		StateContext context = m_context;
 		
-		U_Debug.ASSERT(m_isEntered, "smA_State::update1");
-		
 		if( !m_isEntered )  return;
 		
 		if( m_isEntered )
@@ -364,7 +303,7 @@ public abstract class A_State extends A_BaseStateObject
 			m_foregroundedUpdateCount++;
 		}
 		
-		context.queueEvent(new StateEvent( E_StateEventType.DID_UPDATE, this));
+		context.queueEvent(new StateEvent(E_StateEventType.DID_UPDATE, this));
 		
 		m_lastTimeStep = timeStep;
 		
@@ -379,11 +318,9 @@ public abstract class A_State extends A_BaseStateObject
 	{
 		StateContext context = m_context;
 		
-		//s_logger.log(Level.INFO, "Will background state: " + this.getClass().getName());
-		
 		context.queueEvent(new StateEvent(E_StateEventType.DID_BACKGROUND, this, blockingState));
 		
-		this.m_blockingState = blockingState;
+		m_blockingState = blockingState;
 		
 		this.willBackground(blockingState);
 		
@@ -398,8 +335,6 @@ public abstract class A_State extends A_BaseStateObject
 	void willExit_internal()
 	{
 		StateContext root = m_context;
-		
-		//s_logger.log(Level.INFO, "Will exit state: " + this.getClass().getName());
 		
 		root.queueEvent(new StateEvent(E_StateEventType.DID_EXIT, this));
 

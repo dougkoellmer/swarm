@@ -44,7 +44,7 @@ public class Action_SignInOrUp_SignUp extends A_Action
 		accountManager.signUp(creds, E_TransactionAction.QUEUE_REQUEST);
 		userManager.populateUser(E_TransactionAction.QUEUE_REQUEST_AND_FLUSH);
 
-		machine_pushState(this.getState().getParent(), State_AccountStatusPending.class);	
+		pushState(this.getState().getParent(), State_AccountStatusPending.class);	
 	}
 
 	@Override

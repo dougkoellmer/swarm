@@ -24,7 +24,6 @@ import swarm.shared.app.S_CommonApp;
 import swarm.shared.utils.U_Math;
 import swarm.shared.statemachine.A_Action;
 import swarm.shared.statemachine.A_State;
-import swarm.shared.statemachine.E_StateTimeType;
 import swarm.shared.statemachine.I_StateEventListener;
 import swarm.shared.statemachine.StateEvent;
 import swarm.shared.structs.Point;
@@ -499,7 +498,7 @@ public class Magnifier extends FlowPanel implements I_StateEventListener
 						{
 							if( event.getState().isEntered() )
 							{
-								double timeMantissa = event.getState().getTimeInState(E_StateTimeType.TOTAL) / m_fadeInTime_seconds;
+								double timeMantissa = event.getState().getTotalTimeInState() / m_fadeInTime_seconds;
 								timeMantissa = U_Math.clamp(timeMantissa, 0, 1);
 								
 								this.setAlpha(m_baseAlpha + (1-m_baseAlpha)*timeMantissa);

@@ -17,28 +17,15 @@ public abstract class A_StateMachine extends A_State
 	{
 	}
 	
-	void internal_setState(Class<? extends A_State> T, A_StateConstructor constructor)
+	public <T extends A_State> T getCurrentState()
 	{
-		A_State currentState = this.getCurrentState();
-		A_State stateBeneath = null;
-		
-		if( currentState != null )
-		{
-			stateBeneath = this.m_currentState.getStateBeneath();
-			this.exitSubState(currentState);
-		}
-		
-		A_State newState = m_context.getInstance(T);
-		
-		this.enterSubState(newState, stateBeneath, false, constructor);
+		return (T) m_currentState;
 	}
 	
 	void pushState_internal(Class<? extends A_State> T, A_StateConstructor constructor)
 	{
 		A_State newState		= m_context.getInstance(T);
 		A_State currentState = this.getCurrentState();
-		
-		U_Debug.ASSERT(currentState != null);
 		
 		if( currentState == null )
 		{
@@ -62,38 +49,48 @@ public abstract class A_StateMachine extends A_State
 		//		A 3-state stack with the middle state transparent would require us to foreground
 		//		both the first and second state in the stack.
 		
-		A_State poppedState = this.getCurrentState();
-		A_State stateBeneath = poppedState.getStateBeneath();
+		A_State stateToPop = this.getCurrentState();
+		A_State stateBeneath = stateToPop.getStateBeneath();
 		
-		boolean validPop = poppedState != null && stateBeneath != null;
-		U_Debug.ASSERT(validPop, "internal_popState1");
+		boolean canPop = stateToPop != null && stateBeneath != null;
 		
-		if( !validPop )
+		if( !canPop )
 		{
 			return;
 		}
 		
-		this.exitSubState(poppedState);
+		this.exitSubState(stateToPop);
 		
 		m_currentState = stateBeneath;
 		
-		if( !poppedState.isTransparent() )
+		if( !stateToPop.isTransparent() )
 		{
-			m_currentState.didForeground_internal(poppedState.getClass(), args);
+			m_currentState.didForeground_internal(stateToPop.getClass(), args);
 		}
 	}
 	
-	public <T extends A_State> T getCurrentState()
+	void setState_internal(Class<? extends A_State> T, A_StateConstructor constructor)
 	{
-		return (T) m_currentState;
+		A_State currentState = this.getCurrentState();
+		A_State stateBeneath = null;
+		
+		if( currentState != null )
+		{
+			stateBeneath = this.m_currentState.getStateBeneath();
+			this.exitSubState(currentState);
+		}
+		
+		A_State newState = m_context.getInstance(T);
+		
+		this.enterSubState(newState, stateBeneath, false, constructor);
 	}
 	
 	@Override
 	void didEnter_internal(A_StateConstructor constructor)
 	{
-		U_Debug.ASSERT(m_currentState == null);
-
 		super.didEnter_internal(constructor);
+		
+		// nothing to do!
 	}
 	
 	@Override
@@ -160,12 +157,6 @@ public abstract class A_StateMachine extends A_State
 	
 	private void enterSubState(A_State stateToEnter, A_State stateBeneath, boolean isPush, A_StateConstructor constructor)
 	{
-		boolean invalidSet = (this.m_currentState != null) && m_currentState == stateToEnter && m_currentState.isEntered();
-		
-		U_Debug.ASSERT(!invalidSet, "enterSubState1");
-		
-		//smU_Debug.ASSERT(this.checkLegalStateManipulation());
-	
 		stateToEnter.m_stateBeneath = stateBeneath;
 		stateToEnter.m_previousState = isPush ? null : (this.m_currentState != null ? this.m_currentState.getClass() : null);
 		stateToEnter.m_parent = this;

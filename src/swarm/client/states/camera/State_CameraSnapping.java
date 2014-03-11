@@ -305,7 +305,7 @@ public class State_CameraSnapping extends A_State implements I_StateEventListene
 				testCell.onAddressFound(m_targetAddress);
 			}
 			
-			machine_setState(getParent(), State_ViewingCell.class, constructor);
+			setState(getParent(), State_ViewingCell.class, constructor);
 			
 			return;
 		}

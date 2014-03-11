@@ -115,7 +115,7 @@ public class State_Initializing extends A_State implements I_TransactionResponse
 	{
 		if( this.isForegrounded() && m_successCount >= m_requiredSuccessCount )
 		{
-			machine_setState(getParent(), StateContainer_Base.class);
+			setState(getParent(), StateContainer_Base.class);
 			
 			StateMachine_Base baseController = getContext().getEnteredState(StateMachine_Base.class);
 			

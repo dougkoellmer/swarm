@@ -68,12 +68,7 @@ public class StateContext
 		A_Action registeredAction = m_actionRegistry.get(T);
 	
 		if ( registeredAction != null )
-		{
-			if ( registeredAction.m_state != null )
-			{
-				U_Debug.ASSERT(false, "Action reuse.");
-			}
-			
+		{			
 			return registeredAction;
 		}
 		
@@ -187,13 +182,13 @@ public class StateContext
 		{
 			if ( registeredState.isEntered() )
 			{
-				U_Debug.ASSERT(false, "Tried to reuse state instance.");
+				//"Tried to reuse state instance.";
 			}
 			
 			return registeredState;
 		}
 
-		U_Debug.ASSERT(false, "No state instance registered.");
+		//"No state instance registered."
 		
 		return null;
 	}
@@ -307,7 +302,10 @@ public class StateContext
 	
 	private void cleanListeners()
 	{
-		U_Debug.ASSERT(!m_processEventQueue_hasEntered);
+		if( !m_processEventQueue_hasEntered )
+		{
+			//assert
+		}
 		
 		for( int i = m_listeners.size()-1; i >= 0; i-- )
 		{
@@ -407,8 +405,6 @@ public class StateContext
 		
 		if( m_eventQueueIndex >= m_eventQueue.size() )
 		{
-			U_Debug.ASSERT(m_eventQueueIndex == m_eventQueue.size() );
-			
 			m_eventQueue.clear();
 			m_eventQueueIndex= 0;
 		}

@@ -13,8 +13,6 @@ import swarm.shared.debugging.U_Debug;
  */
 public abstract class A_Action extends A_BaseStateObject
 {
-	private static final Logger s_logger = Logger.getLogger(A_Action.class.getName());
-	
 	A_State m_state = null;
 	Class<? extends A_State> m_association;
 	

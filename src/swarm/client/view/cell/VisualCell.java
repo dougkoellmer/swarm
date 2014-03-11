@@ -387,6 +387,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		m_isSnapping = false;
 		m_isFocused = true;
 		
+		this.getElement().getStyle().setPosition(Position.ABSOLUTE);
 		E_ZIndex.CELL_FOCUSED.assignTo(this);
 		this.ensureTargetLayout();
 		
@@ -404,6 +405,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		m_isSnapping = false; // just in case.
 		m_isFocused = false;
 		
+		//this.getElement().getStyle().setPosition(Position.FIXED);
 		this.m_glassPanel.setVisible(true);
 		this.removeStyleName("visual_cell_focused");
 		U_Css.allowUserSelect(m_contentPanel.getElement(), false);

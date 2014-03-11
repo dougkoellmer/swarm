@@ -113,14 +113,14 @@ public class StateMachine_Camera extends A_StateMachine implements I_StateEventL
 		{
 			if( currentState instanceof State_CameraSnapping )
 			{
-				machine_setState(this, State_CameraFloating.class);
+				setState(this, State_CameraFloating.class);
 				
 				//TODO: Might want to ease the camera instead of stopping it short.
 				m_appContext.cameraMngr.setTargetPosition(m_appContext.cameraMngr.getCamera().getPosition(), false, true);
 			}
 			
 			State_GettingMapping.Constructor constructor = new State_GettingMapping.Constructor(address);
-			machine_pushState(this, State_GettingMapping.class, constructor);
+			pushState(this, State_GettingMapping.class, constructor);
 		}
 		
 		addressManager.getCellAddressMapping(address, E_TransactionAction.MAKE_REQUEST);
@@ -143,7 +143,7 @@ public class StateMachine_Camera extends A_StateMachine implements I_StateEventL
 		else
 		{
 			State_CameraSnapping.Constructor constructor = new State_CameraSnapping.Constructor(coord, address_nullable, targetPoint);
-			machine_setState(this, State_CameraSnapping.class, constructor);
+			setState(this, State_CameraSnapping.class, constructor);
 		}
 	}
 	
@@ -153,7 +153,7 @@ public class StateMachine_Camera extends A_StateMachine implements I_StateEventL
 		{
 			if( this.isForegrounded() )
 			{
-				machine_popState(this);
+				popState(this);
 			}
 			else
 			{
@@ -246,7 +246,7 @@ public class StateMachine_Camera extends A_StateMachine implements I_StateEventL
 		{
 			if( revealingState == null ) // DRK > Hmm, not sure why I put this check here, but shouldn't be harmful I guess.
 			{
-				machine_setState(this, State_CameraFloating.class);
+				setState(this, State_CameraFloating.class);
 			}
 		}
 		else if( this.getCurrentState() instanceof State_GettingMapping )

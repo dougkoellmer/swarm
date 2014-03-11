@@ -47,15 +47,15 @@ public class StateContainer_Base extends A_StateContainer
 			{
 				if ( !this.isStateEntered(m_consoleState_T) )
 				{
-					container_enterState(this, m_consoleState_T);
-					container_foregroundState(this, m_consoleState_T);
+					enterState(this, m_consoleState_T);
+					foregroundState(this, m_consoleState_T);
 				}
 			}
 			
 			if ( !this.isStateEntered(StateMachine_Camera.class) )
 			{
-				container_enterState(this, StateMachine_Camera.class);
-				container_foregroundState(this, StateMachine_Camera.class);
+				enterState(this, StateMachine_Camera.class);
+				foregroundState(this, StateMachine_Camera.class);
 			}
 		}
 	}

@@ -91,17 +91,17 @@ public class StateMachine_Account extends A_StateMachine
 			{
 				if( accountManager.isSignedIn() )
 				{
-					machine_setState(this, State_ManageAccount.class);
+					setState(this, State_ManageAccount.class);
 				}
 				else
 				{
-					machine_setState(this, State_SignInOrUp.class);
+					setState(this, State_SignInOrUp.class);
 				}
 			}
 			
 			if( !(this.getCurrentState() instanceof State_AccountStatusPending) )
 			{
-				machine_pushState(this, State_AccountStatusPending.class);
+				pushState(this, State_AccountStatusPending.class);
 			}
 		}
 		else
@@ -116,11 +116,11 @@ public class StateMachine_Account extends A_StateMachine
 		
 		ClientAccountManager accountManager = m_accountMngr;
 		
-		machine_beginBatch(this);
+		this.beginBatchOperation();
 	
 		if( (this.getCurrentState() instanceof State_AccountStatusPending) )
 		{
-			machine_popState(this);
+			popState(this);
 		}
 		
 		A_State currentState = this.getCurrentState();
@@ -129,18 +129,18 @@ public class StateMachine_Account extends A_StateMachine
 		{
 			if( currentState == null || currentState instanceof State_SignInOrUp )
 			{
-				machine_setState(this, State_ManageAccount.class);
+				setState(this, State_ManageAccount.class);
 			}
 		}
 		else
 		{
 			if( currentState == null || currentState instanceof State_ManageAccount )
 			{
-				machine_setState(this, State_SignInOrUp.class);
+				setState(this, State_SignInOrUp.class);
 			}
 		}
 		
-		machine_endBatch(this);
+		this.endBatchOperation();
 	}
 	
 	@Override 
@@ -154,7 +154,7 @@ public class StateMachine_Account extends A_StateMachine
 		{
 			if( this.getCurrentState() instanceof State_AccountStatusPending )
 			{
-				machine_popState(this);
+				popState(this);
 			}
 		}
 	}

@@ -129,6 +129,9 @@ public class SplitPanel extends SplitLayoutPanel implements I_UIElement
 		m_splitter.getElement().getStyle().setWidth(8, Unit.PX);
 		m_splitter.getParent().addDomHandler(mouseDownHandler, MouseDownEvent.getType());
 		
+		E_ZIndex.CONSOLE.assignTo(m_splitter);
+		E_ZIndex.CONSOLE.assignTo(m_tabPanel);
+		
 		m_panelButton.addStyleName("sm_panel_button");
 		
 		//--- DRK > I think it just looks a little sloppy if you experiment around and can drag this particular button.

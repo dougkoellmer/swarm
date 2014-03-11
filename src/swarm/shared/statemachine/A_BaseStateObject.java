@@ -3,13 +3,13 @@ package swarm.shared.statemachine;
 import swarm.shared.debugging.U_Debug;
 
 /**
- * This base class provides both actions and states with a unified API to safely manipulate the machine tree.
+ * This base class provides both actions and states with a unified API to safely manipulate any part of the machine tree.
  * More runtime protections, mostly for debugging purposes, may be added to this class in the future.
  * 
  * @author Doug
  *
  */
-public class A_BaseStateObject extends Object
+public class A_BaseStateObject
 {
 	StateContext m_context;
 	
@@ -18,83 +18,63 @@ public class A_BaseStateObject extends Object
 		return m_context;
 	}
 	
-	protected void container_enterState(A_State thisArg, Class<? extends A_State> T)
+	protected void enterState(A_State container, Class<? extends A_State> T)
 	{
-		this.container_enterState(thisArg, T, null);
+		this.enterState(container, T, null);
 	}
 	
-	protected void container_enterState(A_State thisArg, Class<? extends A_State> T, A_StateConstructor constructor)
+	protected void enterState(A_State container, Class<? extends A_State> T, A_StateConstructor constructor)
 	{
-		U_Debug.ASSERT(thisArg instanceof A_StateContainer);
-		
-		((A_StateContainer) thisArg).internal_enterState(T, constructor);
+		((A_StateContainer) container).enterState_internal(T, constructor);
 	}
 	
-	protected void container_foregroundState(A_State thisArg, Class<? extends A_State> T)
+	protected void foregroundState(A_State container, Class<? extends A_State> T)
 	{
-		U_Debug.ASSERT(thisArg instanceof A_StateContainer);
-		
-		((A_StateContainer) thisArg).internal_foregroundState(T);
+		((A_StateContainer) container).foregroundState_internal(T);
 	}
 	
-	protected void container_backgroundState(A_State thisArg, Class<? extends A_State> T)
+	protected void backgroundState(A_State container, Class<? extends A_State> T)
 	{
-		U_Debug.ASSERT(thisArg instanceof A_StateContainer);
-		
-		((A_StateContainer) thisArg).internal_backgroundState(T);
+		((A_StateContainer) container).backgroundState_internal(T);
 	}
 	
-	protected void container_exitState(A_State thisArg, Class<? extends A_State> T)
+	protected void container_exitState(A_State container, Class<? extends A_State> T)
 	{
-		U_Debug.ASSERT(thisArg instanceof A_StateContainer);
-		
-		((A_StateContainer) thisArg).internal_exitState(T);
+		((A_StateContainer) container).exitState_internal(T);
 	}
 	
-	protected void machine_pushState(A_State thisArg, Class<? extends A_State> T)
+	protected void pushState(A_State machine, Class<? extends A_State> T)
 	{
-		this.machine_pushState(thisArg, T, null);
+		this.pushState(machine, T, null);
 	}
 	
-	protected void machine_pushState(A_State thisArg, Class<? extends A_State> T, A_StateConstructor constructor)
-	{
-		//smU_Debug.ASSERT(m_parent.checkLegalStateManipulation());
-		
-		U_Debug.ASSERT(thisArg instanceof A_StateMachine);
-		
-		((A_StateMachine) thisArg).pushState_internal(T, constructor);
+	protected void pushState(A_State machine, Class<? extends A_State> T, A_StateConstructor constructor)
+	{		
+		((A_StateMachine) machine).pushState_internal(T, constructor);
 	}
 	
-	protected void machine_popState(A_State thisArg, Object ... args)
+	protected void popState(A_State machine, Object ... args)
 	{
-		//smU_Debug.ASSERT(this.checkLegalStateManipulation());
-		
-		U_Debug.ASSERT(thisArg instanceof A_StateMachine);
-		
-		((A_StateMachine) thisArg).popState_internal(args);
+		((A_StateMachine) machine).popState_internal(args);
 	}
 	
-	protected void machine_setState(A_State thisArg, Class<? extends A_State> T)
+	protected void setState(A_State machine, Class<? extends A_State> T)
 	{
-		this.machine_setState(thisArg, T, null);
+		this.setState(machine, T, null);
 	}
 	
-	protected void machine_beginBatch(A_State thisArg)
+	protected void setState(A_State machine, Class<? extends A_State> T, A_StateConstructor constructor)
 	{
-		thisArg.m_context.beginBatch();
+		((A_StateMachine) machine).setState_internal(T, constructor);
 	}
 	
-	protected void machine_endBatch(A_State thisArg)
+	protected void beginBatchOperation()
 	{
-		thisArg.m_context.endBatch();
+		m_context.beginBatch();
 	}
 	
-	protected void machine_setState(A_State thisArg, Class<? extends A_State> T, A_StateConstructor constructor)
+	protected void endBatchOperation()
 	{
-		//smU_Debug.ASSERT(this.checkLegalStateManipulation());
-
-		U_Debug.ASSERT(thisArg instanceof A_StateMachine);
-		
-		((A_StateMachine) thisArg).internal_setState(T, constructor);
+		m_context.endBatch();
 	}
 }

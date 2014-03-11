@@ -3,49 +3,23 @@ package swarm.client.view.cell;
 import java.util.logging.Logger;
 
 import swarm.client.app.ClientAppConfig;
-import swarm.client.app.AppContext;
 import swarm.client.entities.Camera;
-import swarm.client.entities.BufferCell;
-import swarm.client.entities.E_CodeStatus;
-import swarm.client.input.ClickManager;
-import swarm.client.input.I_ClickHandler;
-import swarm.client.managers.CameraManager;
-import swarm.client.managers.CellBuffer;
-import swarm.client.managers.CellBufferManager;
-import swarm.client.navigation.BrowserNavigator;
-import swarm.client.navigation.BrowserNavigator.I_StateChangeListener;
-import swarm.client.navigation.ScrollNavigator;
 import swarm.client.navigation.ScrollNavigator.I_ScrollListener;
 import swarm.client.navigation.U_CameraViewport;
 import swarm.client.states.camera.Action_Camera_SnapToPoint;
 import swarm.client.states.camera.Action_Camera_SetViewSize;
-import swarm.client.states.camera.Action_Camera_SnapToAddress;
 import swarm.client.states.camera.Action_Camera_SnapToCoordinate;
-import swarm.client.states.camera.Action_ViewingCell_Refresh;
 import swarm.client.states.camera.Event_Camera_OnCellSizeFound;
 import swarm.client.states.camera.StateMachine_Camera;
 import swarm.client.states.camera.State_CameraFloating;
 import swarm.client.states.camera.State_CameraSnapping;
-import swarm.client.states.camera.State_GettingMapping;
 import swarm.client.states.camera.State_ViewingCell;
-import swarm.client.states.code.Action_EditingCode_Preview;
-import swarm.client.states.code.Action_EditingCode_Save;
 import swarm.client.view.E_ZIndex;
 import swarm.client.view.I_UIElement;
 import swarm.client.view.U_Css;
 import swarm.client.view.U_View;
 import swarm.client.view.ViewContext;
-import swarm.client.view.tooltip.E_ToolTipType;
-import swarm.client.view.tooltip.ToolTipConfig;
-import swarm.client.view.tooltip.ToolTipManager;
-import swarm.client.view.widget.SpriteButton;
-import swarm.shared.app.S_CommonApp;
-import swarm.shared.debugging.U_Debug;
 import swarm.shared.entities.A_Grid;
-import swarm.shared.entities.E_CodeType;
-import swarm.shared.statemachine.A_Action;
-import swarm.shared.statemachine.A_State;
-import swarm.shared.statemachine.E_StateTimeType;
 import swarm.shared.statemachine.StateEvent;
 import swarm.shared.structs.CellAddressMapping;
 import swarm.shared.structs.CellSize;
@@ -57,16 +31,7 @@ import swarm.shared.utils.U_Math;
 
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style.Unit;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.ScrollEvent;
-import com.google.gwt.event.dom.client.ScrollHandler;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment;
-import com.google.gwt.user.client.ui.HasVerticalAlignment;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment.HorizontalAlignmentConstant;
 
 public class VisualCellHud extends FlowPanel implements I_UIElement
 {
@@ -284,7 +249,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 								if( m_alpha > 0 )
 								{
 									A_Grid grid = m_viewContext.appContext.gridMngr.getGrid();
-									double timeMantissa = event.getState().getTimeInState(E_StateTimeType.TOTAL) / m_fadeOutTime_seconds;
+									double timeMantissa = event.getState().getTotalTimeInState() / m_fadeOutTime_seconds;
 									timeMantissa = U_Math.clamp(timeMantissa, 0, 1);
 									this.setAlpha(m_baseAlpha * (1-timeMantissa));
 									

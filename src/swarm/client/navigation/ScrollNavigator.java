@@ -86,6 +86,8 @@ public class ScrollNavigator implements I_StateEventListener
 		m_scrollBarWidthDiv2 = (int) Math.floor(((double)U_Css.getScrollBarWidth())/2);
 		m_cellHudHeight = viewContext.appConfig.cellHudHeight;
 		
+		m_scrollContainer.getElement().getStyle().setZIndex(1);
+		
 		m_args_SnapToCoord.userData = this.getClass();
 		
 		m_scrollContainer.addDomHandler(new ScrollHandler()

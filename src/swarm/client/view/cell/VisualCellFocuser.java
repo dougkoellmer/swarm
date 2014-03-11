@@ -20,7 +20,6 @@ import swarm.shared.app.S_CommonApp;
 import swarm.shared.debugging.U_Debug;
 import swarm.shared.statemachine.A_Action;
 import swarm.shared.statemachine.A_State;
-import swarm.shared.statemachine.E_StateTimeType;
 import swarm.shared.statemachine.StateContext;
 import swarm.shared.statemachine.StateEvent;
 import swarm.shared.structs.GridCoordinate;
@@ -248,7 +247,7 @@ public class VisualCellFocuser extends FlowPanel implements I_UIElement
 			{
 				StateMachine_Camera cameraController = m_stateContext.getEnteredState(StateMachine_Camera.class);
 				
-				m_fadeStartTime = cameraController.getTimeInState(E_StateTimeType.TOTAL);
+				m_fadeStartTime = cameraController.getTotalTimeInState();
 				m_startAlpha = m_alpha;
 				
 				if( oldState == AnimationState.FADING_IN )
@@ -325,7 +324,7 @@ public class VisualCellFocuser extends FlowPanel implements I_UIElement
 					}
 				}
 				
-				double elapsed = currentState.getParent().getTimeInState(E_StateTimeType.TOTAL) - m_fadeStartTime;
+				double elapsed = currentState.getParent().getTotalTimeInState() - m_fadeStartTime;
 				double ratio = elapsed / m_fadeOutTime_seconds;
 				
 				if( ratio >= 1 )

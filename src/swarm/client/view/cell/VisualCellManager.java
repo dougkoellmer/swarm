@@ -1,49 +1,33 @@
 package swarm.client.view.cell;
 
-import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import swarm.client.app.S_Client;
-import swarm.client.app.AppContext;
 import swarm.client.entities.Camera;
 import swarm.client.entities.BufferCell;
 import swarm.client.managers.CellBuffer;
 import swarm.client.managers.CellBufferManager;
-import swarm.client.navigation.U_CameraViewport;
-import swarm.client.entities.I_BufferCellListener;
 import swarm.client.states.StateMachine_Base;
 import swarm.client.states.camera.Action_Camera_SetViewSize;
-import swarm.client.states.camera.Action_Camera_SnapToCoordinate;
 import swarm.client.states.camera.Action_Camera_SnapToPoint;
 import swarm.client.states.camera.Action_ViewingCell_Refresh;
-import swarm.client.states.camera.Event_Camera_OnCellSizeFound;
 import swarm.client.states.camera.StateMachine_Camera;
 import swarm.client.states.camera.State_CameraSnapping;
 import swarm.client.states.camera.State_ViewingCell;
-import swarm.client.structs.CellPool;
-import swarm.client.structs.I_CellPoolDelegate;
 import swarm.client.view.I_UIElement;
 import swarm.client.view.U_Css;
 import swarm.client.view.ViewContext;
-import swarm.client.view.cell.AlertManager.I_Delegate;
 import swarm.client.view.dialog.Dialog;
-import swarm.shared.app.S_CommonApp;
 import swarm.shared.debugging.U_Debug;
 import swarm.shared.entities.A_Grid;
 import swarm.shared.entities.U_Grid;
-import swarm.shared.memory.ObjectPool;
-import swarm.shared.reflection.I_Class;
-import swarm.shared.statemachine.A_Action;
-import swarm.shared.statemachine.A_State;
-import swarm.shared.statemachine.E_StateTimeType;
 import swarm.shared.statemachine.StateEvent;
 import swarm.shared.structs.CellAddress;
-import swarm.shared.structs.GridCoordinate;
 import swarm.shared.structs.Point;
 
 import com.google.gwt.dom.client.Style.Display;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.safehtml.shared.SafeHtml;
-import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.ui.Panel;
 
@@ -126,7 +110,22 @@ public class VisualCellManager implements I_UIElement
 		});
 	}
 	
+	private boolean contains(VisualCell[] cells, VisualCell cell)
+	{
+		for( int i = 0; i < cells.length; i++ )
+		{
+			if( cells[i] == cell )  return true;
+		}
+		
+		return false;
+	}
+	
 	public boolean updateCellTransforms(double timeStep)
+	{
+		return this.updateCellTransforms(timeStep, false);
+	}
+	
+	private boolean updateCellTransforms(double timeStep, boolean isViewStateTransition)
 	{
 		CellBufferManager cellManager = m_viewContext.appContext.cellBufferMngr;
 		CellBuffer cellBuffer = cellManager.getDisplayBuffer();
@@ -170,11 +169,12 @@ public class VisualCellManager implements I_UIElement
 			cellHeightPlusPadding = grid.getCellHeight() * scaling;
 		}
 		
+		boolean isViewingCell = m_viewContext.stateContext.isEntered(State_ViewingCell.class);
 		boolean use3dTransforms = m_viewContext.appContext.platformInfo.has3dTransforms();
+		int scrollX = m_viewContext.scrollNavigator.getScrollX();
+		int scrollY = m_viewContext.scrollNavigator.getScrollY();
 	
 		String scaleProperty = scaling < NO_SCALING ? U_Css.createScaleTransform(scaling, use3dTransforms) : null;
-		int scrollX = m_container.getParent().getElement().getScrollLeft();
-		int scrollY = m_container.getParent().getElement().getScrollTop();
 		
 		//--- DRK > NOTE: ALL DOM-manipulation related to cells should occur within this block.
 		//---		This might be an extraneous optimization in some browsers if they themselves have
@@ -188,25 +188,61 @@ public class VisualCellManager implements I_UIElement
 				
 				if( ithBufferCell == null )  continue;
 				
+				VisualCell ithVisualCell = (VisualCell) ithBufferCell.getVisualization();
+				
+				//if( cells_nullable.length > 0 && !this.contains(cells_nullable, ithVisualCell) )  continue;
+				
 				int ix = i % bufferWidth;
 				int iy = i / bufferWidth;
 				
 				double offsetX = (ix * (cellWidthPlusPadding));
 				double offsetY = (iy * (cellHeightPlusPadding));
 				
-				VisualCell ithVisualCell = (VisualCell) ithBufferCell.getVisualization();	
 				ithVisualCell.update(timeStep);
 				ithVisualCell.validate();
 				
 				offsetX += ((double)ithVisualCell.getXOffset())*scaling;
 				offsetY += ((double)ithVisualCell.getYOffset())*scaling;
 				
-				double translateX = basePoint.getX() + offsetX + scrollX;
-				double translateY = basePoint.getY() + offsetY + scrollY;
-				String translateProperty = U_Css.createTranslateTransform(translateX, translateY, use3dTransforms);
-				String transform = scaleProperty != null ? translateProperty + " " + scaleProperty : translateProperty;
-				String transformProperty = m_viewContext.appContext.platformInfo.getTransformProperty();
-				ithVisualCell.getElement().getStyle().setProperty(transformProperty, transform);
+				double translateX = basePoint.getX() + offsetX;
+				double translateY = basePoint.getY() + offsetY;
+				translateX += scrollX;
+				translateY += scrollY;
+				
+				if( isViewingCell )
+				{
+					ithVisualCell.getElement().getStyle().setLeft(translateX, Unit.PX);
+					ithVisualCell.getElement().getStyle().setTop(translateY, Unit.PX);
+					
+					if( scaleProperty != null ) // for now should always be null because viewing state doesn't allow z camera offset
+					{
+						String transformProperty = m_viewContext.appContext.platformInfo.getTransformProperty();
+						ithVisualCell.getElement().getStyle().setProperty(transformProperty, scaleProperty);
+					}
+					else
+					{
+						if( isViewStateTransition )
+						{
+							String transformProperty = m_viewContext.appContext.platformInfo.getTransformProperty();
+							ithVisualCell.getElement().getStyle().clearProperty(transformProperty);
+						}
+					}
+					
+					ithVisualCell.getElement().getOffsetTop();
+				}
+				else
+				{
+					String translateProperty = U_Css.createTranslateTransform(translateX, translateY, use3dTransforms);
+					String transform = scaleProperty != null ? translateProperty + " " + scaleProperty : translateProperty;
+					String transformProperty = m_viewContext.appContext.platformInfo.getTransformProperty();
+					ithVisualCell.getElement().getStyle().setProperty(transformProperty, transform);
+					
+					if( isViewStateTransition )
+					{
+						ithVisualCell.getElement().getStyle().clearLeft();
+						ithVisualCell.getElement().getStyle().clearTop();
+					}
+				}
 				
 				if( ithVisualCell.getParent() == null )
 				{
@@ -272,7 +308,7 @@ public class VisualCellManager implements I_UIElement
 						//---		after exiting viewing or snapping state. There's probably a more efficient way to determine if they're actually shrinking.
 						//---		This is just a catch-all.
 						if( (event.getState().getPreviousState() == State_ViewingCell.class || event.getState().getPreviousState() == State_CameraSnapping.class) &&
-							event.getState().getTimeInState(E_StateTimeType.TOTAL) <= m_viewContext.config.cellSizeChangeTime_seconds )
+							event.getState().getTotalTimeInState() <= m_viewContext.config.cellSizeChangeTime_seconds )
 						{
 							this.updateCellTransforms(event.getState().getLastTimeStep());
 						}
@@ -290,11 +326,21 @@ public class VisualCellManager implements I_UIElement
 				break;
 			}
 			
+			case DID_ENTER:
+			{
+				if( event.getState() instanceof State_ViewingCell )
+				{
+					this.updateCellTransforms(0.0, true);
+				}
+				
+				break;
+			}
+			
 			case DID_EXIT:
 			{
 				if( event.getState() instanceof State_ViewingCell )
 				{
-					clearAlerts();
+					this.updateCellTransforms(0.0, true);
 				}
 				
 				break;

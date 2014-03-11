@@ -21,19 +21,15 @@ public abstract class A_StateContainer extends A_State
 	
 	private A_State getChildForManipulation(Class<? extends A_State> T)
 	{
-		U_Debug.ASSERT(this.isForegrounded());
-		
 		A_State state = m_children.get(T);
 		
 		if ( state == null )
 		{
-			U_Debug.ASSERT(false);
 			return null;
 		}
 		
 		if ( !state.isEntered() )
 		{
-			U_Debug.ASSERT(false);
 			return null;
 		}
 		
@@ -56,17 +52,15 @@ public abstract class A_StateContainer extends A_State
 		return m_children.get(T) != null;
 	}
 	
-	void internal_enterState(Class<? extends A_State> T, A_StateConstructor constructor)
+	void enterState_internal(Class<? extends A_State> T, A_StateConstructor constructor)
 	{
 		if ( !this.isForegrounded() )
 		{
-			U_Debug.ASSERT(false);
 			return;
 		}
 		
 		if ( m_children.get(T) != null )
 		{
-			U_Debug.ASSERT(false);
 			return;
 		}
 		
@@ -79,11 +73,10 @@ public abstract class A_StateContainer extends A_State
 		m_childrenForegrounded.put(T, false);
 	}
 	
-	void internal_foregroundState(Class<? extends A_State> T)
+	void foregroundState_internal(Class<? extends A_State> T)
 	{
 		if ( !this.isForegrounded() )
 		{
-			U_Debug.ASSERT(false);
 			return;
 		}
 		
@@ -91,7 +84,6 @@ public abstract class A_StateContainer extends A_State
 	
 		if ( state.isForegrounded() )
 		{
-			U_Debug.ASSERT(false);
 			return;
 		}
 		
@@ -100,11 +92,10 @@ public abstract class A_StateContainer extends A_State
 		m_childrenForegrounded.put(T, true);
 	}
 	
-	void internal_backgroundState(Class<? extends A_State> T)
+	void backgroundState_internal(Class<? extends A_State> T)
 	{
 		if ( !this.isForegrounded() )
 		{
-			U_Debug.ASSERT(false);
 			return;
 		}
 		
@@ -112,7 +103,6 @@ public abstract class A_StateContainer extends A_State
 	
 		if ( !state.isForegrounded() )
 		{
-			U_Debug.ASSERT(false);
 			return;
 		}
 		
@@ -121,11 +111,10 @@ public abstract class A_StateContainer extends A_State
 		m_childrenForegrounded.put(T, false);
 	}
 	
-	void internal_exitState(Class<? extends A_State> T)
+	void exitState_internal(Class<? extends A_State> T)
 	{
 		if ( !this.isForegrounded() )
 		{
-			U_Debug.ASSERT(false);
 			return;
 		}
 		
@@ -146,10 +135,7 @@ public abstract class A_StateContainer extends A_State
 	
 	@Override
 	void didEnter_internal(A_StateConstructor constructor)
-	{
-		U_Debug.ASSERT(m_children == null);
-		U_Debug.ASSERT(m_childrenForegrounded == null);
-		
+	{		
 		super.didEnter_internal(constructor);
 		
 		m_children = new HashMap<Class<? extends A_State>, A_State>();

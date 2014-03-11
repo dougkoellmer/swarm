@@ -9,7 +9,7 @@ public class Action_Base_HideSupplementState extends A_Action
 	@Override
 	public void perform(A_ActionArgs args)
 	{
-		container_backgroundState(this.getState(), StateMachine_Tabs.class);
+		backgroundState(this.getState(), StateMachine_Tabs.class);
 	}
 	
 	@Override

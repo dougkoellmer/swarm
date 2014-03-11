@@ -31,7 +31,7 @@ public class State_GenericDialog extends A_State
 		@Override
 		public void perform(A_ActionArgs args)
 		{
-			machine_popState(getContext().getForegroundedState(StateMachine_Base.class));
+			popState(getContext().getForegroundedState(StateMachine_Base.class));
 		}
 	}
 	
