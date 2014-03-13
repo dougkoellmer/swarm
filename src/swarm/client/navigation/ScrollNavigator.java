@@ -204,7 +204,7 @@ public class ScrollNavigator implements I_StateEventListener
 	private void updateCameraViewRect(boolean updateBuffer, boolean maintainApparentPosition)
 	{
 		m_args_SetCameraViewSize.init(this.getWindowWidth(), this.getWindowHeight(), updateBuffer, maintainApparentPosition);
-		m_viewContext.stateContext.performAction(Action_Camera_SetViewSize.class, m_args_SetCameraViewSize);
+		m_viewContext.stateContext.perform(Action_Camera_SetViewSize.class, m_args_SetCameraViewSize);
 	}
 	
 	/*private void updateCameraFromScrollBars()

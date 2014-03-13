@@ -374,7 +374,7 @@ public class SignUpPanel extends VerticalPanel implements I_StateEventListener
 			SignUpCredentials creds = new SignUpCredentials(rememberMe, args);
 			
 			m_args_SignUp.setCreds(creds);
-			m_viewContext.stateContext.performAction(Action_SignInOrUp_SignUp.class, m_args_SignUp);
+			m_viewContext.stateContext.perform(Action_SignInOrUp_SignUp.class, m_args_SignUp);
 			
 			m_lastFocusedFieldIndex = focusedFieldIndex;
 			

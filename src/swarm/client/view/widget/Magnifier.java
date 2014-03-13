@@ -398,7 +398,7 @@ public class Magnifier extends FlowPanel implements I_StateEventListener
 			if ( setTarget )
 			{
 				m_args_SetCameraTarget.init(m_utilPoint, false, true);
-				m_viewContext.stateContext.performAction(Action_Camera_SnapToPoint.class, m_args_SetCameraTarget);
+				m_viewContext.stateContext.perform(Action_Camera_SnapToPoint.class, m_args_SetCameraTarget);
 			}
 		}
 		

@@ -91,12 +91,12 @@ public class StateContext
 		return null;
 	}
 	
-	public boolean performAction(Class<? extends A_Action> T)
+	public boolean perform(Class<? extends A_Action> T)
 	{
-		return performAction(T, null);
+		return perform(T, null);
 	}
 	
-	public boolean performAction(Class<? extends A_Action> T, A_ActionArgs args)
+	public boolean perform(Class<? extends A_Action> T, A_ActionArgs args)
 	{
 		A_State state = getEnteredStateForAction(T);
 		
@@ -105,19 +105,19 @@ public class StateContext
 		return state.performAction(T, args);
 	}
 	
-	public boolean isActionPerformable(Class<? extends A_Action> T)
+	public boolean isPerformable(Class<? extends A_Action> T)
 	{
-		return isActionPerformable(T, null);
+		return isPerformable(T, null);
 	}
 	
-	public boolean isActionPerformable(Class<? extends A_Action> T, A_ActionArgs args)
+	public boolean isPerformable(Class<? extends A_Action> T, A_ActionArgs args)
 	{
 		A_State state = getEnteredStateForAction(T);
 		
-		return isActionPerformable_private(state, T, args);
+		return isPerformable_private(state, T, args);
 	}
 	
-	private boolean isActionPerformable_private(A_State state, Class<? extends A_Action> T, A_ActionArgs args)
+	private boolean isPerformable_private(A_State state, Class<? extends A_Action> T, A_ActionArgs args)
 	{
 		if( state == null )
 		{

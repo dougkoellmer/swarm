@@ -119,7 +119,7 @@ public class VisualCellHudInner extends HorizontalPanel implements I_StateEventL
 				
 				VisualCellHudInner.this.m_viewContext.cellMngr.clearAlerts();
 				
-				m_viewContext.stateContext.performAction(Action_ViewingCell_Refresh.class);
+				m_viewContext.stateContext.perform(Action_ViewingCell_Refresh.class);
 			}
 		});
 		
@@ -144,7 +144,7 @@ public class VisualCellHudInner extends HorizontalPanel implements I_StateEventL
 				s_utilPoint1.incZ(VisualCellHudInner.this.m_viewContext.appConfig.backOffDistance);
 				
 				m_args_SetCameraTarget.init(s_utilPoint1, false, true);
-				m_viewContext.stateContext.performAction(Action_Camera_SnapToPoint.class, m_args_SetCameraTarget);
+				m_viewContext.stateContext.perform(Action_Camera_SnapToPoint.class, m_args_SetCameraTarget);
 			}
 		});
 		
@@ -172,7 +172,7 @@ public class VisualCellHudInner extends HorizontalPanel implements I_StateEventL
 	
 	private void updateRefreshButton()
 	{
-		boolean canRefresh = m_viewContext.stateContext.isActionPerformable(Action_ViewingCell_Refresh.class);
+		boolean canRefresh = m_viewContext.stateContext.isPerformable(Action_ViewingCell_Refresh.class);
 		m_refresh.setEnabled(canRefresh);
 		
 		if( !canRefresh )

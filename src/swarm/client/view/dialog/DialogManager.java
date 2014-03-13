@@ -57,10 +57,10 @@ public class DialogManager implements I_UIElement
 				//---				so that I only have to call State_GenericDialog.Ok, and the system knows
 				//---				to call State_AsyncDialog.Ok because it is State_AsyncDialog that is foregrounded.
 				//---				Until then, I present the following somewhat sloppy workaround.
-				if( m_stateContext.performAction(State_GenericDialog.Ok.class) )
+				if( m_stateContext.perform(State_GenericDialog.Ok.class) )
 				{
 				}
-				else if( m_stateContext.performAction(State_AsyncDialog.Ok.class) )
+				else if( m_stateContext.perform(State_AsyncDialog.Ok.class) )
 				{
 					
 				}

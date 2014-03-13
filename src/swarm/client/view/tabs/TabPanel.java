@@ -128,7 +128,7 @@ public class TabPanel extends AbsolutePanel implements I_UIElement
 			public void onClick(int x, int y)
 			{
 				m_args_SelectTab.setIndex(tabIndex);
-				m_viewContext.stateContext.performAction(Action_Tabs_SelectTab.class, m_args_SelectTab);
+				m_viewContext.stateContext.perform(Action_Tabs_SelectTab.class, m_args_SelectTab);
 			}
 		});
 		

@@ -392,7 +392,7 @@ public class MouseNavigator implements I_UIElement, Mouse.I_Listener
 		m_utilPoint1.incZ(m_viewContext.appConfig.backOffDistance);
 		
 		m_args_SnapToPoint.init(m_utilPoint1, false, true);
-		m_viewContext.stateContext.performAction(Action_Camera_SnapToPoint.class, m_args_SnapToPoint);
+		m_viewContext.stateContext.perform(Action_Camera_SnapToPoint.class, m_args_SnapToPoint);
 	}
 	
 	private void onMouseClick()
@@ -478,7 +478,7 @@ public class MouseNavigator implements I_UIElement, Mouse.I_Listener
 				if( m_utilVector.calcLengthSquared() > 0)
 				{
 					m_args_SnapToPoint.init(m_utilPoint2, true, true);
-					m_viewContext.stateContext.performAction(Action_Camera_SnapToPoint.class, m_args_SnapToPoint);
+					m_viewContext.stateContext.perform(Action_Camera_SnapToPoint.class, m_args_SnapToPoint);
 				}
 				
 				m_utilPoint2.calcDifference(m_lastWorldPoint, m_utilVector);

@@ -68,7 +68,7 @@ public class ManageAccountPanel extends FlowPanel implements I_StateEventListene
 			@Override
 			public void onClick(int x, int y)
 			{
-				m_viewContext.stateContext.performAction(Action_ManageAccount_SignOut.class);
+				m_viewContext.stateContext.perform(Action_ManageAccount_SignOut.class);
 			}
 		});
 		

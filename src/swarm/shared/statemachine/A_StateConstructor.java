@@ -2,20 +2,15 @@ package swarm.shared.statemachine;
 
 public abstract class A_StateConstructor
 {
-	private final Object m_userData;
+	private final Object userData;
 	
 	public A_StateConstructor()
 	{
-		m_userData = null;
+		userData = null;
 	}
 	
-	public A_StateConstructor(Object userData)
+	public A_StateConstructor(Object inputUserData)
 	{
-		m_userData = userData;
-	}
-	
-	public Object getUserData()
-	{
-		return m_userData;
+		this.userData = inputUserData;
 	}
 }

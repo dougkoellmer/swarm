@@ -150,13 +150,13 @@ public class SplitPanel extends SplitLayoutPanel implements I_UIElement
 			@Override
 			public void onClick(int x, int y)
 			{
-				if( m_viewContext.stateContext.performAction(Action_Base_HideSupplementState.class) )
+				if( m_viewContext.stateContext.perform(Action_Base_HideSupplementState.class) )
 				{
 					m_lastTabPanelSize = m_tabPanel.getOffsetWidth();
 					
 					m_tweener.start(m_lastTabPanelSize, 0);
 				}
-				else if( m_viewContext.stateContext.performAction(Action_Base_ShowSupplementState.class) )
+				else if( m_viewContext.stateContext.perform(Action_Base_ShowSupplementState.class) )
 				{
 					double windowWidth = RootPanel.get().getOffsetWidth();
 					
@@ -381,14 +381,14 @@ public class SplitPanel extends SplitLayoutPanel implements I_UIElement
 	
 	private void showOrHideTabControllerStateFromManualResize()
 	{
-		boolean showable = m_viewContext.stateContext.isActionPerformable(Action_Base_ShowSupplementState.class);
-		boolean hideable = m_viewContext.stateContext.isActionPerformable(Action_Base_HideSupplementState.class);
+		boolean showable = m_viewContext.stateContext.isPerformable(Action_Base_ShowSupplementState.class);
+		boolean hideable = m_viewContext.stateContext.isPerformable(Action_Base_HideSupplementState.class);
 		
 		if( showable )
 		{
 			if( m_splitter.getAbsoluteLeft() > 0 )
 			{
-				m_viewContext.stateContext.performAction(Action_Base_ShowSupplementState.class);
+				m_viewContext.stateContext.perform(Action_Base_ShowSupplementState.class);
 			}
 		}
 		else if( hideable )
@@ -396,7 +396,7 @@ public class SplitPanel extends SplitLayoutPanel implements I_UIElement
 			if( m_splitter.getAbsoluteLeft() <= 0 )
 			{
 				m_lastTabPanelSize = 0;
-				m_viewContext.stateContext.performAction(Action_Base_HideSupplementState.class);
+				m_viewContext.stateContext.perform(Action_Base_HideSupplementState.class);
 			}
 		}
 	}

@@ -249,7 +249,7 @@ public class CellApi
 	{
 		if( rawAddress.equals("~") )
 		{
-			m_viewContext.stateContext.performAction(Action_ViewingCell_Refresh.class);
+			m_viewContext.stateContext.perform(Action_ViewingCell_Refresh.class);
 			
 			return;
 		}
@@ -262,7 +262,7 @@ public class CellApi
 		}
 		
 		m_snapAddressArgs.init(address);
-		m_viewContext.stateContext.performAction(Action_Camera_SnapToAddress.class, m_snapAddressArgs);
+		m_viewContext.stateContext.perform(Action_Camera_SnapToAddress.class, m_snapAddressArgs);
 	}
 	
 	private void alert(String message)
@@ -275,7 +275,7 @@ public class CellApi
 		Point point = new Point(x, y, z);
 
 		m_snapPointArgs.init(point, false, true);
-		m_viewContext.stateContext.performAction(Action_Camera_SnapToPoint.class, m_snapPointArgs);
+		m_viewContext.stateContext.perform(Action_Camera_SnapToPoint.class, m_snapPointArgs);
 	}
 	
 	/*private static void snapToRelativePoint(double x, double y, double z)
@@ -298,7 +298,7 @@ public class CellApi
 		}
 		
 		m_snapCoordArgs.init(coordinate);
-		m_viewContext.stateContext.performAction(Action_Camera_SnapToCoordinate.class, m_snapCoordArgs);
+		m_viewContext.stateContext.perform(Action_Camera_SnapToCoordinate.class, m_snapCoordArgs);
 	}
 	
 	private void snapToRelativeCoordinate(double m, double n)

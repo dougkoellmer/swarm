@@ -43,14 +43,72 @@ public class A_BaseStateObject
 		((A_StateContainer) container).exitState_internal(T);
 	}
 	
+	private A_State getMachineFromThis()
+	{
+		if( this instanceof A_Action )
+		{
+			A_State state = ((A_Action)this).getState();
+			
+			if( state instanceof A_StateMachine )
+			{
+				return state;
+			}
+			else if( state.getParent() instanceof A_StateMachine )
+			{
+				return state.getParent();
+			}
+		}
+		else if( this instanceof A_StateMachine )
+		{
+			return (A_State) this;
+		}
+		else if( this instanceof A_State )
+		{
+			A_State parent = ((A_State)this).getParent();
+			
+			if( parent instanceof A_StateMachine )
+			{
+				return parent;
+			}
+		}
+		
+		return null;
+	}
+	
+	protected void pushState(Class<? extends A_State> T)
+	{
+		this.pushState(T, (A_StateConstructor) null);
+	}
+	
+	protected void pushState(Class<? extends A_State> T, Object userData)
+	{
+		this.pushState(T, new A_StateConstructor(userData) {});
+	}
+	
+	protected void pushState(Class<? extends A_State> T, A_StateConstructor constructor_nullable)
+	{
+		this.pushState(this.getMachineFromThis(), T, constructor_nullable);
+	}
+	
 	protected void pushState(A_State machine, Class<? extends A_State> T)
 	{
 		this.pushState(machine, T, null);
 	}
 	
-	protected void pushState(A_State machine, Class<? extends A_State> T, A_StateConstructor constructor)
+	protected void pushState(A_State machine, Class<? extends A_State> T, Object userData)
 	{		
-		((A_StateMachine) machine).pushState_internal(T, constructor);
+		((A_StateMachine) machine).pushState_internal(T, new A_StateConstructor(userData){});
+	}
+	
+	protected void pushState(A_State machine, Class<? extends A_State> T, A_StateConstructor constructor_nullable)
+	{		
+		((A_StateMachine) machine).pushState_internal(T, constructor_nullable);
+	}
+	
+	
+	protected void popState(Object ... args)
+	{
+		this.popState(this.getMachineFromThis(), args);
 	}
 	
 	protected void popState(A_State machine, Object ... args)
@@ -58,14 +116,35 @@ public class A_BaseStateObject
 		((A_StateMachine) machine).popState_internal(args);
 	}
 	
+	protected void setState(Class<? extends A_State> T)
+	{
+		this.setState(T, (A_StateConstructor)null);
+	}
+	
+	protected void setState(Class<? extends A_State> T, Object userData)
+	{
+		this.setState(T, new A_StateConstructor(userData) {});
+	}
+	
+	protected void setState(Class<? extends A_State> T, A_StateConstructor constructor_nullable)
+	{
+		this.setState(this.getMachineFromThis(), T, constructor_nullable);
+	}
+	
+	
 	protected void setState(A_State machine, Class<? extends A_State> T)
 	{
 		this.setState(machine, T, null);
 	}
 	
-	protected void setState(A_State machine, Class<? extends A_State> T, A_StateConstructor constructor)
+	protected void setState(A_State machine, Class<? extends A_State> T, Object userData)
 	{
-		((A_StateMachine) machine).setState_internal(T, constructor);
+		((A_StateMachine) machine).setState_internal(T, new A_StateConstructor(userData) {});
+	}
+	
+	protected void setState(A_State machine, Class<? extends A_State> T, A_StateConstructor constructor_nullable)
+	{
+		((A_StateMachine) machine).setState_internal(T, constructor_nullable);
 	}
 	
 	protected void beginBatchOperation()

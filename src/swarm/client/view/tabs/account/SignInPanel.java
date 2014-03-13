@@ -309,11 +309,11 @@ public class SignInPanel extends VerticalPanel implements I_StateEventListener
 			
 			if( type == E_SubmitType.SIGN_IN )
 			{
-				m_viewContext.stateContext.performAction(Action_SignInOrUp_SignIn.class, m_actionArgs);
+				m_viewContext.stateContext.perform(Action_SignInOrUp_SignIn.class, m_actionArgs);
 			}
 			else if( type == E_SubmitType.RESET_PASSWORD )
 			{
-				m_viewContext.stateContext.performAction(Action_SignInOrUp_SetNewPassword.class, m_actionArgs);
+				m_viewContext.stateContext.perform(Action_SignInOrUp_SetNewPassword.class, m_actionArgs);
 			}
 			
 			m_lastFocusedFieldIndex = focusedFieldIndex;

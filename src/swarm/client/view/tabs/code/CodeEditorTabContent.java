@@ -129,7 +129,7 @@ public class CodeEditorTabContent extends AbsolutePanel implements I_TabContent,
 	
 	private void onSaveClicked()
 	{
-		if( !m_viewContext.stateContext.isActionPerformable(Action_EditingCode_Save.class) )
+		if( !m_viewContext.stateContext.isPerformable(Action_EditingCode_Save.class) )
 		{
 			return;
 		}
@@ -138,12 +138,12 @@ public class CodeEditorTabContent extends AbsolutePanel implements I_TabContent,
 		
 		onChange(); // one last time to make sure all changes are provided to the machine.
 		
-		m_viewContext.stateContext.performAction(Action_EditingCode_Save.class);
+		m_viewContext.stateContext.perform(Action_EditingCode_Save.class);
 	}
 	
 	private void onPreviewClicked()
 	{
-		if( !m_viewContext.stateContext.isActionPerformable(Action_EditingCode_Preview.class) )
+		if( !m_viewContext.stateContext.isPerformable(Action_EditingCode_Preview.class) )
 		{
 			return;
 		}
@@ -152,7 +152,7 @@ public class CodeEditorTabContent extends AbsolutePanel implements I_TabContent,
 		
 		onChange(); // one last time to make sure all changes are provided to the machine.
 		
-		m_viewContext.stateContext.performAction(Action_EditingCode_Preview.class);
+		m_viewContext.stateContext.perform(Action_EditingCode_Preview.class);
 	}
 	
 	private void updateLayout()
@@ -179,8 +179,8 @@ public class CodeEditorTabContent extends AbsolutePanel implements I_TabContent,
 	
 	private void refreshButtons()
 	{
-		boolean canCommit = m_viewContext.stateContext.isActionPerformable(Action_EditingCode_Save.class);
-		boolean canPreview = m_viewContext.stateContext.isActionPerformable(Action_EditingCode_Preview.class);
+		boolean canCommit = m_viewContext.stateContext.isPerformable(Action_EditingCode_Save.class);
+		boolean canPreview = m_viewContext.stateContext.isPerformable(Action_EditingCode_Preview.class);
 		
 		m_previewButton.setEnabled(canPreview);
 		m_saveButton.setEnabled(canCommit);
@@ -406,7 +406,7 @@ public class CodeEditorTabContent extends AbsolutePanel implements I_TabContent,
 		refreshCharacterCount();
 		
 		m_args_CodeChanged.init(sourceCode);
-		m_viewContext.stateContext.performAction(Action_EditingCode_Edit.class, m_args_CodeChanged);
+		m_viewContext.stateContext.perform(Action_EditingCode_Edit.class, m_args_CodeChanged);
 	}
 
 	@Override
