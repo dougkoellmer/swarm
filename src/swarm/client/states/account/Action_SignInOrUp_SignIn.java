@@ -5,12 +5,12 @@ import swarm.client.managers.UserManager;
 import swarm.client.transaction.E_TransactionAction;
 import swarm.shared.account.SignInCredentials;
 import swarm.shared.statemachine.A_Action;
-import swarm.shared.statemachine.A_ActionArgs;
+import swarm.shared.statemachine.StateArgs;
 import swarm.shared.statemachine.A_State;
 
 public class Action_SignInOrUp_SignIn extends A_Action
 {
-	public static class Args extends A_ActionArgs
+	public static class Args extends StateArgs
 	{
 		SignInCredentials m_creds;
 		
@@ -30,7 +30,7 @@ public class Action_SignInOrUp_SignIn extends A_Action
 	}
 	
 	@Override
-	public void perform(A_ActionArgs args)
+	public void perform(StateArgs args)
 	{
 		SignInCredentials creds = ((Action_SignInOrUp_SignIn.Args) args).m_creds;
 
@@ -44,7 +44,7 @@ public class Action_SignInOrUp_SignIn extends A_Action
 	}
 	
 	@Override
-	public boolean isPerformable(A_ActionArgs args)
+	public boolean isPerformable(StateArgs args)
 	{
 		State_SignInOrUp state = this.getState();
 		

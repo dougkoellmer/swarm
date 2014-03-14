@@ -3,13 +3,13 @@ package swarm.client.states.camera;
 import swarm.client.entities.Camera;
 import swarm.client.managers.CameraManager;
 import swarm.shared.statemachine.A_Action;
-import swarm.shared.statemachine.A_ActionArgs;
+import swarm.shared.statemachine.StateArgs;
 import swarm.shared.statemachine.A_State;
 import swarm.shared.structs.Point;
 
 public class Action_Camera_SetViewSize extends A_Action
 {
-	public static class Args extends A_ActionArgs
+	public static class Args extends StateArgs
 	{
 		private final double[] m_dimensions = new double[2];
 		private boolean m_updateBuffer = true;
@@ -39,7 +39,7 @@ public class Action_Camera_SetViewSize extends A_Action
 	}
 	
 	@Override
-	public void perform(A_ActionArgs args)
+	public void perform(StateArgs args)
 	{
 		Args args_cast = (Args) args;
 		StateMachine_Camera machine = this.getState();

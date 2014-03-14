@@ -179,12 +179,12 @@ public class ScrollNavigator implements I_StateEventListener
 			if( viewingState == null )
 			{
 				m_args_SnapToCoord.init(coord, m_utilPoint1);
-				snappingState.getParent().performAction(Action_Camera_SnapToCoordinate.class, m_args_SnapToCoord);
+				snappingState.getParent().perform(Action_Camera_SnapToCoordinate.class, m_args_SnapToCoord);
 			}
 			else
 			{
 				m_args_SnapToPoint.init(m_utilPoint1, true, false);
-				viewingState.getParent().performAction(Action_Camera_SnapToPoint.class, m_args_SnapToPoint);
+				viewingState.getParent().perform(Action_Camera_SnapToPoint.class, m_args_SnapToPoint);
 			}
 			
 			//s_logger.severe(m_viewContext.appContext.cameraMngr.getCamera().getPosition()+"");

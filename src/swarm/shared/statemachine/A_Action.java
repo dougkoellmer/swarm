@@ -1,12 +1,5 @@
 package swarm.shared.statemachine;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.logging.Logger;
-
-import swarm.shared.debugging.U_Debug;
-
-
 /**
  * ...
  * @author 
@@ -30,19 +23,19 @@ public abstract class A_Action extends A_BaseStateObject
 		return false;
 	}
 	
-	public /*virtual*/ void prePerform(A_ActionArgs args)
+	public /*virtual*/ void prePerform(StateArgs args)
 	{
 		
 	}
 
-	public abstract void perform(A_ActionArgs args);
+	public abstract void perform(StateArgs args);
 
 	public Class<? extends A_State> getStateAssociation()
 	{
 		return m_association;
 	}
 
-	public boolean isPerformable(A_ActionArgs args)
+	public boolean isPerformable(StateArgs args)
 	{
 		return true;
 	}

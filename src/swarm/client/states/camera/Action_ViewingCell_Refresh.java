@@ -3,13 +3,13 @@ package swarm.client.states.camera;
 import swarm.client.entities.BufferCell;
 import swarm.client.entities.E_CodeStatus;
 import swarm.shared.entities.E_CodeType;
-import swarm.shared.statemachine.A_ActionArgs;
+import swarm.shared.statemachine.StateArgs;
 import swarm.shared.statemachine.A_State;
 
 public class Action_ViewingCell_Refresh extends smA_CameraAction 
 {
 	@Override
-	public void perform(A_ActionArgs args)
+	public void perform(StateArgs args)
 	{
 		State_ViewingCell state = (State_ViewingCell) this.getState();
 		
@@ -17,7 +17,7 @@ public class Action_ViewingCell_Refresh extends smA_CameraAction
 	}
 	
 	@Override
-	public boolean isPerformable(A_ActionArgs args)
+	public boolean isPerformable(StateArgs args)
 	{
 		State_ViewingCell state = (State_ViewingCell) this.getState();
 		BufferCell cell = state.getCell();

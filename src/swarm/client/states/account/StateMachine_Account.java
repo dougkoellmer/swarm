@@ -10,7 +10,7 @@ import swarm.client.states.code.State_EditingCodeBlocker;
 import swarm.shared.debugging.U_Debug;
 import swarm.shared.statemachine.A_State;
 import swarm.shared.statemachine.A_StateMachine;
-import swarm.shared.statemachine.A_StateConstructor;
+import swarm.shared.statemachine.StateArgs;
 
 
 
@@ -74,7 +74,7 @@ public class StateMachine_Account extends A_StateMachine
 	}
 	
 	@Override
-	protected void didEnter(A_StateConstructor constructor)
+	protected void didEnter(StateArgs constructor)
 	{
 	}
 	

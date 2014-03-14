@@ -24,11 +24,10 @@ import swarm.shared.debugging.U_Debug;
 import swarm.shared.entities.E_CodeType;
 import swarm.shared.statemachine.A_Action;
 
-import swarm.shared.statemachine.A_ActionArgs;
+import swarm.shared.statemachine.StateArgs;
 import swarm.shared.statemachine.A_EventAction;
 import swarm.shared.statemachine.A_State;
 import swarm.shared.statemachine.A_StateMachine;
-import swarm.shared.statemachine.A_StateConstructor;
 import swarm.shared.statemachine.StateContext;
 import swarm.shared.structs.CellAddressMapping;
 import swarm.shared.transaction.E_RequestPath;
@@ -55,7 +54,7 @@ public class StateMachine_Base extends A_StateMachine implements I_TransactionRe
 	
 	public static class OnAccountManagerResponse extends A_EventAction
 	{
-		public static class Args extends A_ActionArgs
+		public static class Args extends StateArgs
 		{
 			private final ClientAccountManager.E_ResponseType m_type;
 			
@@ -130,7 +129,7 @@ public class StateMachine_Base extends A_StateMachine implements I_TransactionRe
 		public void onAccountTransactionResponse(E_ResponseType type)
 		{
 			OnAccountManagerResponse.Args args= new OnAccountManagerResponse.Args(type);
-			m_state.performAction(OnAccountManagerResponse.class, args);
+			m_state.perform(OnAccountManagerResponse.class, args);
 			
 			StateMachine_Base baseMachine = m_state.getContext().getForegroundedState(StateMachine_Base.class);
 			
@@ -250,7 +249,7 @@ public class StateMachine_Base extends A_StateMachine implements I_TransactionRe
 	}
 	
 	@Override
-	protected void didEnter(A_StateConstructor constructor)
+	protected void didEnter(StateArgs constructor)
 	{
 		final ClientAccountManager accountManager = m_appContext.accountMngr;
 		final UserManager userManager = m_appContext.userMngr;
@@ -267,7 +266,7 @@ public class StateMachine_Base extends A_StateMachine implements I_TransactionRe
 			@Override
 			public void onGridUpdate()
 			{
-				StateMachine_Base.this.performAction(StateMachine_Base.OnGridUpdate.class);
+				StateMachine_Base.this.perform(StateMachine_Base.OnGridUpdate.class);
 			}
 		});
 		
@@ -276,13 +275,13 @@ public class StateMachine_Base extends A_StateMachine implements I_TransactionRe
 			@Override
 			public void onUserPopulated()
 			{
-				StateMachine_Base.this.performAction(OnUserPopulated.class);
+				StateMachine_Base.this.perform(OnUserPopulated.class);
 			}
 
 			@Override
 			public void onUserDidClear()
 			{
-				StateMachine_Base.this.performAction(OnUserCleared.class);
+				StateMachine_Base.this.perform(OnUserCleared.class);
 			}
 
 			@Override

@@ -19,9 +19,8 @@ import swarm.shared.code.E_CompilationStatus;
 import swarm.shared.debugging.U_Debug;
 import swarm.shared.entities.E_CodeType;
 import swarm.shared.statemachine.A_Action;
-import swarm.shared.statemachine.A_StateConstructor;
-
 import swarm.shared.statemachine.A_State;
+import swarm.shared.statemachine.StateArgs;
 import swarm.shared.structs.Code;
 import swarm.shared.structs.GridCoordinate;
 
@@ -131,7 +130,7 @@ public class State_EditingCode extends A_State
 	}
 	
 	@Override
-	protected void didEnter(A_StateConstructor constructor)
+	protected void didEnter(StateArgs constructor)
 	{
 		m_mostRecentBlockerReason = null;
 	}

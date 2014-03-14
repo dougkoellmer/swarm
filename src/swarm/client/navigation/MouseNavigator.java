@@ -185,7 +185,7 @@ public class MouseNavigator implements I_UIElement, Mouse.I_Listener
 						m_utilPoint1.translate(m_utilVector);
 						
 						m_args_SnapToPoint.init(m_utilPoint1, false, true);
-						m_cameraMachine.performAction(Action_Camera_SnapToPoint.class, m_args_SnapToPoint);
+						m_cameraMachine.perform(Action_Camera_SnapToPoint.class, m_args_SnapToPoint);
 					}
 					else
 					{
@@ -285,7 +285,7 @@ public class MouseNavigator implements I_UIElement, Mouse.I_Listener
 						}*/
 						
 						m_args_SnapToPoint.init(cameraPosition, false, true);
-						m_cameraMachine.performAction(Action_Camera_SnapToPoint.class, m_args_SnapToPoint);
+						m_cameraMachine.perform(Action_Camera_SnapToPoint.class, m_args_SnapToPoint);
 					}
 					else
 					{
@@ -305,7 +305,7 @@ public class MouseNavigator implements I_UIElement, Mouse.I_Listener
 						}*/
 						
 						m_args_SnapToPoint.init(cameraPosition, false, true);
-						m_cameraMachine.performAction(Action_Camera_SnapToPoint.class, m_args_SnapToPoint);
+						m_cameraMachine.perform(Action_Camera_SnapToPoint.class, m_args_SnapToPoint);
 					}
 				}
 				
@@ -431,7 +431,7 @@ public class MouseNavigator implements I_UIElement, Mouse.I_Listener
 		
 		m_args_SnapToCoord.init(m_mouseGridCoord, m_utilPoint2);
 		
-		if( !m_cameraMachine.performAction(Action_Camera_SnapToCoordinate.class, m_args_SnapToCoord) )
+		if( !m_cameraMachine.perform(Action_Camera_SnapToCoordinate.class, m_args_SnapToCoord) )
 		{
 			if( viewing )
 			{
@@ -516,13 +516,13 @@ public class MouseNavigator implements I_UIElement, Mouse.I_Listener
 			{
 				if ( m_cameraState instanceof State_CameraSnapping )
 				{
-					m_cameraMachine.performAction(Action_Camera_SnapToPoint.class);
+					m_cameraMachine.perform(Action_Camera_SnapToPoint.class);
 				}
 				else if ( m_cameraState instanceof State_ViewingCell )
 				{
 					if( !m_mouseWentDownOnViewedCell )
 					{
-						m_cameraMachine.performAction(Action_Camera_SnapToPoint.class);
+						m_cameraMachine.perform(Action_Camera_SnapToPoint.class);
 					}
 				}
 			}

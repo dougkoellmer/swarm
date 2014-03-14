@@ -240,7 +240,7 @@ public class BrowserNavigator implements I_StateEventListener
 							
 							m_historyManager.setState(address, new HistoryState()); // set empty state
 							m_args_SnapToAddress.init(address);
-							event.getState().performAction(Action_Camera_SnapToAddress.class, m_args_SnapToAddress);
+							event.getState().perform(Action_Camera_SnapToAddress.class, m_args_SnapToAddress);
 						}
 						else
 						{
@@ -254,7 +254,7 @@ public class BrowserNavigator implements I_StateEventListener
 							m_utilPoint1.copy(m_cameraMngr.getCamera().getPosition());
 							m_utilPoint1.incZ(-m_viewContext.config.initialBumpDistance);
 							m_args_SnapToPoint.init(m_utilPoint1, false, false);
-							event.getState().performAction(Action_Camera_SnapToPoint.class, m_args_SnapToPoint);
+							event.getState().perform(Action_Camera_SnapToPoint.class, m_args_SnapToPoint);
 						}
 					}
 					

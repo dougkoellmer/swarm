@@ -1,9 +1,8 @@
 package swarm.shared.statemachine;
 
-import swarm.shared.debugging.U_Debug;
 
 /**
- * This base class provides both actions and states with a unified API to safely manipulate any part of the machine tree.
+ * This base class provides both actions and states with a unified API to safely & easily manipulate any part of the machine tree.
  * More runtime protections, mostly for debugging purposes, may be added to this class in the future.
  * 
  * @author Doug
@@ -23,7 +22,7 @@ public class A_BaseStateObject
 		this.enterState(container, T, null);
 	}
 	
-	protected void enterState(A_State container, Class<? extends A_State> T, A_StateConstructor constructor)
+	protected void enterState(A_State container, Class<? extends A_State> T, StateArgs constructor)
 	{
 		((A_StateContainer) container).enterState_internal(T, constructor);
 	}
@@ -77,15 +76,15 @@ public class A_BaseStateObject
 	
 	protected void pushState(Class<? extends A_State> T)
 	{
-		this.pushState(T, (A_StateConstructor) null);
+		this.pushState(T, (StateArgs) null);
 	}
 	
 	protected void pushState(Class<? extends A_State> T, Object userData)
 	{
-		this.pushState(T, new A_StateConstructor(userData) {});
+		this.pushState(T, new StateArgs(userData) {});
 	}
 	
-	protected void pushState(Class<? extends A_State> T, A_StateConstructor constructor_nullable)
+	protected void pushState(Class<? extends A_State> T, StateArgs constructor_nullable)
 	{
 		this.pushState(this.getMachineFromThis(), T, constructor_nullable);
 	}
@@ -97,10 +96,10 @@ public class A_BaseStateObject
 	
 	protected void pushState(A_State machine, Class<? extends A_State> T, Object userData)
 	{		
-		((A_StateMachine) machine).pushState_internal(T, new A_StateConstructor(userData){});
+		((A_StateMachine) machine).pushState_internal(T, new StateArgs(userData){});
 	}
 	
-	protected void pushState(A_State machine, Class<? extends A_State> T, A_StateConstructor constructor_nullable)
+	protected void pushState(A_State machine, Class<? extends A_State> T, StateArgs constructor_nullable)
 	{		
 		((A_StateMachine) machine).pushState_internal(T, constructor_nullable);
 	}
@@ -118,15 +117,15 @@ public class A_BaseStateObject
 	
 	protected void setState(Class<? extends A_State> T)
 	{
-		this.setState(T, (A_StateConstructor)null);
+		this.setState(T, (StateArgs)null);
 	}
 	
 	protected void setState(Class<? extends A_State> T, Object userData)
 	{
-		this.setState(T, new A_StateConstructor(userData) {});
+		this.setState(T, new StateArgs(userData) {});
 	}
 	
-	protected void setState(Class<? extends A_State> T, A_StateConstructor constructor_nullable)
+	protected void setState(Class<? extends A_State> T, StateArgs constructor_nullable)
 	{
 		this.setState(this.getMachineFromThis(), T, constructor_nullable);
 	}
@@ -139,10 +138,10 @@ public class A_BaseStateObject
 	
 	protected void setState(A_State machine, Class<? extends A_State> T, Object userData)
 	{
-		((A_StateMachine) machine).setState_internal(T, new A_StateConstructor(userData) {});
+		((A_StateMachine) machine).setState_internal(T, new StateArgs(userData) {});
 	}
 	
-	protected void setState(A_State machine, Class<? extends A_State> T, A_StateConstructor constructor_nullable)
+	protected void setState(A_State machine, Class<? extends A_State> T, StateArgs constructor_nullable)
 	{
 		((A_StateMachine) machine).setState_internal(T, constructor_nullable);
 	}

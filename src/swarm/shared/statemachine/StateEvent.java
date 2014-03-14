@@ -2,8 +2,6 @@ package swarm.shared.statemachine;
 
 import java.util.logging.Logger;
 
-import swarm.shared.debugging.U_Debug;
-
 public class StateEvent
 {
 	private static final Logger s_logger = Logger.getLogger(StateEvent.class.getName());
@@ -13,7 +11,7 @@ public class StateEvent
 	private E_StateEventType m_eventType = null;
 	A_State m_state = null;
 	A_Action m_action = null; // we keep an instance, but only ever expose the class publicly.
-	A_ActionArgs m_actionArgs = null;
+	StateArgs m_actionArgs = null;
 	private Class<? extends A_State> m_blockingOrRevealingState;
 	
 	int m_listenerIndex = UNINITIALIZED_LISTENER_INDEX;
@@ -24,7 +22,7 @@ public class StateEvent
 		m_state = state;
 	}
 	
-	StateEvent(A_State state, A_Action action, A_ActionArgs args)
+	StateEvent(A_State state, A_Action action, StateArgs args)
 	{
 		m_actionArgs = args;
 		m_state = state;
@@ -39,7 +37,7 @@ public class StateEvent
 		m_blockingOrRevealingState = blockingOrRevealingState;
 	}
 	
-	public <T extends A_ActionArgs> T getActionArgs()
+	public <T extends StateArgs> T getActionArgs()
 	{
 		return (T) m_actionArgs;
 	}
@@ -106,5 +104,35 @@ public class StateEvent
 		}
 		
 		listener.onStateEvent(this);
+	}
+	
+	private Class<? extends A_BaseStateObject> getStateObjectClass()
+	{
+		A_State state = this.getState();
+		if( state != null )  return state.getClass();
+		
+		return this.getAction();
+	}
+	
+	public boolean isFor(E_StateEventType type)
+	{
+		return type == this.getType();
+	}
+	
+	public boolean isFor(Class<? extends A_BaseStateObject> stateObject)
+	{
+		return stateObject == this.getStateObjectClass();
+	}
+	
+	public boolean isFor(E_StateEventType type, Class<? extends A_BaseStateObject> stateObject)
+	{
+		return isFor(stateObject, type);
+	}
+	
+	public boolean isFor(Class<? extends A_BaseStateObject> stateObject, E_StateEventType type)
+	{
+		Class<? extends A_BaseStateObject> thisStateObject = this.getStateObjectClass();
+		
+		return thisStateObject == stateObject && this.getType() == type;
 	}
 }

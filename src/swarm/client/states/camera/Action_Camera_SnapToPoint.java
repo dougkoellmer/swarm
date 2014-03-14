@@ -2,13 +2,13 @@ package swarm.client.states.camera;
 
 
 import swarm.client.managers.CameraManager;
-import swarm.shared.statemachine.A_ActionArgs;
+import swarm.shared.statemachine.StateArgs;
 import swarm.shared.statemachine.A_State;
 import swarm.shared.structs.Point;
 
 public class Action_Camera_SnapToPoint extends smA_CameraAction
 {
-	public static class Args extends A_ActionArgs
+	public static class Args extends StateArgs
 	{
 		private Point m_point;
 		private boolean m_instant;
@@ -47,7 +47,7 @@ public class Action_Camera_SnapToPoint extends smA_CameraAction
 	}
 	
 	@Override
-	public void perform(A_ActionArgs args)
+	public void perform(StateArgs args)
 	{
 		StateMachine_Camera machine = this.getState();
 		

@@ -6,10 +6,9 @@ import java.util.List;
 import swarm.client.states.account.StateMachine_Account;
 import swarm.client.states.code.StateMachine_EditingCode;
 import swarm.shared.statemachine.A_Action;
-
 import swarm.shared.statemachine.A_State;
 import swarm.shared.statemachine.A_StateMachine;
-import swarm.shared.statemachine.A_StateConstructor;
+import swarm.shared.statemachine.StateArgs;
 
 /**
  * ...
@@ -29,7 +28,7 @@ public class StateMachine_Tabs extends A_StateMachine
 	}
 	
 	@Override
-	protected void didEnter(A_StateConstructor constructor)
+	protected void didEnter(StateArgs constructor)
 	{
 		
 	}

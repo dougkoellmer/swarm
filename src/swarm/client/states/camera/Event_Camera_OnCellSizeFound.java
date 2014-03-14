@@ -1,6 +1,6 @@
 package swarm.client.states.camera;
 
-import swarm.shared.statemachine.A_ActionArgs;
+import swarm.shared.statemachine.StateArgs;
 import swarm.shared.statemachine.A_EventAction;
 import swarm.shared.statemachine.A_State;
 import swarm.shared.structs.CellAddress;
@@ -9,7 +9,7 @@ import swarm.shared.structs.CellSize;
 
 public class Event_Camera_OnCellSizeFound extends A_EventAction
 {
-	public static class Args extends A_ActionArgs
+	public static class Args extends StateArgs
 	{
 		private final CellSize m_cellSize = new CellSize();
 		private final CellAddressMapping m_mapping = new CellAddressMapping();

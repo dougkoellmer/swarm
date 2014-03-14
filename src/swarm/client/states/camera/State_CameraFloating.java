@@ -2,7 +2,7 @@ package swarm.client.states.camera;
 
 import swarm.shared.statemachine.A_Action;
 import swarm.shared.statemachine.A_State;
-import swarm.shared.statemachine.A_StateConstructor;
+import swarm.shared.statemachine.StateArgs;
 import swarm.shared.statemachine.StateEvent;
 import swarm.shared.structs.GridCoordinate;
 import swarm.shared.structs.Point;
@@ -14,7 +14,7 @@ public class State_CameraFloating extends A_State
 	}
 	
 	@Override
-	protected void didEnter(A_StateConstructor constructor)
+	protected void didEnter(StateArgs constructor)
 	{
 	}
 	

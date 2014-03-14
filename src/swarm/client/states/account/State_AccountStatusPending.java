@@ -2,7 +2,7 @@ package swarm.client.states.account;
 
 
 import swarm.shared.statemachine.A_State;
-import swarm.shared.statemachine.A_StateConstructor;
+import swarm.shared.statemachine.StateArgs;
 
 
 /**
@@ -12,7 +12,7 @@ import swarm.shared.statemachine.A_StateConstructor;
 public class State_AccountStatusPending extends A_State
 {
 	@Override
-	protected void didEnter(A_StateConstructor constructor)
+	protected void didEnter(StateArgs constructor)
 	{
 	}
 }

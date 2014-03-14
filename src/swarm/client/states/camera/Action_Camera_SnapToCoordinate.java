@@ -6,7 +6,7 @@ import java.util.logging.Logger;
 import swarm.client.app.AppContext;
 import swarm.client.managers.GridManager;
 import swarm.shared.entities.A_Grid;
-import swarm.shared.statemachine.A_ActionArgs;
+import swarm.shared.statemachine.StateArgs;
 import swarm.shared.statemachine.A_State;
 import swarm.shared.structs.CellAddress;
 import swarm.shared.structs.GridCoordinate;
@@ -23,7 +23,7 @@ public class Action_Camera_SnapToCoordinate extends smA_CameraAction
 		void setTargetPoint(Args args);
 	}
 	
-	public static class Args extends A_ActionArgs
+	public static class Args extends StateArgs
 	{
 		private final GridCoordinate m_coordinate = new GridCoordinate();
 		private CellAddress m_address;
@@ -102,7 +102,7 @@ public class Action_Camera_SnapToCoordinate extends smA_CameraAction
 	}
 	
 	@Override
-	public void prePerform(A_ActionArgs args)
+	public void prePerform(StateArgs args)
 	{
 		super.prePerform(args);
 		
@@ -122,7 +122,7 @@ public class Action_Camera_SnapToCoordinate extends smA_CameraAction
 	}
 	
 	@Override
-	public void perform(A_ActionArgs args)
+	public void perform(StateArgs args)
 	{
 		GridCoordinate coordinate = ((Args) args).m_coordinate;
 		Point point = ((Args) args).m_point;
@@ -147,7 +147,7 @@ public class Action_Camera_SnapToCoordinate extends smA_CameraAction
 	}
 	
 	@Override
-	public boolean isPerformable(A_ActionArgs args)
+	public boolean isPerformable(StateArgs args)
 	{
 		GridCoordinate coordinate = ((Args) args).m_coordinate;
 		

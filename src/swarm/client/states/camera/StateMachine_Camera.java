@@ -40,7 +40,7 @@ import swarm.shared.statemachine.A_Action;
 import swarm.shared.statemachine.A_State;
 import swarm.shared.statemachine.A_StateMachine;
 import swarm.shared.statemachine.I_StateEventListener;
-import swarm.shared.statemachine.A_StateConstructor;
+import swarm.shared.statemachine.StateArgs;
 import swarm.shared.statemachine.StateEvent;
 import swarm.shared.structs.CellAddress;
 import swarm.shared.structs.CellAddressMapping;
@@ -168,7 +168,7 @@ public class StateMachine_Camera extends A_StateMachine implements I_StateEventL
 	}
 	
 	@Override
-	protected void didEnter(A_StateConstructor constructor)
+	protected void didEnter(StateArgs constructor)
 	{
 		//--- DRK > Not enforcing z constraints here because UI probably hasn't told us camera view size yet.
 		
@@ -232,7 +232,7 @@ public class StateMachine_Camera extends A_StateMachine implements I_StateEventL
 					if( state.getTargetCoord().isEqualTo(mapping_copied.getCoordinate()) )
 					{
 						StateMachine_Camera.this.m_onCellSizeFoundArgs.init(cellSize_copied, mapping_copied);
-						StateMachine_Camera.this.performAction(Event_Camera_OnCellSizeFound.class, StateMachine_Camera.this.m_onCellSizeFoundArgs);
+						StateMachine_Camera.this.perform(Event_Camera_OnCellSizeFound.class, StateMachine_Camera.this.m_onCellSizeFoundArgs);
 					}
 				}
 			}

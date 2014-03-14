@@ -3,14 +3,14 @@ package swarm.client.states.camera;
 import swarm.client.app.AppContext;
 import swarm.client.managers.CellAddressManager;
 import swarm.shared.statemachine.A_Action;
-import swarm.shared.statemachine.A_ActionArgs;
+import swarm.shared.statemachine.StateArgs;
 import swarm.shared.statemachine.A_State;
 import swarm.shared.structs.CellAddress;
 import swarm.shared.structs.E_CellAddressParseError;
 
 public class Action_Camera_SnapToAddress extends A_Action
 {
-	public static class Args extends A_ActionArgs
+	public static class Args extends StateArgs
 	{
 		private CellAddress m_address;
 		private boolean m_onlyCausedRefresh = false;
@@ -44,7 +44,7 @@ public class Action_Camera_SnapToAddress extends A_Action
 	}
 	
 	@Override
-	public void perform(A_ActionArgs args)
+	public void perform(StateArgs args)
 	{
 		CellAddress address = ((Args) args).m_address;
 		StateMachine_Camera machine = this.getState();
@@ -70,7 +70,7 @@ public class Action_Camera_SnapToAddress extends A_Action
 	}
 	
 	@Override
-	public boolean isPerformable(A_ActionArgs args)
+	public boolean isPerformable(StateArgs args)
 	{
 		CellAddress address = ((Args) args).m_address;
 		

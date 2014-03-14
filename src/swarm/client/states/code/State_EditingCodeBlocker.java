@@ -4,7 +4,7 @@ package swarm.client.states.code;
 import swarm.shared.statemachine.A_Action;
 import swarm.shared.statemachine.A_EventAction;
 import swarm.shared.statemachine.A_State;
-import swarm.shared.statemachine.A_StateConstructor;
+import swarm.shared.statemachine.StateArgs;
 import swarm.shared.structs.CellAddress;
 
 public class State_EditingCodeBlocker extends A_State
@@ -20,7 +20,7 @@ public class State_EditingCodeBlocker extends A_State
 		PREVIEWING
 	};
 	
-	static class Constructor extends A_StateConstructor
+	static class Constructor extends StateArgs
 	{
 		private final Reason m_reason;
 		
@@ -51,7 +51,7 @@ public class State_EditingCodeBlocker extends A_State
 	{
 		m_reason = reason;
 		
-		this.performAction(OnReasonChange.class);
+		this.perform(OnReasonChange.class);
 	}
 	
 	public Reason getReason()
@@ -60,7 +60,7 @@ public class State_EditingCodeBlocker extends A_State
 	}
 	
 	@Override
-	protected void didEnter(A_StateConstructor constructor)
+	protected void didEnter(StateArgs constructor)
 	{
 		Constructor thisCons = (Constructor) constructor;
 		

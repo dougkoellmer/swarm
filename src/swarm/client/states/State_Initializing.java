@@ -13,14 +13,14 @@ import swarm.client.transaction.E_ResponseSuccessControl;
 import swarm.client.transaction.I_TransactionResponseHandler;
 import swarm.client.transaction.ClientTransactionManager;
 import swarm.client.transaction.InlineRequestDispatcher;
-
 import swarm.shared.debugging.U_Debug;
 import swarm.shared.reflection.I_Callback;
 import swarm.shared.statemachine.A_State;
-import swarm.shared.statemachine.A_StateConstructor;
+import swarm.shared.statemachine.StateArgs;
 import swarm.shared.transaction.E_RequestPath;
 import swarm.shared.transaction.TransactionRequest;
 import swarm.shared.transaction.TransactionResponse;
+
 
 
 import com.google.gwt.http.client.RequestBuilder;
@@ -67,7 +67,7 @@ public class State_Initializing extends A_State implements I_TransactionResponse
 	}
 	
 	@Override
-	protected void didEnter(A_StateConstructor constructor)
+	protected void didEnter(StateArgs constructor)
 	{
 		final ClientAccountManager accountManager = m_appContext.accountMngr;
 		final UserManager userManager = m_appContext.userMngr;

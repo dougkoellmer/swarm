@@ -320,19 +320,19 @@ public class A_ClientApp extends A_App implements I_TimeSource
 		
 		m_stateContext = m_viewContext.stateContext = new StateContext(new StateMachine_Base(m_appContext), stateEventListener);
 		{
-			m_stateContext.registerState(new State_Initializing(m_appContext));
+			m_stateContext.register(new State_Initializing(m_appContext));
 			
-			m_stateContext.registerState(new State_GenericDialog());
-			m_stateContext.registerState(new State_AsyncDialog());
+			m_stateContext.register(new State_GenericDialog());
+			m_stateContext.register(new State_AsyncDialog());
 			
-			m_stateContext.registerState(new StateContainer_Base(consoleState_T_null));
+			m_stateContext.register(new StateContainer_Base(consoleState_T_null));
 			{
-				m_stateContext.registerState(new StateMachine_Camera(m_appContext, snapFilter));
+				m_stateContext.register(new StateMachine_Camera(m_appContext, snapFilter));
 				{
-					m_stateContext.registerState(new State_CameraFloating());
-					m_stateContext.registerState(new State_GettingMapping());
-					m_stateContext.registerState(new State_CameraSnapping(m_appContext, m_appConfig.cellHudHeight));
-					m_stateContext.registerState(new State_ViewingCell(m_appContext, m_appConfig.cellHudHeight));
+					m_stateContext.register(new State_CameraFloating());
+					m_stateContext.register(new State_GettingMapping());
+					m_stateContext.register(new State_CameraSnapping(m_appContext, m_appConfig.cellHudHeight));
+					m_stateContext.register(new State_ViewingCell(m_appContext, m_appConfig.cellHudHeight));
 				}
 			}
 		}
@@ -379,20 +379,20 @@ public class A_ClientApp extends A_App implements I_TimeSource
 
 	protected void registerCodeEditingStates()
 	{
-		m_stateContext.registerState(new StateMachine_EditingCode(m_appContext));
+		m_stateContext.register(new StateMachine_EditingCode(m_appContext));
 		{
-			m_stateContext.registerState(new State_EditingCode(m_appContext));
-			m_stateContext.registerState(new State_EditingCodeBlocker());
+			m_stateContext.register(new State_EditingCode(m_appContext));
+			m_stateContext.register(new State_EditingCodeBlocker());
 		}
 	}
 	
 	protected void registerAccountStates()
 	{
-		m_stateContext.registerState(new StateMachine_Account(m_appContext.accountMngr));
+		m_stateContext.register(new StateMachine_Account(m_appContext.accountMngr));
 		{
-			m_stateContext.registerState(new State_ManageAccount(m_appContext.accountMngr));
-			m_stateContext.registerState(new State_AccountStatusPending());
-			m_stateContext.registerState(new State_SignInOrUp(m_appContext.accountMngr, m_appContext.userMngr));
+			m_stateContext.register(new State_ManageAccount(m_appContext.accountMngr));
+			m_stateContext.register(new State_AccountStatusPending());
+			m_stateContext.register(new State_SignInOrUp(m_appContext.accountMngr, m_appContext.userMngr));
 		}
 	}
 	

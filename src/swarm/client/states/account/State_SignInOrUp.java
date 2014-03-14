@@ -19,9 +19,8 @@ import swarm.shared.account.SignInValidator;
 import swarm.shared.account.SignUpValidationResult;
 import swarm.shared.debugging.U_Debug;
 import swarm.shared.statemachine.A_Action;
-import swarm.shared.statemachine.A_ActionArgs;
+import swarm.shared.statemachine.StateArgs;
 import swarm.shared.statemachine.A_State;
-import swarm.shared.statemachine.A_StateConstructor;
 import swarm.shared.transaction.E_RequestPath;
 import swarm.shared.transaction.E_ResponseError;
 import swarm.shared.transaction.TransactionRequest;
@@ -48,7 +47,7 @@ public class State_SignInOrUp extends A_State
 		registerAction(new Action_SignInOrUp_SetNewPassword(accountMngr));
 	}
 	
-	boolean isSignInOrResetPerformable(A_ActionArgs args, boolean isForNewPassword)
+	boolean isSignInOrResetPerformable(StateArgs args, boolean isForNewPassword)
 	{
 		//--- DRK > Just a final double-check catch-all here...UI should probably have completely validated before performing the action.
 		
@@ -67,7 +66,7 @@ public class State_SignInOrUp extends A_State
 	}
 	
 	@Override
-	protected void didEnter(A_StateConstructor constructor)
+	protected void didEnter(StateArgs constructor)
 	{
 		
 	}

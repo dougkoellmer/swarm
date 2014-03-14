@@ -1,6 +1,6 @@
 package swarm.client.states.camera;
 
-import swarm.shared.statemachine.A_ActionArgs;
+import swarm.shared.statemachine.StateArgs;
 import swarm.shared.statemachine.A_EventAction;
 import swarm.shared.statemachine.A_State;
 import swarm.shared.structs.CellAddress;
@@ -13,7 +13,7 @@ public class Event_Camera_OnAddressResponse extends A_EventAction
 		ON_FOUND, ON_NOT_FOUND, ON_RESPONSE_ERROR
 	}
 	
-	public static class Args extends A_ActionArgs
+	public static class Args extends StateArgs
 	{
 		private CellAddress m_address;
 		private CellAddressMapping m_mapping;
@@ -53,7 +53,7 @@ public class Event_Camera_OnAddressResponse extends A_EventAction
 	}
 	
 	@Override
-	public boolean isPerformable(A_ActionArgs args)
+	public boolean isPerformable(StateArgs args)
 	{
 		StateMachine_Camera machine = this.getState();
 		A_State currentState = machine.getCurrentState();

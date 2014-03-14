@@ -1,8 +1,7 @@
 package swarm.client.states;
 
 import swarm.shared.statemachine.A_Action;
-import swarm.shared.statemachine.A_ActionArgs;
-import swarm.shared.statemachine.A_StateConstructor;
+import swarm.shared.statemachine.StateArgs;
 
 import swarm.shared.statemachine.A_State;
 
@@ -13,7 +12,7 @@ import swarm.shared.statemachine.A_State;
  */
 public class State_GenericDialog extends A_State
 {
-	public static final class Constructor extends A_StateConstructor
+	public static final class Constructor extends StateArgs
 	{
 		private final String m_title;
 		private final String m_body;
@@ -29,7 +28,7 @@ public class State_GenericDialog extends A_State
 	public static class Ok extends A_Action
 	{
 		@Override
-		public void perform(A_ActionArgs args)
+		public void perform(StateArgs args)
 		{
 			popState(getContext().getForegroundedState(StateMachine_Base.class));
 		}
@@ -55,7 +54,7 @@ public class State_GenericDialog extends A_State
 	}
 	
 	@Override
-	protected void didEnter(A_StateConstructor constructor)
+	protected void didEnter(StateArgs constructor)
 	{
 		Constructor cons = (Constructor) constructor;
 		

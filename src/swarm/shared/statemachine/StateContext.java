@@ -4,9 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
-import swarm.client.states.code.State_EditingCodeBlocker;
-import swarm.shared.debugging.U_Debug;
-
 public class StateContext
 {
 	private static final Logger s_logger = Logger.getLogger(StateContext.class.getName());
@@ -30,7 +27,7 @@ public class StateContext
 		
 		this.addListener(stateEventListener);
 		
-		registerState(m_rootState);
+		register(m_rootState);
 	}
 	
 	public A_State getRootState()
@@ -53,7 +50,7 @@ public class StateContext
 		m_rootState.update_internal(timeStep);
 	}
 	
-	void registerAction(Class<? extends A_State> association, A_Action action)
+	void register(Class<? extends A_State> association, A_Action action)
 	{
 		if( m_actionRegistry.containsKey(action.getClass()) )  return;
 		
@@ -96,13 +93,13 @@ public class StateContext
 		return perform(T, null);
 	}
 	
-	public boolean perform(Class<? extends A_Action> T, A_ActionArgs args)
+	public boolean perform(Class<? extends A_Action> T, StateArgs args)
 	{
 		A_State state = getEnteredStateForAction(T);
 		
 		if( state == null )  return false;
 		
-		return state.performAction(T, args);
+		return state.perform(T, args);
 	}
 	
 	public boolean isPerformable(Class<? extends A_Action> T)
@@ -110,14 +107,14 @@ public class StateContext
 		return isPerformable(T, null);
 	}
 	
-	public boolean isPerformable(Class<? extends A_Action> T, A_ActionArgs args)
+	public boolean isPerformable(Class<? extends A_Action> T, StateArgs args)
 	{
 		A_State state = getEnteredStateForAction(T);
 		
 		return isPerformable_private(state, T, args);
 	}
 	
-	private boolean isPerformable_private(A_State state, Class<? extends A_Action> T, A_ActionArgs args)
+	private boolean isPerformable_private(A_State state, Class<? extends A_Action> T, StateArgs args)
 	{
 		if( state == null )
 		{
@@ -125,7 +122,7 @@ public class StateContext
 		}
 		else
 		{
-			return state.isActionPerfomable(T, args);
+			return state.isPerformable(T, args);
 		}
 	}
 	
@@ -153,7 +150,7 @@ public class StateContext
 		return getEnteredState(T) != null;
 	}
 	
-	public void registerState(A_State state)
+	public void register(A_State state)
 	{
 		m_stateRegistry.put(state.getClass(), state);
 		state.m_context = this;
@@ -186,6 +183,22 @@ public class StateContext
 			}
 			
 			return registeredState;
+		}
+		else
+		{
+			try
+			{
+				registeredState = T.newInstance();
+				this.register(registeredState);
+			}
+			catch (InstantiationException e)
+			{
+				e.printStackTrace();
+			}
+			catch (IllegalAccessException e)
+			{
+				e.printStackTrace();
+			}
 		}
 
 		//"No state instance registered."

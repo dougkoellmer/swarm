@@ -1,6 +1,6 @@
 package swarm.client.states.camera;
 
-import swarm.shared.statemachine.A_ActionArgs;
+import swarm.shared.statemachine.StateArgs;
 import swarm.shared.statemachine.A_EventAction;
 import swarm.shared.statemachine.A_State;
 import swarm.shared.structs.CellAddress;
@@ -13,7 +13,7 @@ public class Event_GettingMapping_OnResponse extends A_EventAction
 		ON_FOUND, ON_NOT_FOUND, ON_RESPONSE_ERROR
 	}
 	
-	public static class Args extends A_ActionArgs
+	public static class Args extends StateArgs
 	{
 		private final CellAddress m_address;
 		private final CellAddressMapping m_mapping;

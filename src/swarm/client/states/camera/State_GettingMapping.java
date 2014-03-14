@@ -3,14 +3,14 @@ package swarm.client.states.camera;
 import swarm.client.entities.BufferCell;
 import swarm.shared.statemachine.A_Action;
 import swarm.shared.statemachine.A_State;
-import swarm.shared.statemachine.A_StateConstructor;
+import swarm.shared.statemachine.StateArgs;
 import swarm.shared.statemachine.StateEvent;
 import swarm.shared.structs.CellAddress;
 import swarm.shared.structs.Point;
 
 public class State_GettingMapping extends A_State
 {
-	static class Constructor extends A_StateConstructor
+	static class Constructor extends StateArgs
 	{
 		private final CellAddress m_address;
 		
@@ -44,7 +44,7 @@ public class State_GettingMapping extends A_State
 	}
 	
 	@Override
-	protected void didEnter(A_StateConstructor constructor)
+	protected void didEnter(StateArgs constructor)
 	{
 		Constructor thisConstructor = (Constructor) constructor;
 		updateAddress(thisConstructor.m_address);

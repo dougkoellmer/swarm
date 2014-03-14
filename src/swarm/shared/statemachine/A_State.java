@@ -1,11 +1,6 @@
 package swarm.shared.statemachine;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import swarm.shared.debugging.U_Debug;
 
 
 /**
@@ -71,7 +66,7 @@ public abstract class A_State extends A_BaseStateObject
 	
 	private void registerAction_private(A_Action action)
 	{
-		m_context.registerAction(this.getClass(), action);
+		m_context.register(this.getClass(), action);
 	}
 	
 	protected void registerAction(A_Action action)
@@ -166,12 +161,12 @@ public abstract class A_State extends A_BaseStateObject
 		return m_previousState;
 	}
 	
-	public boolean performAction(Class<? extends A_Action> T)
+	public boolean perform(Class<? extends A_Action> T)
 	{
-		return this.performAction(T, null);
+		return this.perform(T, null);
 	}
 	
-	public boolean performAction(Class<? extends A_Action> T, A_ActionArgs args)
+	public boolean perform(Class<? extends A_Action> T, StateArgs args)
 	{
 		A_Action action = m_context.getAction(T);
 
@@ -180,7 +175,7 @@ public abstract class A_State extends A_BaseStateObject
 			return false;
 		}
 		
-		boolean performable = this.isActionPerformable_private(action, args);
+		boolean performable = this.isPerformable_private(action, args);
 		
 		if( !performable )
 		{
@@ -211,12 +206,12 @@ public abstract class A_State extends A_BaseStateObject
 		}
 	}
 	
-	public boolean isActionPerfomable(Class<? extends A_Action> T, A_ActionArgs args)
+	public boolean isPerformable(Class<? extends A_Action> T, StateArgs args)
 	{
-		return this.isActionPerformable_private(m_context.getAction(T), args);
+		return this.isPerformable_private(m_context.getAction(T), args);
 	}
 	
-	private boolean isActionPerformable_private(A_Action action, A_ActionArgs args)
+	private boolean isPerformable_private(A_Action action, StateArgs args)
 	{
 		if ( !this.isEntered() )
 		{
@@ -241,7 +236,7 @@ public abstract class A_State extends A_BaseStateObject
 		return isPerformable;
 	}
 	
-	void didEnter_internal(A_StateConstructor constructor)
+	void didEnter_internal(StateArgs constructor)
 	{
 		StateContext root = m_context;
 		
@@ -350,7 +345,7 @@ public abstract class A_State extends A_BaseStateObject
 		root.processEventQueue();
 	}
 	
-	protected void didEnter(A_StateConstructor constructor) {}
+	protected void didEnter(StateArgs constructor) {}
 	protected void didForeground(Class<? extends A_State> revealingState, Object[] argsFromRevealingState){ }
 	protected void update(double timeStep) {}
 	protected void willBackground(Class<? extends A_State> blockingState) {}

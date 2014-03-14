@@ -8,7 +8,7 @@ import swarm.shared.account.SignInValidator;
 import swarm.shared.debugging.U_Debug;
 import swarm.shared.statemachine.A_Action;
 import swarm.shared.statemachine.A_State;
-import swarm.shared.statemachine.A_StateConstructor;
+import swarm.shared.statemachine.StateArgs;
 
 
 
@@ -24,7 +24,7 @@ public class State_ManageAccount extends A_State
 	}
 	
 	@Override
-	protected void didEnter(A_StateConstructor constructor)
+	protected void didEnter(StateArgs constructor)
 	{
 	}
 }

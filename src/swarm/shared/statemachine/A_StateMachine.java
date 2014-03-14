@@ -1,8 +1,5 @@
 package swarm.shared.statemachine;
 
-import java.util.ArrayList;
-
-import swarm.shared.debugging.U_Debug;
 
 
 /**
@@ -22,7 +19,7 @@ public abstract class A_StateMachine extends A_State
 		return (T) m_currentState;
 	}
 	
-	void pushState_internal(Class<? extends A_State> T, A_StateConstructor constructor)
+	void pushState_internal(Class<? extends A_State> T, StateArgs constructor)
 	{
 		A_State newState		= m_context.getInstance(T);
 		A_State currentState = this.getCurrentState();
@@ -69,7 +66,7 @@ public abstract class A_StateMachine extends A_State
 		}
 	}
 	
-	void setState_internal(Class<? extends A_State> T, A_StateConstructor constructor)
+	void setState_internal(Class<? extends A_State> T, StateArgs constructor)
 	{
 		A_State currentState = this.getCurrentState();
 		A_State stateBeneath = null;
@@ -86,7 +83,7 @@ public abstract class A_StateMachine extends A_State
 	}
 	
 	@Override
-	void didEnter_internal(A_StateConstructor constructor)
+	void didEnter_internal(StateArgs constructor)
 	{
 		super.didEnter_internal(constructor);
 		
@@ -155,7 +152,7 @@ public abstract class A_StateMachine extends A_State
 		}
 	}
 	
-	private void enterSubState(A_State stateToEnter, A_State stateBeneath, boolean isPush, A_StateConstructor constructor)
+	private void enterSubState(A_State stateToEnter, A_State stateBeneath, boolean isPush, StateArgs constructor)
 	{
 		stateToEnter.m_stateBeneath = stateBeneath;
 		stateToEnter.m_previousState = isPush ? null : (this.m_currentState != null ? this.m_currentState.getClass() : null);

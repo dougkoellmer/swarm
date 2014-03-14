@@ -8,12 +8,12 @@ import swarm.shared.account.SignUpCredentials;
 import swarm.shared.account.SignUpValidator;
 import swarm.shared.debugging.U_Debug;
 import swarm.shared.statemachine.A_Action;
-import swarm.shared.statemachine.A_ActionArgs;
+import swarm.shared.statemachine.StateArgs;
 import swarm.shared.statemachine.A_State;
 
 public class Action_SignInOrUp_SignUp extends A_Action
 {
-	public static class Args extends A_ActionArgs
+	public static class Args extends StateArgs
 	{
 		private SignUpCredentials m_creds;
 		
@@ -34,7 +34,7 @@ public class Action_SignInOrUp_SignUp extends A_Action
 	}
 	
 	@Override
-	public void perform(A_ActionArgs args)
+	public void perform(StateArgs args)
 	{
 		SignUpCredentials creds = ((Action_SignInOrUp_SignUp.Args) args).m_creds;
 
@@ -48,7 +48,7 @@ public class Action_SignInOrUp_SignUp extends A_Action
 	}
 
 	@Override
-	public boolean isPerformable(A_ActionArgs args)
+	public boolean isPerformable(StateArgs args)
 	{
 		//--- DRK > Just a final double-check catch-all here...UI should have completely validated before performing the action.
 		

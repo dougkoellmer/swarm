@@ -6,12 +6,12 @@ import swarm.client.entities.BufferCell;
 import swarm.client.managers.UserManager;
 import swarm.client.states.camera.State_ViewingCell;
 import swarm.shared.statemachine.A_Action;
-import swarm.shared.statemachine.A_ActionArgs;
+import swarm.shared.statemachine.StateArgs;
 import swarm.shared.statemachine.A_State;
 
 public class Action_EditingCode_Edit extends A_Action 
 {
-	public static class Args extends A_ActionArgs
+	public static class Args extends StateArgs
 	{
 		private String m_changedCode = null;
 		
@@ -29,7 +29,7 @@ public class Action_EditingCode_Edit extends A_Action
 	}
 	
 	@Override
-	public void perform(A_ActionArgs args)
+	public void perform(StateArgs args)
 	{
 		String code = ((Action_EditingCode_Edit.Args) args).m_changedCode;
 		
@@ -42,7 +42,7 @@ public class Action_EditingCode_Edit extends A_Action
 	}
 	
 	@Override
-	public boolean isPerformable(A_ActionArgs args)
+	public boolean isPerformable(StateArgs args)
 	{
 		State_ViewingCell state = getContext().getForegroundedState(State_ViewingCell.class);
 		

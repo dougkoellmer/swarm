@@ -29,7 +29,7 @@ class CellAddressManagerListener implements CellAddressManager.I_Listener
 			{
 				Event_GettingMapping_OnResponse.Args args = new Event_GettingMapping_OnResponse.Args(type, address, mapping);
 				
-				currentState.performAction(Event_GettingMapping_OnResponse.class, args);
+				currentState.perform(Event_GettingMapping_OnResponse.class, args);
 				
 				m_machine.tryPoppingGettingAddressState();
 				
@@ -67,7 +67,7 @@ class CellAddressManagerListener implements CellAddressManager.I_Listener
 		if( dispatch )
 		{
 			m_onAddressResponseArgs.init(type, address, mapping);
-			m_machine.performAction(Event_Camera_OnAddressResponse.class, m_onAddressResponseArgs);
+			m_machine.perform(Event_Camera_OnAddressResponse.class, m_onAddressResponseArgs);
 		}
 	}
 	
@@ -77,7 +77,7 @@ class CellAddressManagerListener implements CellAddressManager.I_Listener
 		if( dispatchGotMappingEvent(Event_GettingMapping_OnResponse.E_Type.ON_FOUND, address, mapping) )
 		{
 			m_snapToCoordArgs.init(address, mapping.getCoordinate());
-			m_machine.performAction(Action_Camera_SnapToCoordinate.class, m_snapToCoordArgs);
+			m_machine.perform(Action_Camera_SnapToCoordinate.class, m_snapToCoordArgs);
 		}
 	}
 

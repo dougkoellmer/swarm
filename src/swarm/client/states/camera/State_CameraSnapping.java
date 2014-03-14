@@ -28,10 +28,9 @@ import swarm.shared.debugging.U_Debug;
 import swarm.shared.entities.A_Grid;
 import swarm.shared.entities.E_CodeType;
 import swarm.shared.statemachine.A_Action;
-
 import swarm.shared.statemachine.A_State;
 import swarm.shared.statemachine.I_StateEventListener;
-import swarm.shared.statemachine.A_StateConstructor;
+import swarm.shared.statemachine.StateArgs;
 import swarm.shared.statemachine.StateEvent;
 import swarm.shared.structs.CellAddress;
 import swarm.shared.structs.CellAddressMapping;
@@ -44,7 +43,7 @@ public class State_CameraSnapping extends A_State implements I_StateEventListene
 	
 	private static final Logger s_logger = Logger.getLogger(State_CameraSnapping.class.getName());
 	
-	public static class Constructor extends A_StateConstructor
+	public static class Constructor extends StateArgs
 	{
 		private GridCoordinate m_targetCoordinate;
 		private CellAddress m_targetAddress;
@@ -257,7 +256,7 @@ public class State_CameraSnapping extends A_State implements I_StateEventListene
 	}
 	
 	@Override
-	protected void didEnter(A_StateConstructor constructor)
+	protected void didEnter(StateArgs constructor)
 	{
 		StateMachine_Camera machine = getParent();
 		

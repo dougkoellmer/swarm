@@ -1,7 +1,7 @@
 package swarm.client.states.camera;
 
 import swarm.client.managers.CameraManager;
-import swarm.shared.statemachine.A_ActionArgs;
+import swarm.shared.statemachine.StateArgs;
 import swarm.shared.statemachine.A_State;
 import swarm.shared.structs.Point;
 
@@ -9,7 +9,7 @@ import swarm.shared.structs.Point;
 //		Could make Action API for this machine more robust by allowing any order of calls.
 public class Action_Camera_SetInitialPosition extends smA_CameraAction
 {
-	public static class Args extends A_ActionArgs
+	public static class Args extends StateArgs
 	{
 		private Point m_point;
 		
@@ -27,7 +27,7 @@ public class Action_Camera_SetInitialPosition extends smA_CameraAction
 	}
 	
 	@Override
-	public void perform(A_ActionArgs args)
+	public void perform(StateArgs args)
 	{
 		StateMachine_Camera machine = this.getState();
 		
@@ -37,7 +37,7 @@ public class Action_Camera_SetInitialPosition extends smA_CameraAction
 	}
 	
 	@Override
-	public boolean isPerformable(A_ActionArgs args)
+	public boolean isPerformable(StateArgs args)
 	{
 		StateMachine_Camera machine = this.getState();
 		return machine.getUpdateCount() == 0;

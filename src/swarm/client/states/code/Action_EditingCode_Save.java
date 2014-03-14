@@ -1,13 +1,13 @@
 package swarm.client.states.code;
 
 import swarm.shared.statemachine.A_Action;
-import swarm.shared.statemachine.A_ActionArgs;
+import swarm.shared.statemachine.StateArgs;
 import swarm.shared.statemachine.A_State;
 
 public class Action_EditingCode_Save extends A_Action
 {
 	@Override
-	public void perform(A_ActionArgs args)
+	public void perform(StateArgs args)
 	{
 		State_EditingCode state = this.getState();
 		
@@ -15,7 +15,7 @@ public class Action_EditingCode_Save extends A_Action
 	}
 	
 	@Override
-	public boolean isPerformable(A_ActionArgs args)
+	public boolean isPerformable(StateArgs args)
 	{
 		State_EditingCode state = this.getState();
 		

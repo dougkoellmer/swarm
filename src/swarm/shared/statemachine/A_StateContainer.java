@@ -3,8 +3,6 @@ package swarm.shared.statemachine;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import swarm.shared.debugging.U_Debug;
-
 
 /**
  * ...
@@ -52,7 +50,7 @@ public abstract class A_StateContainer extends A_State
 		return m_children.get(T) != null;
 	}
 	
-	void enterState_internal(Class<? extends A_State> T, A_StateConstructor constructor)
+	void enterState_internal(Class<? extends A_State> T, StateArgs constructor)
 	{
 		if ( !this.isForegrounded() )
 		{
@@ -134,7 +132,7 @@ public abstract class A_StateContainer extends A_State
 	}
 	
 	@Override
-	void didEnter_internal(A_StateConstructor constructor)
+	void didEnter_internal(StateArgs constructor)
 	{		
 		super.didEnter_internal(constructor);
 		

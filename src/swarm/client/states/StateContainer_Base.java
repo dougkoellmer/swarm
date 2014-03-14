@@ -6,10 +6,9 @@ import swarm.client.transaction.E_ResponseErrorControl;
 import swarm.client.transaction.E_ResponseSuccessControl;
 import swarm.client.transaction.I_TransactionResponseHandler;
 import swarm.client.transaction.ClientTransactionManager;
-
 import swarm.shared.statemachine.A_State;
 import swarm.shared.statemachine.A_StateContainer;
-import swarm.shared.statemachine.A_StateConstructor;
+import swarm.shared.statemachine.StateArgs;
 import swarm.shared.transaction.TransactionRequest;
 import swarm.shared.transaction.TransactionResponse;
 
@@ -29,7 +28,7 @@ public class StateContainer_Base extends A_StateContainer
 	}
 	
 	@Override
-	protected void didEnter(A_StateConstructor constructor)
+	protected void didEnter(StateArgs constructor)
 	{
 	}
 	
