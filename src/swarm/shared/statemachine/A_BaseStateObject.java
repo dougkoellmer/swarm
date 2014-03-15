@@ -17,6 +17,11 @@ public class A_BaseStateObject
 		return m_context;
 	}
 	
+	private static StateArgs createArgs(Object userData)
+	{
+		return userData != null ? new StateArgs() : null;
+	}
+	
 	protected void enterState(A_State container, Class<? extends A_State> T)
 	{
 		this.enterState(container, T, null);
@@ -81,7 +86,7 @@ public class A_BaseStateObject
 	
 	protected void pushState(Class<? extends A_State> T, Object userData)
 	{
-		this.pushState(T, new StateArgs(userData) {});
+		this.pushState(T, createArgs(userData));
 	}
 	
 	protected void pushState(Class<? extends A_State> T, StateArgs constructor_nullable)
@@ -95,8 +100,8 @@ public class A_BaseStateObject
 	}
 	
 	protected void pushState(A_State machine, Class<? extends A_State> T, Object userData)
-	{		
-		((A_StateMachine) machine).pushState_internal(T, new StateArgs(userData){});
+	{
+		this.pushState(machine, T, createArgs(userData));
 	}
 	
 	protected void pushState(A_State machine, Class<? extends A_State> T, StateArgs constructor_nullable)
@@ -122,14 +127,13 @@ public class A_BaseStateObject
 	
 	protected void setState(Class<? extends A_State> T, Object userData)
 	{
-		this.setState(T, new StateArgs(userData) {});
+		this.setState(T, createArgs(userData));
 	}
 	
 	protected void setState(Class<? extends A_State> T, StateArgs constructor_nullable)
 	{
 		this.setState(this.getMachineFromThis(), T, constructor_nullable);
 	}
-	
 	
 	protected void setState(A_State machine, Class<? extends A_State> T)
 	{
@@ -138,7 +142,7 @@ public class A_BaseStateObject
 	
 	protected void setState(A_State machine, Class<? extends A_State> T, Object userData)
 	{
-		((A_StateMachine) machine).setState_internal(T, new StateArgs(userData) {});
+		this.setState(machine, T, createArgs(userData));
 	}
 	
 	protected void setState(A_State machine, Class<? extends A_State> T, StateArgs constructor_nullable)

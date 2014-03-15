@@ -50,6 +50,16 @@ public class StateContext
 		m_rootState.update_internal(timeStep);
 	}
 	
+	public void willBackground()
+	{		
+		m_rootState.willBackground_internal(null);
+	}
+	
+	public void willExit()
+	{
+		m_rootState.willExit_internal();
+	}
+	
 	void register(Class<? extends A_State> association, A_Action action)
 	{
 		if( m_actionRegistry.containsKey(action.getClass()) )  return;
@@ -91,6 +101,15 @@ public class StateContext
 	public boolean perform(Class<? extends A_Action> T)
 	{
 		return perform(T, null);
+	}
+	
+	public boolean perform(Class<? extends A_Action> T, Object userData)
+	{
+		A_State state = getEnteredStateForAction(T);
+		
+		if( state == null )  return false;
+		
+		return state.perform(T, userData);
 	}
 	
 	public boolean perform(Class<? extends A_Action> T, StateArgs args)
@@ -190,6 +209,7 @@ public class StateContext
 			{
 				registeredState = T.newInstance();
 				this.register(registeredState);
+				return registeredState;
 			}
 			catch (InstantiationException e)
 			{

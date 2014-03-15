@@ -1,6 +1,6 @@
 package swarm.shared.statemachine;
 
-public abstract class StateArgs
+public class StateArgs
 {
 	public Object userData;
 	

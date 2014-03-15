@@ -166,6 +166,11 @@ public abstract class A_State extends A_BaseStateObject
 		return this.perform(T, null);
 	}
 	
+	public boolean perform(Class<? extends A_Action> T, Object userData)
+	{
+		return this.perform(T, new StateArgs(userData){});
+	}
+	
 	public boolean perform(Class<? extends A_Action> T, StateArgs args)
 	{
 		A_Action action = m_context.getAction(T);
@@ -252,8 +257,9 @@ public abstract class A_State extends A_BaseStateObject
 		root.queueEvent(new StateEvent(E_StateEventType.DID_ENTER, this));
 		
 		m_isEntering = true;
-		
+
 		this.didEnter(constructor);
+		this.didEnter();
 		
 		m_isEntering = false;
 		
@@ -273,8 +279,9 @@ public abstract class A_State extends A_BaseStateObject
 		context.queueEvent(new StateEvent(E_StateEventType.DID_FOREGROUND, this));
 		
 		m_isForegrounding = true;
-		
+
 		this.didForeground(revealingState, args);
+		this.didForeground();
 		
 		m_isForegrounding = false;
 		
@@ -305,6 +312,7 @@ public abstract class A_State extends A_BaseStateObject
 		m_totalUpdateCount++;
 		
 		this.update(timeStep);
+		this.update();
 		
 		context.processEventQueue();
 	}
@@ -318,6 +326,7 @@ public abstract class A_State extends A_BaseStateObject
 		m_blockingState = blockingState;
 		
 		this.willBackground(blockingState);
+		this.willBackground();
 		
 		m_isForegrounded = false;
 		
@@ -345,9 +354,14 @@ public abstract class A_State extends A_BaseStateObject
 		root.processEventQueue();
 	}
 	
+	//--- DRK > Bunch of event callbacks that you can override.
 	protected void didEnter(StateArgs constructor) {}
+	protected void didEnter() {}
 	protected void didForeground(Class<? extends A_State> revealingState, Object[] argsFromRevealingState){ }
+	protected void didForeground(){ }
 	protected void update(double timeStep) {}
+	protected void update() {}
 	protected void willBackground(Class<? extends A_State> blockingState) {}
+	protected void willBackground() {}
 	protected void willExit() { }
 }
