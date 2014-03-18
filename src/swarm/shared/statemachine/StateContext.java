@@ -20,8 +20,14 @@ public class StateContext
 	
 	private final HashMap<Class<? extends A_State>, A_State> m_stateRegistry = new HashMap<Class<? extends A_State>, A_State>();
 	private final HashMap<Class<? extends A_Action>, A_Action> m_actionRegistry = new HashMap<Class<? extends A_Action>, A_Action>();
+	private I_StateFactory m_stateFactory;
 	
 	public StateContext(A_State rootState, I_StateEventListener stateEventListener)
+	{
+		this(rootState, stateEventListener, null);
+	}
+	
+	public StateContext(A_State rootState, I_StateEventListener stateEventListener, I_StateFactory stateFactory)
 	{
 		m_rootState = rootState;
 		
@@ -203,25 +209,10 @@ public class StateContext
 			
 			return registeredState;
 		}
-		else
+		else if( m_stateFactory != null )
 		{
-			try
-			{
-				registeredState = T.newInstance();
-				this.register(registeredState);
-				return registeredState;
-			}
-			catch (InstantiationException e)
-			{
-				e.printStackTrace();
-			}
-			catch (IllegalAccessException e)
-			{
-				e.printStackTrace();
-			}
+			registeredState = m_stateFactory.newInstance(T);
 		}
-
-		//"No state instance registered."
 		
 		return null;
 	}

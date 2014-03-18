@@ -100,7 +100,7 @@ public class ScrollNavigator implements I_StateEventListener
 				{
 					VisualCell cell = (VisualCell)viewingState.getCell().getVisualization();
 					setTargetLayout(cell);
-					m_viewContext.cellMngr.updateCellTransforms(0.0);
+					//m_viewContext.cellMngr.updateCellTransforms(0.0);
 				}
 				else
 				{

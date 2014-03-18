@@ -26,6 +26,7 @@ import swarm.shared.entities.E_CodeType;
 import swarm.shared.structs.Code;
 import swarm.shared.structs.MutableCode;
 import swarm.shared.structs.Point;
+import swarm.shared.structs.Rect;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style.Display;
@@ -97,6 +98,9 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	private int m_yOffset = 0;
 	private int m_baseXOffset = 0;
 	private int m_baseYOffset = 0;
+	
+	private int m_startingXOffset = 0;
+	private int m_startingYOffset = 0;
 	
 	private double m_baseChangeValue = 0;
 	
@@ -289,6 +293,38 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		m_isValidated = true;
 	}
 	
+	void crop(int thisX, int thisY, int windowWidth, int windowHeight)
+	{
+		int totalWidth = m_width+m_padding;
+		int totalHeight = m_height+m_padding;
+		thisX -= m_xOffset;
+		thisY -= m_yOffset;
+		
+		int leftOver = (thisX + totalWidth) - windowWidth;
+		
+		if( leftOver > 0)
+		{
+			totalWidth -= leftOver;
+		}
+		
+		leftOver = (thisY + totalHeight) - windowHeight;
+		
+		if( leftOver > 0)
+		{
+			totalHeight -= leftOver;
+		}
+		
+		m_contentPanel.setSize(m_width + "px", m_height + "px");
+		this.setSize(totalWidth + "px", totalHeight + "px");
+	}
+	
+	void removeCrop()
+	{
+		this.flushLayout();
+		m_contentPanel.getElement().getStyle().clearWidth();
+		m_contentPanel.getElement().getStyle().clearHeight();
+	}
+	
 	private void flushLayout()
 	{
 		this.setSize(m_width+m_padding + "px", m_height+m_padding + "px");
@@ -299,7 +335,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		m_bufferCell = bufferCell;
 		
 		 //--- DRK > NOTE: for some reason this gets reset somehow...at least in hosted mode, so can't put it in constructor.
-		this.getElement().getStyle().setPosition(Position.ABSOLUTE);
+		this.getElement().getStyle().setPosition(Position.FIXED);
 		
 		m_currentImageIndex = -1;
 		
@@ -343,6 +379,9 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		else if( this.m_isFocused )
 		{
 			this.ensureTargetLayout();
+			
+			m_startingXOffset = m_xOffset;
+			m_startingYOffset = m_yOffset;
 		}
 	}
 	
@@ -391,6 +430,9 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		E_ZIndex.CELL_FOCUSED.assignTo(this);
 		this.ensureTargetLayout();
 		
+		m_startingXOffset = m_xOffset;
+		m_startingYOffset = m_yOffset;
+		
 		this.m_glassPanel.setVisible(false);
 		this.addStyleName("visual_cell_focused");
 
@@ -405,7 +447,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		m_isSnapping = false; // just in case.
 		m_isFocused = false;
 		
-		//this.getElement().getStyle().setPosition(Position.FIXED);
+		this.getElement().getStyle().setPosition(Position.FIXED);
 		this.m_glassPanel.setVisible(true);
 		this.removeStyleName("visual_cell_focused");
 		U_Css.allowUserSelect(m_contentPanel.getElement(), false);
@@ -428,6 +470,16 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	public int getYOffset()
 	{
 		return m_yOffset;
+	}
+	
+	public int getStartingXOffset()
+	{
+		return m_startingXOffset;
+	}
+	
+	public int getStartingYOffset()
+	{
+		return m_startingYOffset;
 	}
 	
 	public void calcTopLeft(Point point_out)
@@ -474,6 +526,8 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 			E_ZIndex.CELL_POPPED.assignTo(this);
 			m_isSnapping = true;
 		}
+		
+		this.getElement().getStyle().setPosition(Position.ABSOLUTE);
 	}
 	
 	public void cancelPopUp()
@@ -487,6 +541,8 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 			
 			U_Debug.ASSERT(wasSnapping, "expected cell to know it was snapping");
 		}
+		
+		this.getElement().getStyle().setPosition(Position.FIXED);
 	}
 	
 	public void pushDown()

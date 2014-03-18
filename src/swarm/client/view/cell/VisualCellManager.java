@@ -169,10 +169,14 @@ public class VisualCellManager implements I_UIElement
 			cellHeightPlusPadding = grid.getCellHeight() * scaling;
 		}
 		
-		boolean isViewingCell = m_viewContext.stateContext.isEntered(State_ViewingCell.class);
+		State_ViewingCell viewingState = m_viewContext.stateContext.getEnteredState(State_ViewingCell.class);
+		boolean isViewingCell = viewingState != null;
+		BufferCell viewedCell = viewingState != null ? viewingState.getCell() : null;
 		boolean use3dTransforms = m_viewContext.appContext.platformInfo.has3dTransforms();
 		int scrollX = m_viewContext.scrollNavigator.getScrollX();
 		int scrollY = m_viewContext.scrollNavigator.getScrollY();
+		int windowWidth = (int) m_viewContext.scrollNavigator.getWindowWidth();
+		int windowHeight = (int) m_viewContext.scrollNavigator.getWindowHeight();
 	
 		String scaleProperty = scaling < NO_SCALING ? U_Css.createScaleTransform(scaling, use3dTransforms) : null;
 		
@@ -201,48 +205,48 @@ public class VisualCellManager implements I_UIElement
 				ithVisualCell.update(timeStep);
 				ithVisualCell.validate();
 				
-				offsetX += ((double)ithVisualCell.getXOffset())*scaling;
-				offsetY += ((double)ithVisualCell.getYOffset())*scaling;
-				
-				double translateX = basePoint.getX() + offsetX;
-				double translateY = basePoint.getY() + offsetY;
-				translateX += scrollX;
-				translateY += scrollY;
-				
-				if( isViewingCell )
+				if( !isViewingCell || isViewingCell && ithBufferCell != viewedCell )
 				{
-					ithVisualCell.getElement().getStyle().setLeft(translateX, Unit.PX);
-					ithVisualCell.getElement().getStyle().setTop(translateY, Unit.PX);
-					
-					if( scaleProperty != null ) // for now should always be null because viewing state doesn't allow z camera offset
-					{
-						String transformProperty = m_viewContext.appContext.platformInfo.getTransformProperty();
-						ithVisualCell.getElement().getStyle().setProperty(transformProperty, scaleProperty);
-					}
-					else
-					{
-						if( isViewStateTransition )
-						{
-							String transformProperty = m_viewContext.appContext.platformInfo.getTransformProperty();
-							ithVisualCell.getElement().getStyle().clearProperty(transformProperty);
-						}
-					}
-					
-					ithVisualCell.getElement().getOffsetTop();
+					offsetX += ((double)ithVisualCell.getXOffset())*scaling;
+					offsetY += ((double)ithVisualCell.getYOffset())*scaling;
 				}
 				else
 				{
-					String translateProperty = U_Css.createTranslateTransform(translateX, translateY, use3dTransforms);
-					String transform = scaleProperty != null ? translateProperty + " " + scaleProperty : translateProperty;
-					String transformProperty = m_viewContext.appContext.platformInfo.getTransformProperty();
-					ithVisualCell.getElement().getStyle().setProperty(transformProperty, transform);
-					
-					if( isViewStateTransition )
+					//--- DRK > At this point in swarm's life, we should only be hitting this block 
+					//---		on window resizes and only resizes. For some reason the scroll has to
+					//---		be included here...it's not apparent why, but resetting the translation
+					//---		removes the window's scroll. Happens for all browsers, so not a "bug",
+					//---		but requires a workaround as if it were a bug.
+					offsetX += ((double)ithVisualCell.getStartingXOffset())*scaling;
+					offsetY += ((double)ithVisualCell.getStartingYOffset())*scaling;
+					offsetX += scrollX;
+					offsetY += scrollY;
+				}
+				
+				double translateX = basePoint.getX() + offsetX;
+				double translateY = basePoint.getY() + offsetY;
+				
+				if( isViewingCell )
+				{
+					if( ithBufferCell != viewedCell )
 					{
-						ithVisualCell.getElement().getStyle().clearLeft();
-						ithVisualCell.getElement().getStyle().clearTop();
+						//--- DRK > Need to crop the cell because it has a fixed position and will
+						//---		appear under the scroll bar but still have mouse focus through
+						//---		the scrollbar...happens on all browsers, so I guess not a "bug" per se
+						//---		but still needs this sloppy workaround.
+						ithVisualCell.crop((int)translateX, (int)translateY, windowWidth, windowHeight);
 					}
 				}
+				else if( !isViewingCell && isViewStateTransition )
+				{
+					//--- DRK > Removing the crop when exiting the viewing cell state.
+					ithVisualCell.removeCrop();
+				}
+				
+				String translateProperty = U_Css.createTranslateTransform(translateX, translateY, use3dTransforms);
+				String transform = scaleProperty != null ? translateProperty + " " + scaleProperty : translateProperty;
+				String transformProperty = m_viewContext.appContext.platformInfo.getTransformProperty();
+				ithVisualCell.getElement().getStyle().setProperty(transformProperty, transform);
 				
 				if( ithVisualCell.getParent() == null )
 				{

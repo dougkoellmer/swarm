@@ -71,7 +71,7 @@
 
 .sm_cell_hud
 {
-	position:absolute;
+	position:fixed;
 	padding:4px;
     padding-top: 3px;
 	
