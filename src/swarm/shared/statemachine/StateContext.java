@@ -34,6 +34,8 @@ public class StateContext
 		this.addListener(stateEventListener);
 		
 		register(m_rootState);
+		
+		m_stateFactory = stateFactory;
 	}
 	
 	public A_State getRootState()
@@ -212,6 +214,12 @@ public class StateContext
 		else if( m_stateFactory != null )
 		{
 			registeredState = m_stateFactory.newInstance(T);
+			
+			if( registeredState != null )
+			{
+				this.register(registeredState);
+				return registeredState;
+			}
 		}
 		
 		return null;

@@ -98,7 +98,8 @@ body, html, .sm_cell_container, .sm_tab_content_container,
 .sm_button_tray_wrapper
 {
 	padding-right:4px;
-	height: 46px;
+	height: 47px;
+	background:white;
 }
 
 .sm_button_tray_ceiling

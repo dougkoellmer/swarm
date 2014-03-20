@@ -219,6 +219,9 @@ public class VisualCellManager implements I_UIElement
 					//---		but requires a workaround as if it were a bug.
 					offsetX += ((double)ithVisualCell.getStartingXOffset())*scaling;
 					offsetY += ((double)ithVisualCell.getStartingYOffset())*scaling;
+					
+					//--- DRK > Really not sure why we have to change translation to account for scroll on window resizes.
+					//---		Doesn't make sense, but every browser behaves the same.
 					offsetX += scrollX;
 					offsetY += scrollY;
 				}
@@ -235,12 +238,18 @@ public class VisualCellManager implements I_UIElement
 						//---		the scrollbar...happens on all browsers, so I guess not a "bug" per se
 						//---		but still needs this sloppy workaround.
 						ithVisualCell.crop((int)translateX, (int)translateY, windowWidth, windowHeight);
+						
+						//--- DRK > In a way we only should need to do this once when target cell becomes focused,
+						//---		but we're doing it for all cells everytime because it's a lightweight operation
+						//---		and just provides a blanket technique for if new cells are created on a window resize
+						ithVisualCell.setScrollMode(E_ScrollMode.SCROLLING_NOT_FOCUSED);
 					}
 				}
 				else if( !isViewingCell && isViewStateTransition )
 				{
 					//--- DRK > Removing the crop when exiting the viewing cell state.
 					ithVisualCell.removeCrop();
+					ithVisualCell.setScrollMode(E_ScrollMode.NOT_SCROLLING);
 				}
 				
 				String translateProperty = U_Css.createTranslateTransform(translateX, translateY, use3dTransforms);

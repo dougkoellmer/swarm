@@ -300,18 +300,18 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		thisX -= m_xOffset;
 		thisY -= m_yOffset;
 		
-		int leftOver = (thisX + totalWidth) - windowWidth;
+		int overflow = (thisX + totalWidth) - windowWidth;
 		
-		if( leftOver > 0)
+		if( overflow > 0 )
 		{
-			totalWidth -= leftOver;
+			totalWidth -= overflow;
 		}
 		
-		leftOver = (thisY + totalHeight) - windowHeight;
+		overflow = (thisY + totalHeight) - windowHeight;
 		
-		if( leftOver > 0)
+		if( overflow > 0)
 		{
-			totalHeight -= leftOver;
+			totalHeight -= overflow;
 		}
 		
 		m_contentPanel.setSize(m_width + "px", m_height + "px");
@@ -335,7 +335,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		m_bufferCell = bufferCell;
 		
 		 //--- DRK > NOTE: for some reason this gets reset somehow...at least in hosted mode, so can't put it in constructor.
-		this.getElement().getStyle().setPosition(Position.FIXED);
+		this.setScrollMode(E_ScrollMode.NOT_SCROLLING);
 		
 		m_currentImageIndex = -1;
 		
@@ -420,13 +420,24 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		this.pushDown();
 	}
 	
+	void setScrollMode(E_ScrollMode mode)
+	{
+		if( mode == E_ScrollMode.SCROLLING_FOCUSED || mode == E_ScrollMode.NOT_SCROLLING )
+		{
+			this.getElement().getStyle().setPosition(Position.ABSOLUTE);
+		}
+		else
+		{
+			this.getElement().getStyle().setPosition(Position.FIXED);
+		}
+	}
+	
 	@Override
 	public void onFocusGained()
 	{
 		m_isSnapping = false;
 		m_isFocused = true;
 		
-		this.getElement().getStyle().setPosition(Position.ABSOLUTE);
 		E_ZIndex.CELL_FOCUSED.assignTo(this);
 		this.ensureTargetLayout();
 		
@@ -447,7 +458,6 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		m_isSnapping = false; // just in case.
 		m_isFocused = false;
 		
-		this.getElement().getStyle().setPosition(Position.FIXED);
 		this.m_glassPanel.setVisible(true);
 		this.removeStyleName("visual_cell_focused");
 		U_Css.allowUserSelect(m_contentPanel.getElement(), false);
@@ -526,8 +536,6 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 			E_ZIndex.CELL_POPPED.assignTo(this);
 			m_isSnapping = true;
 		}
-		
-		this.getElement().getStyle().setPosition(Position.ABSOLUTE);
 	}
 	
 	public void cancelPopUp()
@@ -541,8 +549,6 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 			
 			U_Debug.ASSERT(wasSnapping, "expected cell to know it was snapping");
 		}
-		
-		this.getElement().getStyle().setPosition(Position.FIXED);
 	}
 	
 	public void pushDown()
