@@ -334,9 +334,6 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	{
 		m_bufferCell = bufferCell;
 		
-		 //--- DRK > NOTE: for some reason this gets reset somehow...at least in hosted mode, so can't put it in constructor.
-		this.setScrollMode(E_ScrollMode.NOT_SCROLLING);
-		
 		m_currentImageIndex = -1;
 		
 		onCreatedOrRecycled(width, height, padding, subCellDimension);
@@ -354,8 +351,9 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		m_targetXOffset = m_baseXOffset = m_xOffset = 0;
 		m_targetYOffset = m_baseYOffset = m_yOffset = 0;
 		m_padding = padding;
-		
-		this.flushLayout();
+
+		this.setScrollMode(E_ScrollMode.NOT_SCROLLING);
+		this.removeCrop();
 	}
 	
 	public void setTargetLayout(int width, int height, int xOffset, int yOffset)

@@ -22,6 +22,7 @@ import swarm.shared.statemachine.I_StateEventListener;
 import swarm.shared.statemachine.StateEvent;
 import swarm.shared.structs.Point;
 
+import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -59,7 +60,9 @@ public class VisualCellHudInner extends HorizontalPanel implements I_StateEventL
 		m_viewContext = viewContext;
 		
 		this.setWidth("100%");
+		this.setHeight("100%");
 		
+		//this.getElement().getStyle().setPosition(Position.RELATIVE);
 		this.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		m_leftDock.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		m_rightDock.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);

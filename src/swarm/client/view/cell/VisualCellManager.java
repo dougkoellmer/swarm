@@ -244,6 +244,11 @@ public class VisualCellManager implements I_UIElement
 						//---		and just provides a blanket technique for if new cells are created on a window resize
 						ithVisualCell.setScrollMode(E_ScrollMode.SCROLLING_NOT_FOCUSED);
 					}
+					else
+					{
+						ithVisualCell.removeCrop();
+						ithVisualCell.setScrollMode(E_ScrollMode.SCROLLING_FOCUSED);
+					}
 				}
 				else if( !isViewingCell && isViewStateTransition )
 				{
