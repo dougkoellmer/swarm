@@ -31,6 +31,7 @@ public class Action_Camera_SnapToCoordinate extends smA_CameraAction
 		private boolean m_hasTargetPoint;
 		
 		private boolean m_onlyCausedRefresh = false;
+		private boolean m_causeRefresh;
 		
 		public Args()
 		{
@@ -51,6 +52,7 @@ public class Action_Camera_SnapToCoordinate extends smA_CameraAction
 			m_address = null;
 			
 			m_hasTargetPoint = false;
+			m_causeRefresh = true;
 		}
 		
 		public void init(GridCoordinate coordinate, Point point)
@@ -60,6 +62,7 @@ public class Action_Camera_SnapToCoordinate extends smA_CameraAction
 			m_address = null;
 			
 			m_hasTargetPoint = true;
+			m_causeRefresh = true;
 		}
 		
 		void init(CellAddress address, GridCoordinate coordinate)
@@ -68,6 +71,7 @@ public class Action_Camera_SnapToCoordinate extends smA_CameraAction
 			m_coordinate.copy(coordinate);
 			
 			m_hasTargetPoint = false;
+			m_causeRefresh = true;
 		}
 		
 		public GridCoordinate getTargetCoordinate()
@@ -84,6 +88,12 @@ public class Action_Camera_SnapToCoordinate extends smA_CameraAction
 		{
 			m_address = null;
 			m_hasTargetPoint = false;
+			m_causeRefresh = true;
+		}
+		
+		public void causeRefresh(boolean value)
+		{
+			m_causeRefresh = value;
 		}
 		
 		public boolean onlyCausedRefresh()
@@ -124,6 +134,7 @@ public class Action_Camera_SnapToCoordinate extends smA_CameraAction
 	@Override
 	public void perform(StateArgs args)
 	{
+		Args args_cast = args.cast();
 		GridCoordinate coordinate = ((Args) args).m_coordinate;
 		Point point = ((Args) args).m_point;
 		StateMachine_Camera machine = this.getState();
@@ -133,7 +144,10 @@ public class Action_Camera_SnapToCoordinate extends smA_CameraAction
 		{
 			if( ((State_ViewingCell)currentState).getCell().getCoordinate().isEqualTo(coordinate) )
 			{
-				((State_ViewingCell)currentState).refreshCell();
+				if( args_cast.m_causeRefresh )
+				{
+					((State_ViewingCell)currentState).refreshCell();
+				}
 				((Args) args).m_onlyCausedRefresh = true;
 				
 				return;

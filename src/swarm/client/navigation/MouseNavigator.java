@@ -430,6 +430,7 @@ public class MouseNavigator implements I_UIElement, Mouse.I_Listener
 		U_CameraViewport.calcConstrainedCameraPoint(grid, m_mouseGridCoord, m_utilPoint1, viewWidth, viewHeight, cellHudHeight, m_utilPoint2);
 		
 		m_args_SnapToCoord.init(m_mouseGridCoord, m_utilPoint2);
+		m_args_SnapToCoord.causeRefresh(false);
 		
 		if( !m_cameraMachine.perform(Action_Camera_SnapToCoordinate.class, m_args_SnapToCoord) )
 		{

@@ -35,6 +35,7 @@ public enum E_ZIndex
 	MAGNIFIER_DRAG_BUTTON,
 	CONSOLE,
 	MINIMIZER_MAXIMIZER,
+	SPLITTER_GLASS,
 	DIALOG_GLASS,
 	DIALOG,
 	TOOL_TIP_1,
@@ -56,6 +57,11 @@ public enum E_ZIndex
 	public void assignTo(IsWidget widget, Enum offset)
 	{
 		widget.asWidget().getElement().getStyle().setZIndex(this.getZIndex() + offset.ordinal());
+	}
+	
+	public void assignTo(Element element)
+	{
+		element.getStyle().setZIndex(this.getZIndex());
 	}
 	
 	public void assignTo(Element element, Enum offset)

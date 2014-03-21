@@ -29,6 +29,9 @@ import swarm.shared.statemachine.A_State;
 import swarm.shared.statemachine.E_StateEventType;
 import swarm.shared.statemachine.StateEvent;
 
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Style.Cursor;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -36,6 +39,7 @@ import com.google.gwt.event.dom.client.DragStartEvent;
 import com.google.gwt.event.dom.client.DragStartHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SplitLayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -73,6 +77,10 @@ public class SplitPanel extends SplitLayoutPanel implements I_UIElement
 	SplitPanel(ViewContext viewContext, ViewConfig config)
 	{
 		super((int) PARENT_SPLITTER_WIDTH);
+		
+		Element glassElem = this.getGlassElem();
+		glassElem.getStyle().setCursor(Cursor.W_RESIZE);
+		E_ZIndex.SPLITTER_GLASS.assignTo(glassElem);
 		
 		m_viewContext = viewContext;
 		
@@ -134,7 +142,7 @@ public class SplitPanel extends SplitLayoutPanel implements I_UIElement
 		
 		m_panelButton.addStyleName("sm_panel_button");
 		
-		//--- DRK > I think it just looks a little sloppy if you experiment around and can drag this particular button.
+		//--- DRK > I think it just looks a little sloppy if you click around and can drag this particular button by accident.
 		m_panelButton.addDragStartHandler(new DragStartHandler()
 		{
 			@Override
@@ -180,6 +188,12 @@ public class SplitPanel extends SplitLayoutPanel implements I_UIElement
 		updateButtonPosition(panelWidth);
 		RootPanel.get().add(m_panelButton);
 	}
+	
+	private native Element getGlassElem()
+	/*-{
+			return @com.google.gwt.user.client.ui.SplitLayoutPanel::glassElem;
+	}-*/;
+	       
 	
 	public double getTabPanelWidth()
 	{
