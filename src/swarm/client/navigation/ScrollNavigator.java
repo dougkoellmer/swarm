@@ -368,12 +368,26 @@ public class ScrollNavigator implements I_StateEventListener
 	
 	private double getWindowWidthSansScroll()
 	{
-		return m_scrollContainer.getElement().getOffsetWidth();
+		double value = m_scrollContainer.getElement().getOffsetWidth();
+		
+		if( value == 0 )
+		{
+			value = this.getWindowWidth();
+		}
+		
+		return value;
 	}
 	
 	private double getWindowHeightSansScroll()
 	{
-		return m_scrollContainer.getElement().getOffsetHeight();
+		double value = m_scrollContainer.getElement().getOffsetHeight();
+		
+		if( value == 0 )
+		{
+			value = this.getWindowHeight();
+		}
+		
+		return value;
 	}
 	
 	public double getWindowWidth()
@@ -384,7 +398,7 @@ public class ScrollNavigator implements I_StateEventListener
 		{
 			if( m_scrollContainer.getElement().getOffsetWidth() != 0 )
 			{
-				return 0;
+				return m_scrollContainer.getElement().getOffsetWidth();
 			}
 			else
 			{
@@ -405,7 +419,7 @@ public class ScrollNavigator implements I_StateEventListener
 		{
 			if( m_scrollContainer.getElement().getOffsetHeight() != 0 )
 			{
-				return 0;
+				return m_scrollContainer.getElement().getOffsetHeight();
 			}
 			else
 			{
