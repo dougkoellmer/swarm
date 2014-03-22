@@ -22,29 +22,34 @@ public class A_BaseStateObject
 		return userData != null ? new StateArgs() : null;
 	}
 	
-	protected void enterState(A_State container, Class<? extends A_State> T)
+	protected static void enterState(A_State container, Class<? extends A_State> T)
 	{
-		this.enterState(container, T, null);
+		enterState(container, T, null);
 	}
 	
-	protected void enterState(A_State container, Class<? extends A_State> T, StateArgs constructor)
+	protected static void enterState(A_State container, Class<? extends A_State> T, StateArgs constructor)
 	{
 		((A_StateContainer) container).enterState_internal(T, constructor);
 	}
 	
-	protected void foregroundState(A_State container, Class<? extends A_State> T)
+	protected static void foregroundState(A_State container, Class<? extends A_State> T)
 	{
 		((A_StateContainer) container).foregroundState_internal(T);
 	}
 	
-	protected void backgroundState(A_State container, Class<? extends A_State> T)
+	protected static void backgroundState(A_State container, Class<? extends A_State> T)
 	{
 		((A_StateContainer) container).backgroundState_internal(T);
 	}
 	
-	protected void container_exitState(A_State container, Class<? extends A_State> T)
+	protected static void exitState(A_State container, Class<? extends A_State> T)
 	{
 		((A_StateContainer) container).exitState_internal(T);
+	}
+	
+	protected <T extends A_StateMachine> T getMachine()
+	{
+		return (T) getMachineFromThis();
 	}
 	
 	private A_State getMachineFromThis()
@@ -94,17 +99,17 @@ public class A_BaseStateObject
 		this.pushState(this.getMachineFromThis(), T, constructor_nullable);
 	}
 	
-	protected void pushState(A_State machine, Class<? extends A_State> T)
+	protected static void pushState(A_State machine, Class<? extends A_State> T)
 	{
-		this.pushState(machine, T, null);
+		A_BaseStateObject.pushState(machine, T, null);
 	}
 	
-	protected void pushState(A_State machine, Class<? extends A_State> T, Object userData)
+	protected static void pushState(A_State machine, Class<? extends A_State> T, Object userData)
 	{
-		this.pushState(machine, T, createArgs(userData));
+		A_BaseStateObject.pushState(machine, T, createArgs(userData));
 	}
 	
-	protected void pushState(A_State machine, Class<? extends A_State> T, StateArgs constructor_nullable)
+	protected static void pushState(A_State machine, Class<? extends A_State> T, StateArgs constructor_nullable)
 	{		
 		((A_StateMachine) machine).pushState_internal(T, constructor_nullable);
 	}
@@ -112,10 +117,10 @@ public class A_BaseStateObject
 	
 	protected void popState(Object ... args)
 	{
-		this.popState(this.getMachineFromThis(), args);
+		A_BaseStateObject.popState(this.getMachineFromThis(), args);
 	}
 	
-	protected void popState(A_State machine, Object ... args)
+	protected static void popState(A_State machine, Object ... args)
 	{
 		((A_StateMachine) machine).popState_internal(args);
 	}
@@ -132,23 +137,25 @@ public class A_BaseStateObject
 	
 	protected void setState(Class<? extends A_State> T, StateArgs constructor_nullable)
 	{
-		this.setState(this.getMachineFromThis(), T, constructor_nullable);
+		A_BaseStateObject.setState(this.getMachineFromThis(), T, constructor_nullable);
 	}
 	
-	protected void setState(A_State machine, Class<? extends A_State> T)
+	protected static void setState(A_State machine, Class<? extends A_State> T)
 	{
-		this.setState(machine, T, null);
+		A_BaseStateObject.setState(machine, T, (StateArgs) null);
 	}
 	
-	protected void setState(A_State machine, Class<? extends A_State> T, Object userData)
+	protected static void setState(A_State machine, Class<? extends A_State> T, Object userData)
 	{
-		this.setState(machine, T, createArgs(userData));
+		A_BaseStateObject.setState(machine, T, createArgs(userData));
 	}
 	
-	protected void setState(A_State machine, Class<? extends A_State> T, StateArgs constructor_nullable)
+	protected static void setState(A_State machine, Class<? extends A_State> T, StateArgs constructor_nullable)
 	{
 		((A_StateMachine) machine).setState_internal(T, constructor_nullable);
 	}
+	
+	
 	
 	protected void beginBatchOperation()
 	{

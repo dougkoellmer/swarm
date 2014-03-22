@@ -55,7 +55,7 @@ public class State_ViewingCell extends A_State implements I_StateEventListener, 
 		m_appContext = appContext;
 		m_cellHudHeight = cellHudHeight;
 		
-		registerAction(new Action_ViewingCell_Refresh());
+		register(new Action_ViewingCell_Refresh());
 	}
 	
 	void refreshCell()

@@ -41,7 +41,7 @@ public class State_EditingCodeBlocker extends A_State
 	
 	public State_EditingCodeBlocker()
 	{
-		registerAction(new OnReasonChange());
+		register(new OnReasonChange());
 	}
 	
 	

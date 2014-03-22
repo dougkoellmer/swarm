@@ -22,7 +22,7 @@ public class StateMachine_Tabs extends A_StateMachine
 	
 	public StateMachine_Tabs(List<Class<? extends A_State>> tabStates) 
 	{
-		registerAction(new Action_Tabs_SelectTab());
+		register(new Action_Tabs_SelectTab());
 		
 		m_tabStates = tabStates;
 	}

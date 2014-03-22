@@ -199,11 +199,11 @@ public class StateMachine_Base extends A_StateMachine implements I_TransactionRe
 		m_appContext = appContext;
 		
 		//smA_Action.register(new PushDialog());
-		registerAction(new OnGridUpdate());
-		registerAction(new OnAccountManagerResponse());
+		register(new OnGridUpdate());
+		register(new OnAccountManagerResponse());
 		
-		registerAction(new OnUserPopulated());
-		registerAction(new OnUserCleared());
+		register(new OnUserPopulated());
+		register(new OnUserCleared());
 		
 		m_accountManagerDelegate = new AccountManagerDelegate(this);
 	}

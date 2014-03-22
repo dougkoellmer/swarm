@@ -42,9 +42,9 @@ public class State_SignInOrUp extends A_State
 	{
 		m_accountMngr = accountMngr;
 		
-		registerAction(new Action_SignInOrUp_SignIn(accountMngr, userMngr));
-		registerAction(new Action_SignInOrUp_SignUp(accountMngr, userMngr));
-		registerAction(new Action_SignInOrUp_SetNewPassword(accountMngr));
+		register(new Action_SignInOrUp_SignIn(accountMngr, userMngr));
+		register(new Action_SignInOrUp_SignUp(accountMngr, userMngr));
+		register(new Action_SignInOrUp_SetNewPassword(accountMngr));
 	}
 	
 	boolean isSignInOrResetPerformable(StateArgs args, boolean isForNewPassword)

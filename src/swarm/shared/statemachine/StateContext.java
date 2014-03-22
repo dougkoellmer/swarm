@@ -68,7 +68,7 @@ public class StateContext
 		m_rootState.willExit_internal();
 	}
 	
-	void register(Class<? extends A_State> association, A_Action action)
+	void register(A_Action action, Class<? extends A_State> association)
 	{
 		if( m_actionRegistry.containsKey(action.getClass()) )  return;
 		

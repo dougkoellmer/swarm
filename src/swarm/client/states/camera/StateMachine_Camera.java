@@ -91,13 +91,13 @@ public class StateMachine_Camera extends A_StateMachine implements I_StateEventL
 		m_codeRepo.addSource(user);
 		m_codeRepo.addSource(m_appContext.codeCache);
 		
-		registerAction(new Action_Camera_SetViewSize(m_appContext.cameraMngr));
-		registerAction(new Action_Camera_SnapToAddress(m_appContext.addressMngr));
-		registerAction(new Action_Camera_SnapToCoordinate(snapFilter, m_appContext.gridMngr));
-		registerAction(new Event_Camera_OnAddressResponse());
-		registerAction(new Event_Camera_OnCellSizeFound());
-		registerAction(new Action_Camera_SnapToPoint(m_appContext.cameraMngr));
-		registerAction(new Action_Camera_SetInitialPosition(m_appContext.cameraMngr));
+		register(new Action_Camera_SetViewSize(m_appContext.cameraMngr));
+		register(new Action_Camera_SnapToAddress(m_appContext.addressMngr));
+		register(new Action_Camera_SnapToCoordinate(snapFilter, m_appContext.gridMngr));
+		register(new Event_Camera_OnAddressResponse());
+		register(new Event_Camera_OnCellSizeFound());
+		register(new Action_Camera_SnapToPoint(m_appContext.cameraMngr));
+		register(new Action_Camera_SetInitialPosition(m_appContext.cameraMngr));
 	}
 	
 	void snapToCellAddress(CellAddress address)

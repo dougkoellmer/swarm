@@ -18,6 +18,6 @@ public class State_AsyncDialog extends State_GenericDialog
 	
 	public State_AsyncDialog()
 	{
-		registerAction(new State_AsyncDialog.Ok());
+		register(new State_AsyncDialog.Ok());
 	}
 }

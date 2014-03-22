@@ -36,7 +36,7 @@ public class State_GenericDialog extends A_State
 	
 	public State_GenericDialog()
 	{
-		registerAction(new State_GenericDialog.Ok());
+		register(new State_GenericDialog.Ok());
 	}
 	
 	

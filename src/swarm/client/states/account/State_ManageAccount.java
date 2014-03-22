@@ -20,7 +20,7 @@ public class State_ManageAccount extends A_State
 {
 	public State_ManageAccount(ClientAccountManager accountMngr)
 	{
-		registerAction(new Action_ManageAccount_SignOut(accountMngr));
+		register(new Action_ManageAccount_SignOut(accountMngr));
 	}
 	
 	@Override

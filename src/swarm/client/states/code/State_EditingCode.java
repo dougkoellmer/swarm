@@ -39,9 +39,9 @@ public class State_EditingCode extends A_State
 	{
 		m_appContext = appContext;
 		
-		registerAction(new Action_EditingCode_Save());
-		registerAction(new Action_EditingCode_Edit(m_appContext.userMngr));
-		registerAction(new Action_EditingCode_Preview());
+		register(new Action_EditingCode_Save());
+		register(new Action_EditingCode_Edit(m_appContext.userMngr));
+		register(new Action_EditingCode_Preview());
 	}
 	
 	void performCommitOrPreview(A_Action thisArg)

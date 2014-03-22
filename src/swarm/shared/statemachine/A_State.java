@@ -66,10 +66,10 @@ public abstract class A_State extends A_BaseStateObject
 	
 	private void registerAction_private(A_Action action)
 	{
-		m_context.register(this.getClass(), action);
+		m_context.register(action, this.getClass());
 	}
 	
-	protected void registerAction(A_Action action)
+	protected void register(A_Action action)
 	{
 		if( m_context == null )
 		{

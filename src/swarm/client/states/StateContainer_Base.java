@@ -23,8 +23,8 @@ public class StateContainer_Base extends A_StateContainer
 	public StateContainer_Base(Class<? extends A_State> consoleState_T)
 	{
 		m_consoleState_T = consoleState_T;
-		registerAction(new Action_Base_HideSupplementState());
-		registerAction(new Action_Base_ShowSupplementState());
+		register(new Action_Base_HideSupplementState());
+		register(new Action_Base_ShowSupplementState());
 	}
 	
 	@Override

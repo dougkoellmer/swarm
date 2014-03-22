@@ -24,7 +24,7 @@ public class State_GettingMapping extends A_State
 	
 	public State_GettingMapping()
 	{
-		registerAction(new Event_GettingMapping_OnResponse());
+		register(new Event_GettingMapping_OnResponse());
 	}
 	
 	CellAddress getAddress()

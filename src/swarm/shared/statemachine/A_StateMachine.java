@@ -69,6 +69,12 @@ public abstract class A_StateMachine extends A_State
 	void setState_internal(Class<? extends A_State> T, StateArgs constructor)
 	{
 		A_State currentState = this.getCurrentState();
+		
+		if( currentState.getClass() == T )
+		{
+			return;
+		}
+		
 		A_State stateBeneath = null;
 		
 		if( currentState != null )
