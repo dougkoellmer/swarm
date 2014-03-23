@@ -86,6 +86,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 		m_fadeOutTime_seconds = m_viewContext.config.hudFadeOutTime_seconds;
 		
 		m_alpha = m_baseAlpha = 0.0;
+		this.setAlpha(0.0);
 		
 		this.getElement().getStyle().setOverflow(Overflow.HIDDEN);
 		this.getElement().getStyle().setPosition(Position.FIXED);
