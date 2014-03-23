@@ -218,6 +218,8 @@ public abstract class A_State extends A_BaseStateObject
 	
 	private boolean isPerformable_private(A_Action action, StateArgs args)
 	{
+		if( !action.isAssociatedWithState(this.getClass()) )  return false;
+		
 		if ( !this.isEntered() )
 		{
 			return false;

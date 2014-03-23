@@ -34,6 +34,11 @@ public abstract class A_Action extends A_BaseStateObject
 	{
 		return m_association;
 	}
+	
+	public boolean isAssociatedWithState(Class<? extends A_State> stateClass)
+	{
+		return stateClass == this.getStateAssociation();
+	}
 
 	public boolean isPerformable(StateArgs args)
 	{

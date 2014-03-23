@@ -70,7 +70,7 @@ public abstract class A_StateMachine extends A_State
 	{
 		A_State currentState = this.getCurrentState();
 		
-		if( currentState.getClass() == T )
+		if( currentState != null && currentState.getClass() == T )
 		{
 			return;
 		}
