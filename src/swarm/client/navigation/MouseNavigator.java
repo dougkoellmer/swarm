@@ -211,7 +211,6 @@ public class MouseNavigator implements I_UIElement, Mouse.I_Listener
 					
 					mousePointToWorld(m_utilPoint2);
 					
-					
 					double extraPadding = 0;
 					
 					if( scrollNavigator.isScrollingX() || scrollNavigator.isScrollingY() )

@@ -8,7 +8,9 @@ import swarm.client.input.MouseEvent;
 import swarm.shared.debugging.U_Debug;
 import swarm.shared.structs.Point;
 import swarm.shared.structs.Tolerance;
+
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Touch;
 import com.google.gwt.event.dom.client.DomEvent;
 import com.google.gwt.event.dom.client.MouseDownEvent;
@@ -171,11 +173,20 @@ public class Mouse implements MouseDownHandler, MouseUpHandler, MouseMoveHandler
 		point_out.inc(-m_container.getElement().getParentElement().getScrollLeft(), -m_container.getElement().getParentElement().getScrollTop(), 0);
 	}
 	
+	private static native int workaroundEventGetMouseWheelVelocityY(NativeEvent evt)
+	/*-{
+	  if (typeof evt.wheelDelta == "undefined") {
+	    return 0;
+	  }
+	  return Math.round(-evt.wheelDelta / 40) || 0;
+	}-*/;
+	
 	@Override
 	public void onMouseWheel(MouseWheelEvent event)
 	{
+		int wheelDelta = workaroundEventGetMouseWheelVelocityY(event.getNativeEvent());
 		this.setMousePoint(event.getRelativeX(m_container.getElement()), event.getRelativeY(m_container.getElement()), m_mouseEvent.getPoint());
-		m_mouseEvent.set(E_MouseEventType.MOUSE_SCROLLED, -event.getDeltaY(), Element.as(event.getNativeEvent().getEventTarget()), false);
+		m_mouseEvent.set(E_MouseEventType.MOUSE_SCROLLED, -wheelDelta, Element.as(event.getNativeEvent().getEventTarget()), false);
 		
 		s_logger.log(Level.INFO, "scroll" + m_mouseEvent.getScrollDelta());
 		
