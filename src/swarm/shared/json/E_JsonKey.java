@@ -8,7 +8,8 @@ package swarm.shared.json;
  */
 public enum E_JsonKey implements I_JsonKeySource
 {
-	serverVersion,
+	libServerVersion,
+	appServerVersion,
 	txnArgs,
 	requestPath,
 	requestList,

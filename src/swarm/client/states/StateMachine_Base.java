@@ -220,7 +220,7 @@ public class StateMachine_Base extends A_StateMachine implements I_TransactionRe
 		}
 		else
 		{
-			popState(this);
+			popVer(this);
 		}
 	}
 	
@@ -238,7 +238,7 @@ public class StateMachine_Base extends A_StateMachine implements I_TransactionRe
 	{
 		if( m_asyncDialogQueue.size() == 0 )
 		{
-			this.pushState(this, T, constructor);
+			pushVer(this, T, constructor);
 			
 			m_asyncDialogQueue.add(null);
 		}

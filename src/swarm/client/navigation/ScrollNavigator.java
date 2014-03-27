@@ -735,7 +735,7 @@ public class ScrollNavigator implements I_StateEventListener
 	{
 		BufferCell bufferCell = visualCell.getBufferCell();
 		
-		if( !bufferCell.getFocusedCellSize().isValid() )  return;
+		if( !bufferCell.getFocusedCellSize().isExplicit() )  return;
 		
 		this.calcTargetLayout(bufferCell.getFocusedCellSize(), bufferCell.getCoordinate(), m_utilPoint2, m_utilRect1);
 		m_utilPoint2.incX(-this.getScrollX());

@@ -4,8 +4,6 @@ import swarm.shared.utils.U_Bits;
 
 public class S_CommonApp
 {
-	public static final int SERVER_VERSION = 11;
-	
 	public static final int UNKNOWN_SERVER_VERSION = -1;
 	
 	public static final double DEPTH_OF_FIELD = 500;

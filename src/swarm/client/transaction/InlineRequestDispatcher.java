@@ -124,21 +124,21 @@ public class InlineRequestDispatcher implements I_SyncRequestDispatcher
 	}
 
 	@Override
-	public boolean dispatch(TransactionRequest request)
+	public boolean dispatch(TransactionRequest inputRequest)
 	{
 		if( m_inlineTransactions.size() == 0 )  return false;
 		
-		if( request instanceof TransactionRequestBatch )
+		if( inputRequest instanceof TransactionRequestBatch )
 		{
-			TransactionRequestBatch requestBatch = (TransactionRequestBatch) request;
+			TransactionRequestBatch inputRequestBatch = (TransactionRequestBatch) inputRequest;
 			
 			I_JsonArray responseBatch = null;
 			TransactionRequestBatch inlineRequestBatch = null;
 			
 			int handledCount = 0;
-			for( int i = 0; i < requestBatch.getSize(); i++ )
+			for( int i = 0; i < inputRequestBatch.getSize(); i++ )
 			{
-				TransactionRequest ithRequest = requestBatch.getRequest(i);
+				TransactionRequest ithRequest = inputRequestBatch.getRequest(i);
 				InlineTransaction transaction = getTransaction(ithRequest);
 				
 				if( transaction != null )
@@ -151,7 +151,7 @@ public class InlineRequestDispatcher implements I_SyncRequestDispatcher
 					transaction.m_response.writeJson(m_jsonFactory, responseJson);
 					responseBatch.addObject(responseJson);
 					
-					ithRequest.cancel();
+					ithRequest.cancel(); // will cause it to be removed from batch before dispatch
 					
 					handledCount++;
 				}
@@ -162,18 +162,18 @@ public class InlineRequestDispatcher implements I_SyncRequestDispatcher
 				this.queueTransaction(inlineRequestBatch, responseBatch);
 			}
 			
-			if( handledCount == requestBatch.getSize() )
+			if( handledCount == inputRequestBatch.getSize() )
 			{
 				return true;
 			}
 		}
 		else
 		{
-			InlineTransaction transaction = getTransaction(request);
+			InlineTransaction transaction = getTransaction(inputRequest);
 			
 			if( transaction != null )
 			{
-				this.queueTransaction(request, transaction.m_response);
+				this.queueTransaction(inputRequest, transaction.m_response);
 				
 				return true;
 			}

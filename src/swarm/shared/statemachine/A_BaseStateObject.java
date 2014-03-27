@@ -49,14 +49,14 @@ public class A_BaseStateObject
 	
 	protected <T extends A_StateMachine> T getMachine()
 	{
-		return (T) getMachineFromThis();
+		return (T) getClosestMachine(this);
 	}
 	
-	private A_State getMachineFromThis()
+	private static A_State getClosestMachine(A_BaseStateObject stateObject)
 	{
-		if( this instanceof A_Action )
+		if( stateObject instanceof A_Action )
 		{
-			A_State state = ((A_Action)this).getState();
+			A_State state = ((A_Action)stateObject).getState();
 			
 			if( state instanceof A_StateMachine )
 			{
@@ -67,13 +67,13 @@ public class A_BaseStateObject
 				return state.getParent();
 			}
 		}
-		else if( this instanceof A_StateMachine )
+		else if( stateObject instanceof A_StateMachine )
 		{
-			return (A_State) this;
+			return (A_State) stateObject;
 		}
-		else if( this instanceof A_State )
+		else if( stateObject instanceof A_State )
 		{
-			A_State parent = ((A_State)this).getParent();
+			A_State parent = ((A_State)stateObject).getParent();
 			
 			if( parent instanceof A_StateMachine )
 			{
@@ -84,46 +84,133 @@ public class A_BaseStateObject
 		return null;
 	}
 	
-	protected void pushState(Class<? extends A_State> T)
+	protected void pushVer(Class<? extends A_State> T)
 	{
-		this.pushState(T, (StateArgs) null);
+		this.pushVer(T, (StateArgs) null);
 	}
 	
-	protected void pushState(Class<? extends A_State> T, Object userData)
+	protected void pushVer(Class<? extends A_State> T, Object userData)
 	{
-		this.pushState(T, createArgs(userData));
+		this.pushVer(T, createArgs(userData));
 	}
 	
-	protected void pushState(Class<? extends A_State> T, StateArgs constructor_nullable)
+	protected void pushVer(Class<? extends A_State> T, StateArgs constructor_nullable)
 	{
-		this.pushState(this.getMachineFromThis(), T, constructor_nullable);
+		pushVer(getClosestMachine(this), T, constructor_nullable);
 	}
 	
-	protected static void pushState(A_State machine, Class<? extends A_State> T)
+	protected static void pushVer(A_State machine, Class<? extends A_State> T)
 	{
-		A_BaseStateObject.pushState(machine, T, null);
+		A_BaseStateObject.pushVer(machine, T, null);
 	}
 	
-	protected static void pushState(A_State machine, Class<? extends A_State> T, Object userData)
+	protected static void pushVer(A_State machine, Class<? extends A_State> T, Object userData)
 	{
-		A_BaseStateObject.pushState(machine, T, createArgs(userData));
+		A_BaseStateObject.pushVer(machine, T, createArgs(userData));
 	}
 	
-	protected static void pushState(A_State machine, Class<? extends A_State> T, StateArgs constructor_nullable)
+	protected static void pushVer(A_State machine, Class<? extends A_State> T, StateArgs constructor_nullable)
 	{		
-		((A_StateMachine) machine).pushState_internal(T, constructor_nullable);
+		((A_StateMachine) machine).pushVer_internal(T, constructor_nullable);
 	}
 	
-	
-	protected void popState(Object ... args)
+	protected void popVer(Object ... args)
 	{
-		A_BaseStateObject.popState(this.getMachineFromThis(), args);
+		A_BaseStateObject.popVer(getClosestMachine(this), args);
 	}
 	
-	protected static void popState(A_State machine, Object ... args)
+	protected static void popVer(A_State machine, Object ... args)
 	{
 		((A_StateMachine) machine).popState_internal(args);
 	}
+	
+	
+	
+	
+	protected static void pushHor(A_State machine)
+	{
+		
+	}
+	
+	protected static void pushHor(A_State machine, int offset)
+	{
+		
+	}
+	
+	protected static void pushHor(A_State machine, int offset, Object userData_nullable)
+	{
+		
+	}
+	
+	protected static void pushHor(A_State machine, int offset, StateArgs constructor_nullable)
+	{
+		
+	}
+	
+	protected static void pushHor(A_State machine, Class<? extends A_State> T)
+	{
+		A_BaseStateObject.pushHor(machine, T, null);
+	}
+	
+	protected static void pushHor(A_State machine, Class<? extends A_State> T, Object userData)
+	{
+		A_BaseStateObject.pushHor(machine, T, createArgs(userData));
+	}
+	
+	protected static void pushHor(A_State machine, Class<? extends A_State> T, StateArgs constructor_nullable)
+	{		
+		//((A_StateMachine) machine).pushHor_internal(T, constructor_nullable);
+	}
+	
+	
+	
+	protected static void popHor(A_State machine)
+	{
+		
+	}
+	
+	protected static void popHor(A_State machine, int offset)
+	{
+		
+	}
+	
+	protected static void popHor(A_State machine, int offset, Object userData_nullable)
+	{
+		
+	}
+	
+	protected static void popHor(A_State machine, int offset, StateArgs constructor_nullable)
+	{
+		
+	}
+	
+	
+	
+	protected static int getHorIndex(A_State machine)
+	{
+		return -1;
+	}
+	
+	protected static int getHorCount(A_State machine)
+	{
+		return -1;
+	}
+	
+	protected static Class<? extends A_State> getHorState(A_State machine, int offset)
+	{
+		return null;
+	}
+	
+	
+	protected static void goHor(A_State machine, int offset)
+	{
+		
+	}
+	
+	
+	
+	
+	
 	
 	protected void setState(Class<? extends A_State> T)
 	{
@@ -137,8 +224,9 @@ public class A_BaseStateObject
 	
 	protected void setState(Class<? extends A_State> T, StateArgs constructor_nullable)
 	{
-		A_BaseStateObject.setState(this.getMachineFromThis(), T, constructor_nullable);
+		A_BaseStateObject.setState(getClosestMachine(this), T, constructor_nullable);
 	}
+	
 	
 	protected static void setState(A_State machine, Class<? extends A_State> T)
 	{
@@ -154,6 +242,32 @@ public class A_BaseStateObject
 	{
 		((A_StateMachine) machine).setState_internal(T, constructor_nullable);
 	}
+	
+	
+	
+	
+	
+	protected static void peek(Class<? extends A_State> T, int offset)
+	{
+		
+	}
+	
+	protected static int getQueueSize(Class<? extends A_State> T)
+	{
+		return -1;
+	}
+	
+	protected static void enqueue(Class<? extends A_State> T)
+	{
+		
+	}
+	
+	protected static Class<? extends A_State> dequeue()
+	{
+		return null;
+	}
+	
+	
 	
 	
 	

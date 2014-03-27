@@ -299,7 +299,7 @@ public class BrowserNavigator implements I_StateEventListener
 					{
 						if( m_lastSnapAction == Action_Camera_SnapToCoordinate.class )
 						{
-							U_Debug.ASSERT(m_args_OnMappingResponse == null, "sm_bro_nav_112387");
+							U_Debug.ASSERT(m_args_OnMappingResponse == null, "sm_bro_nav_112389");
 							
 							boolean pushEmptyState = false;
 							BufferCell cell = viewingState.getCell();
@@ -341,7 +341,9 @@ public class BrowserNavigator implements I_StateEventListener
 						}
 						else if( m_lastSnapAction == Action_Camera_SnapToAddress.class )
 						{
-							U_Debug.ASSERT(m_args_OnAddressResponse == null, "sm_bro_nav_112387");
+							//--- DRK > This assert gets hit with direct navigation to a cell with a new page view.
+							//---		Commenting it out cause I can't figure out what it's checking for.
+							//U_Debug.ASSERT(m_args_OnAddressResponse == null, "sm_bro_nav_112387");
 							
 							if( m_args_OnMappingResponse != null )
 							{

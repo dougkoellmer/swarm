@@ -134,7 +134,7 @@ public abstract class A_ServerApp extends A_App
 		m_context.jsonFactory = new ServerJsonFactory();
 		m_context.codeCompiler = new ServerCodeCompiler(true);
 		m_context.requestPathMngr = new RequestPathManager(m_context.jsonFactory, appConfig.verboseTransactions);
-		m_context.txnMngr = new ServerTransactionManager((A_ServerJsonFactory) m_context.jsonFactory, m_context.requestPathMngr, appConfig.verboseTransactions);
+		m_context.txnMngr = new ServerTransactionManager((A_ServerJsonFactory) m_context.jsonFactory, m_context.requestPathMngr, appConfig.verboseTransactions, appConfig.libServerVersion, appConfig.appServerVersion);
 		m_context.inlineTxnMngr = new InlineTransactionManager(m_context.txnMngr, m_context.requestPathMngr, (A_ServerJsonFactory) m_context.jsonFactory, appConfig.appId, appConfig.verboseTransactions);
 		m_context.blobMngrFactory = new BlobManagerFactory();
 		m_context.sessionMngr = new SessionManager(m_context.blobMngrFactory, m_context.jsonFactory);

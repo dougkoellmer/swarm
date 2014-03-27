@@ -1,6 +1,7 @@
 package swarm.client.transaction;
 
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 import swarm.shared.app.BaseAppContext;
 import swarm.shared.json.A_JsonFactory;
@@ -16,6 +17,7 @@ import swarm.shared.transaction.E_ReservedRequestPath;
 import swarm.shared.transaction.I_RequestPath;
 import swarm.shared.transaction.RequestPathManager;
 import swarm.shared.transaction.TransactionRequest;
+
 import com.google.gwt.http.client.RequestBuilder;
 
 
@@ -24,7 +26,9 @@ import com.google.gwt.http.client.RequestBuilder;
  * @author 
  */
 public class TransactionRequestBatch extends TransactionRequest
-{	
+{
+	private static final Logger s_logger = Logger.getLogger(TransactionRequestBatch.class.getName());
+	
 	private final ArrayList<TransactionRequest> m_requestList = new ArrayList<TransactionRequest>();
 	
 	public TransactionRequestBatch(A_JsonFactory jsonFactory)
@@ -119,9 +123,9 @@ public class TransactionRequestBatch extends TransactionRequest
 	}
 	
 	@Override
-	public void onDispatch(long timeInMilliseconds, int serverVersion)
+	public void onDispatch(long timeInMilliseconds, int libServerVersion, int appServerVersion)
 	{
-		super.onDispatch(timeInMilliseconds, serverVersion);
+		super.onDispatch(timeInMilliseconds, libServerVersion, appServerVersion);
 		
 		for( int i = 0; i < m_requestList.size(); i++ )
 		{
@@ -149,8 +153,21 @@ public class TransactionRequestBatch extends TransactionRequest
 				ithRequest.writeJson(factory, requestPathMngr, requestJson);
 				requestList.addObject(requestJson);
 			}
+			else
+			{
+				m_requestList.remove(i);
+				i--;
+			}
 		}
 		
-		factory.getHelper().putJsonArray(json_out, E_JsonKey.requestList, requestList);
+		 // DRK > Can't think of a reason this would be false...just in case.
+		if( requestList.getSize() > 0 )
+		{
+			factory.getHelper().putJsonArray(json_out, E_JsonKey.requestList, requestList);
+		}
+		else
+		{
+			s_logger.severe("Expected at least one request in batch."); // Most likely indicates problem in library somewhere.
+		}
 	}
 }

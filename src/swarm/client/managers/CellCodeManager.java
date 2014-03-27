@@ -97,7 +97,7 @@ public class CellCodeManager implements I_TransactionResponseHandler
 	public void flush()
 	{
 		ClientTransactionManager txnMngr = m_appContext.txnMngr;
-		txnMngr.flushAsyncRequestQueue();
+		//txnMngr.flushAsyncRequestQueue();
 	}
 	
 	private void preparePostQuery(GridCoordinate coord)

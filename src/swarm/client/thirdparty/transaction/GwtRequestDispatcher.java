@@ -144,7 +144,7 @@ public class GwtRequestDispatcher implements I_AsyncRequestDispatcher, RequestCa
 				
 				return;
 			}
-			
+
 			TransactionRequestBatch batch = (TransactionRequestBatch) request;
 
 			I_JsonArray responseList = m_jsonFactory.getHelper().getJsonArray(responseJson, E_JsonKey.responseList);

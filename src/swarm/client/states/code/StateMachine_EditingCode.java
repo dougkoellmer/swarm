@@ -76,7 +76,7 @@ public class StateMachine_EditingCode extends A_StateMachine implements I_StateE
 		{
 			if( this.getCurrentState() instanceof State_EditingCodeBlocker )
 			{
-				popState(this, (Object) null);
+				popVer(this, (Object) null);
 			}
 		}
 	}
@@ -93,7 +93,7 @@ public class StateMachine_EditingCode extends A_StateMachine implements I_StateE
 			}
 			else
 			{
-				popState(this, ((State_EditingCodeBlocker) this.getCurrentState()).getReason());
+				popVer(this, ((State_EditingCodeBlocker) this.getCurrentState()).getReason());
 			}
 		}
 		else
@@ -107,7 +107,7 @@ public class StateMachine_EditingCode extends A_StateMachine implements I_StateE
 			{
 				State_EditingCodeBlocker.Constructor constructor = new State_EditingCodeBlocker.Constructor(reason);
 				
-				pushState(this, State_EditingCodeBlocker.class, constructor);
+				pushVer(this, State_EditingCodeBlocker.class, constructor);
 			}
 		}
 	}

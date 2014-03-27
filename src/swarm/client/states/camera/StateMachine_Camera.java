@@ -120,7 +120,7 @@ public class StateMachine_Camera extends A_StateMachine implements I_StateEventL
 			}
 			
 			State_GettingMapping.Constructor constructor = new State_GettingMapping.Constructor(address);
-			pushState(this, State_GettingMapping.class, constructor);
+			pushVer(this, State_GettingMapping.class, constructor);
 		}
 		
 		addressManager.getCellAddressMapping(address, E_TransactionAction.MAKE_REQUEST);
@@ -153,7 +153,7 @@ public class StateMachine_Camera extends A_StateMachine implements I_StateEventL
 		{
 			if( this.isForegrounded() )
 			{
-				popState(this);
+				popVer(this);
 			}
 			else
 			{

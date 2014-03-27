@@ -74,4 +74,10 @@ public abstract class A_TransactionObject
 	{
 		m_jsonArgs = factory.getHelper().getJsonObject(json, E_JsonKey.txnArgs);
 	}
+	
+	@Override
+	public String toString()
+	{
+		return m_jsonArgs != null ? m_jsonArgs.toString() : "";
+	}
 }

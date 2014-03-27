@@ -101,7 +101,7 @@ public class StateMachine_Account extends A_StateMachine
 			
 			if( !(this.getCurrentState() instanceof State_AccountStatusPending) )
 			{
-				pushState(this, State_AccountStatusPending.class);
+				pushVer(this, State_AccountStatusPending.class);
 			}
 		}
 		else
@@ -120,7 +120,7 @@ public class StateMachine_Account extends A_StateMachine
 	
 		if( (this.getCurrentState() instanceof State_AccountStatusPending) )
 		{
-			popState(this);
+			popVer(this);
 		}
 		
 		A_State currentState = this.getCurrentState();
@@ -154,7 +154,7 @@ public class StateMachine_Account extends A_StateMachine
 		{
 			if( this.getCurrentState() instanceof State_AccountStatusPending )
 			{
-				popState(this);
+				popVer(this);
 			}
 		}
 	}

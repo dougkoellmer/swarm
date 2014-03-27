@@ -31,6 +31,9 @@ public class getServerVersion extends A_DefaultRequestHandler
 	@Override
 	public void handleRequest(TransactionContext context, TransactionRequest request, TransactionResponse response)
 	{
-		m_serverContext.jsonFactory.getHelper().putInt(response.getJsonArgs(), E_JsonKey.serverVersion, S_CommonApp.SERVER_VERSION);
+		int libServerVersion = m_serverContext.config.libServerVersion;
+		int appServerVersion = m_serverContext.config.appServerVersion;
+		m_serverContext.jsonFactory.getHelper().putInt(response.getJsonArgs(), E_JsonKey.libServerVersion, libServerVersion);
+		m_serverContext.jsonFactory.getHelper().putInt(response.getJsonArgs(), E_JsonKey.appServerVersion, appServerVersion);
 	}
 }

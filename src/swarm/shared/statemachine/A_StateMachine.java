@@ -19,7 +19,7 @@ public abstract class A_StateMachine extends A_State
 		return (T) m_currentState;
 	}
 	
-	void pushState_internal(Class<? extends A_State> T, StateArgs constructor)
+	void pushVer_internal(Class<? extends A_State> T, StateArgs constructor)
 	{
 		A_State newState		= m_context.getInstance(T);
 		A_State currentState = this.getCurrentState();

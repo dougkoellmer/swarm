@@ -76,7 +76,7 @@ public class CellSizeManager implements I_TransactionResponseHandler
 	{
 		A_ClientUser user = m_appContext.userMngr.getUser();
 		UserCell userCell = user.getCell(mapping);
-		if( userCell != null && userCell.getFocusedCellSize().isValid() )
+		if( userCell != null && userCell.getFocusedCellSize().isExplicit() )
 		{
 			cellSize_out.copy(userCell.getFocusedCellSize());
 			
@@ -96,7 +96,7 @@ public class CellSizeManager implements I_TransactionResponseHandler
 				{
 					BufferCell cellFromOtherBuffer = buffer.getCellAtAbsoluteCoord(mapping.getCoordinate());
 					
-					if( cellFromOtherBuffer.getFocusedCellSize().isValid() )
+					if( cellFromOtherBuffer.getFocusedCellSize().isExplicit() )
 					{
 						cellSize_out.copy(cellFromOtherBuffer.getFocusedCellSize());
 						
@@ -116,7 +116,7 @@ public class CellSizeManager implements I_TransactionResponseHandler
 	
 	public void populateCellSize(CellAddressMapping mapping, CellBufferManager targetBufferMngr, BufferCell cell)
 	{
-		if( cell.getFocusedCellSize().isValid() )  return;
+		if( cell.getFocusedCellSize().isExplicit() )  return;
 		if( cell.getFocusedCellSize().isPending() )  return;
 		
 		if( getCellSizeFromLocalSource(mapping, targetBufferMngr, cell.getFocusedCellSize()) )
@@ -222,7 +222,7 @@ public class CellSizeManager implements I_TransactionResponseHandler
 					{
 						BufferCell cell = buffer.getCellAtAbsoluteCoord(m_utilMapping.getCoordinate());
 
-						if( !cell.getFocusedCellSize().isValid() ) // should be "pending", but covering all cases here.
+						if( !cell.getFocusedCellSize().isExplicit() ) // should be "pending", but covering all cases here.
 						{
 							cell.getFocusedCellSize().setToDefaults();
 						}

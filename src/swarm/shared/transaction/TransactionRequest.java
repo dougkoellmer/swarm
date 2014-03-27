@@ -7,6 +7,7 @@ import swarm.shared.json.A_JsonFactory;
 import swarm.shared.json.E_JsonKey;
 import swarm.shared.json.I_JsonObject;
 import swarm.shared.json.JsonHelper;
+
 import com.google.gwt.http.client.RequestBuilder;
 
 
@@ -21,7 +22,8 @@ public class TransactionRequest extends A_TransactionObject
 	private int m_retryCount = 0;
 	protected E_HttpMethod m_method;
 	private boolean m_isCancelled = false;
-	protected Integer m_serverVersion = null;
+	protected Integer m_libServerVersion = null;
+	protected Integer m_appServerVersion = null;
 	
 	public TransactionRequest(A_JsonFactory jsonFactory, I_RequestPath path)
 	{
@@ -73,9 +75,14 @@ public class TransactionRequest extends A_TransactionObject
 		m_isCancelled = true;
 	}
 	
-	public Integer getServerVersion()
+	public Integer getLibServerVersion()
 	{
-		return m_serverVersion;
+		return m_libServerVersion;
+	}
+	
+	public Integer getAppServerVersion()
+	{
+		return m_appServerVersion;
 	}
 	
 	public E_HttpMethod getMethod()
@@ -91,13 +98,15 @@ public class TransactionRequest extends A_TransactionObject
 	public void onDispatch(long timeInMilliseconds)
 	{
 		m_dispatchTime = timeInMilliseconds;
-		m_serverVersion = null;
+		m_libServerVersion = null;
+		m_appServerVersion = null;
 	}
 	
-	public void onDispatch(long timeInMilliseconds, int serverVersion)
+	public void onDispatch(long timeInMilliseconds, int libServerVersion, int appServerVersion)
 	{
 		m_dispatchTime = timeInMilliseconds;
-		m_serverVersion = serverVersion;
+		m_libServerVersion = libServerVersion;
+		m_appServerVersion = appServerVersion;
 	}
 	
 	@Override
@@ -120,9 +129,14 @@ public class TransactionRequest extends A_TransactionObject
 		
 		requestPathMngr.putToJson(m_path, json_out);
 		
-		if( m_serverVersion != null )
+		if( m_libServerVersion != null )
 		{
-			factory.getHelper().putInt(json_out, E_JsonKey.serverVersion, m_serverVersion);
+			factory.getHelper().putInt(json_out, E_JsonKey.libServerVersion, m_libServerVersion);
+		}
+		
+		if( m_appServerVersion != null )
+		{
+			factory.getHelper().putInt(json_out, E_JsonKey.appServerVersion, m_appServerVersion);
 		}
 	}
 	
@@ -132,8 +146,16 @@ public class TransactionRequest extends A_TransactionObject
 		
 		m_path = requestPathMngr.getFromJson(json);
 		
-		Integer serverVersion = factory.getHelper().getInt(json, E_JsonKey.serverVersion);
+		Integer libServerVersion = factory.getHelper().getInt(json, E_JsonKey.libServerVersion);
+		Integer appServerVersion = factory.getHelper().getInt(json, E_JsonKey.appServerVersion);
 		
-		m_serverVersion = serverVersion;
+		m_libServerVersion = libServerVersion;
+		m_appServerVersion = appServerVersion;
+	}
+	
+	@Override
+	public String toString()
+	{
+		return m_path.getName() + " " + super.toString();
 	}
 }

@@ -19,7 +19,7 @@ public class Action_ManageAccount_SignOut extends A_Action
 	{
 		m_accountMngr.signOut();
 		
-		pushState(this.getState().getParent(), State_AccountStatusPending.class);			
+		pushVer(this.getState().getParent(), State_AccountStatusPending.class);			
 	}
 	
 	@Override

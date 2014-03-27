@@ -57,9 +57,14 @@ public class CellSize implements I_ReadsJson, I_WritesJson
 		m_width = m_height = PENDING_DIMENSION;
 	}
 	
-	public boolean isValid()
+	public boolean isExplicit()
 	{
 		return m_width >= 0 && m_height >= 0;
+	}
+	
+	public boolean isPartiallyExplicit()
+	{
+		return m_width >= 0 || m_height >= 0;
 	}
 	
 	public boolean isDefault()

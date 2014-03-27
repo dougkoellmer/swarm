@@ -88,12 +88,18 @@ public class ClientTransactionManager
 	private RequestPathManager m_requestPathMngr;
 	private A_JsonFactory m_jsonFactory;
 	
-	public ClientTransactionManager(RequestPathManager requestPathMngr, A_JsonFactory jsonFactory) 
+	private final int m_libServerVersion;
+	private final int m_appServerVersion;
+	
+	public ClientTransactionManager(RequestPathManager requestPathMngr, A_JsonFactory jsonFactory, int libServerVersion, int appServerVersion) 
 	{
 		m_jsonFactory = jsonFactory;
 		m_requestPathMngr = requestPathMngr;
 		m_requestPathMngr.register(E_ReservedRequestPath.values());
 		m_reusedResponse = new TransactionResponse(m_jsonFactory);
+		
+		m_libServerVersion = libServerVersion;
+		m_appServerVersion = appServerVersion;
 	}
 	
 	public void setSyncRequestDispatcher(I_SyncRequestDispatcher dispatcher)
@@ -227,7 +233,7 @@ public class ClientTransactionManager
 	
 	private void makeRequest_private(TransactionRequest request)
 	{
-		request.onDispatch(U_Time.getMilliseconds(), S_CommonApp.SERVER_VERSION);
+		request.onDispatch(U_Time.getMilliseconds(), m_libServerVersion, m_appServerVersion);
 		//request.init(m_requestPathMngr);
 		
 		if( m_syncDispatcher.dispatch(request) ){}

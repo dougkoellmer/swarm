@@ -100,6 +100,7 @@ public class getCode extends A_DefaultRequestHandler implements I_DeferredReques
 		
 		if( persistedCell == null )
 		{
+			s_logger.severe("HERE");;
 			//responseCode = new smCode("", smE_CodeType.values());
 		}
 		else

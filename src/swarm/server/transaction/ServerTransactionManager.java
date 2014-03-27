@@ -68,12 +68,16 @@ public class ServerTransactionManager
 	private final A_ServerJsonFactory m_jsonFactory;
 	private final boolean m_verboseJson;
 	private final RequestPathManager m_requestPathMngr;
+	private final int m_libServerVersion;
+	private final int m_appServerVersion;
 	
-	public ServerTransactionManager(A_ServerJsonFactory jsonFactory, RequestPathManager requestPathMngr, boolean verboseTransactions)
+	public ServerTransactionManager(A_ServerJsonFactory jsonFactory, RequestPathManager requestPathMngr, boolean verboseTransactions, int libServerVersion, int appServerVersion)
 	{
 		m_jsonFactory = jsonFactory;
 		m_requestPathMngr = requestPathMngr;		
 		m_verboseJson = verboseTransactions;
+		m_libServerVersion = libServerVersion;
+		m_appServerVersion = appServerVersion;
 		
 		m_requestPathMngr.register(E_ReservedRequestPath.values());
 	}
@@ -136,13 +140,11 @@ public class ServerTransactionManager
 			//--- DRK > Create a wrapper around the native request and see if there's a server version mismatch.
 			TransactionRequest wrappedRequest = new TransactionRequest(m_jsonFactory, nativeRequest);
 			wrappedRequest.readJson(m_jsonFactory, m_requestPathMngr, requestJson);
-			Integer serverVersionAsFarAsClientKnows = wrappedRequest.getServerVersion();
-			boolean serverVersionMismatch = false;
-			
-			if( serverVersionAsFarAsClientKnows != null && serverVersionAsFarAsClientKnows != S_CommonApp.SERVER_VERSION )
-			{
-				serverVersionMismatch = true;
-			}
+			Integer libServerVersionAsFarAsClientKnows = wrappedRequest.getLibServerVersion();
+			Integer appServerVersionAsFarAsClientKnows = wrappedRequest.getAppServerVersion();
+			boolean serverVersionMismatch =
+					libServerVersionAsFarAsClientKnows != null && libServerVersionAsFarAsClientKnows != m_libServerVersion ||
+					appServerVersionAsFarAsClientKnows != null && appServerVersionAsFarAsClientKnows != m_appServerVersion ;;
 			
 			//--- DRK > Early out for server version mismatches.
 			if( serverVersionMismatch )
