@@ -184,7 +184,8 @@ public class Mouse implements MouseDownHandler, MouseUpHandler, MouseMoveHandler
 	@Override
 	public void onMouseWheel(MouseWheelEvent event)
 	{
-		int wheelDelta = workaroundEventGetMouseWheelVelocityY(event.getNativeEvent());
+		int wheelDelta = event.getDeltaY();
+		wheelDelta = wheelDelta != 0 ? wheelDelta : workaroundEventGetMouseWheelVelocityY(event.getNativeEvent());
 		this.setMousePoint(event.getRelativeX(m_container.getElement()), event.getRelativeY(m_container.getElement()), m_mouseEvent.getPoint());
 		m_mouseEvent.set(E_MouseEventType.MOUSE_SCROLLED, -wheelDelta, Element.as(event.getNativeEvent().getEventTarget()), false);
 		
