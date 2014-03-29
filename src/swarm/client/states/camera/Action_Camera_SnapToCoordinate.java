@@ -33,6 +33,8 @@ public class Action_Camera_SnapToCoordinate extends smA_CameraAction
 		private boolean m_onlyCausedRefresh = false;
 		private boolean m_causeRefresh;
 		
+		public boolean historyShouldIgnore = false; // kinda hacky...signal to browser history manager.
+		
 		public Args()
 		{
 			init(null);

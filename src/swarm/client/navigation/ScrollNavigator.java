@@ -89,6 +89,7 @@ public class ScrollNavigator implements I_StateEventListener
 		m_scrollContainer.getElement().getStyle().setZIndex(1);
 		
 		m_args_SnapToCoord.userData = this.getClass();
+		m_args_SnapToCoord.historyShouldIgnore = true;
 		
 		m_scrollContainer.addDomHandler(new ScrollHandler()
 		{
@@ -140,6 +141,11 @@ public class ScrollNavigator implements I_StateEventListener
 	}
 	
 	public void onResize()
+	{
+		onResize_private();
+	}
+	
+	private void onResize_private()
 	{
 		State_ViewingCell viewingState =  m_viewContext.stateContext.getEnteredState(State_ViewingCell.class);
 		State_CameraSnapping snappingState = m_viewContext.stateContext.getEnteredState(State_CameraSnapping.class);

@@ -16,7 +16,7 @@ class CellAddressManagerListener implements CellAddressManager.I_Listener
 	CellAddressManagerListener(StateMachine_Camera machine)
 	{
 		m_machine = machine;
-		m_snapToCoordArgs.userData = Action_Camera_SnapToAddress.class;
+		m_snapToCoordArgs.historyShouldIgnore = true;
 	}
 	
 	private boolean dispatchGotMappingEvent(Event_GettingMapping_OnResponse.E_Type type, CellAddress address, CellAddressMapping mapping)

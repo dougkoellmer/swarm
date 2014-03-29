@@ -538,10 +538,12 @@ public class BrowserNavigator implements I_StateEventListener
 							return;
 						}
 						
-						//--- DRK > TODO: Kinda hacky...relying on very specific configuration of state machine.
-						if( args.userData == Action_Camera_SnapToAddress.class )
+						//--- DRK > TODO: Kinda hacky...
+						if( args.historyShouldIgnore )
 						{
-							m_lastSnapAction = Action_Camera_SnapToAddress.class;
+							//--- DRK > Used to have this line here...because multiple "snap to coord" calls can be made after a snap to address now
+							//---		in order to reposition the window and whatnot
+							//m_lastSnapAction = Action_Camera_SnapToAddress.class;
 						}
 						else
 						{
