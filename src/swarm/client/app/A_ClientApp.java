@@ -258,7 +258,7 @@ public class A_ClientApp extends A_App implements I_TimeSource
 		m_appContext.txnMngr = new ClientTransactionManager(m_appContext.requestPathMngr, m_appContext.jsonFactory, m_appConfig.libServerVersion, m_appConfig.appServerVersion);
 		m_appContext.gridMngr = new GridManager(m_appContext.txnMngr, m_appContext.jsonFactory, m_appConfig.grid);
 		m_appContext.cameraMngr = new CameraManager(m_appContext.gridMngr, camera, m_appConfig.minSnapTime, m_appConfig.snapTimeRange);
-		m_appContext.addressMngr = new CellAddressManager(m_appContext, m_appConfig.addressCacheSize, m_appConfig.addressCacheExpiration_seconds, this);
+		m_appContext.addressMngr = m_appContext.addressMngr != null ? m_appContext.addressMngr : new CellAddressManager(m_appContext, m_appConfig.addressCacheSize, m_appConfig.addressCacheExpiration_seconds, this);
 		m_appContext.accountMngr = new ClientAccountManager(signInValidator, signUpValidator, m_appContext.txnMngr, m_appContext.jsonFactory);
 		m_appContext.codeMngr = new CellCodeManager(m_appContext);
 		m_appContext.cellSizeMngr = new CellSizeManager(m_appContext);

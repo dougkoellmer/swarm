@@ -151,6 +151,34 @@ public class CellAddressManager implements I_TransactionResponseHandler
 		}
 	}
 	
+	protected CellAddressMapping getMappingFromLocalSource(CellAddress address)
+	{
+		//--- DRK > Try to get mapping from cache.
+		CellAddressMapping mapping = m_cache.get(address);
+		if( mapping != null )
+		{
+			return mapping;
+		}
+		
+		//--- DRK > Try to get mapping from user.
+		UserManager userManager = m_appContext.userMngr;
+		A_ClientUser user = userManager.getUser();
+		mapping = user.getCellAddressMapping(address);
+		if( mapping != null )
+		{
+			return mapping;
+		}
+		
+		//--- DRK > Try to get mapping from cell buffer.
+		mapping = getMappingFromCellBuffer(address);
+		if( mapping != null )
+		{
+			return mapping;
+		}
+		
+		return null;
+	}
+	
 	public void getCellAddressMapping(CellAddress address, E_TransactionAction action)
 	{
 		E_CellAddressParseError parseError = address.getParseError();
@@ -163,36 +191,13 @@ public class CellAddressManager implements I_TransactionResponseHandler
 			return;
 		}
 		
-		//--- DRK > Try to get mapping from cache.
-		CellAddressMapping mapping = m_cache.get(address);
+		CellAddressMapping mapping = this.getMappingFromLocalSource(address);
 		if( mapping != null )
 		{
 			if( m_listener != null )  m_listener.onMappingFound(address, mapping);
-			
-			return;
 		}
 		
-		//--- DRK > Try to get mapping from user.
-		UserManager userManager = m_appContext.userMngr;
-		A_ClientUser user = userManager.getUser();
-		mapping = user.getCellAddressMapping(address);
-		if( mapping != null )
-		{
-			if( m_listener != null )  m_listener.onMappingFound(address, mapping);
-			
-			return;
-		}
-		
-		//--- DRK > Try to get mapping from cell buffer.
-		mapping = getMappingFromCellBuffer(address);
-		if( mapping != null )
-		{
-			if( m_listener != null )  m_listener.onMappingFound(address, mapping);
-			
-			return;
-		}
-		
-		//--- DRK > If all else fails, we must contact server.
+		//--- DRK > If all else fails we must contact server.
 		if( !isWaitingOnResponse(address) )
 		{
 			ClientTransactionManager txnMngr = m_appContext.txnMngr;

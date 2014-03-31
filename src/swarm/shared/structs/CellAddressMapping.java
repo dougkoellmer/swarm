@@ -17,6 +17,13 @@ public class CellAddressMapping extends A_JsonEncodable implements I_JsonCompara
 		initCoordinate();
 	}
 	
+	public CellAddressMapping(int m, int n)
+	{
+		initCoordinate();
+		
+		m_coordinate.set(m, n);
+	}
+	
 	public CellAddressMapping(String value)
 	{
 		initCoordinate();
