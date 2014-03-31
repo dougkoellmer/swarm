@@ -266,8 +266,8 @@ public class A_ClientApp extends A_App implements I_TimeSource
 		
 		//--- DRK > Configure transaction stuff.
 		m_appContext.requestPathMngr.register(E_RequestPath.values());
-		m_appContext.txnMngr.setSyncRequestDispatcher(new InlineRequestDispatcher(m_appContext.jsonFactory, m_appContext.requestPathMngr, m_appConfig.appId));
-		m_appContext.txnMngr.setAsyncRequestDispatcher(new GwtRequestDispatcher(m_appContext.jsonFactory, m_appContext.requestPathMngr));
+		m_appContext.txnMngr.setSyncDispatcher(new InlineRequestDispatcher(m_appContext.jsonFactory, m_appContext.requestPathMngr, m_appConfig.appId));
+		m_appContext.txnMngr.setAsyncDispatcher(new GwtRequestDispatcher(m_appContext.jsonFactory, m_appContext.requestPathMngr));
 	}
 	
 	protected void stage_startViewManagers()
@@ -417,7 +417,7 @@ public class A_ClientApp extends A_App implements I_TimeSource
 		m_lastTime = currentTime;
 
 		m_appContext.txnMngr.flushSyncResponses();
-		m_appContext.txnMngr.flushAsyncRequestQueue();
+		m_appContext.txnMngr.flushRequestQueue();
 	}
 
 	@Override

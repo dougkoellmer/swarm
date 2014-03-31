@@ -28,4 +28,6 @@ public class ClientAppConfig extends AppConfig
 	public A_ClientUser user;
 	public A_Grid grid;
 	public ViewController viewController;
+	
+	public int maxSubCellDimension = 1;
 }

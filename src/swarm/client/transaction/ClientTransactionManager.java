@@ -102,16 +102,30 @@ public class ClientTransactionManager
 		m_appServerVersion = appServerVersion;
 	}
 	
-	public void setSyncRequestDispatcher(I_SyncRequestDispatcher dispatcher)
+	public I_SyncRequestDispatcher getSyncDispatcher()
+	{
+		return m_syncDispatcher;
+	}
+	
+	public void setSyncDispatcher(I_SyncRequestDispatcher dispatcher)
 	{
 		m_syncDispatcher = dispatcher;
 		m_syncDispatcher.initialize(m_callbacks, S_Transaction.MAX_GET_URL_LENGTH);
 	}
 	
-	public void setAsyncRequestDispatcher(I_AsyncRequestDispatcher dispatcher)
+	public I_AsyncRequestDispatcher getAsyncDispatcher()
+	{
+		return m_asyncDispatcher;
+	}
+	
+	public void setAsyncDispatcher(I_AsyncRequestDispatcher dispatcher)
 	{
 		m_asyncDispatcher = dispatcher;
-		m_asyncDispatcher.initialize(m_callbacks, S_Transaction.MAX_GET_URL_LENGTH);
+		
+		if( m_asyncDispatcher != null )
+		{
+			m_asyncDispatcher.initialize(m_callbacks, S_Transaction.MAX_GET_URL_LENGTH);
+		}
 	}
 	
 	private void callSuccessHandlers(TransactionRequest request, TransactionResponse response)
@@ -193,7 +207,7 @@ public class ClientTransactionManager
 		m_transactionRequestBatch.addRequest(request);
 	}
 	
-	public void flushAsyncRequestQueue()
+	public void flushRequestQueue()
 	{
 		if ( m_transactionRequestBatch == null )  return;		
 		
@@ -234,14 +248,14 @@ public class ClientTransactionManager
 	private void makeRequest_private(TransactionRequest request)
 	{
 		request.onDispatch(U_Time.getMilliseconds(), m_libServerVersion, m_appServerVersion);
-		//request.init(m_requestPathMngr);
 		
-		if( m_syncDispatcher.dispatch(request) ){}
-		else if( m_asyncDispatcher.dispatch(request) ){}
+		if( m_syncDispatcher != null && m_syncDispatcher.dispatch(request) ){}
+		else if( m_asyncDispatcher != null && m_asyncDispatcher.dispatch(request) ){}
 		else
 		{
-			//TODO(DRK): Create a third "error" dispatcher that simply responds to requests with CLIENT_EXCEPTION (or a new error type)
-			//			 The error here I guess is that something was so fucked we couldn't even get the request out the door with the other two dispatchers.
+			m_reusedResponse.clear();
+			m_reusedResponse.setError(E_ResponseError.NO_DISPATCHER);
+			this.onError(request, m_reusedResponse);
 		}
 	}
 	
@@ -284,7 +298,7 @@ public class ClientTransactionManager
 			case QUEUE_REQUEST_AND_FLUSH:
 			{
 				this.queueRequest_private(request);
-				this.flushAsyncRequestQueue();
+				this.flushRequestQueue();
 				
 				break;
 			}

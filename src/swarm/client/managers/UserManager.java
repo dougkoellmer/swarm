@@ -113,6 +113,8 @@ public class UserManager implements I_TransactionResponseHandler, ClientAccountM
 		{
 			UserCell userCell = cellIterator.next();
 			
+			m_appContext.cellSizeMngr.getCellSizeFromLocalSource(userCell.getCoordinate(), userCell.getFocusedCellSize());
+			
 			//--- DRK > NOTE:	This block used to kinda make sense with b33hive, but now with more generic usage
 			//---				like dougkoellmer.com, a user's cell doesn't necessarily have the username in it.
 			/*if( firstIteration )

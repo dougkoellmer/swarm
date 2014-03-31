@@ -395,6 +395,7 @@ public class A_ClientUser extends A_User implements I_LocalCodeRepository
 	protected void justReadMappingFromJson(CellAddressMapping mapping)
 	{
 		UserCell newCell = new UserCell(mapping.getCoordinate());
+		
 		m_cells.add(newCell);
 	}
 

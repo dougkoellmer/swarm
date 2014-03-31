@@ -109,7 +109,7 @@ public class CellAddressManager implements I_TransactionResponseHandler
 			this.setBufferCellAddress(address, mapping);
 		}
 		
-		m_listener.onAddressFound(mapping, address);
+		if( m_listener != null )  m_listener.onAddressFound(mapping, address);
 	}
 	
 	public void getCellAddress(CellAddressMapping mapping, E_TransactionAction action)
@@ -158,7 +158,7 @@ public class CellAddressManager implements I_TransactionResponseHandler
 		//--- DRK > Early out if address has a bad format.
 		if( parseError != E_CellAddressParseError.NO_ERROR )
 		{
-			m_listener.onMappingNotFound(address);
+			if( m_listener != null )  m_listener.onMappingNotFound(address);
 			
 			return;
 		}
@@ -167,7 +167,7 @@ public class CellAddressManager implements I_TransactionResponseHandler
 		CellAddressMapping mapping = m_cache.get(address);
 		if( mapping != null )
 		{
-			m_listener.onMappingFound(address, mapping);
+			if( m_listener != null )  m_listener.onMappingFound(address, mapping);
 			
 			return;
 		}
@@ -178,7 +178,7 @@ public class CellAddressManager implements I_TransactionResponseHandler
 		mapping = user.getCellAddressMapping(address);
 		if( mapping != null )
 		{
-			m_listener.onMappingFound(address, mapping);
+			if( m_listener != null )  m_listener.onMappingFound(address, mapping);
 			
 			return;
 		}
@@ -187,7 +187,7 @@ public class CellAddressManager implements I_TransactionResponseHandler
 		mapping = getMappingFromCellBuffer(address);
 		if( mapping != null )
 		{
-			m_listener.onMappingFound(address, mapping);
+			if( m_listener != null )  m_listener.onMappingFound(address, mapping);
 			
 			return;
 		}
@@ -284,7 +284,7 @@ public class CellAddressManager implements I_TransactionResponseHandler
 			}
 			else
 			{
-				m_listener.onAddressNotFound(mapping);
+				if( m_listener != null )  m_listener.onAddressNotFound(mapping);
 			}
 		}
 		else if( request.getPath() == E_RequestPath.getCellAddressMapping )
@@ -303,11 +303,11 @@ public class CellAddressManager implements I_TransactionResponseHandler
 				
 				this.setBufferCellAddress(address, mapping);
 				
-				m_listener.onMappingFound(address, mapping);
+				if( m_listener != null )  m_listener.onMappingFound(address, mapping);
 			}
 			else
 			{
-				m_listener.onMappingNotFound(address);
+				if( m_listener != null )  m_listener.onMappingNotFound(address);
 			}
 		}
 		
@@ -324,7 +324,7 @@ public class CellAddressManager implements I_TransactionResponseHandler
 			
 			if( response.getError() == E_ResponseError.VERSION_MISMATCH )
 			{
-				m_listener.onResponseError(mapping);
+				if( m_listener != null )  m_listener.onResponseError(mapping);
 				
 				return E_ResponseErrorControl.CONTINUE;
 			}
@@ -334,7 +334,7 @@ public class CellAddressManager implements I_TransactionResponseHandler
 				//---		seem all that bad, just that we couldn't find the address for whatever reason.
 				//---		If there's a really critical problem with the server, other more important transactions
 				//---		will blow up loudly anyway.
-				m_listener.onAddressNotFound(mapping);
+				if( m_listener != null )  m_listener.onAddressNotFound(mapping);
 				
 				return E_ResponseErrorControl.BREAK;
 			}
@@ -346,7 +346,7 @@ public class CellAddressManager implements I_TransactionResponseHandler
 			
 			if( response.getError() == E_ResponseError.VERSION_MISMATCH )
 			{
-				m_listener.onResponseError(address);
+				if( m_listener != null )  m_listener.onResponseError(address);
 				
 				return E_ResponseErrorControl.CONTINUE;
 			}
@@ -356,7 +356,7 @@ public class CellAddressManager implements I_TransactionResponseHandler
 				//---		seem all that bad, just that we couldn't find the mapping for whatever reason.
 				//---		If there's a really critical problem with the server, other more important transactions
 				//---		will blow up loudly anyway.
-				m_listener.onMappingNotFound(address);
+				if( m_listener != null )  m_listener.onMappingNotFound(address);
 				
 				return E_ResponseErrorControl.BREAK;
 			}

@@ -30,6 +30,13 @@ public class ServerCellAddressMapping extends CellAddressMapping implements I_Bl
 		m_gridType = null;
 	}
 	
+	public ServerCellAddressMapping(String value)
+	{
+		super(value);
+		
+		m_gridType = E_GridType.ACTIVE;
+	}
+	
 	public ServerCellAddressMapping(E_GridType gridType)
 	{
 		super();

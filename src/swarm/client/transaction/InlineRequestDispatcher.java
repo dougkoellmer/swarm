@@ -136,6 +136,7 @@ public class InlineRequestDispatcher implements I_SyncRequestDispatcher
 			TransactionRequestBatch inlineRequestBatch = null;
 			
 			int handledCount = 0;
+			int originalBatchSize = inputRequestBatch.getSize();
 			for( int i = 0; i < inputRequestBatch.getSize(); i++ )
 			{
 				TransactionRequest ithRequest = inputRequestBatch.getRequest(i);
@@ -151,7 +152,9 @@ public class InlineRequestDispatcher implements I_SyncRequestDispatcher
 					transaction.m_response.writeJson(m_jsonFactory, responseJson);
 					responseBatch.addObject(responseJson);
 					
-					ithRequest.cancel(); // will cause it to be removed from batch before dispatch
+					inputRequestBatch.remove(i);
+					i--;
+					ithRequest.cancel(); // does nothing now that batch removes it on above line
 					
 					handledCount++;
 				}
@@ -162,7 +165,7 @@ public class InlineRequestDispatcher implements I_SyncRequestDispatcher
 				this.queueTransaction(inlineRequestBatch, responseBatch);
 			}
 			
-			if( handledCount == inputRequestBatch.getSize() )
+			if( handledCount == originalBatchSize )
 			{
 				return true;
 			}

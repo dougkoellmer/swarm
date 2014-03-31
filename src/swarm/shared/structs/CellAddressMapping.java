@@ -10,10 +10,18 @@ import swarm.shared.json.JsonHelper;
 public class CellAddressMapping extends A_JsonEncodable implements I_JsonComparable
 {
 	protected GridCoordinate m_coordinate = null;
+	private int m_subCellDimension = 1;
 	
 	public CellAddressMapping()
 	{
 		initCoordinate();
+	}
+	
+	public CellAddressMapping(String value)
+	{
+		initCoordinate();
+		
+		this.readString(value);
 	}
 	
 	public CellAddressMapping(GridCoordinate sourceCoordinate)
@@ -33,6 +41,25 @@ public class CellAddressMapping extends A_JsonEncodable implements I_JsonCompara
 	public void copy(CellAddressMapping mapping)
 	{
 		this.m_coordinate.copy(mapping.getCoordinate());
+	}
+	
+	private void readString(String value)
+	{
+		String[] coords = value.split("x");
+		
+		if( coords.length >= 2 )
+		{
+			this.m_coordinate.readStrings(coords);
+		}
+		
+		if( coords.length == 3 )
+		{
+			m_subCellDimension = Integer.parseInt(coords[2]);
+		}
+		else
+		{
+			m_subCellDimension = 1;
+		}
 	}
 	
 	protected void initCoordinate()

@@ -9,6 +9,7 @@ public enum E_ResponseError
 	//--- DRK > Set only by client transaction manager.
 	CLIENT_ERROR, // e.g. no network connection maybe
 	HTTP_ERROR,		// can be caused by any bad http status code returned.
+	NO_DISPATCHER,  // couldn't find a dispatcher to satisfy the request
 	
 	//--- DRK > Set only by server transaction manager.
 	REQUEST_READ_ERROR,

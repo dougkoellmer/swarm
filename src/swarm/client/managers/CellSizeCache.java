@@ -3,6 +3,7 @@ package swarm.client.managers;
 import swarm.shared.memory.LRUCache;
 import swarm.shared.structs.CellAddressMapping;
 import swarm.shared.structs.CellSize;
+import swarm.shared.structs.GridCoordinate;
 import swarm.shared.time.I_TimeSource;
 
 public class CellSizeCache
@@ -19,9 +20,9 @@ public class CellSizeCache
 		m_cache.put(mapping_copied.writeString(), new CellSize(value_copied));
 	}
 	
-	public boolean get(CellAddressMapping mapping_copied, CellSize value_out)
+	public boolean get(GridCoordinate coord, CellSize value_out)
 	{
-		CellSize cellSize = (CellSize) m_cache.get(mapping_copied.writeString());
+		CellSize cellSize = (CellSize) m_cache.get(coord.writeString());
 		
 		if( cellSize != null )
 		{
@@ -33,5 +34,10 @@ public class CellSizeCache
 		{
 			return false;
 		}
+	}
+	
+	public boolean get(CellAddressMapping mapping_copied, CellSize value_out)
+	{
+		return this.get(mapping_copied.getCoordinate(), value_out);
 	}
 }

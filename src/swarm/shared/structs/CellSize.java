@@ -87,6 +87,12 @@ public class CellSize implements I_ReadsJson, I_WritesJson
 		m_width = m_height = DEFAULT_DIMENSION;
 	}
 	
+	public void setToDefaultsIfMatches(int explicitDefaultWidth, int explicitDefaultHeight)
+	{
+		m_width = m_width == explicitDefaultWidth ? DEFAULT_DIMENSION : m_width;
+		m_height = m_height == explicitDefaultHeight ? DEFAULT_DIMENSION : m_height;
+	}
+	
 	public void setIfDefault(int width, int height)
 	{
 		m_width = m_width == DEFAULT_DIMENSION ? width : m_width;

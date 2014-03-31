@@ -135,6 +135,11 @@ public class TransactionRequestBatch extends TransactionRequest
 		}
 	}
 	
+	void remove(int index)
+	{
+		m_requestList.remove(index);
+	}
+	
 	@Override
 	public void writeJson(A_JsonFactory factory, RequestPathManager requestPathMngr, I_JsonObject json_out)
 	{
@@ -147,6 +152,8 @@ public class TransactionRequestBatch extends TransactionRequest
 			TransactionRequest ithRequest = m_requestList.get(i);
 			
 			//--- DRK > Request can be cancelled by a synchronous request dispatcher.
+			//--- 		LATER NOTE: requests are now removed by sync dispatcher, so 
+			//---		should never find cancelled request here...keeping check just in case.
 			if( !ithRequest.isCancelled() )
 			{
 				I_JsonObject requestJson = factory.createJsonObject();
@@ -155,7 +162,7 @@ public class TransactionRequestBatch extends TransactionRequest
 			}
 			else
 			{
-				m_requestList.remove(i);
+				this.remove(i);
 				i--;
 			}
 		}

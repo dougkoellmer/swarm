@@ -16,6 +16,7 @@ import swarm.shared.entities.A_Grid;
 import swarm.shared.json.MutableJsonQuery;
 import swarm.shared.structs.CellAddressMapping;
 import swarm.shared.structs.CellSize;
+import swarm.shared.structs.GridCoordinate;
 import swarm.shared.transaction.E_RequestPath;
 import swarm.shared.transaction.TransactionRequest;
 import swarm.shared.transaction.TransactionResponse;
@@ -69,13 +70,18 @@ public class CellSizeManager implements I_TransactionResponseHandler
 	
 	public boolean getCellSizeFromLocalSource(CellAddressMapping mapping, CellSize cellSize_out)
 	{
-		return getCellSizeFromLocalSource(mapping, null, cellSize_out);
+		return getCellSizeFromLocalSource(mapping.getCoordinate(), null, cellSize_out);
 	}
 	
-	private boolean getCellSizeFromLocalSource(CellAddressMapping mapping, CellBufferManager targetBufferMngr_nullable, CellSize cellSize_out)
+	public boolean getCellSizeFromLocalSource(GridCoordinate coord, CellSize cellSize_out)
+	{
+		return getCellSizeFromLocalSource(coord, null, cellSize_out);
+	}
+	
+	private boolean getCellSizeFromLocalSource(GridCoordinate coord, CellBufferManager targetBufferMngr_nullable, CellSize cellSize_out)
 	{
 		A_ClientUser user = m_appContext.userMngr.getUser();
-		UserCell userCell = user.getCell(mapping);
+		UserCell userCell = user.getCell(coord);
 		if( userCell != null && userCell.getFocusedCellSize().isExplicit() )
 		{
 			cellSize_out.copy(userCell.getFocusedCellSize());
@@ -92,9 +98,9 @@ public class CellSizeManager implements I_TransactionResponseHandler
 			
 			if( buffer.getSubCellCount() == 1 )
 			{
-				if ( buffer.isInBoundsAbsolute(mapping.getCoordinate()) )
+				if ( buffer.isInBoundsAbsolute(coord) )
 				{
-					BufferCell cellFromOtherBuffer = buffer.getCellAtAbsoluteCoord(mapping.getCoordinate());
+					BufferCell cellFromOtherBuffer = buffer.getCellAtAbsoluteCoord(coord);
 					
 					if( cellFromOtherBuffer.getFocusedCellSize().isExplicit() )
 					{
@@ -106,8 +112,12 @@ public class CellSizeManager implements I_TransactionResponseHandler
 			}
 		}
 		
-		if( m_cache.get(mapping, cellSize_out) )
+		
+		if( m_cache.get(coord, cellSize_out) )
 		{
+			A_Grid grid = m_appContext.gridMngr.getGrid();
+			cellSize_out.setIfDefault(grid.getCellWidth(), grid.getCellHeight());
+			
 			return true;
 		}
 		
@@ -119,7 +129,7 @@ public class CellSizeManager implements I_TransactionResponseHandler
 		if( cell.getFocusedCellSize().isExplicit() )  return;
 		if( cell.getFocusedCellSize().isPending() )  return;
 		
-		if( getCellSizeFromLocalSource(mapping, targetBufferMngr, cell.getFocusedCellSize()) )
+		if( getCellSizeFromLocalSource(mapping.getCoordinate(), targetBufferMngr, cell.getFocusedCellSize()) )
 		{
 			return;
 		}
@@ -156,10 +166,7 @@ public class CellSizeManager implements I_TransactionResponseHandler
 			}
 			
 			m_utilMapping.readJson(request.getJsonArgs(), m_appContext.jsonFactory);
-			
-			A_Grid grid = m_appContext.gridMngr.getGrid();
 			A_ClientUser user = m_appContext.userMngr.getUser();
-			m_utilCellSize.setIfDefault(grid.getCellWidth(), grid.getCellHeight());
 			
 			if( user.isCellOwner(m_utilMapping) )
 			{
@@ -185,7 +192,7 @@ public class CellSizeManager implements I_TransactionResponseHandler
 					{
 						BufferCell cell = buffer.getCellAtAbsoluteCoord(m_utilMapping.getCoordinate());
 						
-						//--- DRK > Cell could conceivably be null if it was deleted while this request was out.
+						//--- DRK > Cell could be null if it went out of view while this request was out.
 						if( cell != null )
 						{
 							cell.getFocusedCellSize().copy(m_utilCellSize);
@@ -194,7 +201,7 @@ public class CellSizeManager implements I_TransactionResponseHandler
 				}
 			}
 			
-			m_listener.onCellSizeFound(m_utilMapping, m_utilCellSize);
+			if( m_listener != null )  m_listener.onCellSizeFound(m_utilMapping, m_utilCellSize);
 			
 			return E_ResponseSuccessControl.BREAK;
 		}
@@ -222,7 +229,7 @@ public class CellSizeManager implements I_TransactionResponseHandler
 					{
 						BufferCell cell = buffer.getCellAtAbsoluteCoord(m_utilMapping.getCoordinate());
 
-						if( !cell.getFocusedCellSize().isExplicit() ) // should be "pending", but covering all cases here.
+						if( !cell.getFocusedCellSize().isExplicit() ) // should maybe be "pending", but covering all cases here.
 						{
 							cell.getFocusedCellSize().setToDefaults();
 						}

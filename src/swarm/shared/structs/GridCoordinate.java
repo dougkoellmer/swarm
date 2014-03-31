@@ -136,8 +136,13 @@ public class GridCoordinate extends A_JsonEncodable implements I_JsonComparable
 	public void readString(String string)
 	{
 		String[] coordStrings = string.split("x");
-		int m = Integer.parseInt(coordStrings[0]);
-		int n = Integer.parseInt(coordStrings[1]);
+		this.readStrings(coordStrings);
+	}
+	
+	public void readStrings(String[] coords)
+	{
+		int m = Integer.parseInt(coords[0]);
+		int n = Integer.parseInt(coords[1]);
 		this.set(m, n);
 	}
 	
