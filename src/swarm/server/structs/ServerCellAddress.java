@@ -30,6 +30,11 @@ public class ServerCellAddress extends CellAddress implements Externalizable, I_
 	{
 		super(rawAddress);
 	}
+	
+	public ServerCellAddress(CellAddress address_copied)
+	{
+		super(address_copied);
+	}
 
 	public ServerCellAddress()
 	{
@@ -59,7 +64,7 @@ public class ServerCellAddress extends CellAddress implements Externalizable, I_
 	@Override
 	public String createBlobKey(I_Blob blob)
 	{
-		return U_Blob.generateKey(blob, this.getRawAddress());
+		return U_Blob.generateKey(blob, this.getRaw());
 	}
 
 	@Override
@@ -67,7 +72,7 @@ public class ServerCellAddress extends CellAddress implements Externalizable, I_
 	{
 		out.writeInt(EXTERNAL_VERSION);
 		
-		U_Serialization.writeNullableString(this.getCasedRawAddress(), out);
+		U_Serialization.writeNullableString(this.getCasedRaw(), out);
 	}
 
 	@Override

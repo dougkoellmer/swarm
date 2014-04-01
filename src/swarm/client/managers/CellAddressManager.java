@@ -11,6 +11,7 @@ import swarm.client.transaction.I_TransactionResponseHandler;
 import swarm.client.transaction.ClientTransactionManager;
 import swarm.shared.app.BaseAppContext;
 import swarm.shared.json.MutableJsonQuery;
+import swarm.shared.lang.Boolean;
 import swarm.shared.structs.CellAddress;
 import swarm.shared.structs.CellAddressMapping;
 import swarm.shared.structs.E_CellAddressParseError;
@@ -43,6 +44,8 @@ public class CellAddressManager implements I_TransactionResponseHandler
 		
 		void onResponseError(CellAddressMapping mapping);
 	}
+	
+	private final Boolean m_utilBool = new Boolean();
 	
 	private final CellAddressCache m_cache;
 	
@@ -112,15 +115,15 @@ public class CellAddressManager implements I_TransactionResponseHandler
 		if( m_listener != null )  m_listener.onAddressFound(mapping, address);
 	}
 	
-	public void getCellAddress(CellAddressMapping mapping, E_TransactionAction action)
+	protected CellAddress getAddressFromLocalSource(CellAddressMapping mapping, Boolean updateBuffer_out)
 	{
+		updateBuffer_out.value = true;
+		
 		//--- DRK > Try to get address from cache.
 		CellAddress address = m_cache.get(mapping);
 		if( address != null )
 		{
-			onAddressFound(mapping, address, true);
-			
-			return;
+			return address;
 		}
 		
 		//--- DRK > Try to get address from user.
@@ -129,16 +132,26 @@ public class CellAddressManager implements I_TransactionResponseHandler
 		address = user.getCellAddress(mapping);
 		if( address != null )
 		{
-			onAddressFound(mapping, address, true);
-			
-			return;
+			return address;
 		}
 		
 		//--- DRK > Try to get address from cell buffer.
 		address = this.getAddressFromCellBuffer(mapping);
 		if( address != null )
 		{
-			onAddressFound(mapping, address, false);
+			updateBuffer_out.value = false;
+			return address;
+		}
+		
+		return null;
+	}
+	
+	public void getCellAddress(CellAddressMapping mapping, E_TransactionAction action)
+	{
+		CellAddress address = this.getAddressFromLocalSource(mapping, m_utilBool);
+		if( address != null )
+		{
+			onAddressFound(mapping, address, m_utilBool.value);
 			
 			return;
 		}
@@ -195,6 +208,8 @@ public class CellAddressManager implements I_TransactionResponseHandler
 		if( mapping != null )
 		{
 			if( m_listener != null )  m_listener.onMappingFound(address, mapping);
+			
+			return;
 		}
 		
 		//--- DRK > If all else fails we must contact server.

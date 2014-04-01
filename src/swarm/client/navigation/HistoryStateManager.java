@@ -82,7 +82,7 @@ public class HistoryStateManager
 	
 	public void setState(CellAddress address, HistoryState state)
 	{
-		this.setState(address.getCasedRawAddressLeadSlash(), state);
+		this.setState(address.getCasedRawLeadSlash(), state);
 	}
 	
 	public void setState(CellAddress address, CellAddressMapping mapping)
@@ -113,7 +113,7 @@ public class HistoryStateManager
 	
 	public void pushState(CellAddress address, HistoryState state)
 	{
-		this.pushState(address.getCasedRawAddressLeadSlash(), state);
+		this.pushState(address.getCasedRawLeadSlash(), state);
 	}
 	
 	public void pushState(String path, Point point)

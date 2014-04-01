@@ -269,7 +269,7 @@ public class BrowserNavigator implements I_StateEventListener
 						}
 						else
 						{
-							path = address.getCasedRawAddressLeadSlash();
+							path = address.getCasedRawLeadSlash();
 							Document.get().setTitle(path); // manually doing this because for some reason history api sometimes won't set the title
 						}
 						

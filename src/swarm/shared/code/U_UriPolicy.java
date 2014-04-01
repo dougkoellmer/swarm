@@ -121,7 +121,7 @@ public final class U_UriPolicy
 			
 			if( address.getParseError() == E_CellAddressParseError.NO_ERROR )
 			{
-				return address.getRawAddress();
+				return address.getRaw();
 			}
 		}
 		

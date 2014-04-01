@@ -27,7 +27,7 @@ public class CellAddressCache
 	
 	public CellAddressMapping get(CellAddress address)
 	{
-		return (CellAddressMapping) m_addressToMapping.get(address.getRawAddressLeadSlash());
+		return (CellAddressMapping) m_addressToMapping.get(address.getRawLeadSlash());
 	}
 	
 	public CellAddress get(CellAddressMapping mapping)
@@ -37,7 +37,7 @@ public class CellAddressCache
 	
 	public void put(CellAddress key, CellAddressMapping value)
 	{
-		m_addressToMapping.put(key.getRawAddressLeadSlash(), value);
+		m_addressToMapping.put(key.getRawLeadSlash(), value);
 	}
 	
 	public void put(CellAddressMapping key, CellAddress value)
@@ -52,6 +52,6 @@ public class CellAddressCache
 
 	public void clear(CellAddress address)
 	{
-		m_addressToMapping.remove(address.getRawAddressLeadSlash());
+		m_addressToMapping.remove(address.getRawLeadSlash());
 	}
 }

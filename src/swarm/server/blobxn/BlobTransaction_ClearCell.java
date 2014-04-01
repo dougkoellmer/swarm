@@ -49,7 +49,7 @@ public class BlobTransaction_ClearCell extends A_BlobTransaction
 			
 			if( mapping == null )
 			{
-				throw new BlobException("Could not find mapping for the address: " + m_address.getRawAddressLeadSlash());
+				throw new BlobException("Could not find mapping for the address: " + m_address.getRawLeadSlash());
 			}
 		}
 		else

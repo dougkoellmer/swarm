@@ -515,7 +515,7 @@ public class ServerCodeCompiler extends A_CodeCompiler
 				
 				if( address.getParseError() == E_CellAddressParseError.NO_ERROR )
 				{
-					String rawAddress = address.getRawAddress();
+					String rawAddress = address.getRaw();
 					href.setNodeValue(U_Code.transformPathToJavascript(apiNamespace, rawAddress));
 					
 					setTarget = false;

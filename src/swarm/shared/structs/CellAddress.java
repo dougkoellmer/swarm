@@ -49,7 +49,7 @@ public class CellAddress extends A_JsonEncodable implements I_JsonComparable
 	
 	public CellAddress(CellAddress source)
 	{
-		this(source.getRawAddressLeadSlash());
+		this(source.getRawLeadSlash());
 	}
 	
 	public boolean isValid()
@@ -72,22 +72,22 @@ public class CellAddress extends A_JsonEncodable implements I_JsonComparable
 		return m_parseError;
 	}
 	
-	public String getRawAddressLeadSlash()
+	public String getRawLeadSlash()
 	{
 		return "/" + m_rawAddress;
 	}
 	
-	public String getRawAddress()
+	public String getRaw()
 	{
 		return m_rawAddress;
 	}
 	
-	public String getCasedRawAddress()
+	public String getCasedRaw()
 	{
 		return m_caseSensitiveRawAddress;
 	}
 	
-	public String getCasedRawAddressLeadSlash()
+	public String getCasedRawLeadSlash()
 	{
 		return "/" + m_caseSensitiveRawAddress;
 	}
@@ -182,7 +182,7 @@ public class CellAddress extends A_JsonEncodable implements I_JsonComparable
 	@Override
 	public void writeJson(I_JsonObject json_out, A_JsonFactory factory)
 	{
-		factory.getHelper().putString(json_out, E_JsonKey.rawCellAddress, getCasedRawAddress());
+		factory.getHelper().putString(json_out, E_JsonKey.rawCellAddress, getCasedRaw());
 	}
 
 	@Override

@@ -85,7 +85,7 @@ private static final Logger s_logger = Logger.getLogger(BlobTransaction_AddCellT
 		
 		if( address.getParseError() != E_CellAddressParseError.NO_ERROR )
 		{
-			throw new BlobException("Bad address: " + address.getRawAddressLeadSlash());
+			throw new BlobException("Bad address: " + address.getRawLeadSlash());
 		}
 		
 		//--- DRK > Do a get that we'll use to perform some sanity checks.
