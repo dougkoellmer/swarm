@@ -41,6 +41,7 @@ import swarm.shared.json.A_JsonFactory;
 import swarm.shared.json.I_JsonObject;
 import swarm.shared.structs.CellAddressMapping;
 import swarm.shared.structs.CellSize;
+import swarm.shared.thirdparty.S_Caja;
 import swarm.shared.transaction.S_Transaction;
 import swarm.shared.transaction.TransactionRequest;
 import swarm.shared.transaction.TransactionResponse;
@@ -91,6 +92,7 @@ public class CellPreviewServlet extends A_BaseServlet
 		PrintWriter writer = nativeResponse.getWriter();
 		String uri = nativeRequest.getRequestURI();
 		E_CodeType codeType = E_CodeType.getCodeTypeFromURI(uri);
+		boolean raw = uri.contains("raw");
 		
 		nativeResponse.setContentType("text/plain");
 		nativeResponse.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -105,7 +107,6 @@ public class CellPreviewServlet extends A_BaseServlet
 		//TODO: Also allow cell address uri.
 		String[] pathComponents = uri.split("/");
 		String mappingString = pathComponents[pathComponents.length-1];
-		mappingString = mappingString.replaceAll("\\.", "x");
 		ServerCellAddressMapping mapping = new ServerCellAddressMapping(mappingString);
 		
 		
@@ -124,6 +125,7 @@ public class CellPreviewServlet extends A_BaseServlet
 			ServerCode code = (ServerCode) cell.getStandInCode(codeType);
 			String rawCode = code.getRawCode();
 			rawCode = rawCode != null ? rawCode : "";
+			E_CodeSafetyLevel safetyLevel = code.getSafetyLevel();
 			
 			if( code != null )
 			{
@@ -139,15 +141,35 @@ public class CellPreviewServlet extends A_BaseServlet
 					{
 						if( codeType == E_CodeType.SPLASH || codeType == E_CodeType.COMPILED )
 						{
-							CellSize cellSize = codeType == E_CodeType.COMPILED ? cell.getFocusedCellSize() : new CellSize();
-							cellSize.setIfDefault(defaultCellWidth, defaultCellHeight);
-							String cellSizeString = "width:"+cellSize.getWidth()+"px; height:"+cellSize.getHeight()+"px;";
+							String html = "";
 							
-							nativeResponse.setContentType("text/html");
-							previewHtml = previewHtml.replaceAll("(\\{\\{cellSize\\}\\})(\\{\\{code\\}\\})", "$1"+cellSizeString+"$2"+rawCode);
+							if( raw )
+							{
+								html = rawCode;
+								
+								if( safetyLevel == E_CodeSafetyLevel.VIRTUAL_STATIC_SANDBOX )
+								{
+									String namespace = mappingString+S_Caja.CAJA_NAMESPACE_SUFFIX;
+									String cajaDivs = S_Caja.CAJA_DIVS_START.replaceAll("\\{\\{namespace\\}\\}", namespace);
+									html = cajaDivs + html + S_Caja.CAJA_DIVS_END;
+								}
+							}
+							else
+							{
+								CellSize cellSize = codeType == E_CodeType.COMPILED ? cell.getFocusedCellSize() : new CellSize();
+								cellSize.setIfDefault(defaultCellWidth, defaultCellHeight);
+								String cellSizeString = "width:"+cellSize.getWidth()+"px; height:"+cellSize.getHeight()+"px;";
+								
+								String frameSrc = "/r.preview/"+codeType.toString().toLowerCase()+"/raw/"+mappingString;
+								previewHtml = previewHtml.replaceAll("\\{\\{cellSize\\}\\}", cellSizeString);
+								previewHtml = previewHtml.replaceAll("\\{\\{frameSrc\\}\\}", frameSrc);
+								
+								html = previewHtml;
+							}
 							
 							nativeResponse.setStatus(HttpServletResponse.SC_OK);
-							writer.write(previewHtml);
+							nativeResponse.setContentType("text/html");
+							writer.write(html);
 						}
 						else
 						{

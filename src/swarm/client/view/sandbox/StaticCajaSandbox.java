@@ -3,6 +3,7 @@ package swarm.client.view.sandbox;
 import java.util.logging.Logger;
 
 import swarm.client.view.tabs.code.I_CodeLoadListener;
+import swarm.shared.thirdparty.S_Caja;
 
 import com.google.gwt.dom.client.Style.Overflow;
 import com.google.gwt.user.client.DOM;
@@ -11,11 +12,6 @@ import com.google.gwt.user.client.Element;
 public class StaticCajaSandbox implements I_CellSandbox
 {
 	private static final Logger s_logger = Logger.getLogger(StaticCajaSandbox.class.getName());
-	
-	private static final String OUTER_CONTAINER_STYLE = "position: relative; overflow: hidden; display: block; margin: 0px; padding: 0px;";
-	private static final String OUTER_CONTAINER_CLASS = "caja-vdoc-outer caja-vdoc-wrapper";
-	private static final String INNER_CONTAINER_STYLE = "display: block; position: relative;";
-	private static final String INNER_CONTAINER_CLASS = "static-caja-vdoc caja-vdoc-inner caja-vdoc-wrapper vdoc-container___";
 
 	private final Element m_outerCaja;
 	private final Element m_innerCaja;
@@ -24,11 +20,11 @@ public class StaticCajaSandbox implements I_CellSandbox
 	StaticCajaSandbox()
 	{
 		m_outerCaja = DOM.createElement("div");
-		m_outerCaja.setAttribute("style", OUTER_CONTAINER_STYLE);
-		m_outerCaja.setAttribute("class", OUTER_CONTAINER_CLASS);
+		m_outerCaja.setAttribute("style", S_Caja.OUTER_CONTAINER_STYLE);
+		m_outerCaja.setAttribute("class", S_Caja.OUTER_CONTAINER_CLASS);
 		m_innerCaja = DOM.createElement("div");
-		m_innerCaja.setAttribute("style", INNER_CONTAINER_STYLE);
-		m_innerCaja.setAttribute("class", INNER_CONTAINER_CLASS);
+		m_innerCaja.setAttribute("style", S_Caja.INNER_CONTAINER_STYLE);
+		m_innerCaja.setAttribute("class", S_Caja.INNER_CONTAINER_CLASS);
 
 		m_outerCaja.appendChild(m_innerCaja);
 		
