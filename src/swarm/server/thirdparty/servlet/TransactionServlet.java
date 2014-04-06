@@ -14,6 +14,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONException;
 
 
+
+import com.dougkoellmer.server.app.ServerApp;
+
 import swarm.server.app.A_ServerApp;
 import swarm.server.app.ServerContext;
 import swarm.server.transaction.ServerTransactionManager;
@@ -53,6 +56,19 @@ public class TransactionServlet extends A_BaseServlet
 		I_JsonObject responseJson = context.jsonFactory.createJsonObject();
 		
 		context.txnMngr.handleRequestFromClient(nativeRequest, nativeResponse, this.getServletContext(), requestJson, responseJson);
+		
+		if( isGet )
+		{
+			long expiration_seconds = ServerApp.getInstance().getConfig().requestCacheExpiration_seconds;
+			
+			if( expiration_seconds > 0 )
+			{
+				long expiration_millis = expiration_seconds*1000;
+				long now_millis = System.currentTimeMillis();
+				nativeResponse.setHeader("Cache-Control", "public, max-age="+expiration_seconds);
+				nativeResponse.setDateHeader("Expires", now_millis + expiration_millis);
+			}
+		}
 		
 		U_Servlet.writeJsonResponse(responseJson, nativeResponse.getWriter());
 		

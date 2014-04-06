@@ -12,6 +12,7 @@ public class ServerAppConfig extends AppConfig
 	public double startingZ;
 	public GridCoordinate startingCoord = null;
 	public int gridExpansionDelta;
+	public long requestCacheExpiration_seconds = 0;
 	
 	public String mainPage;
 	

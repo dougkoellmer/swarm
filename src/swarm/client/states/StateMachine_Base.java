@@ -244,7 +244,13 @@ public class StateMachine_Base extends A_StateMachine implements I_TransactionRe
 		}
 		else
 		{
-			m_asyncDialogQueue.add(new DialogData(T, constructor));
+			//--- DRK > TODO: Right now the server can come back with like a dozen server version mismatch errors
+			//---		and queue the same number of identical error dialogs...just making a hack fix here that
+			//---		only allows one dialog at a time, cause pretty sure the dialog system has to be overhauled
+			//---		anyway. The fix is the commenting out of queueing further dialogs. A cleaner fix would be
+			//---		to check equality against the currently displayed dialog and the rest of the queue, but
+			//---		again, it has to be overhauled eventually anyway and there are bigger fish to fry.
+			//m_asyncDialogQueue.add(new DialogData(T, constructor));
 		}
 	}
 	
@@ -358,7 +364,7 @@ public class StateMachine_Base extends A_StateMachine implements I_TransactionRe
 					State_GenericDialog.Constructor constructor = new State_GenericDialog.Constructor
 					(
 						"Version Mismatch",
-						"There is a new version of b33hive available. Please refresh your browser."
+						"There is a new version available. Please refresh your browser."
 					);
 					
 					queueAsyncDialog(State_AsyncDialog.class, constructor);
