@@ -131,12 +131,12 @@ public class TransactionRequest extends A_TransactionObject
 		
 		if( m_libServerVersion != null )
 		{
-			factory.getHelper().putInt(json_out, E_JsonKey.libServerVersion, m_libServerVersion);
+			factory.getHelper().putInt(json_out, E_JsonKey.libVersion, m_libServerVersion);
 		}
 		
 		if( m_appServerVersion != null )
 		{
-			factory.getHelper().putInt(json_out, E_JsonKey.appServerVersion, m_appServerVersion);
+			factory.getHelper().putInt(json_out, E_JsonKey.appVersion, m_appServerVersion);
 		}
 	}
 	
@@ -146,8 +146,8 @@ public class TransactionRequest extends A_TransactionObject
 		
 		m_path = requestPathMngr.getFromJson(json);
 		
-		Integer libServerVersion = factory.getHelper().getInt(json, E_JsonKey.libServerVersion);
-		Integer appServerVersion = factory.getHelper().getInt(json, E_JsonKey.appServerVersion);
+		Integer libServerVersion = factory.getHelper().getInt(json, E_JsonKey.libVersion);
+		Integer appServerVersion = factory.getHelper().getInt(json, E_JsonKey.appVersion);
 		
 		m_libServerVersion = libServerVersion;
 		m_appServerVersion = appServerVersion;
