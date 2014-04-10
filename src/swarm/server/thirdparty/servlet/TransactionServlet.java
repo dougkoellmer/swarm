@@ -53,7 +53,7 @@ public class TransactionServlet extends A_BaseServlet
 		I_JsonObject requestJson = U_Servlet.getRequestJson(nativeRequest, isGet);
 		I_JsonObject responseJson = context.jsonFactory.createJsonObject();
 		
-		TransactionResponse response = context.txnMngr.handleRequestFromClient(nativeRequest, nativeResponse, this.getServletContext(), responseJson, requestJson);
+		TransactionResponse response = context.txnMngr.handleRequestFromClient(nativeRequest, nativeResponse, this.getServletContext(), requestJson, responseJson);
 		
 		if( isGet && !response.hasError() )
 		{
