@@ -26,6 +26,19 @@ class TransactionResponseBatch extends TransactionResponse
 		m_responses.add(response);
 	}
 	
+	@Override public boolean hasError()
+	{
+		for( int i = 0; i < m_responses.size(); i++ )
+		{
+			if( m_responses.get(i).hasError() )
+			{
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
 	@Override
 	public void writeJson(A_JsonFactory factory, I_JsonObject json_out)
 	{

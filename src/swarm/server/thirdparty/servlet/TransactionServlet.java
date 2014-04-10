@@ -15,8 +15,6 @@ import org.json.JSONException;
 
 
 
-import com.dougkoellmer.server.app.ServerApp;
-
 import swarm.server.app.A_ServerApp;
 import swarm.server.app.ServerContext;
 import swarm.server.transaction.ServerTransactionManager;
@@ -55,11 +53,11 @@ public class TransactionServlet extends A_BaseServlet
 		I_JsonObject requestJson = U_Servlet.getRequestJson(nativeRequest, isGet);
 		I_JsonObject responseJson = context.jsonFactory.createJsonObject();
 		
-		context.txnMngr.handleRequestFromClient(nativeRequest, nativeResponse, this.getServletContext(), requestJson, responseJson);
+		TransactionResponse response = context.txnMngr.handleRequestFromClient(nativeRequest, nativeResponse, this.getServletContext(), responseJson, requestJson);
 		
-		if( isGet )
+		if( isGet && !response.hasError() )
 		{
-			long expiration_seconds = ServerApp.getInstance().getConfig().requestCacheExpiration_seconds;
+			long expiration_seconds = A_ServerApp.getInstance().getConfig().requestCacheExpiration_seconds;
 			
 			if( expiration_seconds > 0 )
 			{

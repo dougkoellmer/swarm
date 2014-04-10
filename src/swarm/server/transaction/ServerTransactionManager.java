@@ -115,12 +115,12 @@ public class ServerTransactionManager
 		return responseToReturn;
 	}
 	
-	public void handleRequestFromClient(final Object nativeRequest, final Object nativeResponse, Object nativeContext, I_JsonObject requestJson, I_JsonObject responseJson_out)
+	public TransactionResponse handleRequestFromClient(final Object nativeRequest, final Object nativeResponse, Object nativeContext, I_JsonObject requestJson, I_JsonObject responseJson_out)
 	{
-		this.handleRequestFromClient(nativeRequest, nativeResponse, nativeContext, requestJson, responseJson_out, m_verboseJson);
+		return this.handleRequestFromClient(nativeRequest, nativeResponse, nativeContext, requestJson, responseJson_out, m_verboseJson);
 	}
 	
-	public void handleRequestFromClient(final Object nativeRequest, final Object nativeResponse, Object nativeContext, I_JsonObject requestJson, I_JsonObject responseJson_out, boolean verboseJson)
+	public TransactionResponse handleRequestFromClient(final Object nativeRequest, final Object nativeResponse, Object nativeContext, I_JsonObject requestJson, I_JsonObject responseJson_out, boolean verboseJson)
 	{
 		m_jsonFactory.startScope(verboseJson);
 		
@@ -134,7 +134,7 @@ public class ServerTransactionManager
 			{
 				responseToReturn = this.createEarlyOutResponse(E_ResponseError.REQUEST_READ_ERROR);
 				
-				return; // hits finally block
+				return responseToReturn; // hits finally block
 			}
 			
 			//--- DRK > Create a wrapper around the native request and see if there's a server version mismatch.
@@ -151,14 +151,14 @@ public class ServerTransactionManager
 			{
 				responseToReturn = this.createEarlyOutResponse(E_ResponseError.VERSION_MISMATCH);
 				
-				return; // hits finally block
+				return responseToReturn; // hits finally block
 			}
 			
 			if( wrappedRequest.getPath() == null )
 			{
 				responseToReturn = this.createEarlyOutResponse(E_ResponseError.UNKNOWN_PATH);
 
-				return; // hits finally block
+				return responseToReturn; // hits finally block
 			}
 			
 			boolean isBatch = wrappedRequest.getPath() == E_ReservedRequestPath.batch;
@@ -275,25 +275,25 @@ public class ServerTransactionManager
 			
 			responseToReturn = null;
 		}
-		finally
+		
+		if( responseToReturn == null )
 		{
-			if( responseToReturn == null )
-			{
-				responseToReturn = new TransactionResponse(m_jsonFactory);
-				responseToReturn.setError(E_ResponseError.SERVER_EXCEPTION);
-				
-				s_logger.log(Level.SEVERE, "Response should not have been null.");
-			}
+			responseToReturn = new TransactionResponse(m_jsonFactory);
+			responseToReturn.setError(E_ResponseError.SERVER_EXCEPTION);
 			
-			responseToReturn.writeJson(m_jsonFactory, responseJson_out);
-			
-			m_jsonFactory.endScope();
-			
-			for( int i = 0; i < m_scopeListeners.size(); i++ )
-			{
-				m_scopeListeners.get(i).onExitScope();
-			}
+			s_logger.log(Level.SEVERE, "Response should not have been null.");
 		}
+		
+		responseToReturn.writeJson(m_jsonFactory, responseJson_out);
+		
+		m_jsonFactory.endScope();
+		
+		for( int i = 0; i < m_scopeListeners.size(); i++ )
+		{
+			m_scopeListeners.get(i).onExitScope();
+		}
+		
+		return responseToReturn;
 	}
 	
 	/**

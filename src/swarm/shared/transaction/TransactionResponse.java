@@ -32,6 +32,11 @@ public class TransactionResponse extends A_TransactionObject
 		return m_nativeObject;
 	}
 	
+	public boolean hasError()
+	{
+		return m_error != E_ResponseError.NO_ERROR;
+	}
+	
 	public void clear()
 	{
 		m_error = E_ResponseError.NO_ERROR;

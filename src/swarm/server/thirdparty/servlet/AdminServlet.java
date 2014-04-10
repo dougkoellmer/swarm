@@ -116,7 +116,7 @@ public class AdminServlet extends A_BaseServlet
 			{
 				I_JsonObject responseJson = context.jsonFactory.createJsonObject();
 				
-				context.txnMngr.handleRequestFromClient(nativeRequest, nativeResponse, this.getServletContext(), requestJson, responseJson, true);
+				TransactionResponse response = context.txnMngr.handleRequestFromClient(nativeRequest, nativeResponse, this.getServletContext(), requestJson, responseJson, true);
 				
 				U_Servlet.writeJsonResponse(responseJson, nativeResponse.getWriter());
 			}
