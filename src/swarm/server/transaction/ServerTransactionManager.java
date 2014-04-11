@@ -59,6 +59,8 @@ import swarm.shared.transaction.U_RequestBatch;
 
 public class ServerTransactionManager
 {
+	private static class BreakOutException extends Exception{}
+	
 	private static final Logger s_logger = Logger.getLogger(ServerTransactionManager.class.getName());
 	
 	private final HashMap<Integer, I_RequestHandler> m_handlers = new HashMap<Integer, I_RequestHandler>();
@@ -70,6 +72,8 @@ public class ServerTransactionManager
 	private final RequestPathManager m_requestPathMngr;
 	private final int m_libServerVersion;
 	private final int m_appServerVersion;
+	
+	private final BreakOutException m_utilBreakoutException = new BreakOutException();
 	
 	public ServerTransactionManager(A_ServerJsonFactory jsonFactory, RequestPathManager requestPathMngr, boolean verboseTransactions, int libServerVersion, int appServerVersion)
 	{
@@ -134,7 +138,7 @@ public class ServerTransactionManager
 			{
 				responseToReturn = this.createEarlyOutResponse(E_ResponseError.REQUEST_READ_ERROR);
 				
-				return responseToReturn; // hits finally block
+				throw m_utilBreakoutException;
 			}
 			
 			//--- DRK > Create a wrapper around the native request and see if there's a server version mismatch.
@@ -151,14 +155,14 @@ public class ServerTransactionManager
 			{
 				responseToReturn = this.createEarlyOutResponse(E_ResponseError.VERSION_MISMATCH);
 				
-				return responseToReturn; // hits finally block
+				throw m_utilBreakoutException;
 			}
 			
 			if( wrappedRequest.getPath() == null )
 			{
 				responseToReturn = this.createEarlyOutResponse(E_ResponseError.UNKNOWN_PATH);
 
-				return responseToReturn; // hits finally block
+				throw m_utilBreakoutException;
 			}
 			
 			boolean isBatch = wrappedRequest.getPath() == E_ReservedRequestPath.batch;
@@ -267,7 +271,10 @@ public class ServerTransactionManager
 				}
 			}
 		}
-		
+		catch(BreakOutException e)
+		{
+			// DRK > "valid" case...little hacky though.
+		}
 		//--- DRK > Most likely means some problem with this class...unlikely, but catching everything just to be safe.
 		catch(Throwable e)
 		{
