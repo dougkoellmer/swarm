@@ -56,6 +56,7 @@ public class SignInServlet extends A_BaseServlet
 		ServerContext context = A_ServerApp.getInstance().getContext();
 		
 		SessionManager sessionMngr = context.sessionMngr;
+		sessionMngr.onEnterScope();
 		ServerAccountManager accountMngr = context.accountMngr;
 		
 		((A_ServerJsonFactory)context.jsonFactory).startScope(true);
@@ -124,6 +125,7 @@ public class SignInServlet extends A_BaseServlet
 		finally
 		{
 			((A_ServerJsonFactory)context.jsonFactory).endScope();
+			sessionMngr.onExitScope();
 		}
 	}
 }
