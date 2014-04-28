@@ -17,14 +17,14 @@ public class InlineFrameSandboxManager
 	
 	private final ObjectPool<InlineFrameSandbox> m_sandboxPool;
 	
-	public InlineFrameSandboxManager(final String apiNamespace)
+	public InlineFrameSandboxManager(final String apiNamespace, final Integer version)
 	{
 		m_sandboxPool = new ObjectPool<InlineFrameSandbox>(new I_Class<InlineFrameSandbox>()
 		{
 			@Override
 			public InlineFrameSandbox newInstance()
 			{
-				return new InlineFrameSandbox(apiNamespace);
+				return new InlineFrameSandbox(apiNamespace, version);
 			}
 		});
 	}

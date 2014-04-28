@@ -25,7 +25,8 @@ public class SandboxManager
 		m_cellApi = new CellApi(viewContext);
 		m_cellApi.registerApi(apiNamespace);
 		
-		m_iframeSandboxMngr = new InlineFrameSandboxManager(apiNamespace);
+		Integer version = viewContext.appConfig.appVersion + viewContext.appConfig.libVersion;
+		m_iframeSandboxMngr = new InlineFrameSandboxManager(apiNamespace, version);
 		m_cajaSandboxMngr = new CajaSandboxManager(m_cellApi, callback, apiNamespace, useVirtualSandbox);
 	}
 	
@@ -79,7 +80,9 @@ public class SandboxManager
 				
 				host.setInnerHTML("");
 				
-				m_iframeSandboxMngr.start_remote(host, code.getRawCode(), listener);  break;
+				m_iframeSandboxMngr.start_remote(host, code.getRawCode(), listener);
+				
+				break;
 			}
 			case VIRTUAL_DYNAMIC_SANDBOX:
 			{

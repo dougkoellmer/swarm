@@ -11,14 +11,19 @@ public class InlineFrameSandbox
 {
 	private final IFrameElement m_iframe;
 	private final String m_apiNamespace;
+	private final Integer m_version;
+	private final String m_versionString;
 	
-	public InlineFrameSandbox(String apiNamespace)
+	public InlineFrameSandbox(String apiNamespace, Integer version)
 	{
 		m_iframe = Document.get().createIFrameElement();
 		
 		m_iframe.addClassName("sm_iframe_sandbox");
 		
 		m_apiNamespace = apiNamespace;
+		
+		m_version = version;
+		m_versionString = m_version != null ? "?v="+m_version : "";
 	}
 	
 	private boolean registerLocalApi()
@@ -86,6 +91,10 @@ public class InlineFrameSandbox
 			this.@swarm.client.view.sandbox.InlineFrameSandbox::registerLocalApi()();
 			
 			iframeDoc.write(rawCode);
+			
+			var evt = iframeDoc.createEvent('Event');  
+			evt.initEvent('load', false, false);  
+			iframe.contentWindow.dispatchEvent(evt);
 	}-*/;
 	
 	void start_remote(Element host, String src, I_CodeLoadListener listener)
@@ -102,8 +111,9 @@ public class InlineFrameSandbox
 			var iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
 
 			this.@swarm.client.view.sandbox.InlineFrameSandbox::registerLocalApi()();
+			var version = this.@swarm.client.view.sandbox.InlineFrameSandbox::m_versionString;
 			
-			iframeDoc.src = src;
+			iframe.src = src+version;
 	}-*/;
 	
 	void stop(Element host)
