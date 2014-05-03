@@ -9,7 +9,7 @@ abstract class smA_CameraAction extends A_Action
 	@Override
 	public void prePerform(StateArgs args)
 	{
-		StateMachine_Camera machine = getContext().getEnteredState(StateMachine_Camera.class);
+		StateMachine_Camera machine = getContext().getEntered(StateMachine_Camera.class);
 		
 		machine.tryPoppingGettingAddressState();
 	}

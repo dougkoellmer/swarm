@@ -197,7 +197,7 @@ public class CodeEditorTabContent extends AbsolutePanel implements I_TabContent,
 			{
 				if( event.getState() instanceof State_ViewingCell )
 				{
-					State_EditingCode editingHtmlState = event.getContext().getEnteredState(State_EditingCode.class);
+					State_EditingCode editingHtmlState = event.getContext().getEntered(State_EditingCode.class);
 					
 					if( editingHtmlState != null )
 					{
@@ -308,8 +308,8 @@ public class CodeEditorTabContent extends AbsolutePanel implements I_TabContent,
 				else if( event.getAction() == StateMachine_Base.OnUserPopulated.class || 
 						 event.getAction() == StateMachine_Base.OnUserCleared.class  )
 				{
-					State_ViewingCell viewingState = event.getContext().getEnteredState(State_ViewingCell.class);
-					State_EditingCode editingState = event.getContext().getEnteredState(State_EditingCode.class);
+					State_ViewingCell viewingState = event.getContext().getEntered(State_ViewingCell.class);
+					State_EditingCode editingState = event.getContext().getEntered(State_EditingCode.class);
 					
 					if( viewingState != null && editingState != null )
 					{
@@ -324,7 +324,7 @@ public class CodeEditorTabContent extends AbsolutePanel implements I_TabContent,
 	
 	private void updateConsoleBlocker()
 	{
-		State_EditingCodeBlocker blocker = m_viewContext.stateContext.getForegroundedState(State_EditingCodeBlocker.class);
+		State_EditingCodeBlocker blocker = m_viewContext.stateContext.getForegrounded(State_EditingCodeBlocker.class);
 		
 		if( blocker == null )
 		{
@@ -364,7 +364,7 @@ public class CodeEditorTabContent extends AbsolutePanel implements I_TabContent,
 	
 	private void refreshCharacterCount()
 	{
-		State_ViewingCell viewingState = m_viewContext.stateContext.getEnteredState(State_ViewingCell.class);
+		State_ViewingCell viewingState = m_viewContext.stateContext.getEntered(State_ViewingCell.class);
 		
 		if( viewingState != null && !m_viewContext.stateContext.isForegrounded(State_EditingCodeBlocker.class) )
 		{

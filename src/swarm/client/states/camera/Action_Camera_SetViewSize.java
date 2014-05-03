@@ -45,6 +45,7 @@ public class Action_Camera_SetViewSize extends A_Action
 		StateMachine_Camera machine = this.getState();
 		Camera camera = m_cameraMngr.getCamera();
 		
+		
 		double deltaX = args_cast.m_dimensions[0] - camera.getViewWidth();
 		double deltaY = args_cast.m_dimensions[1] - camera.getViewHeight();
 		

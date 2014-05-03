@@ -204,37 +204,53 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 			double mantissa = m_baseChangeValue == 1 ? 1 : (snapProgress - m_baseChangeValue) / (1-m_baseChangeValue);
 			mantissa = U_Math.clampMantissa(mantissa);
 				
-			this.updateLayout(mantissa);
+			this.updateLayout(mantissa, mantissa);
 		}
 		else if( this.m_layoutState == LayoutState.CHANGING_FROM_TIME )
 		{
 			m_baseChangeValue += timeStep;
 			double mantissa = m_baseChangeValue / m_sizeChangeTime;
 			mantissa = U_Math.clampMantissa(mantissa);
-			mantissa = U_View.easeMantissa(mantissa, m_retractionEasing);
-			//s_logger.severe(mantissa+"");
 			
-			this.updateLayout(mantissa);
+			double easingMultiplier = 1.5;
+			
+			double retractionEasingX = m_retractionEasing - 1;
+			retractionEasingX += m_baseWidth / m_defaultWidth;
+			double mantissaX = U_View.easeMantissa(mantissa, retractionEasingX);
+
+			double retractionEasingY = m_retractionEasing - 1;
+			retractionEasingY += m_baseHeight / m_defaultHeight;
+			double mantissaY = U_View.easeMantissa(mantissa, retractionEasingY);
+			
+			retractionEasingX *= easingMultiplier;
+			retractionEasingY *= easingMultiplier;
+			
+//			s_logger.severe("START");
+//			s_logger.severe(m_retractionEasing + " " + retractionEasingX + " " + retractionEasingY);
+//			s_logger.severe(mantissa + " " + mantissaX + " " + mantissaY);
+//			s_logger.severe("END");
+			
+			this.updateLayout(mantissaX, mantissaY);
 		}
 	}
 	
-	private void updateLayout(double progressMantissa)
+	private void updateLayout(double progressMantissaX, double progressMantissaY)
 	{
-		double widthDelta = (m_targetWidth - m_baseWidth) * progressMantissa;
+		double widthDelta = (m_targetWidth - m_baseWidth) * progressMantissaX;
 		m_width = (int) (m_baseWidth + widthDelta);
 		
-		double heightDelta = (m_targetHeight - m_baseHeight) * progressMantissa;
+		double heightDelta = (m_targetHeight - m_baseHeight) * progressMantissaY;
 		m_height = (int) (m_baseHeight + heightDelta);
 		
-		double xOffsetDelta = (m_targetXOffset - m_baseXOffset) * progressMantissa;
+		double xOffsetDelta = (m_targetXOffset - m_baseXOffset) * progressMantissaX;
 		m_xOffset = (int) (m_baseXOffset + xOffsetDelta);
 		
-		double yOffsetDelta = (m_targetYOffset - m_baseYOffset) * progressMantissa;
+		double yOffsetDelta = (m_targetYOffset - m_baseYOffset) * progressMantissaY;
 		m_yOffset = (int) (m_baseYOffset + yOffsetDelta);
 		
 		//s_logger.severe(m_xOffset + " " + m_targetXOffset + " " + m_baseXOffset);
 		
-		if( progressMantissa >= 1 )
+		if( progressMantissaX >= 1 )
 		{
 			this.ensureTargetLayout();
 		}

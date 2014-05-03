@@ -46,7 +46,7 @@ public class State_EditingCode extends A_State
 	
 	void performCommitOrPreview(A_Action thisArg)
 	{
-		State_ViewingCell viewingState = getContext().getForegroundedState(State_ViewingCell.class);
+		State_ViewingCell viewingState = getContext().getForegrounded(State_ViewingCell.class);
 		BufferCell viewedCell = viewingState.getCell();
 		GridCoordinate coord = viewedCell.getCoordinate();
 		
@@ -77,7 +77,7 @@ public class State_EditingCode extends A_State
 			String title = "Compiler Error";
 			String body = m_appContext.compilerErrorMsgGenerator.generate(compilerResult);
 			
-			StateMachine_Base baseController = getContext().getEnteredState(StateMachine_Base.class);
+			StateMachine_Base baseController = getContext().getEntered(StateMachine_Base.class);
 			
 			State_GenericDialog.Constructor constructor = new State_GenericDialog.Constructor(title, body);
 			
@@ -87,7 +87,7 @@ public class State_EditingCode extends A_State
 	
 	boolean isCommitOrPreviewPerformable(boolean isPreview)
 	{
-		State_ViewingCell state = getContext().getForegroundedState(State_ViewingCell.class);
+		State_ViewingCell state = getContext().getForegrounded(State_ViewingCell.class);
 		
 		if( state == null )
 		{

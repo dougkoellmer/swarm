@@ -209,7 +209,7 @@ public class SplitPanel extends SplitLayoutPanel implements I_UIElement
 	{
 		ToolTipManager toolTipper = m_viewContext.toolTipMngr;
 		
-		StateMachine_Tabs tabMachine = m_viewContext.stateContext.getEnteredState(StateMachine_Tabs.class);
+		StateMachine_Tabs tabMachine = m_viewContext.stateContext.getEntered(StateMachine_Tabs.class);
 		
 		boolean isCollapsed = !tabMachine.isForegrounded() && tabMachine.getBlockingState() == null;
 		

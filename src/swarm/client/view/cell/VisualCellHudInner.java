@@ -133,7 +133,7 @@ public class VisualCellHudInner extends HorizontalPanel implements I_StateEventL
 			{
 				if( !m_close.isEnabled() )  return;
 
-				State_ViewingCell viewingState = m_viewContext.stateContext.getEnteredState(State_ViewingCell.class);
+				State_ViewingCell viewingState = m_viewContext.stateContext.getEntered(State_ViewingCell.class);
 				if( viewingState == null )
 				{
 					s_utilPoint1.copy(VisualCellHudInner.this.m_viewContext.appContext.cameraMngr.getCamera().getPosition());
@@ -160,8 +160,8 @@ public class VisualCellHudInner extends HorizontalPanel implements I_StateEventL
 	
 	private void updateCloseButton()
 	{
-		State_ViewingCell viewingState = m_viewContext.stateContext.getEnteredState(State_ViewingCell.class);
-		State_CameraSnapping snappingState = m_viewContext.stateContext.getEnteredState(State_CameraSnapping.class);
+		State_ViewingCell viewingState = m_viewContext.stateContext.getEntered(State_ViewingCell.class);
+		State_CameraSnapping snappingState = m_viewContext.stateContext.getEntered(State_CameraSnapping.class);
 		
 		if( viewingState != null || snappingState != null && snappingState.getPreviousState() == State_ViewingCell.class )
 		{
@@ -190,8 +190,8 @@ public class VisualCellHudInner extends HorizontalPanel implements I_StateEventL
 	
 	private void updateHistoryButtons()
 	{
-		State_ViewingCell viewingState = m_viewContext.stateContext.getEnteredState(State_ViewingCell.class);
-		State_CameraSnapping snappingState = m_viewContext.stateContext.getEnteredState(State_CameraSnapping.class);
+		State_ViewingCell viewingState = m_viewContext.stateContext.getEntered(State_ViewingCell.class);
+		State_CameraSnapping snappingState = m_viewContext.stateContext.getEntered(State_CameraSnapping.class);
 		
 		if( viewingState != null || snappingState != null && snappingState.getPreviousState() == State_ViewingCell.class )
 		{

@@ -19,8 +19,6 @@ public abstract class A_State extends A_BaseStateObject
 	//--- DRK > State lifecycle trackers.
 	private boolean m_isForegrounded = false;
 	private boolean m_isEntered = false;
-	private boolean m_isEntering = false;
-	private boolean m_isForegrounding = false;
 	
 	//--- DRK > Tree/family relationships.
 	A_State m_parent = null;
@@ -51,7 +49,7 @@ public abstract class A_State extends A_BaseStateObject
 		{
 			for( int i = 0; i < m_queuedActionsToRegister.size(); i++ )
 			{
-				registerAction_private(m_queuedActionsToRegister.get(i));
+				register_private(m_queuedActionsToRegister.get(i));
 			}
 			
 			m_queuedActionsToRegister = null;
@@ -64,7 +62,7 @@ public abstract class A_State extends A_BaseStateObject
 		m_queuedActionsToRegister.add(action);
 	}
 	
-	private void registerAction_private(A_Action action)
+	private void register_private(A_Action action)
 	{
 		m_context.register(action, this.getClass());
 	}
@@ -77,7 +75,7 @@ public abstract class A_State extends A_BaseStateObject
 		}
 		else
 		{
-			registerAction_private(action);
+			register_private(action);
 		}
 	}
 	
@@ -89,16 +87,6 @@ public abstract class A_State extends A_BaseStateObject
 	public boolean isForegrounded()
 	{
 		return m_isForegrounded;
-	}
-	
-	public boolean isEntering()
-	{
-		return m_isEntering;
-	}
-	
-	public boolean isForegrounding()
-	{
-		return m_isForegrounding;
 	}
 	
 	public boolean isEntered()
@@ -161,17 +149,7 @@ public abstract class A_State extends A_BaseStateObject
 		return m_previousState;
 	}
 	
-	public boolean perform(Class<? extends A_Action> T)
-	{
-		return this.perform(T, null);
-	}
-	
-	public boolean perform(Class<? extends A_Action> T, Object userData)
-	{
-		return this.perform(T, new StateArgs(userData){});
-	}
-	
-	public boolean perform(Class<? extends A_Action> T, StateArgs args)
+	boolean performAction(Class<? extends A_Action> T, StateArgs args)
 	{
 		A_Action action = m_context.getAction(T);
 
@@ -257,13 +235,8 @@ public abstract class A_State extends A_BaseStateObject
 		m_isEntered = true;
 		
 		root.queueEvent(new StateEvent(E_StateEventType.DID_ENTER, this));
-		
-		m_isEntering = true;
 
 		this.didEnter(constructor);
-		this.didEnter();
-		
-		m_isEntering = false;
 		
 		root.processEventQueue();
 	}
@@ -280,12 +253,7 @@ public abstract class A_State extends A_BaseStateObject
 		
 		context.queueEvent(new StateEvent(E_StateEventType.DID_FOREGROUND, this));
 		
-		m_isForegrounding = true;
-
 		this.didForeground(revealingState, args);
-		this.didForeground();
-		
-		m_isForegrounding = false;
 		
 		context.processEventQueue();
 	}
@@ -296,10 +264,7 @@ public abstract class A_State extends A_BaseStateObject
 		
 		if( !m_isEntered )  return;
 		
-		if( m_isEntered )
-		{
-			m_totalTimeInState += timeStep;
-		}
+		m_totalTimeInState += timeStep;
 		
 		if( m_isForegrounded )
 		{
@@ -314,7 +279,6 @@ public abstract class A_State extends A_BaseStateObject
 		m_totalUpdateCount++;
 		
 		this.update(timeStep);
-		this.update();
 		
 		context.processEventQueue();
 	}
@@ -328,7 +292,6 @@ public abstract class A_State extends A_BaseStateObject
 		m_blockingState = blockingState;
 		
 		this.willBackground(blockingState);
-		this.willBackground();
 		
 		m_isForegrounded = false;
 		
@@ -358,12 +321,8 @@ public abstract class A_State extends A_BaseStateObject
 	
 	//--- DRK > Bunch of event callbacks that you can override.
 	protected void didEnter(StateArgs constructor) {}
-	protected void didEnter() {}
 	protected void didForeground(Class<? extends A_State> revealingState, Object[] argsFromRevealingState){ }
-	protected void didForeground(){ }
 	protected void update(double timeStep) {}
-	protected void update() {}
 	protected void willBackground(Class<? extends A_State> blockingState) {}
-	protected void willBackground() {}
 	protected void willExit() { }
 }

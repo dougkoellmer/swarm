@@ -23,7 +23,7 @@ public class Action_SignInOrUp_SetNewPassword extends A_Action
 		ClientAccountManager manager = m_accountMngr;
 		manager.setNewDesiredPassword(creds);
 		
-		pushVer(this.getState().getParent(), State_AccountStatusPending.class);	
+		pushV(State_AccountStatusPending.class);	
 	}
 	
 	@Override

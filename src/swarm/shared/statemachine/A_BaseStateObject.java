@@ -2,7 +2,7 @@ package swarm.shared.statemachine;
 
 
 /**
- * This base class provides both actions and states with a unified API to safely & easily manipulate any part of the machine tree.
+ * This base class provides actions, states and results a unified API to safely & easily manipulate any part of the machine tree.
  * More runtime protections, mostly for debugging purposes, may be added to this class in the future.
  * 
  * @author Doug
@@ -17,10 +17,32 @@ public class A_BaseStateObject
 		return m_context;
 	}
 	
-	private static StateArgs createArgs(Object userData)
+	boolean isLocked()
 	{
-		return userData != null ? new StateArgs() : null;
+		return false;
 	}
+	
+	private StateOperationResult checkLock()
+	{
+		StateOperationResult result = null;
+		
+		if( isLocked() )
+		{
+			if( this instanceof StateOperationResult )
+			{
+				result = (StateOperationResult) this;
+				result.succceeded(false);
+			}
+			else
+			{
+				result = m_context.checkOutResult(this, false);
+			}
+		}
+		
+		return result;
+	}
+	
+	
 	
 	protected static void enterState(A_State container, Class<? extends A_State> T)
 	{
@@ -47,29 +69,40 @@ public class A_BaseStateObject
 		((A_StateContainer) container).exitState_internal(T);
 	}
 	
-	protected <T extends A_StateMachine> T getMachine()
+
+	
+	
+	
+	static StateArgs createArgs(Object userData)
 	{
-		return (T) getClosestMachine(this);
+		return userData != null ? new StateArgs(userData) : null;
 	}
 	
-	private static A_State getClosestMachine(A_BaseStateObject stateObject)
+	protected <T extends A_StateMachine> T getMachine()
 	{
+		return getClosestMachine(this);
+	}
+	
+	private static <T extends A_StateMachine> T getClosestMachine(A_BaseStateObject stateObject)
+	{
+		A_BaseStateObject machine = null;
+		
 		if( stateObject instanceof A_Action )
 		{
 			A_State state = ((A_Action)stateObject).getState();
 			
 			if( state instanceof A_StateMachine )
 			{
-				return state;
+				machine = state;
 			}
 			else if( state.getParent() instanceof A_StateMachine )
 			{
-				return state.getParent();
+				machine = state.getParent();
 			}
 		}
 		else if( stateObject instanceof A_StateMachine )
 		{
-			return (A_State) stateObject;
+			machine = stateObject;
 		}
 		else if( stateObject instanceof A_State )
 		{
@@ -77,194 +110,342 @@ public class A_BaseStateObject
 			
 			if( parent instanceof A_StateMachine )
 			{
-				return parent;
+				machine = parent;
 			}
 		}
+		else if( stateObject instanceof StateOperationResult )
+		{
+			machine = getClosestMachine(((StateOperationResult)stateObject).getSource());
+		}
 		
-		return null;
+		return (T) machine;
 	}
 	
-	protected void pushVer(Class<? extends A_State> T)
+	
+	
+	
+	
+	protected StateOperationResult pushV(Class<? extends A_State> stateClass)
 	{
-		this.pushVer(T, (StateArgs) null);
+		return pushV(stateClass, (StateArgs) null);
 	}
-	
-	protected void pushVer(Class<? extends A_State> T, Object userData)
+	protected StateOperationResult pushV(Class<? extends A_State> stateClass, Object userData)
 	{
-		this.pushVer(T, createArgs(userData));
+		return pushV(stateClass, createArgs(userData));
 	}
-	
-	protected void pushVer(Class<? extends A_State> T, StateArgs constructor_nullable)
+	protected StateOperationResult pushV(Class<? extends A_State> stateClass, StateArgs constructor_nullable)
 	{
-		pushVer(getClosestMachine(this), T, constructor_nullable);
+		return pushV(getClosestMachine(this), stateClass, constructor_nullable);
 	}
 	
-	protected static void pushVer(A_State machine, Class<? extends A_State> T)
+	protected StateOperationResult pushV(Class<? extends A_StateMachine> machine, Class<? extends A_State> stateClass)
 	{
-		A_BaseStateObject.pushVer(machine, T, null);
+		return pushV((A_StateMachine)m_context.getEntered(machine), stateClass, (StateArgs) null);
 	}
-	
-	protected static void pushVer(A_State machine, Class<? extends A_State> T, Object userData)
+	protected StateOperationResult pushV(Class<? extends A_StateMachine> machine, Class<? extends A_State> stateClass, Object userData)
 	{
-		A_BaseStateObject.pushVer(machine, T, createArgs(userData));
+		return pushV((A_StateMachine)m_context.getEntered(machine), stateClass, createArgs(userData));
 	}
-	
-	protected static void pushVer(A_State machine, Class<? extends A_State> T, StateArgs constructor_nullable)
-	{		
-		((A_StateMachine) machine).pushVer_internal(T, constructor_nullable);
-	}
-	
-	protected void popVer(Object ... args)
+	protected StateOperationResult pushV(Class<? extends A_StateMachine> machine, Class<? extends A_State> stateClass, StateArgs constructor_nullable)
 	{
-		A_BaseStateObject.popVer(getClosestMachine(this), args);
+		return pushV((A_StateMachine)m_context.getEntered(machine), stateClass, constructor_nullable);
 	}
 	
-	protected static void popVer(A_State machine, Object ... args)
+	protected StateOperationResult pushV(A_StateMachine machine, Class<? extends A_State> T)
 	{
-		((A_StateMachine) machine).popState_internal(args);
+		return pushV(machine, T, (StateArgs) null);
 	}
-	
-	
-	
-	
-	protected static void pushHor(A_State machine)
+	protected StateOperationResult pushV(A_StateMachine machine, Class<? extends A_State> T, Object userData)
 	{
+		return pushV(machine, T, createArgs(userData));
+	}
+	protected StateOperationResult pushV(A_StateMachine machine, Class<? extends A_State> T, StateArgs constructor_nullable)
+	{
+		StateOperationResult result = checkLock();
 		
-	}
-	
-	protected static void pushHor(A_State machine, int offset)
-	{
+		if( result != null )  return result;
 		
+		return ((A_StateMachine) machine).pushV_internal(T, constructor_nullable);
 	}
 	
-	protected static void pushHor(A_State machine, int offset, Object userData_nullable)
+	
+	
+	protected StateOperationResult popV(Object ... args)
 	{
+		return popV(getClosestMachine(this), args);
+	}
+	protected StateOperationResult popV(Class<? extends A_StateMachine> machineClass, Object ... args)
+	{
+		return popV((A_StateMachine)m_context.getEntered(machineClass), args);
+	}
+	protected StateOperationResult popV(A_StateMachine machine, Object ... args)
+	{
+		StateOperationResult result = checkLock();
 		
-	}
-	
-	protected static void pushHor(A_State machine, int offset, StateArgs constructor_nullable)
-	{
+		if( result != null )  return result;
 		
+		return ((A_StateMachine) machine).popV_internal(args);
 	}
 	
-	protected static void pushHor(A_State machine, Class<? extends A_State> T)
+	
+	
+	
+	protected StateOperationResult push(Class<? extends A_State> stateClass)
 	{
-		A_BaseStateObject.pushHor(machine, T, null);
+		return push(stateClass, (StateArgs) null);
 	}
-	
-	protected static void pushHor(A_State machine, Class<? extends A_State> T, Object userData)
+	protected StateOperationResult push(Class<? extends A_State> stateClass, Object userData)
 	{
-		A_BaseStateObject.pushHor(machine, T, createArgs(userData));
+		return push(stateClass, createArgs(userData));
 	}
-	
-	protected static void pushHor(A_State machine, Class<? extends A_State> T, StateArgs constructor_nullable)
-	{		
-		//((A_StateMachine) machine).pushHor_internal(T, constructor_nullable);
-	}
-	
-	
-	
-	protected static void popHor(A_State machine)
+	protected StateOperationResult push(Class<? extends A_State> stateClass, StateArgs constructor_nullable)
 	{
+		return push(getClosestMachine(this), stateClass, constructor_nullable);
+	}
+	
+	protected StateOperationResult push(Class<? extends A_StateMachine> machine, Class<? extends A_State> stateClass)
+	{
+		return push((A_StateMachine)m_context.getEntered(machine), stateClass, null);
+	}
+	protected StateOperationResult push(Class<? extends A_StateMachine> machine, Class<? extends A_State> stateClass, Object userData)
+	{
+		return push((A_StateMachine)m_context.getEntered(machine), stateClass, createArgs(userData));
+	}
+	protected StateOperationResult push(Class<? extends A_StateMachine> machine, Class<? extends A_State> stateClass, StateArgs args_nullable)
+	{
+		return push((A_StateMachine)m_context.getEntered(machine), stateClass, args_nullable);
+	}
+	
+	protected StateOperationResult push(A_StateMachine machine, Class<? extends A_State> stateClass)
+	{
+		return push(machine, stateClass, null);
+	}
+	protected StateOperationResult push(A_StateMachine machine, Class<? extends A_State> stateClass, Object userData)
+	{
+		return push(machine, stateClass, createArgs(userData));
+	}
+	protected StateOperationResult push(A_StateMachine machine, Class<? extends A_State> stateClass, StateArgs args_nullable)
+	{
+		StateOperationResult result = checkLock();
 		
-	}
-	
-	protected static void popHor(A_State machine, int offset)
-	{
+		if( result != null )  return result;
 		
+		return ((A_StateMachine) machine).push_internal(stateClass, args_nullable);
 	}
 	
-	protected static void popHor(A_State machine, int offset, Object userData_nullable)
+	
+	
+	protected StateOperationResult pop()
 	{
+		return pop(getClosestMachine(this));
+	}
+	protected StateOperationResult pop(Class<? extends A_StateMachine> machineClass)
+	{
+		return pop(m_context.getEntered(machineClass));
+	}
+	protected StateOperationResult pop(A_State machine)
+	{
+		StateOperationResult result = checkLock();
 		
-	}
-	
-	protected static void popHor(A_State machine, int offset, StateArgs constructor_nullable)
-	{
+		if( result != null )  return result;
 		
+		return ((A_StateMachine) machine).pop_internal();
 	}
 	
 	
 	
-	protected static int getHorIndex(A_State machine)
+	protected StateOperationResult go(int offset)
 	{
-		return -1;
+		return go(getClosestMachine(this), offset);
 	}
-	
-	protected static int getHorCount(A_State machine)
+	protected StateOperationResult go(Class<? extends A_StateMachine> machineClass, int offset)
 	{
-		return -1;
+		return go((A_StateMachine)m_context.getEntered(machineClass), offset);
 	}
-	
-	protected static Class<? extends A_State> getHorState(A_State machine, int offset)
+	protected StateOperationResult go(A_StateMachine machine, int offset)
 	{
-		return null;
-	}
-	
-	
-	protected static void goHor(A_State machine, int offset)
-	{
+		StateOperationResult result = checkLock();
 		
-	}
-	
-	
-	
-	
-	
-	
-	protected void setState(Class<? extends A_State> T)
-	{
-		this.setState(T, (StateArgs)null);
-	}
-	
-	protected void setState(Class<? extends A_State> T, Object userData)
-	{
-		this.setState(T, createArgs(userData));
-	}
-	
-	protected void setState(Class<? extends A_State> T, StateArgs constructor_nullable)
-	{
-		A_BaseStateObject.setState(getClosestMachine(this), T, constructor_nullable);
-	}
-	
-	
-	protected static void setState(A_State machine, Class<? extends A_State> T)
-	{
-		A_BaseStateObject.setState(machine, T, (StateArgs) null);
-	}
-	
-	protected static void setState(A_State machine, Class<? extends A_State> T, Object userData)
-	{
-		A_BaseStateObject.setState(machine, T, createArgs(userData));
-	}
-	
-	protected static void setState(A_State machine, Class<? extends A_State> T, StateArgs constructor_nullable)
-	{
-		((A_StateMachine) machine).setState_internal(T, constructor_nullable);
-	}
-	
-	
-	
-	
-	
-	protected static void peek(Class<? extends A_State> T, int offset)
-	{
+		if( result != null )  return result;
 		
+		return ((A_StateMachine) machine).go_internal(offset);
 	}
 	
-	protected static int getQueueSize(Class<? extends A_State> T)
-	{
-		return -1;
-	}
 	
-	protected static void enqueue(Class<? extends A_State> T)
+
+	protected StateOperationResult clearHistory()
 	{
+		return clearHistory(getClosestMachine(this));
+	}
+	protected StateOperationResult clearHistory(Class<? extends A_StateMachine> machineClass)
+	{
+		return clearHistory((A_StateMachine)m_context.getEntered(machineClass));
+	}
+	protected StateOperationResult clearHistory(A_StateMachine machine)
+	{
+		StateOperationResult result = checkLock();
 		
+		if( result != null )  return result;
+		
+		return ((A_StateMachine) machine).clearHistory_internal();
 	}
 	
-	protected static Class<? extends A_State> dequeue()
+	
+	
+	protected StateOperationResult set(Class<? extends A_State> stateClass)
 	{
-		return null;
+		return set(stateClass, (StateArgs)null);
+	}
+	protected StateOperationResult set(Class<? extends A_State> stateClass, Object userData)
+	{
+		return set(stateClass, createArgs(userData));
+	}
+	protected StateOperationResult set(Class<? extends A_State> stateClass, StateArgs constructor_nullable)
+	{
+		return set(getClosestMachine(this), stateClass, constructor_nullable);
+	}
+	
+	protected StateOperationResult set(Class<? extends A_StateMachine> machineClass, Class<? extends A_State> stateClass)
+	{
+		return set(machineClass, stateClass, (StateArgs) null);
+	}
+	protected StateOperationResult set(Class<? extends A_StateMachine> machineClass, Class<? extends A_State> stateClass, Object userData)
+	{
+		return set(machineClass, stateClass, createArgs(userData));
+	}
+	protected StateOperationResult set(Class<? extends A_StateMachine> machineClass, Class<? extends A_State> stateClass, StateArgs constructor_nullable)
+	{
+		return set((A_StateMachine)m_context.getEntered(machineClass), stateClass, constructor_nullable);
+	}
+	
+	protected StateOperationResult set(A_StateMachine machine, Class<? extends A_State> stateClass)
+	{
+		return set(machine, stateClass, (StateArgs) null);
+	}
+	protected StateOperationResult set(A_StateMachine machine, Class<? extends A_State> stateClass, Object userData)
+	{
+		return set(machine, stateClass, createArgs(userData));
+	}
+	protected StateOperationResult set(A_StateMachine machine, Class<? extends A_State> stateClass, StateArgs constructor_nullable)
+	{
+		StateOperationResult result = checkLock();
+		
+		if( result != null )  return result;
+		
+		return machine.set_internal(stateClass, constructor_nullable);
+	}
+	
+	
+
+
+	
+	
+	protected StateOperationResult queue(Class<? extends A_State> stateClass)
+	{
+		return queue(stateClass, (StateArgs)null);
+	}
+	protected StateOperationResult queue(Class<? extends A_State> stateClass, Object userData)
+	{
+		return queue(stateClass, createArgs(userData));
+	}
+	protected StateOperationResult queue(Class<? extends A_State> stateClass, StateArgs constructor_nullable)
+	{
+		return queue(getClosestMachine(this), stateClass, constructor_nullable);
+	}
+	
+	protected StateOperationResult queue(Class<? extends A_StateMachine> machineClass, Class<? extends A_State> stateClass)
+	{
+		return queue(machineClass, stateClass, (StateArgs) null);
+	}
+	protected StateOperationResult queue(Class<? extends A_StateMachine> machineClass, Class<? extends A_State> stateClass, Object userData)
+	{
+		return set(machineClass, stateClass, createArgs(userData));
+	}
+	protected StateOperationResult queue(Class<? extends A_StateMachine> machineClass, Class<? extends A_State> stateClass, StateArgs constructor_nullable)
+	{
+		return queue((A_StateMachine)m_context.getEntered(machineClass), stateClass, constructor_nullable);
+	}
+	
+	protected StateOperationResult queue(A_StateMachine machine, Class<? extends A_State> stateClass)
+	{
+		return queue(machine, stateClass, (StateArgs) null);
+	}
+	protected StateOperationResult queue(A_StateMachine machine, Class<? extends A_State> stateClass, Object userData)
+	{
+		return queue(machine, stateClass, createArgs(userData));
+	}
+	protected StateOperationResult queue(A_StateMachine machine, Class<? extends A_State> stateClass, StateArgs constructor_nullable)
+	{
+		StateOperationResult result = checkLock();
+		
+		if( result != null )  return result;
+		
+		return machine.queue_internal(stateClass, constructor_nullable);
+	}
+	
+	
+	
+	
+	
+	protected StateOperationResult dequeue()
+	{
+		return dequeue(getClosestMachine(this));
+	}
+	protected StateOperationResult dequeue(Class<? extends A_StateMachine> machineClass)
+	{
+		return dequeue((A_StateMachine)m_context.getEntered(machineClass));
+	}
+	protected StateOperationResult dequeue(A_StateMachine machine)
+	{
+		StateOperationResult result = checkLock();
+		
+		if( result != null )  return result;
+		
+		return ((A_StateMachine) machine).dequeue_internal();
+	}
+	
+	
+	
+	
+//	protected static int getIndexH(A_State machine)
+//	{
+//		return -1;
+//	}
+//	
+//	protected static int getCountH(A_State machine)
+//	{
+//		return -1;
+//	}
+//	
+//	protected static Class<? extends A_State> getHorState(A_State machine, int offset)
+//	{
+//		return null;
+//	}
+//	
+//	protected void peek(Class<? extends A_State> T, int offset)
+//	{
+//		
+//	}
+//	
+//	protected int getQueueSize(Class<? extends A_State> T)
+//	{
+//		return -1;
+//	}
+
+	
+	protected StateOperationResult perform(Class<? extends A_Action> T)
+	{
+		return perform(T, (StateArgs)null);
+	}
+	
+	protected StateOperationResult perform(Class<? extends A_Action> T, Object userData)
+	{
+		return perform(T, createArgs(userData));
+	}
+	
+	protected StateOperationResult perform(Class<? extends A_Action> T, StateArgs args)
+	{
+		return m_context.checkOutResult(this, m_context.perform(T, args));
 	}
 	
 	

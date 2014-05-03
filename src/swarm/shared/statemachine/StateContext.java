@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
+import swarm.shared.statemachine.P_StateObjectPool.I_Factory;
+
 public class StateContext
 {
 	private static final Logger s_logger = Logger.getLogger(StateContext.class.getName());
@@ -21,6 +23,44 @@ public class StateContext
 	private final HashMap<Class<? extends A_State>, A_State> m_stateRegistry = new HashMap<Class<? extends A_State>, A_State>();
 	private final HashMap<Class<? extends A_Action>, A_Action> m_actionRegistry = new HashMap<Class<? extends A_Action>, A_Action>();
 	private I_StateFactory m_stateFactory;
+	
+	
+	private static class StackEntryFactoryV implements P_StateObjectPool.I_Factory<P_StackEntryV>
+	{
+		@Override
+		public P_StackEntryV newInstance()
+		{
+			return new P_StackEntryV();
+		}
+	}
+	
+	private final P_StateObjectPool<P_StackEntryV> m_stackEntryPoolV = new P_StateObjectPool<P_StackEntryV>(new StackEntryFactoryV());
+	
+	
+	private static class StackEntryFactoryH implements P_StateObjectPool.I_Factory<P_StackEntryH>
+	{
+		@Override
+		public P_StackEntryH newInstance()
+		{
+			return new P_StackEntryH();
+		}
+	}
+	
+	private final P_StateObjectPool<P_StackEntryH> m_stackEntryPoolH = new P_StateObjectPool<P_StackEntryH>(new StackEntryFactoryH());
+	
+	
+	
+	private static class ResultFactory implements P_StateObjectPool.I_Factory<StateOperationResult>
+	{
+		@Override
+		public StateOperationResult newInstance()
+		{
+			return new StateOperationResult();
+		}
+	}
+	
+	private final P_StateObjectPool<StateOperationResult> m_resultPool = new P_StateObjectPool<StateOperationResult>(new ResultFactory());
+	private final ArrayList<StateOperationResult> m_checkedOutResults = new ArrayList<StateOperationResult>();
 	
 	public StateContext(A_State rootState, I_StateEventListener stateEventListener)
 	{
@@ -98,7 +138,7 @@ public class StateContext
 		{
 			Class<? extends A_State> state_T = action.getStateAssociation();
 			
-			A_State state = this.getEnteredState(state_T);
+			A_State state = this.getEntered(state_T);
 			
 			return state;
 		}
@@ -117,7 +157,7 @@ public class StateContext
 		
 		if( state == null )  return false;
 		
-		return state.perform(T, userData);
+		return state.performAction(T, A_BaseStateObject.createArgs(userData));
 	}
 	
 	public boolean perform(Class<? extends A_Action> T, StateArgs args)
@@ -126,7 +166,7 @@ public class StateContext
 		
 		if( state == null )  return false;
 		
-		return state.perform(T, args);
+		return state.performAction(T, args);
 	}
 	
 	public boolean isPerformable(Class<? extends A_Action> T)
@@ -153,7 +193,7 @@ public class StateContext
 		}
 	}
 	
-	public <T extends A_State> T getEnteredState(Class<? extends A_State> T)
+	public <T extends A_State> T getEntered(Class<? extends A_State> T)
 	{
 		A_State registeredState = m_stateRegistry.get(T);
 		if ( registeredState != null )
@@ -169,12 +209,56 @@ public class StateContext
 	
 	public boolean isForegrounded(Class<? extends A_State> T)
 	{
-		return getForegroundedState(T) != null;
+		return getForegrounded(T) != null;
 	}
 	
+	public boolean isForegrounded_any(Class<? extends A_State> ... stateClasses)
+	{
+		for( int i = 0; i < stateClasses.length; i++ )
+		{
+			if( isForegrounded(stateClasses[i]) )  return true;
+		}
+		
+		return false;
+	}
+	
+	public boolean isForegrounded_all(Class<? extends A_State> ... stateClasses)
+	{
+		if( stateClasses.length == 0 )  return false;
+		
+		for( int i = 0; i < stateClasses.length; i++ )
+		{
+			if( !isForegrounded(stateClasses[i]) )  return false;
+		}
+		
+		return true;
+	}
+
 	public boolean isEntered(Class<? extends A_State> T)
 	{
-		return getEnteredState(T) != null;
+		return getEntered(T) != null;
+	}
+	
+	public boolean isEntered_any(Class<? extends A_State> ... stateClasses)
+	{
+		for( int i = 0; i < stateClasses.length; i++ )
+		{
+			if( isEntered(stateClasses[i]) )  return true;
+		}
+		
+		return false;
+	}
+	
+	public boolean isEntered_all(Class<? extends A_State> ... stateClasses)
+	{
+		if( stateClasses.length == 0 )  return false;
+		
+		for( int i = 0; i < stateClasses.length; i++ )
+		{
+			if( !isEntered(stateClasses[i]) )  return false;
+		}
+		
+		return true;
 	}
 	
 	public void register(A_State state)
@@ -185,7 +269,7 @@ public class StateContext
 		state.onRegistered();
 	}
 	
-	public <T extends A_State> T getForegroundedState(Class<? extends A_State> T)
+	public <T extends A_State> T getForegrounded(Class<? extends A_State> T)
 	{
 		A_State registeredState = m_stateRegistry.get(T);
 		if ( registeredState != null )
@@ -382,6 +466,8 @@ public class StateContext
 			
 			m_processEventQueue_hasEntered = false;
 			
+			checkResultsBackIn();
+			
 			return;
 		}
 		
@@ -446,6 +532,68 @@ public class StateContext
 			m_processEventQueue_hasEntered = false;
 			
 			cleanListeners();
+			checkResultsBackIn();
 		}
+	}
+	
+	private void checkResultsBackIn()
+	{
+		for( int i = 0; i < m_checkedOutResults.size(); i++ )
+		{
+			StateOperationResult result = m_checkedOutResults.get(i);
+			result.clean();
+			m_resultPool.checkIn(result);
+		}
+		
+		m_checkedOutResults.clear();
+	}
+	
+	P_StackEntryV checkOutStackEntryV()
+	{
+		P_StackEntryV entryV = m_stackEntryPoolV.checkOut();
+		entryV.init(this);
+		
+		return entryV;
+	}
+	
+	void checkInStackEntryV(P_StackEntryV entry)
+	{
+		entry.clean();
+		m_stackEntryPoolV.checkIn(entry);
+	}
+	
+	P_StackEntryH checkOutStackEntryH()
+	{
+		return m_stackEntryPoolH.checkOut();
+	}
+	
+	P_StackEntryH checkOutStackEntryH(Class<? extends A_State> stateClass, StateArgs args)
+	{
+		P_StackEntryH entry = m_stackEntryPoolH.checkOut();
+		entry.init(stateClass, args);
+		
+		return entry;
+	}
+	
+	void checkInStackEntryH(P_StackEntryH entry)
+	{
+		entry.clean();
+		m_stackEntryPoolH.checkIn(entry);
+	}
+	
+	StateOperationResult checkOutResult(A_BaseStateObject source, boolean succeeded)
+	{
+		StateOperationResult result = m_resultPool.checkOut();
+		result.init(source, succeeded);
+		
+		m_checkedOutResults.add(result);
+		
+		return result;
+	}
+	
+	void checkInResult(StateOperationResult result)
+	{
+		result.clean();
+		m_resultPool.checkIn(result);
 	}
 }

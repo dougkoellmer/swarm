@@ -57,12 +57,12 @@ public class Action_Camera_SnapToPoint extends smA_CameraAction
 		{
 			if( breakViewingState )
 			{
-				setState(machine, State_CameraFloating.class);
+				set(machine, State_CameraFloating.class);
 			}
 		}
 		else if( !(machine.getCurrentState() instanceof State_CameraFloating) )
 		{
-			setState(machine, State_CameraFloating.class);
+			set(machine, State_CameraFloating.class);
 		}
 		
 		if( args == null )  return;

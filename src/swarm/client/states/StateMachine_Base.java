@@ -131,7 +131,7 @@ public class StateMachine_Base extends A_StateMachine implements I_TransactionRe
 			OnAccountManagerResponse.Args args= new OnAccountManagerResponse.Args(type);
 			m_state.perform(OnAccountManagerResponse.class, args);
 			
-			StateMachine_Base baseMachine = m_state.getContext().getForegroundedState(StateMachine_Base.class);
+			StateMachine_Base baseMachine = m_state.getContext().getForegrounded(StateMachine_Base.class);
 			
 			if( type == E_ResponseType.PASSWORD_CHANGE_SUCCESS )
 			{
@@ -171,7 +171,7 @@ public class StateMachine_Base extends A_StateMachine implements I_TransactionRe
 		@Override
 		public void onAuthenticationError()
 		{
-			StateMachine_Base baseController = m_state.getContext().getEnteredState(StateMachine_Base.class);
+			StateMachine_Base baseController = m_state.getContext().getEntered(StateMachine_Base.class);
 			
 			State_GenericDialog.Constructor constructor = new State_GenericDialog.Constructor
 			(
@@ -216,11 +216,11 @@ public class StateMachine_Base extends A_StateMachine implements I_TransactionRe
 		{
 			DialogData data = m_asyncDialogQueue.get(0);
 			
-			setState(this, data.m_T__extends__State_AsyncDialog, data.m_constructor);
+			set(this, data.m_T__extends__State_AsyncDialog, data.m_constructor);
 		}
 		else
 		{
-			popVer(this);
+			popV(this);
 		}
 	}
 	
@@ -238,7 +238,7 @@ public class StateMachine_Base extends A_StateMachine implements I_TransactionRe
 	{
 		if( m_asyncDialogQueue.size() == 0 )
 		{
-			pushVer(this, T, constructor);
+			pushV(this, T, constructor);
 			
 			m_asyncDialogQueue.add(null);
 		}
@@ -332,7 +332,7 @@ public class StateMachine_Base extends A_StateMachine implements I_TransactionRe
 	{
 		if( this.getCurrentState() == null )
 		{
-			setState(this, State_Initializing.class);
+			set(this, State_Initializing.class);
 		}
 	}
 	

@@ -11,7 +11,7 @@ public class State_AsyncDialog extends State_GenericDialog
 		@Override
 		public void perform(StateArgs args)
 		{
-			StateMachine_Base baseController = getContext().getForegroundedState(StateMachine_Base.class);
+			StateMachine_Base baseController = getContext().getForegrounded(StateMachine_Base.class);
 			baseController.dequeueAsyncDialog();
 		}
 	}

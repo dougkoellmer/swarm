@@ -96,7 +96,7 @@ public class ScrollNavigator implements I_StateEventListener
 			@Override
 			public void onScroll(ScrollEvent event)
 			{
-				State_ViewingCell viewingState =  m_viewContext.stateContext.getEnteredState(State_ViewingCell.class);
+				State_ViewingCell viewingState =  m_viewContext.stateContext.getEntered(State_ViewingCell.class);
 				if( viewingState != null )
 				{
 					VisualCell cell = (VisualCell)viewingState.getCell().getVisualization();
@@ -147,8 +147,8 @@ public class ScrollNavigator implements I_StateEventListener
 	
 	private void onResize_private()
 	{
-		State_ViewingCell viewingState =  m_viewContext.stateContext.getEnteredState(State_ViewingCell.class);
-		State_CameraSnapping snappingState = m_viewContext.stateContext.getEnteredState(State_CameraSnapping.class);
+		State_ViewingCell viewingState =  m_viewContext.stateContext.getEntered(State_ViewingCell.class);
+		State_CameraSnapping snappingState = m_viewContext.stateContext.getEntered(State_CameraSnapping.class);
 		
 		this.toggleScrollBars(viewingState);
 		
@@ -185,12 +185,12 @@ public class ScrollNavigator implements I_StateEventListener
 			if( viewingState == null )
 			{
 				m_args_SnapToCoord.init(coord, m_utilPoint1);
-				snappingState.getParent().perform(Action_Camera_SnapToCoordinate.class, m_args_SnapToCoord);
+				snappingState.getContext().perform(Action_Camera_SnapToCoordinate.class, m_args_SnapToCoord);
 			}
 			else
 			{
 				m_args_SnapToPoint.init(m_utilPoint1, true, false);
-				viewingState.getParent().perform(Action_Camera_SnapToPoint.class, m_args_SnapToPoint);
+				viewingState.getContext().perform(Action_Camera_SnapToPoint.class, m_args_SnapToPoint);
 			}
 			
 			//s_logger.severe(m_viewContext.appContext.cameraMngr.getCamera().getPosition()+"");
@@ -524,7 +524,7 @@ public class ScrollNavigator implements I_StateEventListener
 	
 	public void adjustTargetSnapPoint_private(GridCoordinate targetCoord, Point point_out)
 	{
-		State_ViewingCell viewingState = m_viewContext.stateContext.getEnteredState(State_ViewingCell.class);
+		State_ViewingCell viewingState = m_viewContext.stateContext.getEntered(State_ViewingCell.class);
 		if( viewingState != null )
 		{
 			if( !targetCoord.isEqualTo(viewingState.getCell().getCoordinate()) )

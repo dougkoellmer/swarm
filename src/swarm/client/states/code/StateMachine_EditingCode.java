@@ -58,7 +58,7 @@ public class StateMachine_EditingCode extends A_StateMachine implements I_StateE
 	protected void didForeground(Class<? extends A_State> revealingState, Object[] argsFromRevealingState)
 	{
 		//--- DRK > Camera controller can be null during start up...should be the only time.
-		A_StateMachine cameraController = getContext().getEnteredState(StateMachine_Camera.class);
+		A_StateMachine cameraController = getContext().getEntered(StateMachine_Camera.class);
 		if( cameraController != null )
 		{
 			pushOrPopBlocker(cameraController.getCurrentState());
@@ -76,7 +76,7 @@ public class StateMachine_EditingCode extends A_StateMachine implements I_StateE
 		{
 			if( this.getCurrentState() instanceof State_EditingCodeBlocker )
 			{
-				popVer(this, (Object) null);
+				popV(this, (Object) null);
 			}
 		}
 	}
@@ -93,21 +93,21 @@ public class StateMachine_EditingCode extends A_StateMachine implements I_StateE
 			}
 			else
 			{
-				popVer(this, ((State_EditingCodeBlocker) this.getCurrentState()).getReason());
+				popV(this, ((State_EditingCodeBlocker) this.getCurrentState()).getReason());
 			}
 		}
 		else
 		{
 			if( this.getCurrentState() == null )
 			{
-				setState(this, State_EditingCode.class);
+				set(this, State_EditingCode.class);
 			}
 			
 			if( reason != null )
 			{
 				State_EditingCodeBlocker.Constructor constructor = new State_EditingCodeBlocker.Constructor(reason);
 				
-				pushVer(this, State_EditingCodeBlocker.class, constructor);
+				pushV(this, State_EditingCodeBlocker.class, constructor);
 			}
 		}
 	}
@@ -299,15 +299,15 @@ public class StateMachine_EditingCode extends A_StateMachine implements I_StateE
 			{
 				if( event.getAction() == Action_ViewingCell_Refresh.class )
 				{
-					State_ViewingCell viewingState = getContext().getEnteredState(State_ViewingCell.class);
+					State_ViewingCell viewingState = getContext().getEntered(State_ViewingCell.class);
 					pushOrPopBlocker(viewingState);
 				}
 				else if( event.getAction() == StateMachine_Base.OnUserCleared.class )
 				{
 					if( event.getAction() == StateMachine_Base.OnUserCleared.class  )
 					{
-						State_ViewingCell viewingState = getContext().getEnteredState(State_ViewingCell.class);
-						State_EditingCode editingState = getContext().getEnteredState(State_EditingCode.class);
+						State_ViewingCell viewingState = getContext().getEntered(State_ViewingCell.class);
+						State_EditingCode editingState = getContext().getEntered(State_EditingCode.class);
 						
 						if( viewingState != null && editingState != null )
 						{
@@ -318,8 +318,8 @@ public class StateMachine_EditingCode extends A_StateMachine implements I_StateE
 				else if( event.getAction() == StateMachine_Base.OnUserPopulated.class || 
 						 event.getAction() == StateMachine_Base.OnUserCleared.class  )
 				{
-					State_ViewingCell viewingState = getContext().getEnteredState(State_ViewingCell.class);
-					State_EditingCode editingState = getContext().getEnteredState(State_EditingCode.class);
+					State_ViewingCell viewingState = getContext().getEntered(State_ViewingCell.class);
+					State_EditingCode editingState = getContext().getEntered(State_EditingCode.class);
 					
 					if( viewingState != null && editingState != null )
 					{

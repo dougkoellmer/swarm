@@ -109,7 +109,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 			@Override
 			public void onScroll()
 			{
-				State_ViewingCell viewingState =  m_viewContext.stateContext.getEnteredState(State_ViewingCell.class);
+				State_ViewingCell viewingState =  m_viewContext.stateContext.getEntered(State_ViewingCell.class);
 				if( viewingState != null )
 				{
 					A_Grid grid = m_viewContext.appContext.gridMngr.getGrid();
@@ -165,7 +165,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 	
 	private double calcScrollXOffset(A_Grid grid)
 	{
-		State_ViewingCell viewingState = m_viewContext.stateContext.getEnteredState(State_ViewingCell.class);
+		State_ViewingCell viewingState = m_viewContext.stateContext.getEntered(State_ViewingCell.class);
 		
 		if( viewingState == null )
 		{
@@ -303,8 +303,8 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 			{
 				if( event.getAction() == Action_Camera_SetViewSize.class )
 				{
-					State_ViewingCell viewingState = event.getContext().getEnteredState(State_ViewingCell.class);
-					State_CameraSnapping snappingState = event.getContext().getEnteredState(State_CameraSnapping.class);
+					State_ViewingCell viewingState = event.getContext().getEntered(State_ViewingCell.class);
+					State_CameraSnapping snappingState = event.getContext().getEntered(State_CameraSnapping.class);
 					
 					if( viewingState != null )
 					{						
@@ -323,7 +323,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 				}
 				else if( event.getAction() == Action_Camera_SnapToPoint.class )
 				{
-					State_ViewingCell viewingState = event.getContext().getEnteredState(State_ViewingCell.class);
+					State_ViewingCell viewingState = event.getContext().getEntered(State_ViewingCell.class);
 					
 					if( viewingState != null )
 					{
@@ -386,7 +386,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 		
 		double mantissa = 0;
 		
-		State_CameraFloating floatingState = m_viewContext.stateContext.getEnteredState(State_CameraFloating.class);
+		State_CameraFloating floatingState = m_viewContext.stateContext.getEntered(State_CameraFloating.class);
 		if( floatingState != null )
 		{
 			m_baseWidthProgress += floatingState.getLastTimeStep();
@@ -580,7 +580,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 		
 		double mantissa = 0;
 		
-		State_CameraFloating floatingState = m_viewContext.stateContext.getEnteredState(State_CameraFloating.class);
+		State_CameraFloating floatingState = m_viewContext.stateContext.getEntered(State_CameraFloating.class);
 		if( floatingState != null )
 		{
 			m_basePositionProgress += floatingState.getLastTimeStep();

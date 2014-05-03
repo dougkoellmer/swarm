@@ -51,7 +51,7 @@ public class StateMachine_Account extends A_StateMachine
 		
 		private void onAccountManagerDelegation()
 		{
-			StateMachine_Account accountMachine = m_state.getContext().getForegroundedState(StateMachine_Account.class);
+			StateMachine_Account accountMachine = m_state.getContext().getForegrounded(StateMachine_Account.class);
 
 			if( accountMachine != null )
 			{
@@ -91,17 +91,17 @@ public class StateMachine_Account extends A_StateMachine
 			{
 				if( accountManager.isSignedIn() )
 				{
-					setState(this, State_ManageAccount.class);
+					set(this, State_ManageAccount.class);
 				}
 				else
 				{
-					setState(this, State_SignInOrUp.class);
+					set(this, State_SignInOrUp.class);
 				}
 			}
 			
 			if( !(this.getCurrentState() instanceof State_AccountStatusPending) )
 			{
-				pushVer(this, State_AccountStatusPending.class);
+				pushV(this, State_AccountStatusPending.class);
 			}
 		}
 		else
@@ -120,7 +120,7 @@ public class StateMachine_Account extends A_StateMachine
 	
 		if( (this.getCurrentState() instanceof State_AccountStatusPending) )
 		{
-			popVer(this);
+			popV(this);
 		}
 		
 		A_State currentState = this.getCurrentState();
@@ -129,14 +129,14 @@ public class StateMachine_Account extends A_StateMachine
 		{
 			if( currentState == null || currentState instanceof State_SignInOrUp )
 			{
-				setState(this, State_ManageAccount.class);
+				set(this, State_ManageAccount.class);
 			}
 		}
 		else
 		{
 			if( currentState == null || currentState instanceof State_ManageAccount )
 			{
-				setState(this, State_SignInOrUp.class);
+				set(this, State_SignInOrUp.class);
 			}
 		}
 		
@@ -154,7 +154,7 @@ public class StateMachine_Account extends A_StateMachine
 		{
 			if( this.getCurrentState() instanceof State_AccountStatusPending )
 			{
-				popVer(this);
+				popV(this);
 			}
 		}
 	}

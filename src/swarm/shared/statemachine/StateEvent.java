@@ -114,9 +114,64 @@ public class StateEvent
 		return this.getAction();
 	}
 	
+	
 	public boolean isFor(E_StateEventType type)
 	{
 		return type == this.getType();
+	}
+	
+	public boolean isFor(Class<? extends A_BaseStateObject> stateObject, E_StateEventType ... types)
+	{
+		for( int i = 0; i < types.length; i++ )
+		{
+			if( stateObject == null )
+			{
+				if( isFor(types[i]) )  return true;
+			}
+			else
+			{
+				if( isFor(stateObject, types[i]) )  return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	public boolean isFor(E_StateEventType ... types)
+	{
+		for( int i = 0; i < types.length; i++ )
+		{
+			if( isFor(types[i]) )  return true;
+		}
+		
+		return false;
+	}
+	
+	public boolean isFor(E_StateEventType type, Class<? extends A_BaseStateObject> ... stateObjects)
+	{
+		for( int i = 0; i < stateObjects.length; i++ )
+		{
+			if( type == null )
+			{
+				if( isFor(stateObjects[i]) )  return true;
+			}
+			else
+			{
+				if( isFor(type, stateObjects[i]) )  return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	public boolean isFor(Class<? extends A_BaseStateObject> ... stateObjects)
+	{
+		for( int i = 0; i < stateObjects.length; i++ )
+		{
+			if( isFor(stateObjects[i]) )  return true;
+		}
+		
+		return false;
 	}
 	
 	public boolean isFor(Class<? extends A_BaseStateObject> stateObject)

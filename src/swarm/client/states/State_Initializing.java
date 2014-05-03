@@ -115,9 +115,9 @@ public class State_Initializing extends A_State implements I_TransactionResponse
 	{
 		if( this.isForegrounded() && m_successCount >= m_requiredSuccessCount )
 		{
-			setState(getParent(), StateContainer_Base.class);
+			set(StateContainer_Base.class);
 			
-			StateMachine_Base baseController = getContext().getEnteredState(StateMachine_Base.class);
+			StateMachine_Base baseController = getContext().getEntered(StateMachine_Base.class);
 			
 			ClientAccountManager accountManager = m_appContext.accountMngr;
 			ClientAccountManager.E_PasswordChangeTokenState resetTokenState = accountManager.getPasswordChangeTokenState();

@@ -92,7 +92,7 @@ public class VisualCellHighlight extends FlowPanel implements I_UIElement
 			return;
 		}
 
-		State_CameraSnapping snappingState = m_viewContext.stateContext.getEnteredState(State_CameraSnapping.class);
+		State_CameraSnapping snappingState = m_viewContext.stateContext.getEntered(State_CameraSnapping.class);
 		if( snappingState != null )
 		{
 			if( mouseCoord.isEqualTo(snappingState.getTargetCoord()) )
@@ -196,7 +196,7 @@ public class VisualCellHighlight extends FlowPanel implements I_UIElement
 				if( event.getAction() == Action_Camera_SetViewSize.class ||
 					event.getAction() == Action_Camera_SnapToPoint.class )
 				{
-					State_ViewingCell state = event.getContext().getEnteredState(State_ViewingCell.class);
+					State_ViewingCell state = event.getContext().getEntered(State_ViewingCell.class);
 					
 					if( state != null )
 					{

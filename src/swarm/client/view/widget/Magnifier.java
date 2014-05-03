@@ -485,7 +485,7 @@ public class Magnifier extends FlowPanel implements I_StateEventListener
 				{
 					if( event.getState() instanceof State_CameraSnapping )
 					{
-						State_CameraSnapping cameraSnapping = m_viewContext.stateContext.getEnteredState(State_CameraSnapping.class);
+						State_CameraSnapping cameraSnapping = m_viewContext.stateContext.getEntered(State_CameraSnapping.class);
 						if( cameraSnapping != null && cameraSnapping.getPreviousState() != State_ViewingCell.class )
 						{
 							//s_logger.severe(cameraSnapping.getOverallSnapProgress() + "");

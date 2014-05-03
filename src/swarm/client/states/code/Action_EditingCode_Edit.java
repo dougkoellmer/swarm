@@ -33,7 +33,7 @@ public class Action_EditingCode_Edit extends A_Action
 	{
 		String code = ((Action_EditingCode_Edit.Args) args).m_changedCode;
 		
-		State_ViewingCell viewingState = getContext().getForegroundedState(State_ViewingCell.class);
+		State_ViewingCell viewingState = getContext().getForegrounded(State_ViewingCell.class);
 		BufferCell viewedCell = viewingState.getCell();
 		
 		A_ClientUser user = m_userMngr.getUser();
@@ -44,7 +44,7 @@ public class Action_EditingCode_Edit extends A_Action
 	@Override
 	public boolean isPerformable(StateArgs args)
 	{
-		State_ViewingCell state = getContext().getForegroundedState(State_ViewingCell.class);
+		State_ViewingCell state = getContext().getForegrounded(State_ViewingCell.class);
 		
 		if( state == null )
 		{

@@ -113,14 +113,14 @@ public class StateMachine_Camera extends A_StateMachine implements I_StateEventL
 		{
 			if( currentState instanceof State_CameraSnapping )
 			{
-				setState(this, State_CameraFloating.class);
+				set(this, State_CameraFloating.class);
 				
 				//TODO: Might want to ease the camera instead of stopping it short.
 				m_appContext.cameraMngr.setTargetPosition(m_appContext.cameraMngr.getCamera().getPosition(), false, true);
 			}
 			
 			State_GettingMapping.Constructor constructor = new State_GettingMapping.Constructor(address);
-			pushVer(this, State_GettingMapping.class, constructor);
+			pushV(this, State_GettingMapping.class, constructor);
 		}
 		
 		addressManager.getCellAddressMapping(address, E_TransactionAction.MAKE_REQUEST);
@@ -143,7 +143,7 @@ public class StateMachine_Camera extends A_StateMachine implements I_StateEventL
 		else
 		{
 			State_CameraSnapping.Constructor constructor = new State_CameraSnapping.Constructor(coord, address_nullable, targetPoint);
-			setState(this, State_CameraSnapping.class, constructor);
+			set(this, State_CameraSnapping.class, constructor);
 		}
 	}
 	
@@ -153,7 +153,7 @@ public class StateMachine_Camera extends A_StateMachine implements I_StateEventL
 		{
 			if( this.isForegrounded() )
 			{
-				popVer(this);
+				popV(this);
 			}
 			else
 			{
@@ -209,7 +209,7 @@ public class StateMachine_Camera extends A_StateMachine implements I_StateEventL
 				
 				if( title != null )
 				{
-					StateMachine_Base baseController = getContext().getEnteredState(StateMachine_Base.class);
+					StateMachine_Base baseController = getContext().getEntered(StateMachine_Base.class);
 					
 					State_GenericDialog.Constructor constructor = new State_GenericDialog.Constructor(title, body);
 					baseController.queueAsyncDialog(State_AsyncDialog.class, constructor);
@@ -246,7 +246,7 @@ public class StateMachine_Camera extends A_StateMachine implements I_StateEventL
 		{
 			if( revealingState == null ) // DRK > Hmm, not sure why I put this check here, but shouldn't be harmful I guess.
 			{
-				setState(this, State_CameraFloating.class);
+				set(this, State_CameraFloating.class);
 			}
 		}
 		else if( this.getCurrentState() instanceof State_GettingMapping )

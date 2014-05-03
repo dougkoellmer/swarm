@@ -1,9 +1,9 @@
 package swarm.shared.statemachine;
 	
-	/**
-	 * ...
-	 * @author Doug Koellmer
-	 */
+/**
+ * ...
+ * @author Doug Koellmer
+ */
 public enum E_StateEventType
 {
 	DID_ENTER,

@@ -113,7 +113,7 @@ public class CodeEditor extends FlowPanel implements I_StateEventListener
 				{
 					this.toggleActiveCodeMirrorInstance((State_ViewingCell) event.getState());
 					
-					StateMachine_EditingCode editingState = event.getContext().getEnteredState(StateMachine_EditingCode.class);
+					StateMachine_EditingCode editingState = event.getContext().getEntered(StateMachine_EditingCode.class);
 					
 					if( editingState != null )
 					{
@@ -122,7 +122,7 @@ public class CodeEditor extends FlowPanel implements I_StateEventListener
 				}
 				else if( event.getState() instanceof StateMachine_EditingCode )
 				{
-					State_ViewingCell viewingState = event.getContext().getEnteredState(State_ViewingCell.class);
+					State_ViewingCell viewingState = event.getContext().getEntered(State_ViewingCell.class);
 					
 					if( viewingState != null )
 					{
@@ -158,8 +158,8 @@ public class CodeEditor extends FlowPanel implements I_StateEventListener
 				if( event.getAction() == StateMachine_Base.OnUserPopulated.class || 
 					event.getAction() == StateMachine_Base.OnUserCleared.class  )
 				{
-					State_ViewingCell viewingState = event.getContext().getEnteredState(State_ViewingCell.class);
-					State_EditingCode editingState = event.getContext().getEnteredState(State_EditingCode.class);
+					State_ViewingCell viewingState = event.getContext().getEntered(State_ViewingCell.class);
+					State_EditingCode editingState = event.getContext().getEntered(State_EditingCode.class);
 					
 					if( viewingState != null && editingState != null )
 					{

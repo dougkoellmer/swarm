@@ -23,7 +23,8 @@ public abstract class A_Action extends A_BaseStateObject
 		return false;
 	}
 	
-	public /*virtual*/ void prePerform(StateArgs args)
+	
+	public void prePerform(StateArgs args)
 	{
 		
 	}

@@ -62,7 +62,7 @@ public class StateMachine_Tabs extends A_StateMachine
 		
 		m_tabIndex = index;
 		
-		setState(this, m_tabStates.get(m_tabIndex));
+		set(this, m_tabStates.get(m_tabIndex));
 	}
 	
 	@Override

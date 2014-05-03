@@ -8,4 +8,10 @@ public abstract class A_EventAction extends A_Action
 	{
 		// do nothing
 	}
+	
+	@Override
+	public boolean isPerformableInBackground()
+	{
+		return true;
+	}
 }

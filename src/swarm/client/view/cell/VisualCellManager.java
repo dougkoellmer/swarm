@@ -169,7 +169,7 @@ public class VisualCellManager implements I_UIElement
 			cellHeightPlusPadding = grid.getCellHeight() * scaling;
 		}
 		
-		State_ViewingCell viewingState = m_viewContext.stateContext.getEnteredState(State_ViewingCell.class);
+		State_ViewingCell viewingState = m_viewContext.stateContext.getEntered(State_ViewingCell.class);
 		boolean isViewingCell = viewingState != null;
 		BufferCell viewedCell = viewingState != null ? viewingState.getCell() : null;
 		boolean use3dTransforms = m_viewContext.appContext.platformInfo.has3dTransforms();
@@ -410,7 +410,7 @@ public class VisualCellManager implements I_UIElement
 	
 	private BufferCell getCurrentBufferCell()
 	{
-		State_ViewingCell state = m_viewContext.stateContext.getEnteredState(State_ViewingCell.class);
+		State_ViewingCell state = m_viewContext.stateContext.getEntered(State_ViewingCell.class);
 		if( state != null )
 		{
 			return state.getCell();

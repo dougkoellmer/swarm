@@ -391,7 +391,7 @@ public class CellApi
 	
 	State_ViewingCell getViewingState()
 	{
-		State_ViewingCell viewingState = m_viewContext.stateContext.getEnteredState(State_ViewingCell.class);
+		State_ViewingCell viewingState = m_viewContext.stateContext.getEntered(State_ViewingCell.class);
 		
 		if( viewingState == null )
 		{
