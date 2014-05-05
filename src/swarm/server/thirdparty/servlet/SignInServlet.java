@@ -17,7 +17,6 @@ import org.json.JSONException;
 import swarm.server.account.E_Role;
 import swarm.server.account.ServerAccountManager;
 import swarm.server.account.UserSession;
-
 import swarm.server.app.A_ServerApp;
 import swarm.server.app.A_ServerJsonFactory;
 import swarm.server.app.ServerContext;
@@ -40,26 +39,11 @@ public class SignInServlet extends A_BaseServlet
 	private static final Logger s_logger = Logger.getLogger(SignInServlet.class.getName());
 	
 	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
-	{
-		doGetOrPost(req, resp, true);
-	}
-	
-	@Override
-	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
-	{
-		doGetOrPost(req, resp, false);
-	}
-	
-	private void doGetOrPost(HttpServletRequest nativeRequest, HttpServletResponse nativeResponse, boolean isGet) throws ServletException, IOException
+	protected void doGetOrPost(HttpServletRequest nativeRequest, HttpServletResponse nativeResponse, boolean isGet) throws ServletException, IOException
 	{
 		ServerContext context = A_ServerApp.getInstance().getContext();
-		
 		SessionManager sessionMngr = context.sessionMngr;
-		sessionMngr.onEnterScope();
 		ServerAccountManager accountMngr = context.accountMngr;
-		
-		((A_ServerJsonFactory)context.jsonFactory).startScope(true);
 		
 		try
 		{
@@ -124,8 +108,7 @@ public class SignInServlet extends A_BaseServlet
 		}
 		finally
 		{
-			((A_ServerJsonFactory)context.jsonFactory).endScope();
-			sessionMngr.onExitScope();
+			
 		}
 	}
 }

@@ -71,18 +71,7 @@ public class CellPreviewServlet extends A_BaseServlet
 	}
 	
 	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
-	{
-		doGetOrPost(req, resp, true);
-	}
-	
-	@Override
-	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
-	{
-		doGetOrPost(req, resp, false);
-	}
-	
-	private void doGetOrPost(HttpServletRequest nativeRequest, HttpServletResponse nativeResponse, boolean isGet) throws ServletException, IOException
+	protected void doGetOrPost(HttpServletRequest nativeRequest, HttpServletResponse nativeResponse, boolean isGet) throws ServletException, IOException
 	{
 		//TODO: Get these from somewhere else.
 		int defaultCellWidth = 512;

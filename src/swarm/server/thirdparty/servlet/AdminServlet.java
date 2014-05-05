@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONException;
 
 import swarm.server.account.E_Role;
+import swarm.server.account.ServerAccountManager;
 import swarm.server.app.A_ServerApp;
 import swarm.server.app.A_ServerJsonFactory;
 import swarm.server.app.ServerContext;
@@ -37,28 +38,15 @@ public class AdminServlet extends A_BaseServlet
 	private static final Logger s_logger = Logger.getLogger(AdminServlet.class.getName());
 	
 	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
-	{
-		doGetOrPost(req, resp, true);
-	}
-	
-	@Override
-	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
-	{
-		doGetOrPost(req, resp, false);
-	}
-	
-	private void doGetOrPost(HttpServletRequest nativeRequest, HttpServletResponse nativeResponse, boolean isGet) throws ServletException, IOException
+	protected void doGetOrPost(HttpServletRequest nativeRequest, HttpServletResponse nativeResponse, boolean isGet) throws ServletException, IOException
 	{
 		ServerContext context = A_ServerApp.getInstance().getContext();
 		
-		((A_ServerJsonFactory)context.jsonFactory).startScope(true);
 		
 		//TODO: Move this check into an abstract base class or utlity method or
 		//		something so we can have other admin servlets with same behavior.
 		if( !context.sessionMngr.isAuthorized(nativeRequest, nativeResponse, E_Role.ADMIN) )
 		{
-			((A_ServerJsonFactory)context.jsonFactory).endScope();
 
 			context.redirector.redirectToMainPage(nativeResponse);
 			

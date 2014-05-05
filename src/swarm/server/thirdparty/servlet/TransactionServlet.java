@@ -8,10 +8,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONException;
+
 
 
 
@@ -27,7 +29,7 @@ import swarm.shared.transaction.TransactionRequest;
 import swarm.shared.transaction.TransactionResponse;
 
 
-public class TransactionServlet extends A_BaseServlet
+public class TransactionServlet extends HttpServlet
 {
 	private static final Logger s_logger = Logger.getLogger(TransactionServlet.class.getName());
 	
