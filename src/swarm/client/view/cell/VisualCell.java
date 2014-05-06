@@ -216,14 +216,16 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 			
 			double retractionEasingX = m_retractionEasing - 1;
 			retractionEasingX += m_baseWidth / m_defaultWidth;
+			retractionEasingX *= easingMultiplier;
 			double mantissaX = U_View.easeMantissa(mantissa, retractionEasingX);
 
 			double retractionEasingY = m_retractionEasing - 1;
 			retractionEasingY += m_baseHeight / m_defaultHeight;
+			retractionEasingY *= easingMultiplier;
 			double mantissaY = U_View.easeMantissa(mantissa, retractionEasingY);
 			
-			retractionEasingX *= easingMultiplier;
-			retractionEasingY *= easingMultiplier;
+			
+			
 			
 //			s_logger.severe("START");
 //			s_logger.severe(m_retractionEasing + " " + retractionEasingX + " " + retractionEasingY);
