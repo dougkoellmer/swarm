@@ -8,7 +8,7 @@ public class StateEvent
 	
 	static final int UNINITIALIZED_LISTENER_INDEX = Integer.MIN_VALUE;
 	
-	private E_StateEventType m_eventType = null;
+	private E_EventType m_eventType = null;
 	A_State m_state = null;
 	A_Action m_action = null; // we keep an instance, but only ever expose the class publicly.
 	StateArgs m_actionArgs = null;
@@ -16,7 +16,7 @@ public class StateEvent
 	
 	int m_listenerIndex = UNINITIALIZED_LISTENER_INDEX;
 	
-	StateEvent(E_StateEventType eventType, A_State state)
+	StateEvent(E_EventType eventType, A_State state)
 	{
 		m_eventType = eventType;
 		m_state = state;
@@ -27,10 +27,10 @@ public class StateEvent
 		m_actionArgs = args;
 		m_state = state;
 		m_action = action;
-		m_eventType = E_StateEventType.DID_PERFORM_ACTION;
+		m_eventType = E_EventType.DID_PERFORM_ACTION;
 	}
 	
-	StateEvent(E_StateEventType eventType, A_State state, Class<? extends A_State> blockingOrRevealingState)
+	StateEvent(E_EventType eventType, A_State state, Class<? extends A_State> blockingOrRevealingState)
 	{
 		m_eventType = eventType;
 		m_state = state;
@@ -44,7 +44,7 @@ public class StateEvent
 	
 	public Class<? extends A_State> getBlockingState()
 	{
-		if( m_eventType == E_StateEventType.DID_BACKGROUND )
+		if( m_eventType == E_EventType.DID_BACKGROUND )
 		{
 			return m_blockingOrRevealingState;
 		}
@@ -56,7 +56,7 @@ public class StateEvent
 	
 	public Class<? extends A_State> getRevealingState()
 	{
-		if( m_eventType == E_StateEventType.DID_FOREGROUND )
+		if( m_eventType == E_EventType.DID_FOREGROUND )
 		{
 			return m_blockingOrRevealingState;
 		}
@@ -73,7 +73,7 @@ public class StateEvent
 	
 	public <T extends A_State> T getState()
 	{
-		return (T) (m_eventType != E_StateEventType.DID_PERFORM_ACTION ? m_state : null);
+		return (T) (m_eventType != E_EventType.DID_PERFORM_ACTION ? m_state : null);
 	}
 	
 	public StateContext getContext()
@@ -81,7 +81,7 @@ public class StateEvent
 		return m_state.getContext();
 	}
 	
-	public E_StateEventType getType()
+	public E_EventType getType()
 	{
 		return m_eventType;
 	}
@@ -97,7 +97,7 @@ public class StateEvent
 					//s_logger.info("'Performed " + m_action.getClass().getName() + "' dispatching to last listener...");
 				}
 			}
-			else if( m_eventType != E_StateEventType.DID_UPDATE )
+			else if( m_eventType != E_EventType.DID_UPDATE )
 			{
 				//s_logger.info("'" + m_eventType.toString() + " " + m_state.getClass().getName()  + "' dispatching to last listener...");
 			}
@@ -115,12 +115,12 @@ public class StateEvent
 	}
 	
 	
-	public boolean isFor(E_StateEventType type)
+	public boolean isFor(E_EventType type)
 	{
 		return type == this.getType();
 	}
 	
-	public boolean isFor(Class<? extends A_BaseStateObject> stateObject, E_StateEventType ... types)
+	public boolean isFor(Class<? extends Object> stateObject, E_EventType ... types)
 	{
 		for( int i = 0; i < types.length; i++ )
 		{
@@ -137,7 +137,7 @@ public class StateEvent
 		return false;
 	}
 	
-	public boolean isFor(E_StateEventType ... types)
+	public boolean isFor(E_EventType ... types)
 	{
 		for( int i = 0; i < types.length; i++ )
 		{
@@ -147,7 +147,7 @@ public class StateEvent
 		return false;
 	}
 	
-	public boolean isFor(E_StateEventType type, Class<? extends A_BaseStateObject> ... stateObjects)
+	public boolean isFor(E_EventType type, Class<? extends Object> ... stateObjects)
 	{
 		for( int i = 0; i < stateObjects.length; i++ )
 		{
@@ -164,7 +164,7 @@ public class StateEvent
 		return false;
 	}
 	
-	public boolean isFor(Class<? extends A_BaseStateObject> ... stateObjects)
+	public boolean isFor(Class<? extends Object> ... stateObjects)
 	{
 		for( int i = 0; i < stateObjects.length; i++ )
 		{
@@ -174,20 +174,36 @@ public class StateEvent
 		return false;
 	}
 	
-	public boolean isFor(Class<? extends A_BaseStateObject> stateObject)
+	public boolean isFor(Class<? extends Object> stateObject)
 	{
-		return stateObject == this.getStateObjectClass();
+		if( stateObject == this.getStateObjectClass() )
+		{
+			return true;
+		}
+		
+		//--- DRK > Seems off to have this here
+		if( m_actionArgs != null )
+		{
+			return m_actionArgs.getClass() == stateObject;
+		}
+		
+		return false;
 	}
 	
-	public boolean isFor(E_StateEventType type, Class<? extends A_BaseStateObject> stateObject)
+	public boolean isFor(E_EventType type, Class<? extends Object> stateObject)
 	{
 		return isFor(stateObject, type);
 	}
 	
-	public boolean isFor(Class<? extends A_BaseStateObject> stateObject, E_StateEventType type)
+	public boolean isFor(Class<? extends Object> stateObject, E_EventType type)
 	{
 		Class<? extends A_BaseStateObject> thisStateObject = this.getStateObjectClass();
 		
 		return thisStateObject == stateObject && this.getType() == type;
+	}
+	
+	public boolean isFor(Class<? extends Object> actionClass, Class<? extends StateArgs> argsClass)
+	{
+		return isFor(actionClass) && isFor(argsClass);
 	}
 }

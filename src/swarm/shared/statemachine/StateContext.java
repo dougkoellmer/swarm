@@ -48,20 +48,6 @@ public class StateContext
 	
 	private final P_StateObjectPool<P_StackEntryH> m_stackEntryPoolH = new P_StateObjectPool<P_StackEntryH>(new StackEntryFactoryH());
 	
-	
-	
-	private static class ResultFactory implements P_StateObjectPool.I_Factory<StateOperationResult>
-	{
-		@Override
-		public StateOperationResult newInstance()
-		{
-			return new StateOperationResult();
-		}
-	}
-	
-	private final P_StateObjectPool<StateOperationResult> m_resultPool = new P_StateObjectPool<StateOperationResult>(new ResultFactory());
-	private final ArrayList<StateOperationResult> m_checkedOutResults = new ArrayList<StateOperationResult>();
-	
 	public StateContext(A_State rootState, I_StateEventListener stateEventListener)
 	{
 		this(rootState, stateEventListener, null);
@@ -108,6 +94,11 @@ public class StateContext
 		m_rootState.willExit_internal();
 	}
 	
+	void register(A_Action action)
+	{
+		this.register(action, null);
+	}
+	
 	void register(A_Action action, Class<? extends A_State> association)
 	{
 		if( m_actionRegistry.containsKey(action.getClass()) )  return;
@@ -115,15 +106,30 @@ public class StateContext
 		m_actionRegistry.put(action.getClass(), action);
 		
 		action.m_context = this;
-		action.m_association = association;
+		
+		if( association != null )
+		{
+			action.m_association = association;
+		}
 	}
 	
-	A_Action getAction(Class<? extends A_Action> T)
+	A_Action getActionInstance(Class<? extends A_Action> T)
 	{
 		A_Action registeredAction = m_actionRegistry.get(T);
 	
 		if ( registeredAction != null )
 		{			
+			return registeredAction;
+		}
+		else if( m_stateFactory != null )
+		{
+			registeredAction = m_stateFactory.newAction(T);
+			
+			if( registeredAction != null )
+			{
+				this.register(registeredAction);
+			}
+			
 			return registeredAction;
 		}
 		
@@ -132,7 +138,7 @@ public class StateContext
 
 	private A_State getEnteredStateForAction(Class<? extends A_Action> T)
 	{
-		A_Action action = getAction(T);
+		A_Action action = getActionInstance(T);
 		
 		if( action != null )
 		{
@@ -283,7 +289,7 @@ public class StateContext
 		return null;
 	}
 	
-	protected A_State getInstance(Class<? extends A_State> T)
+	A_State getStateInstance(Class<? extends A_State> T)
 	{
 		A_State registeredState = m_stateRegistry.get(T);
 		if ( registeredState != null )
@@ -297,7 +303,7 @@ public class StateContext
 		}
 		else if( m_stateFactory != null )
 		{
-			registeredState = m_stateFactory.newInstance(T);
+			registeredState = m_stateFactory.newState(T);
 			
 			if( registeredState != null )
 			{
@@ -347,9 +353,9 @@ public class StateContext
 				
 				if( pastEvent.m_state == newEvent.getState() )
 				{
-					if( newEvent.getType() == E_StateEventType.DID_EXIT )
+					if( newEvent.getType() == E_EventType.DID_EXIT )
 					{
-						if( pastEvent.getType() == E_StateEventType.DID_ENTER )
+						if( pastEvent.getType() == E_EventType.DID_ENTER )
 						{
 							antiMatterExplosion = true;
 						}
@@ -358,9 +364,9 @@ public class StateContext
 							antiMatterExplosion = true;
 						}*/
 					}
-					else if( newEvent.getType() == E_StateEventType.DID_BACKGROUND )
+					else if( newEvent.getType() == E_EventType.DID_BACKGROUND )
 					{
-						if( pastEvent.getType() == E_StateEventType.DID_FOREGROUND )
+						if( pastEvent.getType() == E_EventType.DID_FOREGROUND )
 						{
 							antiMatterExplosion = true;
 						}
@@ -466,8 +472,6 @@ public class StateContext
 			
 			m_processEventQueue_hasEntered = false;
 			
-			checkResultsBackIn();
-			
 			return;
 		}
 		
@@ -532,20 +536,7 @@ public class StateContext
 			m_processEventQueue_hasEntered = false;
 			
 			cleanListeners();
-			checkResultsBackIn();
 		}
-	}
-	
-	private void checkResultsBackIn()
-	{
-		for( int i = 0; i < m_checkedOutResults.size(); i++ )
-		{
-			StateOperationResult result = m_checkedOutResults.get(i);
-			result.clean();
-			m_resultPool.checkIn(result);
-		}
-		
-		m_checkedOutResults.clear();
 	}
 	
 	P_StackEntryV checkOutStackEntryV()
@@ -579,21 +570,5 @@ public class StateContext
 	{
 		entry.clean();
 		m_stackEntryPoolH.checkIn(entry);
-	}
-	
-	StateOperationResult checkOutResult(A_BaseStateObject source, boolean succeeded)
-	{
-		StateOperationResult result = m_resultPool.checkOut();
-		result.init(source, succeeded);
-		
-		m_checkedOutResults.add(result);
-		
-		return result;
-	}
-	
-	void checkInResult(StateOperationResult result)
-	{
-		result.clean();
-		m_resultPool.checkIn(result);
 	}
 }

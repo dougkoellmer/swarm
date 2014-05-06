@@ -20,7 +20,7 @@ import swarm.client.view.U_Css;
 import swarm.client.view.U_View;
 import swarm.client.view.ViewContext;
 import swarm.shared.entities.A_Grid;
-import swarm.shared.statemachine.E_StateEventType;
+import swarm.shared.statemachine.E_EventType;
 import swarm.shared.statemachine.StateEvent;
 import swarm.shared.structs.CellAddressMapping;
 import swarm.shared.structs.CellSize;

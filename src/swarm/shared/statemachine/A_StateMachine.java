@@ -36,15 +36,15 @@ public abstract class A_StateMachine extends A_State
 		return (T) currentState;
 	}
 	
-	StateOperationResult pushV_internal(Class<? extends A_State> stateClass, StateArgs args)
+	boolean pushV_internal(Class<? extends A_State> stateClass, StateArgs args)
 	{
 		if( m_currentState == null )
 		{
-			return m_context.checkOutResult(this, false);
+			return false;
 		}
 		else
 		{
-			A_State newState = m_context.getInstance(stateClass);
+			A_State newState = m_context.getStateInstance(stateClass);
 			
 			if( !newState.isTransparent() )
 			{
@@ -58,11 +58,11 @@ public abstract class A_StateMachine extends A_State
 
 			this.enterChildState(newState, m_currentState, true, args);
 			
-			return m_context.checkOutResult(this, true);
+			return true;
 		}
 	}
 	
-	StateOperationResult popV_internal(Object[] args)
+	boolean popV_internal(Object[] args)
 	{		
 		A_State stateToPop = this.getCurrentState();
 		A_State stateBeneath = stateToPop.getStateBeneath();
@@ -71,7 +71,7 @@ public abstract class A_StateMachine extends A_State
 		
 		if( !canPop )
 		{
-			return m_context.checkOutResult(this, false);
+			return false;
 		}
 		else
 		{
@@ -88,36 +88,36 @@ public abstract class A_StateMachine extends A_State
 			{
 				m_currentState.didForeground_internal(stateToPop.getClass(), args);
 			}
-			
-			return m_context.checkOutResult(this, true);
+
+			return true;
 		}
 	}
 	
-	StateOperationResult queue_internal(Class<? extends A_State> stateClass, StateArgs args)
+	boolean queue_internal(Class<? extends A_State> stateClass, StateArgs args)
 	{
 		m_stackEntryV.queue(m_context.checkOutStackEntryH(stateClass, args));
 		
-		return m_context.checkOutResult(this, true);
+		return true;
 	}
 	
-	StateOperationResult dequeue_internal()
+	boolean dequeue_internal()
 	{
 		P_StackEntryH entry = m_stackEntryV.dequeue();
 		
 		if( entry != null )
 		{
-			StateOperationResult result = this.set_private(entry.m_stateClass, entry.m_args);
+			boolean result = this.set_private(entry.m_stateClass, entry.m_args);
 			m_context.checkInStackEntryH(entry);
 			
 			return result;
 		}
 		else
 		{
-			return m_context.checkOutResult(this, false);
+			return false;
 		}
 	}
 	
-	StateOperationResult pop_internal()
+	boolean pop_internal()
 	{
 		P_StackEntryH entry = m_stackEntryV.popH();
 		
@@ -127,18 +127,18 @@ public abstract class A_StateMachine extends A_State
 		}
 		else
 		{
-			return m_context.checkOutResult(this, false);
+			return false;
 		}
 	}
 	
-	StateOperationResult clearHistory_internal()
+	boolean clearHistory_internal()
 	{
 		m_stackEntryV.clearHistory();
 		
-		return m_context.checkOutResult(this, true);
+		return true;
 	}
 	
-	StateOperationResult go_internal(int offset)
+	boolean go_internal(int offset)
 	{
 		P_StackEntryH entry = m_stackEntryV.goH(offset);
 		
@@ -148,11 +148,11 @@ public abstract class A_StateMachine extends A_State
 		}
 		else
 		{
-			return m_context.checkOutResult(this, false);
+			return false;
 		}
 	}
 	
-	StateOperationResult push_internal(Class<? extends A_State> stateClass, StateArgs args)
+	boolean push_internal(Class<? extends A_State> stateClass, StateArgs args)
 	{
 		P_StackEntryH entry = m_context.checkOutStackEntryH(stateClass, args);
 		m_stackEntryV.push(entry);
@@ -160,20 +160,20 @@ public abstract class A_StateMachine extends A_State
 		return set_private(stateClass, args);
 	}
 	
-	StateOperationResult set_internal(Class<? extends A_State> stateClass, StateArgs args)
+	boolean set_internal(Class<? extends A_State> stateClass, StateArgs args)
 	{
 		m_stackEntryV.set(stateClass, args);
 		
 		return set_private(stateClass, args);
 	}
 	
-	private StateOperationResult set_private(Class<? extends A_State> stateClass, StateArgs args)
+	private boolean set_private(Class<? extends A_State> stateClass, StateArgs args)
 	{
 		A_State currentState = this.getCurrentState();
 		
 		if( currentState != null && currentState.getClass() == stateClass )
 		{
-			return m_context.checkOutResult(this, false);
+			return false;
 		}
 		
 		A_State stateBeneath = null;
@@ -184,11 +184,11 @@ public abstract class A_StateMachine extends A_State
 			this.exitChildState(currentState);
 		}
 		
-		A_State newState = m_context.getInstance(stateClass);
+		A_State newState = m_context.getStateInstance(stateClass);
 		
 		this.enterChildState(newState, stateBeneath, false, args);
-		
-		return m_context.checkOutResult(this, true);
+
+		return true;
 	}
 	
 	@Override

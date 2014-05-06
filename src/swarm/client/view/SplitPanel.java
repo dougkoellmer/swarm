@@ -26,7 +26,7 @@ import swarm.client.view.tooltip.ToolTipManager;
 import swarm.client.view.widget.SpriteButton;
 import swarm.shared.statemachine.A_Action;
 import swarm.shared.statemachine.A_State;
-import swarm.shared.statemachine.E_StateEventType;
+import swarm.shared.statemachine.E_EventType;
 import swarm.shared.statemachine.StateEvent;
 
 import com.google.gwt.dom.client.Document;
@@ -360,7 +360,7 @@ public class SplitPanel extends SplitLayoutPanel implements I_UIElement
 		//--- DRK > Doing this here, after forwarding event to tabpanel, so it has a chance to first attach recaptcha to DOM.
 		if( m_reloadCaptchaASAP )
 		{
-			if( event.getType() != E_StateEventType.DID_UPDATE )
+			if( event.getType() != E_EventType.DID_UPDATE )
 			{
 				if( m_viewContext.stateContext.isForegrounded(State_SignInOrUp.class) )
 				{

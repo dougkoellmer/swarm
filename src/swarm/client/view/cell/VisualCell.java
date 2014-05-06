@@ -212,7 +212,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 			double mantissa = m_baseChangeValue / m_sizeChangeTime;
 			mantissa = U_Math.clampMantissa(mantissa);
 			
-			double easingMultiplier = 1.5;
+			double easingMultiplier = 2.25;
 			
 			double retractionEasingX = m_retractionEasing - 1;
 			retractionEasingX += m_baseWidth / m_defaultWidth;

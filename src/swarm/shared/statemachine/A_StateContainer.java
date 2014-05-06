@@ -62,7 +62,7 @@ public abstract class A_StateContainer extends A_State
 			return;
 		}
 		
-		A_State newState	= m_context.getInstance(T);
+		A_State newState	= m_context.getStateInstance(T);
 		m_children.put(T, newState);
 		
 		newState.m_parent = this;

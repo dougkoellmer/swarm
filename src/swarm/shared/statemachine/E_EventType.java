@@ -4,7 +4,7 @@ package swarm.shared.statemachine;
  * ...
  * @author Doug Koellmer
  */
-public enum E_StateEventType
+public enum E_EventType
 {
 	DID_ENTER,
 	DID_FOREGROUND,
