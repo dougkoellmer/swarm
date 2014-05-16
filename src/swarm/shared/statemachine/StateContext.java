@@ -6,7 +6,7 @@ import java.util.logging.Logger;
 
 import swarm.shared.statemachine.P_StateObjectPool.I_Factory;
 
-public class StateContext
+public class StateContext extends A_StateContextProxy
 {
 	private static final Logger s_logger = Logger.getLogger(StateContext.class.getName());
 	
@@ -24,6 +24,9 @@ public class StateContext
 	private final HashMap<Class<? extends A_Action>, A_Action> m_actionRegistry = new HashMap<Class<? extends A_Action>, A_Action>();
 	private I_StateFactory m_stateFactory;
 	
+	private int m_throttleCount = 0;
+	private double m_minTimeStep = 0.0;
+	private double m_timeAggregator = 0.0;
 	
 	private static class StackEntryFactoryV implements P_StateObjectPool.I_Factory<P_StackEntryV>
 	{
@@ -69,27 +72,34 @@ public class StateContext
 		return m_rootState;
 	}
 	
-	public void didEnter()
+	public void onDidEnter()
 	{		
 		m_rootState.didEnter_internal(null);
 	}
 	
-	public void didForeground()
+	public void onDidForeground()
 	{
 		m_rootState.didForeground_internal(null, null);
 	}
 	
-	public void didUpdate(double timeStep)
+	public void onUpdate(double timeStep)
 	{
-		m_rootState.update_internal(timeStep);
+		m_timeAggregator += timeStep;
+		
+		if( m_timeAggregator >= m_minTimeStep )
+		{
+			m_rootState.update_internal(m_timeAggregator);
+			
+			m_timeAggregator = 0.0;
+		}
 	}
 	
-	public void willBackground()
+	public void onWillBackground()
 	{		
 		m_rootState.willBackground_internal(null);
 	}
 	
-	public void willExit()
+	public void onWillExit()
 	{
 		m_rootState.willExit_internal();
 	}
@@ -99,7 +109,7 @@ public class StateContext
 		this.register(action, null);
 	}
 	
-	void register(A_Action action, Class<? extends A_State> association)
+	public void register(A_Action action, Class<? extends A_State> association)
 	{
 		if( m_actionRegistry.containsKey(action.getClass()) )  return;
 		
@@ -152,20 +162,7 @@ public class StateContext
 		return null;
 	}
 	
-	public boolean perform(Class<? extends A_Action> T)
-	{
-		return perform(T, null);
-	}
-	
-	public boolean perform(Class<? extends A_Action> T, Object userData)
-	{
-		A_State state = getEnteredStateForAction(T);
-		
-		if( state == null )  return false;
-		
-		return state.performAction(T, A_BaseStateObject.createArgs(userData));
-	}
-	
+	@Override
 	public boolean perform(Class<? extends A_Action> T, StateArgs args)
 	{
 		A_State state = getEnteredStateForAction(T);
@@ -175,11 +172,7 @@ public class StateContext
 		return state.performAction(T, args);
 	}
 	
-	public boolean isPerformable(Class<? extends A_Action> T)
-	{
-		return isPerformable(T, null);
-	}
-	
+	@Override
 	public boolean isPerformable(Class<? extends A_Action> T, StateArgs args)
 	{
 		A_State state = getEnteredStateForAction(T);
@@ -199,6 +192,7 @@ public class StateContext
 		}
 	}
 	
+	@Override
 	public <T extends A_State> T getEntered(Class<? extends A_State> T)
 	{
 		A_State registeredState = m_stateRegistry.get(T);
@@ -213,67 +207,6 @@ public class StateContext
 		return null;
 	}
 	
-	public boolean isForegrounded(Class<? extends A_State> T)
-	{
-		return getForegrounded(T) != null;
-	}
-	
-	public boolean isForegrounded_any(Class<? extends A_State> ... stateClasses)
-	{
-		for( int i = 0; i < stateClasses.length; i++ )
-		{
-			if( isForegrounded(stateClasses[i]) )  return true;
-		}
-		
-		return false;
-	}
-	
-	public boolean isForegrounded_all(Class<? extends A_State> ... stateClasses)
-	{
-		if( stateClasses.length == 0 )  return false;
-		
-		for( int i = 0; i < stateClasses.length; i++ )
-		{
-			if( !isForegrounded(stateClasses[i]) )  return false;
-		}
-		
-		return true;
-	}
-
-	public boolean isEntered(Class<? extends A_State> T)
-	{
-		return getEntered(T) != null;
-	}
-	
-	public boolean isEntered_any(Class<? extends A_State> ... stateClasses)
-	{
-		for( int i = 0; i < stateClasses.length; i++ )
-		{
-			if( isEntered(stateClasses[i]) )  return true;
-		}
-		
-		return false;
-	}
-	
-	public boolean isEntered_all(Class<? extends A_State> ... stateClasses)
-	{
-		if( stateClasses.length == 0 )  return false;
-		
-		for( int i = 0; i < stateClasses.length; i++ )
-		{
-			if( !isEntered(stateClasses[i]) )  return false;
-		}
-		
-		return true;
-	}
-	
-	public void register(A_State state)
-	{
-		m_stateRegistry.put(state.getClass(), state);
-		state.m_context = this;
-		
-		state.onRegistered();
-	}
 	
 	public <T extends A_State> T getForegrounded(Class<? extends A_State> T)
 	{
@@ -288,6 +221,19 @@ public class StateContext
 		
 		return null;
 	}
+	
+	
+	
+	
+	public void register(A_State state)
+	{
+		m_stateRegistry.put(state.getClass(), state);
+		state.m_context = this;
+		
+		state.onRegistered();
+	}
+	
+	
 	
 	A_State getStateInstance(Class<? extends A_State> T)
 	{
@@ -353,9 +299,9 @@ public class StateContext
 				
 				if( pastEvent.m_state == newEvent.getState() )
 				{
-					if( newEvent.getType() == E_EventType.DID_EXIT )
+					if( newEvent.getType() == E_Event.DID_EXIT )
 					{
-						if( pastEvent.getType() == E_EventType.DID_ENTER )
+						if( pastEvent.getType() == E_Event.DID_ENTER )
 						{
 							antiMatterExplosion = true;
 						}
@@ -364,9 +310,9 @@ public class StateContext
 							antiMatterExplosion = true;
 						}*/
 					}
-					else if( newEvent.getType() == E_EventType.DID_BACKGROUND )
+					else if( newEvent.getType() == E_Event.DID_BACKGROUND )
 					{
-						if( pastEvent.getType() == E_EventType.DID_FOREGROUND )
+						if( pastEvent.getType() == E_Event.DID_FOREGROUND )
 						{
 							antiMatterExplosion = true;
 						}
@@ -570,5 +516,43 @@ public class StateContext
 	{
 		entry.clean();
 		m_stackEntryPoolH.checkIn(entry);
+	}
+
+	@Override
+	StateContext getContext_internal()
+	{
+		return this;
+	}
+	
+	public void pushUpdateThrottle(int fps)
+	{
+		double timeStep = 1.0/((double)fps);
+		
+		pushUpdateThrottle(timeStep);
+	}
+	
+	public void pushUpdateThrottle(double minTimeStep)
+	{
+		if( m_minTimeStep == 0.0 )
+		{
+			m_minTimeStep = minTimeStep;
+		}
+		else
+		{
+			m_minTimeStep = minTimeStep < m_minTimeStep ? minTimeStep : m_minTimeStep;
+		}
+		
+		m_throttleCount++;
+	}
+	
+	public void popUpdateThrottle()
+	{
+		m_throttleCount--;
+		
+		if( m_throttleCount <= 0 )
+		{
+			m_minTimeStep = 0.0;
+			m_throttleCount = 0;
+		}
 	}
 }

@@ -13,6 +13,7 @@ public abstract class A_StateMachine extends A_State
 	
 	public A_StateMachine()
 	{
+		
 	}
 	
 	public <T extends A_State> T getCurrentState()
@@ -93,6 +94,11 @@ public abstract class A_StateMachine extends A_State
 		}
 	}
 	
+	boolean removeFromQueue_internal(Class<? extends A_State> stateClass)
+	{
+		return m_stackEntryV.removeFromQueue(stateClass);
+	}
+	
 	boolean queue_internal(Class<? extends A_State> stateClass, StateArgs args)
 	{
 		m_stackEntryV.queue(m_context.checkOutStackEntryH(stateClass, args));
@@ -119,7 +125,7 @@ public abstract class A_StateMachine extends A_State
 	
 	boolean pop_internal()
 	{
-		P_StackEntryH entry = m_stackEntryV.popH();
+		P_StackEntryH entry = m_stackEntryV.pop();
 		
 		if( entry != null )
 		{
@@ -140,7 +146,7 @@ public abstract class A_StateMachine extends A_State
 	
 	boolean go_internal(int offset)
 	{
-		P_StackEntryH entry = m_stackEntryV.goH(offset);
+		P_StackEntryH entry = m_stackEntryV.go(offset);
 		
 		if( entry != null )
 		{
@@ -171,10 +177,10 @@ public abstract class A_StateMachine extends A_State
 	{
 		A_State currentState = this.getCurrentState();
 		
-		if( currentState != null && currentState.getClass() == stateClass )
-		{
-			return false;
-		}
+//		if( currentState != null && currentState.getClass() == stateClass )
+//		{
+//			return false;
+//		}
 		
 		A_State stateBeneath = null;
 		
@@ -194,9 +200,9 @@ public abstract class A_StateMachine extends A_State
 	@Override
 	void didEnter_internal(StateArgs constructor)
 	{
-		super.didEnter_internal(constructor);
-		
 		m_stackEntryV = m_context.checkOutStackEntryV();
+		
+		super.didEnter_internal(constructor);
 	}
 	
 	@Override

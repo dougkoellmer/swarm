@@ -51,7 +51,7 @@ class P_StackEntryV
 		m_queue.clear();
 	}
 	
-	P_StackEntryH goH(int offset)
+	P_StackEntryH go(int offset)
 	{
 		if( offset == 0 )  return null;
 		
@@ -72,7 +72,7 @@ class P_StackEntryV
 		}
 	}
 
-	P_StackEntryH popH()
+	P_StackEntryH pop()
 	{
 		if( m_historyIndex == 0 )  return null;
 		
@@ -108,6 +108,24 @@ class P_StackEntryV
 		existingEntry.init(stateClass, args);
 		
 		m_history.set(m_historyIndex, existingEntry);
+	}
+	
+	boolean removeFromQueue(Class<? extends A_State> stateClass)
+	{
+		boolean foundSomething = false;
+		
+		for( int i = 0; i < m_queue.size(); i++ )
+		{
+			P_StackEntryH ithEntry = m_queue.get(i);
+			
+			if( ithEntry.m_stateClass == stateClass )
+			{
+				m_queue.remove(i);
+				foundSomething = true;
+			}
+		}
+		
+		return foundSomething;
 	}
 	
 	void queue(P_StackEntryH entry)

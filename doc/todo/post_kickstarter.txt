@@ -44,8 +44,6 @@
 
 - bookmark system
 
-- try to quickly make it so split panel glass can be given resize cursor when dragging
-
 - probably give magnifier dragger a glass similar to split panel...or just use some global one maybe
 
 

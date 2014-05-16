@@ -8,7 +8,7 @@ package swarm.shared.statemachine;
  * @author Doug
  *
  */
-public class A_BaseStateObject
+public class A_BaseStateObject extends A_StateContextProxy
 {
 	StateContext m_context;
 	
@@ -17,10 +17,20 @@ public class A_BaseStateObject
 		return m_context;
 	}
 	
+	@Override StateContext getContext_internal()
+	{
+		return m_context;
+	}
+	
+	public <T extends Object> T cast()
+	{
+		return (T) this;
+	}
+	
 	boolean isLocked()
 	{
 		return false;
-	}	
+	}
 	
 	protected static void enterState(A_State container, Class<? extends A_State> T)
 	{
@@ -45,15 +55,6 @@ public class A_BaseStateObject
 	protected static void exitState(A_State container, Class<? extends A_State> T)
 	{
 		((A_StateContainer) container).exitState_internal(T);
-	}
-	
-
-	
-	
-	
-	static StateArgs createArgs(Object userData)
-	{
-		return userData != null ? new StateArgs(userData) : null;
 	}
 	
 	protected <T extends A_StateMachine> T getMachine()
@@ -362,6 +363,24 @@ public class A_BaseStateObject
 	
 	
 	
+//	
+//	protected boolean removeFromQueue(Class<? extends A_State> stateClass)
+//	{
+//		return removeFromQueue(getClosestMachine(this), stateClass);
+//	}
+//	protected boolean removeFromQueue(Class<? extends A_StateMachine> machineClass, Class<? extends A_State> stateClass)
+//	{
+//		return removeFromQueue((A_StateMachine)m_context.getEntered(machineClass), stateClass);
+//	}
+//	protected boolean removeFromQueue(A_StateMachine machine, Class<? extends A_State> stateClass)
+//	{
+//		if( isLocked() )  return false;
+//		
+//		return ((A_StateMachine) machine).removeFromQueue_internal(stateClass);
+//	}
+	
+	
+	
 	
 //	protected static int getIndexH(A_State machine)
 //	{
@@ -388,80 +407,6 @@ public class A_BaseStateObject
 //		return -1;
 //	}
 	
-	
-	
-	public boolean isPerformable(Class<? extends A_Action> T)
-	{
-		return m_context.isPerformable(T);
-	}
-	
-	public boolean isPerformable(Class<? extends A_Action> T, StateArgs args)
-	{
-		return m_context.isPerformable(T, args);
-	}
-
-	
-	protected boolean perform(Class<? extends A_Action> T)
-	{
-		return perform(T, (StateArgs)null);
-	}
-	
-	protected boolean perform(Class<? extends A_Action> T, Object userData)
-	{
-		return perform(T, createArgs(userData));
-	}
-	
-	protected boolean perform(Class<? extends A_Action> T, StateArgs args)
-	{
-		return m_context.perform(T, args);
-	}
-	
-	
-	
-	
-	
-	
-	
-	public <T extends A_State> T getForegrounded(Class<? extends A_State> T)
-	{
-		return getForegrounded(T);
-	}
-	
-	public boolean isForegrounded(Class<? extends A_State> T)
-	{
-		return isForegrounded(T);
-	}
-	
-	public boolean isForegrounded_any(Class<? extends A_State> ... stateClasses)
-	{
-		return isForegrounded_any(stateClasses);
-	}
-	
-	public boolean isForegrounded_all(Class<? extends A_State> ... stateClasses)
-	{
-		return isForegrounded_all(stateClasses);
-	}
-	
-	
-	public <T extends A_State> T getEntered(Class<? extends A_State> T)
-	{
-		return m_context.getEntered(T);
-	}
-
-	public boolean isEntered(Class<? extends A_State> stateClass)
-	{
-		return m_context.isEntered(stateClass);
-	}
-	
-	public boolean isEntered_any(Class<? extends A_State> ... stateClasses)
-	{
-		return m_context.isEntered_any(stateClasses);
-	}
-	
-	public boolean isEntered_all(Class<? extends A_State> ... stateClasses)
-	{
-		return m_context.isEntered_all(stateClasses);
-	}
 	
 	
 	

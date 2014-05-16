@@ -234,7 +234,7 @@ public abstract class A_State extends A_BaseStateObject
 		
 		m_isEntered = true;
 		
-		root.queueEvent(new StateEvent(E_EventType.DID_ENTER, this));
+		root.queueEvent(new StateEvent(E_Event.DID_ENTER, this));
 
 		this.didEnter(constructor);
 		
@@ -251,7 +251,7 @@ public abstract class A_State extends A_BaseStateObject
 		
 		StateContext context = m_context;
 		
-		context.queueEvent(new StateEvent(E_EventType.DID_FOREGROUND, this));
+		context.queueEvent(new StateEvent(E_Event.DID_FOREGROUND, this));
 		
 		this.didForeground(revealingState, args);
 		
@@ -272,7 +272,7 @@ public abstract class A_State extends A_BaseStateObject
 			m_foregroundedUpdateCount++;
 		}
 		
-		context.queueEvent(new StateEvent(E_EventType.DID_UPDATE, this));
+		context.queueEvent(new StateEvent(E_Event.DID_UPDATE, this));
 		
 		m_lastTimeStep = timeStep;
 		
@@ -287,7 +287,7 @@ public abstract class A_State extends A_BaseStateObject
 	{
 		StateContext context = m_context;
 		
-		context.queueEvent(new StateEvent(E_EventType.DID_BACKGROUND, this, blockingState));
+		context.queueEvent(new StateEvent(E_Event.DID_BACKGROUND, this, blockingState));
 		
 		m_blockingState = blockingState;
 		
@@ -305,7 +305,7 @@ public abstract class A_State extends A_BaseStateObject
 	{
 		StateContext root = m_context;
 		
-		root.queueEvent(new StateEvent(E_EventType.DID_EXIT, this));
+		root.queueEvent(new StateEvent(E_Event.DID_EXIT, this));
 
 		this.willExit();
 

@@ -47,6 +47,8 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		CHANGING_FROM_SNAP
 	};
 	
+	public static int USE_NATURAL_HEIGHT = -1;
+	
 	private static final Logger s_logger = Logger.getLogger(VisualCell.class.getName());
 	
 	//private static final String SPINNER_HTML = "<img src='/r.img/spinner.gif?v=1' />";
@@ -224,9 +226,6 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 			retractionEasingY *= easingMultiplier;
 			double mantissaY = U_View.easeMantissa(mantissa, retractionEasingY);
 			
-			
-			
-			
 //			s_logger.severe("START");
 //			s_logger.severe(m_retractionEasing + " " + retractionEasingX + " " + retractionEasingY);
 //			s_logger.severe(mantissa + " " + mantissaX + " " + mantissaY);
@@ -372,6 +371,22 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 
 		this.setScrollMode(E_ScrollMode.NOT_SCROLLING);
 		this.removeCrop();
+	}
+	
+	public int calcNaturalHeight()
+	{
+		int naturalHeight = this.getElement().getScrollHeight();
+		naturalHeight = naturalHeight < m_defaultHeight ? m_defaultHeight : naturalHeight;
+		
+		return naturalHeight;
+	}
+	
+	public int calcNaturalWidth()
+	{
+		int naturalWidth = this.getElement().getScrollWidth();
+		naturalWidth = naturalWidth < m_defaultWidth ? m_defaultWidth : naturalWidth;
+		
+		return naturalWidth;
 	}
 	
 	public void setTargetLayout(int width, int height, int xOffset, int yOffset)

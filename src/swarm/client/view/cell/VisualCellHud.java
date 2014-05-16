@@ -20,7 +20,8 @@ import swarm.client.view.U_Css;
 import swarm.client.view.U_View;
 import swarm.client.view.ViewContext;
 import swarm.shared.entities.A_Grid;
-import swarm.shared.statemachine.E_EventType;
+import swarm.shared.lang.Boolean;
+import swarm.shared.statemachine.E_Event;
 import swarm.shared.statemachine.StateEvent;
 import swarm.shared.structs.CellAddressMapping;
 import swarm.shared.structs.CellSize;
@@ -63,8 +64,12 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 	private final double m_fadeOutTime_seconds;
 	
 	private final CellAddressMapping m_utilMapping = new CellAddressMapping();
-	private final Rect m_utilRect = new Rect();
-	private final CellSize m_utilCellSize = new CellSize();
+	private final Rect m_utilRect1 = new Rect();
+	private final Rect m_utilRect2 = new Rect();
+	private final CellSize m_utilCellSize1 = new CellSize();
+	private final CellSize m_utilCellSize2 = new CellSize();
+	
+	private final Boolean m_dummyBool = new Boolean();
 	
 	private final GridCoordinate m_lastTargetCoord = new GridCoordinate();
 	
@@ -150,8 +155,8 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 		
 		if( coord_nullable != null )
 		{
-			m_viewContext.scrollNavigator.calcScrollWindowRect(coord_nullable, m_utilRect);
-			viewWidth = m_utilRect.getWidth();
+			m_viewContext.scrollNavigator.calcFocusedLayout(coord_nullable, s_utilPoint2, m_utilRect1, m_utilRect2, m_utilCellSize1, m_dummyBool, m_dummyBool);
+			viewWidth = m_utilRect1.getWidth();
 		}
 		else
 		{
@@ -437,9 +442,11 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 	private void setTargetWidth(GridCoordinate coord)
 	{
 		m_utilMapping.getCoordinate().copy(coord);
-		if( m_viewContext.appContext.cellSizeMngr.getCellSizeFromLocalSource(m_utilMapping, m_utilCellSize) )
+		
+		//TODO: Should use scroll navigator's calcLayout method to account for natural widths.
+		if( m_viewContext.appContext.cellSizeMngr.getCellSizeFromLocalSource(m_utilMapping, m_utilCellSize1) )
 		{
-			this.setTargetWidth(coord, m_utilCellSize.getWidth(), true);
+			this.setTargetWidth(coord, m_utilCellSize1.getWidth(), true);
 		}
 		else
 		{
@@ -509,12 +516,9 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 		
 		if( forTargetLayout )
 		{
-			m_utilMapping.getCoordinate().copy(targetCoord);
-			if( m_viewContext.appContext.cellSizeMngr.getCellSizeFromLocalSource(m_utilMapping, m_utilCellSize) )
-			{
-				m_viewContext.scrollNavigator.calcTargetLayout(m_utilCellSize, targetCoord, s_utilPoint2, m_utilRect);
-				point_out.add(s_utilPoint2);
-			}
+			m_viewContext.scrollNavigator.calcFocusedLayout(targetCoord, s_utilPoint2, m_utilRect1, m_utilRect2, m_utilCellSize1, m_dummyBool, m_dummyBool);
+
+			point_out.add(s_utilPoint2);
 		}
 	}
 	

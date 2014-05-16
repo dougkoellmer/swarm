@@ -332,7 +332,7 @@ public class UserManager implements I_TransactionResponseHandler, ClientAccountM
 				//--- DRK > Just dumping all we can into other local stores
 				//---		because it won't be available in user object anymore.
 				m_appContext.codeCache.cacheCell(userCell);
-				if( userCell.getFocusedCellSize().isExplicit() )
+				if( userCell.getFocusedCellSize().isExplicitOrNatural() )
 				{
 					m_utilMapping.getCoordinate().copy(coord);
 					m_appContext.cellSizeMngr.forceCache(m_utilMapping, userCell.getFocusedCellSize());

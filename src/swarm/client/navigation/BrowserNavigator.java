@@ -95,8 +95,8 @@ public class BrowserNavigator implements I_StateEventListener
 		
 		m_floatingHistoryUpdateRate = floatingHistoryUpdateRate_seconds;
 		
-		m_args_SnapToCoordinate.userData = this.getClass();
-		m_args_SnapToPoint.userData = this.getClass();
+		m_args_SnapToCoordinate.set(this.getClass());
+		m_args_SnapToPoint.set(this.getClass());
 		
 		m_historyStateListener = new HistoryStateManager.I_Listener()
 		{
@@ -581,7 +581,7 @@ public class BrowserNavigator implements I_StateEventListener
 						
 						if( args != null )
 						{
-							m_pushHistoryStateForFloating = args.userData != this.getClass();
+							m_pushHistoryStateForFloating = args.get() != this.getClass();
 							
 							if( m_receivedFloatingStateEntered )
 							{

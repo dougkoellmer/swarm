@@ -21,7 +21,7 @@ import swarm.client.view.cell.VisualCellManager;
 import swarm.client.view.dialog.DialogManager;
 import swarm.client.view.tooltip.ToolTipManager;
 import swarm.shared.statemachine.A_Action;
-import swarm.shared.statemachine.E_EventType;
+import swarm.shared.statemachine.E_Event;
 import swarm.shared.statemachine.I_StateEventListener;
 import swarm.shared.statemachine.StateContext;
 import swarm.shared.statemachine.StateEvent;
@@ -100,7 +100,7 @@ public class ViewController extends Object implements I_StateEventListener
 	
 	public void onStateEvent(StateEvent event)
 	{
-		if ( event.getType() == E_EventType.DID_ENTER )
+		if ( event.getType() == E_Event.DID_ENTER )
 		{
 			if ( event.getState() instanceof StateMachine_Base )
 			{
@@ -121,7 +121,7 @@ public class ViewController extends Object implements I_StateEventListener
 				m_viewContext.splitPanel.setInitialCameraViewport();
 			}
 		}
-		else if( event.getType() == E_EventType.DID_UPDATE )
+		else if( event.getType() == E_Event.DID_UPDATE )
 		{
 			if( event.getState() instanceof StateMachine_Base )
 			{

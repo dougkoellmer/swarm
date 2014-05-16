@@ -73,7 +73,8 @@ public class ScrollNavigator implements I_StateEventListener
 	private final Boolean m_utilBool2 = new Boolean();
 	private final Rect m_utilRect1 = new Rect();
 	private final Rect m_utilRect2 = new Rect();
-	private final CellSize m_utilCellSize = new CellSize();
+	private final CellSize m_utilCellSize1 = new CellSize();
+	private final CellSize m_utilCellSize2 = new CellSize();
 	
 	private I_ScrollListener m_scrollListener = null;
 	
@@ -88,7 +89,7 @@ public class ScrollNavigator implements I_StateEventListener
 		
 		m_scrollContainer.getElement().getStyle().setZIndex(1);
 		
-		m_args_SnapToCoord.userData = this.getClass();
+		m_args_SnapToCoord.set(this.getClass());
 		m_args_SnapToCoord.historyShouldIgnore = true;
 		
 		m_scrollContainer.addDomHandler(new ScrollHandler()
@@ -96,7 +97,7 @@ public class ScrollNavigator implements I_StateEventListener
 			@Override
 			public void onScroll(ScrollEvent event)
 			{
-				State_ViewingCell viewingState =  m_viewContext.stateContext.getEntered(State_ViewingCell.class);
+				State_ViewingCell viewingState =  m_viewContext.stateContext.get(State_ViewingCell.class);
 				if( viewingState != null )
 				{
 					VisualCell cell = (VisualCell)viewingState.getCell().getVisualization();
@@ -178,8 +179,8 @@ public class ScrollNavigator implements I_StateEventListener
 			
 			U_CameraViewport.calcConstrainedCameraPoint(grid, coord, m_utilPoint1, viewWidth, viewHeight, cellHudHeight, m_utilPoint1);
 			
+			//TODO: This series calls calcLayout twice.
 			this.adjustTargetSnapPoint_private(coord, m_utilPoint1);
-			
 			this.setTargetLayout(coord);
 			
 			if( viewingState == null )
@@ -345,7 +346,7 @@ public class ScrollNavigator implements I_StateEventListener
 			//Point centerPoint = m_utilPoint1;
 			//U_CameraViewport.calcViewWindowCenter(grid, viewingState_nullable.getCell().getCoordinate(), m_cellHudHeight, centerPoint);
 			
-			this.calcWindowLayout(targetCoord, m_utilRect1, m_utilRect2, m_utilBool1, m_utilBool2);
+			this.calcFocusedLayout(targetCoord, m_utilPoint1, m_utilRect1, m_utilRect2, m_utilCellSize1, m_utilBool1, m_utilBool2);
 	
 			if( m_utilBool1.value )
 			{
@@ -438,59 +439,6 @@ public class ScrollNavigator implements I_StateEventListener
 		}
 	}
 	
-	private void calcCellSizeRequirement(GridCoordinate coord, Rect rect_out)
-	{
-		A_Grid grid = m_viewContext.appContext.gridMngr.getGrid();
-		CellSizeManager cellSizeMngr = m_viewContext.appContext.cellSizeMngr;
-		m_utilMapping.getCoordinate().copy(coord);
-		
-		if( cellSizeMngr.getCellSizeFromLocalSource(m_utilMapping, m_utilCellSize) )
-		{
-			rect_out.set(m_utilCellSize.getWidth(), m_utilCellSize.getHeight());
-		}
-		else
-		{
-			rect_out.set(grid.getCellWidth(), grid.getCellHeight());
-		}
-	}
-	
-	public void calcScrollWindowRect(GridCoordinate coord, Rect rect_out)
-	{
-		this.calcWindowLayout(coord, rect_out, m_utilRect2, m_utilBool1, m_utilBool2);
-	}
-	
-	private void calcWindowLayout(GridCoordinate coord, Rect window_out, Rect cell_out, Boolean widthSmaller_out, Boolean heightSmaller_out)
-	{
-		A_Grid grid = this.m_viewContext.appContext.gridMngr.getGrid();
-		
-		this.calcCellSizeRequirement(coord, cell_out);
-		double cellWidthReq = U_CameraViewport.calcCellWidthRequirement(grid, cell_out.getWidth());
-		double cellHeightReq = U_CameraViewport.calcCellHeightRequirement(grid, cell_out.getHeight(), m_cellHudHeight);
-		cell_out.set(cellWidthReq, cellHeightReq);
-		
-		window_out.set(this.getWindowWidthSansScroll(), this.getWindowHeightSansScroll());
-
-		widthSmaller_out.value = false;
-		heightSmaller_out.value = false;
-		
-		if( window_out.getWidth() < cellWidthReq )
-		{
-			window_out.incHeight(-m_scrollBarWidthDiv2*2);
-			widthSmaller_out.value = true;
-		}
-
-		if( window_out.getHeight() < cellHeightReq )
-		{
-			window_out.incWidth(-m_scrollBarWidthDiv2*2);
-			heightSmaller_out.value = true;
-		}
-		
-		if( !widthSmaller_out.value && window_out.getWidth() < cellWidthReq )
-		{
-			window_out.incHeight(-m_scrollBarWidthDiv2*2);			
-			widthSmaller_out.value = true;
-		}
-	}
 	
 	public boolean isScrollingX()
 	{
@@ -517,7 +465,7 @@ public class ScrollNavigator implements I_StateEventListener
 	
 	public void adjustTargetSnapPoint(Action_Camera_SnapToCoordinate.Args args)
 	{
-		if( args.userData == this.getClass() )   return;
+		if( args.get() == this.getClass() )   return;
 		
 		this.adjustTargetSnapPoint_private(args.getTargetCoordinate(), args.getTargetPoint());
 	}
@@ -535,7 +483,7 @@ public class ScrollNavigator implements I_StateEventListener
 		
 		A_Grid grid = this.m_viewContext.appContext.gridMngr.getGrid();
 		
-		this.calcWindowLayout(targetCoord, m_utilRect1, m_utilRect2, m_utilBool1, m_utilBool2);
+		this.calcFocusedLayout(targetCoord, m_utilPoint1, m_utilRect1, m_utilRect2, m_utilCellSize1, m_utilBool1, m_utilBool2);
 		
 		double newWindowWidth = m_utilRect1.getWidth();
 		double newWindowHeight = m_utilRect1.getHeight();
@@ -705,15 +653,67 @@ public class ScrollNavigator implements I_StateEventListener
 		}
 	}
 	
-	public void calcTargetLayout(CellSize cellSize, GridCoordinate targetCoord, Point topLeftOffset_out, Rect size_out)
+	public void setTargetLayout(VisualCell visualCell)
 	{
-		this.calcScrollWindowRect(targetCoord, m_utilRect1);
+		BufferCell bufferCell = visualCell.getBufferCell();
 		
-		this.calcTargetLayout(cellSize, m_utilRect1, topLeftOffset_out, size_out);
-		//s_logger.severe(topLeftOffset_out + " " + size_out);
+		this.calcFocusedLayout(bufferCell.getCoordinate(), m_utilPoint2, m_utilRect1, m_utilRect2, m_utilCellSize2, m_utilBool1, m_utilBool2);
+		
+		m_utilPoint2.incX(-this.getScrollX());
+		m_utilPoint2.incY(-this.getScrollY());
+		
+		int height = m_utilCellSize2.getHeight();
+		height = height == CellSize.NATURAL_DIMENSION ? VisualCell.USE_NATURAL_HEIGHT : height;
+		
+		visualCell.setTargetLayout(m_utilCellSize2.getWidth(), height, (int)m_utilPoint2.getX(), (int)m_utilPoint2.getY());
 	}
 	
-	private void calcTargetLayout(CellSize cellSize, Rect windowSize, Point topLeftOffset_out, Rect size_out)
+	
+	
+	private void calcCellSize(VisualCell visualCell, CellSize size_out)
+	{
+		BufferCell bufferCell = visualCell.getBufferCell();
+		CellSize cellSize = bufferCell.getFocusedCellSize();
+		
+		size_out.copy(cellSize);
+		
+		int width = cellSize.getWidth();
+		width = width == CellSize.NATURAL_DIMENSION ? visualCell.calcNaturalWidth() : width;
+		
+		int height = cellSize.getHeight();
+		height = height == CellSize.NATURAL_DIMENSION ? visualCell.calcNaturalHeight() : height;
+		
+		size_out.setExplicit(width, height);
+	}	
+	
+	private void calcCellSize(GridCoordinate coord, CellSize size_out)
+	{
+		A_Grid grid = m_viewContext.appContext.gridMngr.getGrid();
+		
+		CellBufferManager cellManager = m_viewContext.appContext.cellBufferMngr;
+		CellBuffer cellBuffer = cellManager.getDisplayBuffer();
+		if( cellBuffer.isInBoundsAbsolute(coord) )
+		{
+			BufferCell bufferCell = cellBuffer.getCellAtAbsoluteCoord(coord);
+			VisualCell visualCell = (VisualCell) bufferCell.getVisualization();
+			
+			calcCellSize(visualCell, size_out);
+			
+			return;
+		}
+		else
+		{
+			m_utilMapping.getCoordinate().copy(coord);
+			if( m_viewContext.appContext.cellSizeMngr.getCellSizeFromLocalSource(m_utilMapping, size_out) )
+			{
+				return;
+			}
+		}
+		
+		size_out.setExplicit(grid.getCellWidth(), grid.getCellHeight());
+	}
+	
+	private void calcTopLeftOffset(CellSize cellSize, Rect windowSize, Point topLeftOffset_out)
 	{
 		A_Grid grid = m_viewContext.appContext.gridMngr.getGrid();
 		double defaultWidthReq = U_CameraViewport.calcCellWidthRequirement(grid);
@@ -734,19 +734,40 @@ public class ScrollNavigator implements I_StateEventListener
 		int yOffset = (int) -Math.min(topHeight, roomToTheTop);
 		
 		topLeftOffset_out.set(xOffset, yOffset, 0);
-		size_out.set(targetWidth, targetHeight);
 	}
 	
-	public void setTargetLayout(VisualCell visualCell)
+	public void calcFocusedLayout(GridCoordinate coord, Point topLeftOffset_out, Rect window_out, Rect totalCellSize_out, CellSize cellSize_out, Boolean widthSmaller_out, Boolean heightSmaller_out)
 	{
-		BufferCell bufferCell = visualCell.getBufferCell();
+		A_Grid grid = this.m_viewContext.appContext.gridMngr.getGrid();
+
+		this.calcCellSize(coord, cellSize_out);
+		double totalCellWidthReq = U_CameraViewport.calcCellWidthRequirement(grid, cellSize_out.getWidth());
+		double totalCellHeightReq = U_CameraViewport.calcCellHeightRequirement(grid, cellSize_out.getHeight(), m_cellHudHeight);
+		totalCellSize_out.set(totalCellWidthReq, totalCellHeightReq);
 		
-		if( !bufferCell.getFocusedCellSize().isExplicit() )  return;
+		window_out.set(this.getWindowWidthSansScroll(), this.getWindowHeightSansScroll());
 		
-		this.calcTargetLayout(bufferCell.getFocusedCellSize(), bufferCell.getCoordinate(), m_utilPoint2, m_utilRect1);
-		m_utilPoint2.incX(-this.getScrollX());
-		m_utilPoint2.incY(-this.getScrollY());
+		this.calcTopLeftOffset(cellSize_out, window_out, topLeftOffset_out);
+
+		widthSmaller_out.value = false;
+		heightSmaller_out.value = false;
 		
-		visualCell.setTargetLayout((int)m_utilRect1.getWidth(), (int)m_utilRect1.getHeight(), (int)m_utilPoint2.getX(), (int)m_utilPoint2.getY());
+		if( window_out.getWidth() < totalCellWidthReq )
+		{
+			window_out.incHeight(-m_scrollBarWidthDiv2*2);
+			widthSmaller_out.value = true;
+		}
+
+		if( window_out.getHeight() < totalCellHeightReq )
+		{
+			window_out.incWidth(-m_scrollBarWidthDiv2*2);
+			heightSmaller_out.value = true;
+		}
+		
+		if( !widthSmaller_out.value && window_out.getWidth() < totalCellWidthReq )
+		{
+			window_out.incHeight(-m_scrollBarWidthDiv2*2);			
+			widthSmaller_out.value = true;
+		}
 	}
 }

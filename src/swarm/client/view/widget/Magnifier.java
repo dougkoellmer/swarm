@@ -137,7 +137,7 @@ public class Magnifier extends FlowPanel implements I_StateEventListener
 		toolTipper.addTip(m_zoomOut, new ToolTipConfig(E_ToolTipType.MOUSE_OVER, "Zoom Out"));
 		toolTipper.addTip(m_dragger, new ToolTipConfig(E_ToolTipType.MOUSE_OVER, "Drag'n'Zoom"));
 		
-		m_args_SetCameraTarget.userData = Magnifier.class;
+		m_args_SetCameraTarget.set(Magnifier.class);
 		
 		this.add(innerContainer);
 		
@@ -515,7 +515,7 @@ public class Magnifier extends FlowPanel implements I_StateEventListener
 				{
 					if( event.getActionArgs() != null )
 					{
-						if( event.getActionArgs().userData != Magnifier.class )
+						if( event.getActionArgs().get() != Magnifier.class )
 						{
 							m_underThisControl = false;
 							

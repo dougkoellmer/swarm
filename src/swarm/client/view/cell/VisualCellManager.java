@@ -161,7 +161,7 @@ public class VisualCellManager implements I_UIElement
 		else
 		{
 			//--- DRK > We have to fudge the scaling here so that thick artifact lines don't appear between the meta-cell images at some zoom levels.
-			//---		Basically just rounding things to the nearest pixel so that the browser renderer doesn't just decide on its own how it should look at sub-pixels.
+			//---		Basically just rounding things to the nearest pixel so that the browser doesn't just decide on its own how it should look at sub-pixels.
 			cellWidthPlusPadding = (grid.getCellWidth()) * scaling;
 			cellWidthPlusPadding = Math.round(cellWidthPlusPadding);
 			scaling = cellWidthPlusPadding / grid.getCellWidth();
@@ -216,7 +216,7 @@ public class VisualCellManager implements I_UIElement
 					//---		on window resizes and only resizes. For some reason the scroll has to
 					//---		be included here...it's not apparent why, but resetting the translation
 					//---		removes the window's scroll. Happens for all browsers, so not a "bug",
-					//---		but requires a workaround as if it were a bug.
+					//---		but requires this "workaround" kind of as if it were a bug.
 					offsetX += ((double)ithVisualCell.getStartingXOffset())*scaling;
 					offsetY += ((double)ithVisualCell.getStartingYOffset())*scaling;
 					
@@ -234,9 +234,10 @@ public class VisualCellManager implements I_UIElement
 					if( ithBufferCell != viewedCell )
 					{
 						//--- DRK > Need to crop the cell because it has a fixed position and will
-						//---		appear under the scroll bar but still have mouse focus through
+						//---		appear under the scroll bar but still capture the mouse through
 						//---		the scrollbar...happens on all browsers, so I guess not a "bug" per se
-						//---		but still needs this sloppy workaround.
+						//---		but still needs this sloppy workaround. IE will in fact show the cell
+						//---		over the scroll bar...so at least it's more honest than other browsers.
 						ithVisualCell.crop((int)translateX, (int)translateY, windowWidth, windowHeight);
 						
 						//--- DRK > In a way we only should need to do this once when target cell becomes focused,

@@ -7,5 +7,5 @@ package swarm.shared.statemachine;
  */
 public interface I_StateEventListener 
 {
-	void onStateEvent(StateEvent event);
+	void onStateEvent(StateEvent e);
 }

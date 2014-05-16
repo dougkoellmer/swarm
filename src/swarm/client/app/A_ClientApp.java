@@ -371,8 +371,8 @@ public class A_ClientApp extends A_App implements I_TimeSource
 	
 	protected void stage_gunshotSound()
 	{
-		m_stateContext.didEnter();
-		m_stateContext.didForeground();
+		m_stateContext.onDidEnter();
+		m_stateContext.onDidForeground();
 		
 		m_appContext.txnMngr.flushSyncResponses();
 	}
@@ -413,7 +413,7 @@ public class A_ClientApp extends A_App implements I_TimeSource
 	public void update()
 	{
 		double currentTime = U_Time.getSeconds();
-		m_stateContext.didUpdate(currentTime - m_lastTime);
+		m_stateContext.onUpdate(currentTime - m_lastTime);
 		m_lastTime = currentTime;
 
 		m_appContext.txnMngr.flushSyncResponses();

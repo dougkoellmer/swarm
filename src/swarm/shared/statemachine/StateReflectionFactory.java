@@ -59,8 +59,10 @@ public class StateReflectionFactory implements I_StateFactory
 				 actionClassName = "";
 				 for( int i = 0; i < actionClassName_split.length; i++ )
 				 {
-					 actionClassName += actionClassName_split[i];
+					 actionClassName += actionClassName_split[i] + (i < actionClassName_split.length-1 ? "_" : "");
 				 }
+				 
+				 actionClassName = actionClassName.replace("Event", "Action");
 				 
 				 action.m_association = tryToGetState(actionClassName, "State");
 				 

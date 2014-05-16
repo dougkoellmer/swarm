@@ -12,6 +12,7 @@ public class CellSize implements I_ReadsJson, I_WritesJson
 	public static final int DEFAULT_DIMENSION = -1;
 	public static final int INVALID_DIMENSION = -2;
 	public static final int PENDING_DIMENSION = -3;
+	public static final int NATURAL_DIMENSION = -4;
 	
 	protected int m_width = DEFAULT_DIMENSION;
 	protected int m_height = DEFAULT_DIMENSION;
@@ -62,6 +63,12 @@ public class CellSize implements I_ReadsJson, I_WritesJson
 		return m_width >= 0 && m_height >= 0;
 	}
 	
+	public boolean isExplicitOrNatural()
+	{
+		return m_width >= 0 || m_width == NATURAL_DIMENSION &&
+				m_height >= 0 || m_height == NATURAL_DIMENSION;
+	}
+	
 	public boolean isPartiallyExplicit()
 	{
 		return m_width >= 0 || m_height >= 0;
@@ -85,6 +92,12 @@ public class CellSize implements I_ReadsJson, I_WritesJson
 	public void setToDefaults()
 	{
 		m_width = m_height = DEFAULT_DIMENSION;
+	}
+	
+	public void setExplicit(int width, int height)
+	{
+		m_width = width;
+		m_height = height;
 	}
 	
 	public void setToDefaultsIfMatches(int explicitDefaultWidth, int explicitDefaultHeight)
