@@ -5,7 +5,6 @@ public abstract class A_StateContextProxy
 	abstract StateContext getContext_internal();
 	
 	
-	
 	static StateArgs createArgs(Object ... userData)
 	{
 		return userData != null ? new StateArgs(userData) : null;
@@ -46,6 +45,11 @@ public abstract class A_StateContextProxy
 	}
 	
 	public boolean perform(Class<? extends A_Action> T, Object userData)
+	{
+		return this.perform(T, createArgs(userData));
+	}
+	
+	public boolean perform(Class<? extends A_Action> T, Object ... userData)
 	{
 		return this.perform(T, createArgs(userData));
 	}

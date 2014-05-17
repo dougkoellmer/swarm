@@ -39,7 +39,7 @@ public class StateArgs
 		this.userData[index] = userData_in;
 	}
 	
-	public <T extends StateArgs> T cast()
+	public <T extends Object> T cast()
 	{
 		return (T) this;
 	}
