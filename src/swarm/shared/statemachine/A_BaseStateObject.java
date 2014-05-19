@@ -102,9 +102,13 @@ public class A_BaseStateObject extends A_StateContextProxy
 	
 	protected boolean pushV(Class<? extends A_State> stateClass)
 	{
-		return pushV(stateClass, (StateArgs) null);
+		return pushV(stateClass, createArgs((Object)null));
 	}
 	protected boolean pushV(Class<? extends A_State> stateClass, Object userData)
+	{
+		return pushV(stateClass, createArgs(userData));
+	}
+	protected boolean pushV(Class<? extends A_State> stateClass, Object ... userData)
 	{
 		return pushV(stateClass, createArgs(userData));
 	}
@@ -121,6 +125,10 @@ public class A_BaseStateObject extends A_StateContextProxy
 	{
 		return pushV((A_StateMachine)m_context.getEntered(machine), stateClass, createArgs(userData));
 	}
+	protected boolean pushV(Class<? extends A_StateMachine> machine, Class<? extends A_State> stateClass, Object ... userData)
+	{
+		return pushV((A_StateMachine)m_context.getEntered(machine), stateClass, createArgs(userData));
+	}
 	protected boolean pushV(Class<? extends A_StateMachine> machine, Class<? extends A_State> stateClass, StateArgs constructor_nullable)
 	{
 		return pushV((A_StateMachine)m_context.getEntered(machine), stateClass, constructor_nullable);
@@ -128,9 +136,13 @@ public class A_BaseStateObject extends A_StateContextProxy
 	
 	protected boolean pushV(A_StateMachine machine, Class<? extends A_State> T)
 	{
-		return pushV(machine, T, (StateArgs) null);
+		return pushV(machine, T, createArgs((Object)null));
 	}
 	protected boolean pushV(A_StateMachine machine, Class<? extends A_State> T, Object userData)
+	{
+		return pushV(machine, T, createArgs(userData));
+	}
+	protected boolean pushV(A_StateMachine machine, Class<? extends A_State> T, Object ... userData)
 	{
 		return pushV(machine, T, createArgs(userData));
 	}
@@ -163,9 +175,13 @@ public class A_BaseStateObject extends A_StateContextProxy
 	
 	protected boolean push(Class<? extends A_State> stateClass)
 	{
-		return push(stateClass, (StateArgs) null);
+		return push(stateClass, createArgs((Object)null));
 	}
 	protected boolean push(Class<? extends A_State> stateClass, Object userData)
+	{
+		return push(stateClass, createArgs(userData));
+	}
+	protected boolean push(Class<? extends A_State> stateClass, Object ... userData)
 	{
 		return push(stateClass, createArgs(userData));
 	}
@@ -176,9 +192,13 @@ public class A_BaseStateObject extends A_StateContextProxy
 	
 	protected boolean push(Class<? extends A_StateMachine> machine, Class<? extends A_State> stateClass)
 	{
-		return push((A_StateMachine)m_context.getEntered(machine), stateClass, null);
+		return push((A_StateMachine)m_context.getEntered(machine), stateClass, createArgs((Object)null));
 	}
 	protected boolean push(Class<? extends A_StateMachine> machine, Class<? extends A_State> stateClass, Object userData)
+	{
+		return push((A_StateMachine)m_context.getEntered(machine), stateClass, createArgs(userData));
+	}
+	protected boolean push(Class<? extends A_StateMachine> machine, Class<? extends A_State> stateClass, Object ... userData)
 	{
 		return push((A_StateMachine)m_context.getEntered(machine), stateClass, createArgs(userData));
 	}
@@ -189,9 +209,13 @@ public class A_BaseStateObject extends A_StateContextProxy
 	
 	protected boolean push(A_StateMachine machine, Class<? extends A_State> stateClass)
 	{
-		return push(machine, stateClass, null);
+		return push(machine, stateClass, createArgs((Object)null));
 	}
 	protected boolean push(A_StateMachine machine, Class<? extends A_State> stateClass, Object userData)
+	{
+		return push(machine, stateClass, createArgs(userData));
+	}
+	protected boolean push(A_StateMachine machine, Class<? extends A_State> stateClass, Object ... userData)
 	{
 		return push(machine, stateClass, createArgs(userData));
 	}
@@ -257,9 +281,13 @@ public class A_BaseStateObject extends A_StateContextProxy
 	
 	protected boolean set(Class<? extends A_State> stateClass)
 	{
-		return set(stateClass, (StateArgs)null);
+		return set(stateClass, createArgs((Object)null));
 	}
 	protected boolean set(Class<? extends A_State> stateClass, Object userData)
+	{
+		return set(stateClass, createArgs(userData));
+	}
+	protected boolean set(Class<? extends A_State> stateClass, Object ... userData)
 	{
 		return set(stateClass, createArgs(userData));
 	}
@@ -270,9 +298,13 @@ public class A_BaseStateObject extends A_StateContextProxy
 	
 	protected boolean set(Class<? extends A_StateMachine> machineClass, Class<? extends A_State> stateClass)
 	{
-		return set(machineClass, stateClass, (StateArgs) null);
+		return set(machineClass, stateClass, createArgs((Object)null));
 	}
 	protected boolean set(Class<? extends A_StateMachine> machineClass, Class<? extends A_State> stateClass, Object userData)
+	{
+		return set(machineClass, stateClass, createArgs(userData));
+	}
+	protected boolean set(Class<? extends A_StateMachine> machineClass, Class<? extends A_State> stateClass, Object ... userData)
 	{
 		return set(machineClass, stateClass, createArgs(userData));
 	}
@@ -283,9 +315,13 @@ public class A_BaseStateObject extends A_StateContextProxy
 	
 	protected boolean set(A_StateMachine machine, Class<? extends A_State> stateClass)
 	{
-		return set(machine, stateClass, (StateArgs) null);
+		return set(machine, stateClass, createArgs((Object)null));
 	}
 	protected boolean set(A_StateMachine machine, Class<? extends A_State> stateClass, Object userData)
+	{
+		return set(machine, stateClass, createArgs(userData));
+	}
+	protected boolean set(A_StateMachine machine, Class<? extends A_State> stateClass, Object ... userData)
 	{
 		return set(machine, stateClass, createArgs(userData));
 	}
@@ -309,6 +345,10 @@ public class A_BaseStateObject extends A_StateContextProxy
 	{
 		return queue(stateClass, createArgs(userData));
 	}
+	protected boolean queue(Class<? extends A_State> stateClass, Object ... userData)
+	{
+		return queue(stateClass, createArgs(userData));
+	}
 	protected boolean queue(Class<? extends A_State> stateClass, StateArgs constructor_nullable)
 	{
 		return queue(getClosestMachine(this), stateClass, constructor_nullable);
@@ -322,6 +362,10 @@ public class A_BaseStateObject extends A_StateContextProxy
 	{
 		return set(machineClass, stateClass, createArgs(userData));
 	}
+	protected boolean queue(Class<? extends A_StateMachine> machineClass, Class<? extends A_State> stateClass, Object ... userData)
+	{
+		return set(machineClass, stateClass, createArgs(userData));
+	}
 	protected boolean queue(Class<? extends A_StateMachine> machineClass, Class<? extends A_State> stateClass, StateArgs constructor_nullable)
 	{
 		return queue((A_StateMachine)m_context.getEntered(machineClass), stateClass, constructor_nullable);
@@ -332,6 +376,10 @@ public class A_BaseStateObject extends A_StateContextProxy
 		return queue(machine, stateClass, (StateArgs) null);
 	}
 	protected boolean queue(A_StateMachine machine, Class<? extends A_State> stateClass, Object userData)
+	{
+		return queue(machine, stateClass, createArgs(userData));
+	}
+	protected boolean queue(A_StateMachine machine, Class<? extends A_State> stateClass, Object ... userData)
 	{
 		return queue(machine, stateClass, createArgs(userData));
 	}

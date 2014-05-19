@@ -90,7 +90,7 @@ class P_StackEntryV
 	
 	void push(P_StackEntryH entry)
 	{
-		m_queue.add(entry);
+		m_history.add(entry);
 		m_historyIndex++;
 	}
 	
