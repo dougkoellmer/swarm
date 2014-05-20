@@ -57,9 +57,9 @@ public class StateReflectionFactory implements I_StateFactory
 				 String actionClassName = actionClass.getName();
 				 String[] actionClassName_split = actionClassName.split("_");
 				 actionClassName = "";
-				 for( int i = 0; i < actionClassName_split.length; i++ )
+				 for( int i = 0; i < actionClassName_split.length-1; i++ )
 				 {
-					 actionClassName += actionClassName_split[i] + (i < actionClassName_split.length-1 ? "_" : "");
+					 actionClassName += actionClassName_split[i] + (i < actionClassName_split.length-2 ? "_" : "");
 				 }
 				 
 				 actionClassName = actionClassName.replace("Event", "Action");

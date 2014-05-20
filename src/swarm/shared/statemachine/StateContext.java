@@ -110,9 +110,7 @@ public class StateContext extends A_StateContextProxy
 	}
 	
 	public void register(A_Action action, Class<? extends A_State> association)
-	{
-		if( m_actionRegistry.containsKey(action.getClass()) )  return;
-		
+	{		
 		m_actionRegistry.put(action.getClass(), action);
 		
 		action.m_context = this;
