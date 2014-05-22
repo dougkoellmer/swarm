@@ -234,7 +234,7 @@ public class A_BaseStateObject extends A_StateContextProxy
 	}
 	protected boolean pop(Class<? extends A_StateMachine> machineClass)
 	{
-		return pop(m_context.getEntered(machineClass));
+		return pop((A_StateMachine)m_context.getEntered(machineClass));
 	}
 	protected boolean pop(A_State machine)
 	{

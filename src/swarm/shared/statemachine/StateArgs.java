@@ -68,14 +68,10 @@ public class StateArgs
 		return false;
 	}
 	
-	public boolean equals(StateArgs args)
+	public boolean equals(Object ... values)
 	{
-		if( args == null )  return false;
-		
-		if( args.values == null && this.values == null )  return true;
-
 		Object[] values_this = this.values != null ? this.values : DUMMY_VALUES;
-		Object[] values_that = args.values != null ? args.values : DUMMY_VALUES;
+		Object[] values_that = values != null ? values : DUMMY_VALUES;
 		int max = values_this.length > values_that.length ? values_this.length : values_that.length;
 		
 		for( int i = 0; i < max; i++ )
@@ -97,5 +93,14 @@ public class StateArgs
 		}
 		
 		return true;
+	}
+	
+	public boolean equals(StateArgs args)
+	{
+		if( args == null )  return false;
+		
+		if( args.values == null && this.values == null )  return true;
+
+		return equals(args.values);
 	}
 }

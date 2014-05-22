@@ -23,6 +23,7 @@ public abstract class A_State extends A_BaseStateObject
 	//--- DRK > Tree/family relationships.
 	A_State m_parent = null;
 	A_State m_stateBeneath = null;
+	private StateArgs m_args = null;
 	Class<? extends A_State> m_previousState = null;
 	Class<? extends A_State> m_blockingState = null;
 	private Class<? extends A_Action> m_lastActionPerformed = null;
@@ -41,6 +42,12 @@ public abstract class A_State extends A_BaseStateObject
 		m_foregroundedTimeInState = 0.0;
 		m_isForegrounded = false;
 		m_isEntered = false;
+		m_args = null;
+	}
+	
+	protected StateArgs getArgs()
+	{
+		return m_args;
 	}
 	
 	void onRegistered()
@@ -221,7 +228,7 @@ public abstract class A_State extends A_BaseStateObject
 		return isPerformable;
 	}
 	
-	void didEnter_internal(StateArgs constructor)
+	void didEnter_internal(StateArgs args)
 	{
 		StateContext root = m_context;
 		
@@ -235,8 +242,10 @@ public abstract class A_State extends A_BaseStateObject
 		m_isEntered = true;
 		
 		root.queueEvent(new StateEvent(E_Event.DID_ENTER, this));
+		
+		m_args = args;
 
-		this.didEnter(constructor);
+		this.didEnter(args);
 		
 		root.processEventQueue();
 	}

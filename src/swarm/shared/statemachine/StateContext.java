@@ -191,7 +191,7 @@ public class StateContext extends A_StateContextProxy
 	}
 	
 	@Override
-	public <T extends A_State> T getEntered(Class<? extends A_State> T)
+	public <T extends Object> T getEntered(Class<? extends A_State> T)
 	{
 		A_State registeredState = m_stateRegistry.get(T);
 		if ( registeredState != null )
@@ -206,7 +206,7 @@ public class StateContext extends A_StateContextProxy
 	}
 	
 	
-	public <T extends A_State> T getForegrounded(Class<? extends A_State> T)
+	public <T extends Object> T getForegrounded(Class<? extends A_State> T)
 	{
 		A_State registeredState = m_stateRegistry.get(T);
 		if ( registeredState != null )
@@ -493,7 +493,7 @@ public class StateContext extends A_StateContextProxy
 	
 	void checkInStackEntryV(P_StackEntryV entry)
 	{
-		entry.clean();
+		entry.destruct();
 		m_stackEntryPoolV.checkIn(entry);
 	}
 	

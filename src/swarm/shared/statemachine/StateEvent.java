@@ -114,6 +114,7 @@ public class StateEvent extends A_StateContextProxy
 	private Class<? extends A_BaseStateObject> getStateObjectClass()
 	{
 		A_State state = this.getState();
+		
 		if( state != null )  return state.getClass();
 		
 		return (Class<? extends A_BaseStateObject>) this.getAction();
@@ -124,61 +125,7 @@ public class StateEvent extends A_StateContextProxy
 	{
 		return type == this.getType();
 	}
-	
-	public boolean isFor(Class<? extends Object> stateObject, E_Event ... types)
-	{
-		for( int i = 0; i < types.length; i++ )
-		{
-			if( stateObject == null )
-			{
-				if( isFor(types[i]) )  return true;
-			}
-			else
-			{
-				if( isFor(stateObject, types[i]) )  return true;
-			}
-		}
-		
-		return false;
-	}
-	
-	public boolean isFor(E_Event ... types)
-	{
-		for( int i = 0; i < types.length; i++ )
-		{
-			if( isFor(types[i]) )  return true;
-		}
-		
-		return false;
-	}
-	
-	public boolean isFor(E_Event type, Class<? extends Object> ... stateObjects)
-	{
-		for( int i = 0; i < stateObjects.length; i++ )
-		{
-			if( type == null )
-			{
-				if( isFor(stateObjects[i]) )  return true;
-			}
-			else
-			{
-				if( isFor(type, stateObjects[i]) )  return true;
-			}
-		}
-		
-		return false;
-	}
-	
-	public boolean isFor(Class<? extends Object> ... stateObjects)
-	{
-		for( int i = 0; i < stateObjects.length; i++ )
-		{
-			if( isFor(stateObjects[i]) )  return true;
-		}
-		
-		return false;
-	}
-	
+
 	public boolean isFor(Class<? extends Object> stateObject)
 	{
 		if( stateObject == this.getStateObjectClass() )
@@ -195,6 +142,55 @@ public class StateEvent extends A_StateContextProxy
 		return false;
 	}
 	
+	public boolean isFor(A_State state)
+	{
+		return isFor(state.getClass());
+	}
+	
+	public boolean isFor(Class<? extends Object> stateObject, E_Event ... types)
+	{
+		if( !isFor(stateObject) )  return false;
+		
+		for( int i = 0; i < types.length; i++ )
+		{
+			if( isFor(types[i]) )  return true;
+		}
+		
+		return false;
+	}
+	
+	public boolean isFor(E_Event type, Class<? extends Object> ... stateObjects)
+	{
+		if( !isFor(type) )  return false;
+		
+		for( int i = 0; i < stateObjects.length; i++ )
+		{
+			if( isFor(stateObjects[i]) )  return true;
+		}
+		
+		return false;
+	}
+	
+	public boolean isFor(E_Event ... types)
+	{
+		for( int i = 0; i < types.length; i++ )
+		{
+			if( isFor(types[i]) )  return true;
+		}
+		
+		return false;
+	}
+	
+	public boolean isFor(Class<? extends Object> ... stateObjects)
+	{
+		for( int i = 0; i < stateObjects.length; i++ )
+		{
+			if( isFor(stateObjects[i]) )  return true;
+		}
+		
+		return false;
+	}
+	
 	public boolean isFor(E_Event type, Class<? extends Object> stateObject)
 	{
 		return isFor(stateObject, type);
@@ -202,13 +198,6 @@ public class StateEvent extends A_StateContextProxy
 	
 	public boolean isFor(Class<? extends Object> stateObject, E_Event type)
 	{
-		Class<? extends A_BaseStateObject> thisStateObject = this.getStateObjectClass();
-		
-		return thisStateObject == stateObject && this.getType() == type;
-	}
-	
-	public boolean isFor(Class<? extends Object> actionClass, Class<? extends StateArgs> argsClass)
-	{
-		return isFor(actionClass) && isFor(argsClass);
+		return isFor(stateObject, type);
 	}
 }

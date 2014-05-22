@@ -12,17 +12,21 @@ class P_StackEntryV
 	P_StackEntryV m_entryBeneath = null;
 	private StateContext m_context;
 	
+	private boolean m_beingUsed = false;
+	
 	void init(StateContext context)
 	{
 		m_context = context;
+		m_beingUsed = true;
 	}
 	
-	void clean()
+	void destruct()
 	{
 		clearQueue();
 		clearHistory();
 		m_entryBeneath = null;
 		m_context = null;
+		m_beingUsed = false;
 	}
 	
 	P_StackEntryV getEntryBeneath()
