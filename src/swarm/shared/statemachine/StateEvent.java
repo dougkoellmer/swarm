@@ -66,12 +66,12 @@ public class StateEvent extends A_StateContextProxy
 		}
 	}
 	
-	public Class<? extends Object> getAction()
+	public Class<? extends A_Action> getAction()
 	{
 		return m_action.getClass();
 	}
 	
-	public <T extends Object> T getState()
+	public <T extends A_State> T getState()
 	{
 		return (T) (m_eventType != E_Event.DID_PERFORM_ACTION ? m_state : null);
 	}

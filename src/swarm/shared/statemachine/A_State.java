@@ -180,13 +180,8 @@ public abstract class A_State extends A_BaseStateObject
 			action.m_state = this;
 			context.queueEvent(new StateEvent(this, action, args));
 			{
-				//A_Action.s_actionStack.add(action);
-				
 				action.prePerform(args);
-				
 				action.perform(args);
-			
-				//A_Action.s_actionStack.remove(smA_Action.s_actionStack.size()-1);
 			}
 			action.m_state = null;
 

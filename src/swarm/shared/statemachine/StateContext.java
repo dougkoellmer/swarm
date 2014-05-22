@@ -191,7 +191,7 @@ public class StateContext extends A_StateContextProxy
 	}
 	
 	@Override
-	public <T extends Object> T getEntered(Class<? extends A_State> T)
+	public <T extends A_State> T getEntered(Class<? extends A_State> T)
 	{
 		A_State registeredState = m_stateRegistry.get(T);
 		if ( registeredState != null )
@@ -205,8 +205,8 @@ public class StateContext extends A_StateContextProxy
 		return null;
 	}
 	
-	
-	public <T extends Object> T getForegrounded(Class<? extends A_State> T)
+	@Override
+	public <T extends A_State> T getForegrounded(Class<? extends A_State> T)
 	{
 		A_State registeredState = m_stateRegistry.get(T);
 		if ( registeredState != null )
