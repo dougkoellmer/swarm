@@ -65,7 +65,7 @@ public abstract class A_StateContextProxy
 	
 	
 	
-	public <T extends A_State> T getForegrounded(Class<? extends A_State> T)
+	public <T extends Object> T getForegrounded(Class<? extends A_State> T)
 	{
 		return getContext_internal().getForegrounded(T);
 	}
@@ -100,12 +100,12 @@ public abstract class A_StateContextProxy
 	
 	
 
-	public <T extends A_State> T get(Class<? extends A_State> T)
+	public <T extends Object> T get(Class<? extends A_State> T)
 	{
 		return this.getEntered(T);
 	}
 	
-	public <T extends A_State> T getEntered(Class<? extends A_State> T)
+	public <T extends Object> T getEntered(Class<? extends A_State> T)
 	{
 		return getContext_internal().getEntered(T);
 	}

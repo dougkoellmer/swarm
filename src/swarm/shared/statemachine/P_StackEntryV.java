@@ -59,8 +59,6 @@ class P_StackEntryV
 		
 		if( target >= 0 && target < m_history.size() )
 		{
-			clearQueue();
-			
 			m_historyIndex = target;
 			P_StackEntryH toReturn = m_history.get(m_historyIndex);
 			
