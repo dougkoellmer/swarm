@@ -8,8 +8,56 @@ package swarm.shared.statemachine;
  * @author Doug
  *
  */
-public class A_BaseStateObject extends A_StateContextProxy
+public class A_BaseStateObject extends A_StateContextForwarder
 {
+	protected static class FilterMatch
+	{
+		private final FilterTarget m_target;
+		
+		FilterMatch(FilterTarget target)
+		{
+			m_target = target;
+		}
+		
+		FilterTarget getTarget()
+		{
+			return m_target;
+		}
+	}
+	
+	protected static class FilterTarget
+	{
+		private final FilterScope m_scope;
+		
+		public final FilterMatch MATCHING = new FilterMatch(this);
+		public final FilterMatch WITH_ANY = new FilterMatch(this);
+		public final FilterMatch WITH_ALL = new FilterMatch(this);
+		
+		FilterTarget(FilterScope scope)
+		{
+			m_scope = scope;
+		}
+		
+		FilterScope getScope()
+		{
+			return m_scope;
+		}
+	}
+	
+	protected static class FilterScope
+	{
+		public final FilterTarget QUEUE = new FilterTarget(this);
+		public final FilterTarget HISTORY = new FilterTarget(this);
+	}
+	
+	protected static final FilterScope ALL = new FilterScope();
+	protected static final FilterScope FIRST = new FilterScope();
+	protected static final FilterScope LAST = new FilterScope();
+	
+	
+	
+	
+	
 	StateContext m_context;
 	
 	public StateContext getContext()
@@ -409,6 +457,13 @@ public class A_BaseStateObject extends A_StateContextProxy
 		return ((A_StateMachine) machine).dequeue_internal();
 	}
 	
+	
+	
+	
+	protected void remove(A_StateMachine machine, FilterMatch match, Class<? extends Object> stateClass, Object ... argValues)
+	{
+		
+	}
 	
 	
 //	

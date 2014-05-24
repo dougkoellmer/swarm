@@ -1,6 +1,6 @@
 package swarm.shared.statemachine;
 
-public abstract class A_StateContextProxy
+public abstract class A_StateContextForwarder
 {
 	abstract StateContext getContext_internal();
 	

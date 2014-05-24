@@ -6,7 +6,7 @@ import java.util.logging.Logger;
 
 import swarm.shared.statemachine.P_StateObjectPool.I_Factory;
 
-public class StateContext extends A_StateContextProxy
+public class StateContext extends A_StateContextForwarder
 {
 	private static final Logger s_logger = Logger.getLogger(StateContext.class.getName());
 	

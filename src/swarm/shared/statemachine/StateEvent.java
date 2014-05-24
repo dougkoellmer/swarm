@@ -2,7 +2,7 @@ package swarm.shared.statemachine;
 
 import java.util.logging.Logger;
 
-public class StateEvent extends A_StateContextProxy
+public class StateEvent extends A_StateContextForwarder
 {
 	private static final Logger s_logger = Logger.getLogger(StateEvent.class.getName());
 	

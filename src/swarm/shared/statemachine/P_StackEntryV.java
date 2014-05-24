@@ -2,8 +2,14 @@ package swarm.shared.statemachine;
 
 import java.util.ArrayList;
 
+import swarm.shared.statemachine.A_BaseStateObject.FilterMatch;
+import swarm.shared.statemachine.A_BaseStateObject.FilterScope;
+import swarm.shared.statemachine.A_BaseStateObject.FilterTarget;
+
 class P_StackEntryV
 {
+	private static final Object[] DUMMY_ARGS = {};
+	
 	private final ArrayList<P_StackEntryH> m_queue = new ArrayList<P_StackEntryH>();
 	private final ArrayList<P_StackEntryH> m_history = new ArrayList<P_StackEntryH>();
 	
@@ -112,22 +118,81 @@ class P_StackEntryV
 		m_history.set(m_historyIndex, existingEntry);
 	}
 	
-	boolean removeFromQueue(Class<? extends A_State> stateClass)
+	void remove(FilterMatch match, Class<? extends Object> stateClass, Object ... argValues)
 	{
-		boolean foundSomething = false;
-		
-		for( int i = 0; i < m_queue.size(); i++ )
+		argValues = argValues == null ? DUMMY_ARGS : argValues;
+		FilterTarget target = match.getTarget();
+		FilterScope scope = target.getScope();
+		ArrayList<P_StackEntryH> list = target == scope.HISTORY ? m_history : m_queue;
+		boolean isHistory = list == m_history;
+		boolean isLimitOfOne = scope != A_BaseStateObject.ALL;
+		int start, limit, inc, removalOffset;
+		if( scope == A_BaseStateObject.FIRST )
 		{
-			P_StackEntryH ithEntry = m_queue.get(i);
-			
-			if( ithEntry.m_stateClass == stateClass )
-			{
-				m_queue.remove(i);
-				foundSomething = true;
-			}
+			start = 0;
+			inc = 1;
+			limit = list.size();
+			removalOffset = -1;
+		}
+		else
+		{
+			start = list.size()-1;
+			inc = -1;
+			limit = -1;
+			removalOffset = 0;
 		}
 		
-		return foundSomething;
+		for( int i = start; i != limit; i+=inc )
+		{
+			if( isHistory && i == m_historyIndex )  continue;
+			
+			P_StackEntryH ithEntry = list.get(i);
+			StateArgs ithArgs = ithEntry.m_args;
+			Class<? extends Object> ithClass = ithEntry.m_stateClass;
+			boolean remove = false;
+			
+			if( stateClass != null )
+			{
+				//TODO: have instanceof-type functionality so user can pass in interfaces
+				if( stateClass != ithClass )
+				{
+					continue;
+				}
+				else if( argValues.length == 0 )
+				{
+					remove = true;
+				}
+			}
+			
+			if( !remove )
+			{
+				if( match == target.MATCHING )
+				{
+					remove = ithArgs.equals(argValues);
+				}
+				else if( match == target.WITH_ALL )
+				{
+					remove = ithArgs.containsAny(argValues);
+				}
+				else if( match == target.WITH_ANY )
+				{
+					remove = ithArgs.containsAll(argValues);
+				}
+			}
+			
+			if( remove )
+			{
+				list.remove(i);
+				
+				if( isLimitOfOne )  return;
+				
+				i += removalOffset;
+				if( isHistory && i < m_historyIndex )
+				{
+					m_historyIndex--;
+				}
+			}
+		}
 	}
 	
 	void queue(P_StackEntryH entry)

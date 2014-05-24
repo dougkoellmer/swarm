@@ -94,9 +94,9 @@ public abstract class A_StateMachine extends A_State
 		}
 	}
 	
-	boolean removeFromQueue_internal(Class<? extends A_State> stateClass)
+	void remove_internal(FilterMatch match, Class<? extends Object> stateClass, Object ... argValues)
 	{
-		return m_stackEntryV.removeFromQueue(stateClass);
+		m_stackEntryV.remove(match, stateClass, argValues);
 	}
 	
 	boolean queue_internal(Class<? extends A_State> stateClass, StateArgs args)

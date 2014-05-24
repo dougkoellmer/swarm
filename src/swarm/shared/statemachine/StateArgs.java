@@ -68,6 +68,30 @@ public class StateArgs
 		return false;
 	}
 	
+	public boolean containsAny(Object ... args )
+	{
+		if( args == null || args.length == 0 )  return false;
+		
+		for( int i = 0; i < args.length; i++ )
+		{
+			if( contains(args[i] ) )  return true;
+		}
+		
+		return false;
+	}
+	
+	public boolean containsAll(Object ... args )
+	{
+		if( args == null || args.length == 0 )  return false;
+		
+		for( int i = 0; i < args.length; i++ )
+		{
+			if( !contains(args[i] ) )  return false;
+		}
+		
+		return true;
+	}
+	
 	public boolean equals(Object ... values)
 	{
 		Object[] values_this = this.values != null ? this.values : DUMMY_VALUES;
