@@ -416,7 +416,7 @@ public class A_BaseStateObject extends A_StateContextForwarder
 	}
 	protected boolean queue(Class<? extends A_StateMachine> machineClass, Class<? extends A_State> stateClass, StateArgs constructor_nullable)
 	{
-		return queue((A_StateMachine)m_context.getEntered(machineClass), stateClass, constructor_nullable);
+		return queue((A_StateMachine)get(machineClass), stateClass, constructor_nullable);
 	}
 	
 	protected boolean queue(A_StateMachine machine, Class<? extends A_State> stateClass)
@@ -460,58 +460,82 @@ public class A_BaseStateObject extends A_StateContextForwarder
 	
 	
 	
+	
+	protected void remove(FilterMatch match, Object ... argValues)
+	{
+		remove(match, null, argValues);
+	}
+	protected void remove(FilterMatch match, Class<? extends Object> stateClass, Object ... argValues)
+	{
+		remove(getMachine(), match, stateClass, argValues);
+	}
+	
+	protected void remove(Class<? extends A_StateMachine> machineClass, FilterMatch match, Object ... argValues)
+	{
+		remove((A_StateMachine)get(machineClass), match, null, argValues);
+	}
+	protected void remove(Class<? extends A_StateMachine> machineClass, FilterMatch match, Class<? extends Object> stateClass, Object ... argValues)
+	{
+		remove((A_StateMachine)get(machineClass), match, stateClass, argValues);
+	}
+	
+	protected void remove(A_StateMachine machine, FilterMatch match, Object ... argValues)
+	{
+		remove(machine, match, null, argValues);
+	}
 	protected void remove(A_StateMachine machine, FilterMatch match, Class<? extends Object> stateClass, Object ... argValues)
 	{
+		if( isLocked() )  return;
 		
+		machine.remove_internal(match, stateClass, argValues);
 	}
 	
 	
-//	
-//	protected boolean removeFromQueue(Class<? extends A_State> stateClass)
-//	{
-//		return removeFromQueue(getClosestMachine(this), stateClass);
-//	}
-//	protected boolean removeFromQueue(Class<? extends A_StateMachine> machineClass, Class<? extends A_State> stateClass)
-//	{
-//		return removeFromQueue((A_StateMachine)m_context.getEntered(machineClass), stateClass);
-//	}
-//	protected boolean removeFromQueue(A_StateMachine machine, Class<? extends A_State> stateClass)
-//	{
-//		if( isLocked() )  return false;
-//		
-//		return ((A_StateMachine) machine).removeFromQueue_internal(stateClass);
-//	}
 	
 	
 	
 	
-//	protected static int getIndexH(A_State machine)
-//	{
-//		return -1;
-//	}
-//	
-//	protected static int getCountH(A_State machine)
-//	{
-//		return -1;
-//	}
-//	
-//	protected static Class<? extends A_State> getHorState(A_State machine, int offset)
-//	{
-//		return null;
-//	}
-//	
-//	protected void peek(Class<? extends A_State> T, int offset)
-//	{
-//		
-//	}
-//	
-//	protected int getQueueSize(Class<? extends A_State> T)
-//	{
-//		return -1;
-//	}
+	protected void remove(FilterTarget target)
+	{
+		remove(getMachine(), target);
+	}
+	protected void remove(Class<? extends A_StateMachine> machineClass, FilterTarget target)
+	{
+		remove((A_StateMachine)get(machineClass), target);
+	}
+	protected void remove(A_StateMachine machine, FilterTarget target)
+	{
+		remove(machine, target, null);
+	}
+	
+	protected void remove(FilterTarget target, Class<? extends Object> stateClass)
+	{
+		remove(getMachine(), target, stateClass);
+	}
+	protected void remove(Class<? extends A_StateMachine> machineClass, FilterTarget target, Class<? extends Object> stateClass)
+	{
+		remove((A_StateMachine)get(machineClass), target, stateClass);
+	}
+	protected void remove(A_StateMachine machine, FilterTarget target, Class<? extends Object> stateClass)
+	{
+		remove(machine, target, stateClass, null);
+	}
 	
 	
-	
+	protected void remove(FilterTarget target, Class<? extends Object> stateClass, StateArgs args)
+	{
+		remove(getMachine(), target, stateClass, args);
+	}
+	protected void remove(Class<? extends A_StateMachine> machineClass, FilterTarget target, Class<? extends Object> stateClass, StateArgs args)
+	{
+		remove((A_StateMachine)get(machineClass), target, stateClass, args);
+	}
+	protected void remove(A_StateMachine machine, FilterTarget target, Class<? extends Object> stateClass, StateArgs args)
+	{
+		if( isLocked() )  return;
+		
+		machine.remove_internal(target, stateClass, args);
+	}
 	
 	
 	

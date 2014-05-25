@@ -118,15 +118,30 @@ class P_StackEntryV
 		m_history.set(m_historyIndex, existingEntry);
 	}
 	
-	void remove(FilterMatch match, Class<? extends Object> stateClass, Object ... argValues)
+	void remove(FilterTarget target, FilterMatch match_nullable, Class<? extends Object> stateClass_nullable, StateArgs args_nullable, Object ... argValues)
 	{
+		//--- DRK > Early out for the "clear all" case.
+		if( match_nullable == null && stateClass_nullable == null && args_nullable == null )
+		{
+			if( target == target.getScope().HISTORY )
+			{
+				clearHistory();
+			}
+			else
+			{
+				clearQueue();
+			}
+			
+			return;
+		}
+		
 		argValues = argValues == null ? DUMMY_ARGS : argValues;
-		FilterTarget target = match.getTarget();
 		FilterScope scope = target.getScope();
 		ArrayList<P_StackEntryH> list = target == scope.HISTORY ? m_history : m_queue;
 		boolean isHistory = list == m_history;
 		boolean isLimitOfOne = scope != A_BaseStateObject.ALL;
 		int start, limit, inc, removalOffset;
+		
 		if( scope == A_BaseStateObject.FIRST )
 		{
 			start = 0;
@@ -151,14 +166,14 @@ class P_StackEntryV
 			Class<? extends Object> ithClass = ithEntry.m_stateClass;
 			boolean remove = false;
 			
-			if( stateClass != null )
+			if( stateClass_nullable != null )
 			{
 				//TODO: have instanceof-type functionality so user can pass in interfaces
-				if( stateClass != ithClass )
+				if( stateClass_nullable != ithClass )
 				{
 					continue;
 				}
-				else if( argValues.length == 0 )
+				else if( argValues.length == 0 && args_nullable == null )
 				{
 					remove = true;
 				}
@@ -166,17 +181,24 @@ class P_StackEntryV
 			
 			if( !remove )
 			{
-				if( match == target.MATCHING )
+				if( match_nullable != null )
 				{
-					remove = ithArgs.equals(argValues);
+					if( match_nullable == target.MATCHING )
+					{
+						remove = ithArgs.equals(argValues);
+					}
+					else if( match_nullable == target.WITH_ALL )
+					{
+						remove = ithArgs.containsAny(argValues);
+					}
+					else if( match_nullable == target.WITH_ANY )
+					{
+						remove = ithArgs.containsAll(argValues);
+					}
 				}
-				else if( match == target.WITH_ALL )
+				else
 				{
-					remove = ithArgs.containsAny(argValues);
-				}
-				else if( match == target.WITH_ANY )
-				{
-					remove = ithArgs.containsAll(argValues);
+					remove = ithArgs.equals(args_nullable);
 				}
 			}
 			
