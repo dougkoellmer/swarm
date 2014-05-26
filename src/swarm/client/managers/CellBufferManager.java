@@ -138,7 +138,6 @@ public class CellBufferManager implements I_LocalCodeRepository
 		int gridWidthRemainder = subCellDim > 0 ? grid.getWidth() % subCellDim : 0;
 		int relativeGridWidth = grid.getWidth() == 0 ? 0 : (grid.getWidth() - gridWidthRemainder) / subCellDim;
 		relativeGridWidth += gridWidthRemainder > 0 ? 1 : 0;
-		
 		int gridHeightRemainder = subCellDim > 0 ? grid.getHeight() % subCellDim : 0;
 		int relativeGridHeight = grid.getHeight() == 0 ? 0 : (grid.getHeight() - gridHeightRemainder) / subCellDim;
 		relativeGridHeight += gridHeightRemainder > 0 ? 1 : 0;

@@ -67,7 +67,6 @@ public class State_CameraSnapping extends A_State implements I_StateEventListene
 	private CellAddress m_targetAddress = null;
 	
 	private final GridCoordinate m_targetGridCoordinate = new GridCoordinate();
-	private final Point m_utilPoint = new Point();
 	
 	private final Camera m_snapCamera = new Camera(null);
 	private final CellBufferManager m_snapBufferManager;
@@ -83,6 +82,8 @@ public class State_CameraSnapping extends A_State implements I_StateEventListene
 	
 	private double m_snapProgressBase;
 	private final AppContext m_appContext;
+	
+	private BufferCell m_targetCell = null;
 	
 	public State_CameraSnapping(AppContext appContext, double cellHudHeight)
 	{
@@ -104,8 +105,6 @@ public class State_CameraSnapping extends A_State implements I_StateEventListene
 
 	void updateGridCoordinate(GridCoordinate targetCoordinate, CellAddress targetAddress_nullable, Point targetPoint)
 	{
-		A_Grid grid = m_appContext.gridMngr.getGrid();
-		Camera camera = m_appContext.cameraMngr.getCamera();
 		StateMachine_Camera machine = this.getParent();
 		
 		m_targetAddress = targetAddress_nullable;
@@ -119,6 +118,10 @@ public class State_CameraSnapping extends A_State implements I_StateEventListene
 		
 		if( !sameCoordinateAsLastTime )
 		{
+			m_targetCell = null;
+			
+			tryToGetTargetCell(/*fireEvent=*/false);
+			
 			//--- This "nuke" used to get rid of everything, but that sort of broke the UI experience,
 			//--- and most of the time resulted in too much network traffic, so now only errors are cleared.
 			//--- User can still get guaranteed fresh version from server using refresh button.
@@ -286,22 +289,34 @@ public class State_CameraSnapping extends A_State implements I_StateEventListene
 		
 	}
 	
+	private void tryToGetTargetCell(boolean fireEvent)
+	{
+		if( m_targetCell != null )  return;
+		
+		m_targetCell = m_appContext.cellBufferMngr.getDisplayBuffer().getCellAtAbsoluteCoord(m_targetGridCoordinate);
+		
+		if( m_targetCell != null && fireEvent )
+		{
+			perform(Event_CameraSnapping_OnTargetCellAppeared.class);
+		}
+	}
+	
 	@Override
 	protected void update(double timeStep)
 	{
+		tryToGetTargetCell(/*fireEvent=*/true);
+	
 		StateMachine_Camera machine = ((StateMachine_Camera) getParent());
 		
 		if ( m_appContext.cameraMngr.isCameraAtRest() )
 		{
-			BufferCell testCell = m_appContext.cellBufferMngr.getDisplayBuffer().getCellAtAbsoluteCoord(m_targetGridCoordinate);
-			
-			State_ViewingCell.Constructor constructor = new State_ViewingCell.Constructor(testCell);
+			State_ViewingCell.Constructor constructor = new State_ViewingCell.Constructor(m_targetCell);
 			
 			if( m_targetAddress != null )
 			{
 				//--- DRK > This cell might have already been given its address by the address manager,
 				//---		but it doesn't hurt to do this twice.
-				testCell.onAddressFound(m_targetAddress);
+				m_targetCell.onAddressFound(m_targetAddress);
 			}
 			
 			set(State_ViewingCell.class, constructor);
@@ -314,8 +329,9 @@ public class State_CameraSnapping extends A_State implements I_StateEventListene
 	protected void willExit()
 	{
 		m_targetAddress = null;
+		m_targetCell = null;
 		
-		m_targetGridCoordinate.set(-1, -1);
+		m_targetGridCoordinate.copy(INVALID);
 		
 		//--- DRK > Might implement a more elegant expiry system for cells/code hanging out in the snap buffer,
 		//---		but for now it just gets nuked every time we stop snapping.
@@ -351,6 +367,8 @@ public class State_CameraSnapping extends A_State implements I_StateEventListene
 					//--- DRK > Updating snap point if need be...like a view size smaller
 					//---		than the cell size will push the target point up to the upper left.
 					this.updateGridCoordinate(m_targetGridCoordinate, m_targetAddress, m_appContext.cameraMngr.getTargetPosition());
+					
+					tryToGetTargetCell(/*fireEvent=*/true);
 					
 					this.updateSnapBufferManager(true);
 				}
