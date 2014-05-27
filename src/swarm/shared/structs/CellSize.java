@@ -112,6 +112,12 @@ public class CellSize implements I_ReadsJson, I_WritesJson
 		m_height = m_height == DEFAULT_DIMENSION ? height : m_height;
 	}
 	
+	public void setIfNatural(int width, int height)
+	{
+		m_width = m_width == NATURAL_DIMENSION ? width : m_width;
+		m_height = m_height == NATURAL_DIMENSION ? height : m_height;
+	}
+	
 	public void copy(CellSize value)
 	{
 		m_width = value.m_width;

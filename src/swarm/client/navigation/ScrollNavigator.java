@@ -22,6 +22,7 @@ import swarm.client.managers.CellSizeManager;
 import swarm.client.states.camera.Action_Camera_SetViewSize;
 import swarm.client.states.camera.Action_Camera_SnapToCoordinate;
 import swarm.client.states.camera.Action_Camera_SnapToPoint;
+import swarm.client.states.camera.Event_CameraSnapping_OnTargetCellAppeared;
 import swarm.client.states.camera.Event_Camera_OnCellSizeFound;
 import swarm.client.states.camera.Event_GettingMapping_OnResponse;
 import swarm.client.states.camera.StateMachine_Camera;
@@ -41,6 +42,7 @@ import swarm.shared.structs.CellSize;
 import swarm.shared.structs.GridCoordinate;
 import swarm.shared.structs.Point;
 import swarm.shared.structs.Rect;
+import swarm.shared.structs.Vector;
 import swarm.shared.utils.U_Math;
 
 public class ScrollNavigator implements I_StateEventListener
@@ -66,15 +68,10 @@ public class ScrollNavigator implements I_StateEventListener
 	
 	private final Point m_utilPoint1 = new Point();
 	private final Point m_utilPoint2 = new Point();
-	private final Point m_utilPoint3 = new Point();
 	
 	private final CellAddressMapping m_utilMapping = new CellAddressMapping();
-	private final Boolean m_utilBool1 = new Boolean();
-	private final Boolean m_utilBool2 = new Boolean();
-	private final Rect m_utilRect1 = new Rect();
-	private final Rect m_utilRect2 = new Rect();
-	private final CellSize m_utilCellSize1 = new CellSize();
-	private final CellSize m_utilCellSize2 = new CellSize();
+	
+	private final FocusedLayout m_layout = new FocusedLayout();
 	
 	private I_ScrollListener m_scrollListener = null;
 	
@@ -346,20 +343,21 @@ public class ScrollNavigator implements I_StateEventListener
 			//Point centerPoint = m_utilPoint1;
 			//U_CameraViewport.calcViewWindowCenter(grid, viewingState_nullable.getCell().getCoordinate(), m_cellHudHeight, centerPoint);
 			
-			this.calcFocusedLayout(targetCoord, m_utilPoint1, m_utilRect1, m_utilRect2, m_utilCellSize1, m_utilBool1, m_utilBool2);
+//			this.calcFocusedLayout(targetCoord, m_utilPoint1, m_utilRect1, m_utilRect2, m_utilCellSize1, m_utilBool1, m_utilBool2);
+			this.calcFocusedLayout(targetCoord, m_layout);
 	
-			if( m_utilBool1.value )
+			if( m_layout.widthSmaller.value )
 			{
-				putScrollBarX(m_utilRect2.getWidth());
+				putScrollBarX(m_layout.cellSizePlusExtras.getWidth());
 			}
 			else
 			{
 				clearScrollbarX();
 			}
 			
-			if( m_utilBool2.value )
+			if( m_layout.heightSmaller.value )
 			{
-				putScrollBarY(m_utilRect2.getHeight());
+				putScrollBarY(m_layout.cellSizePlusExtras.getHeight());
 			}
 			else
 			{
@@ -483,12 +481,13 @@ public class ScrollNavigator implements I_StateEventListener
 		
 		A_Grid grid = this.m_viewContext.appContext.gridMngr.getGrid();
 		
-		this.calcFocusedLayout(targetCoord, m_utilPoint1, m_utilRect1, m_utilRect2, m_utilCellSize1, m_utilBool1, m_utilBool2);
+//		this.calcFocusedLayout(targetCoord, m_utilPoint1, m_utilRect1, m_utilRect2, m_utilCellSize1, m_utilBool1, m_utilBool2);
+		this.calcFocusedLayout(targetCoord, m_layout);
 		
-		double newWindowWidth = m_utilRect1.getWidth();
-		double newWindowHeight = m_utilRect1.getHeight();
-		boolean widthSmaller = m_utilBool1.value;
-		boolean heightSmaller = m_utilBool2.value;
+		double newWindowWidth = m_layout.window.getWidth();
+		double newWindowHeight = m_layout.window.getHeight();
+		boolean widthSmaller = m_layout.widthSmaller.value;
+		boolean heightSmaller = m_layout.heightSmaller.value;
 
 		if( widthSmaller && heightSmaller )
 		{
@@ -501,30 +500,30 @@ public class ScrollNavigator implements I_StateEventListener
 				
 				if( windowHeightSansScroll > defaultCellHeightReq )
 				{
-					targetCoord.calcPoint(m_utilPoint3, grid.getCellWidth(), grid.getCellHeight(), grid.getCellPadding(), 1);
+					targetCoord.calcPoint(m_utilPoint2, grid.getCellWidth(), grid.getCellHeight(), grid.getCellPadding(), 1);
 					double paddingTop = U_CameraViewport.calcCellPaddingTop(grid, m_cellHudHeight);
-					m_utilPoint3.incY(-paddingTop);
-					m_utilPoint3.incY(newWindowHeight/2);
-					m_utilPoint3.incY(m_scrollBarWidthDiv2);
+					m_utilPoint2.incY(-paddingTop);
+					m_utilPoint2.incY(newWindowHeight/2);
+					m_utilPoint2.incY(m_scrollBarWidthDiv2);
 					
-					double offset = Math.min((m_utilRect2.getHeight() - defaultCellHeightReq)/2, (newWindowHeight - defaultCellHeightReq)/2);
+					double offset = Math.min((m_layout.cellSizePlusExtras.getHeight() - defaultCellHeightReq)/2, (newWindowHeight - defaultCellHeightReq)/2);
 					offset = Math.max(0, offset);
-					m_utilPoint3.incY(-offset);
-					point_out.setY(m_utilPoint3.getY());
+					m_utilPoint2.incY(-offset);
+					point_out.setY(m_utilPoint2.getY());
 				}
 				
 				if( windowWidthSansScroll > defaultCellWidthReq )
 				{
-					targetCoord.calcPoint(m_utilPoint3, grid.getCellWidth(), grid.getCellHeight(), grid.getCellPadding(), 1);
+					targetCoord.calcPoint(m_utilPoint2, grid.getCellWidth(), grid.getCellHeight(), grid.getCellPadding(), 1);
 					double paddingLeft = grid.getCellPadding();
-					m_utilPoint3.incX(-paddingLeft);
-					m_utilPoint3.incX(newWindowWidth/2);
-					m_utilPoint3.incX(m_scrollBarWidthDiv2);
+					m_utilPoint2.incX(-paddingLeft);
+					m_utilPoint2.incX(newWindowWidth/2);
+					m_utilPoint2.incX(m_scrollBarWidthDiv2);
 
-					double offset = Math.min((m_utilRect2.getWidth() - defaultCellWidthReq)/2, (newWindowWidth - defaultCellWidthReq)/2);
+					double offset = Math.min((m_layout.cellSizePlusExtras.getWidth() - defaultCellWidthReq)/2, (newWindowWidth - defaultCellWidthReq)/2);
 					offset = Math.max(0, offset);
-					m_utilPoint3.incX(-offset);
-					point_out.setX(m_utilPoint3.getX());
+					m_utilPoint2.incX(-offset);
+					point_out.setX(m_utilPoint2.getX());
 				}
 			}
 		}
@@ -631,7 +630,11 @@ public class ScrollNavigator implements I_StateEventListener
 			
 			case DID_PERFORM_ACTION:
 			{
-				if (event.getAction() == Event_Camera_OnCellSizeFound.class )
+				if (event.isFor(Event_Camera_OnCellSizeFound.class) )
+				{
+					this.onResize();
+				}
+				else if( event.isFor(Event_CameraSnapping_OnTargetCellAppeared.class) )
 				{
 					this.onResize();
 				}
@@ -657,15 +660,12 @@ public class ScrollNavigator implements I_StateEventListener
 	{
 		BufferCell bufferCell = visualCell.getBufferCell();
 		
-		this.calcFocusedLayout(bufferCell.getCoordinate(), m_utilPoint2, m_utilRect1, m_utilRect2, m_utilCellSize2, m_utilBool1, m_utilBool2);
+		this.calcFocusedLayout(bufferCell.getCoordinate(), m_layout);
 		
-		m_utilPoint2.incX(-this.getScrollX());
-		m_utilPoint2.incY(-this.getScrollY());
+		m_layout.topLeftOffset.incX(-this.getScrollX());
+		m_layout.topLeftOffset.incY(-this.getScrollY());
 		
-		int height = m_utilCellSize2.getHeight();
-		height = height == CellSize.NATURAL_DIMENSION ? VisualCell.USE_NATURAL_HEIGHT : height;
-		
-		visualCell.setTargetLayout(m_utilCellSize2.getWidth(), height, (int)m_utilPoint2.getX(), (int)m_utilPoint2.getY());
+		visualCell.setTargetLayout(m_layout.cellSize.getWidth(), m_layout.cellSize.getHeight(), (int)m_layout.topLeftOffset.getX(), (int)m_layout.topLeftOffset.getY());
 	}
 	
 	
@@ -706,6 +706,8 @@ public class ScrollNavigator implements I_StateEventListener
 			m_utilMapping.getCoordinate().copy(coord);
 			if( m_viewContext.appContext.cellSizeMngr.getCellSizeFromLocalSource(m_utilMapping, size_out) )
 			{
+				size_out.setIfNatural(grid.getCellWidth(), grid.getCellHeight());
+				
 				return;
 			}
 		}
@@ -713,7 +715,7 @@ public class ScrollNavigator implements I_StateEventListener
 		size_out.setExplicit(grid.getCellWidth(), grid.getCellHeight());
 	}
 	
-	private void calcTopLeftOffset(CellSize cellSize, Rect windowSize, Point topLeftOffset_out)
+	private void calcTopLeftOffset(CellSize cellSize, Rect windowSize, Vector topLeftOffset_out)
 	{
 		A_Grid grid = m_viewContext.appContext.gridMngr.getGrid();
 		double defaultWidthReq = U_CameraViewport.calcCellWidthRequirement(grid);
@@ -736,38 +738,38 @@ public class ScrollNavigator implements I_StateEventListener
 		topLeftOffset_out.set(xOffset, yOffset, 0);
 	}
 	
-	public void calcFocusedLayout(GridCoordinate coord, Point topLeftOffset_out, Rect window_out, Rect totalCellSize_out, CellSize cellSize_out, Boolean widthSmaller_out, Boolean heightSmaller_out)
+	public void calcFocusedLayout(GridCoordinate coord, FocusedLayout layout_out)
 	{
 		A_Grid grid = this.m_viewContext.appContext.gridMngr.getGrid();
 
-		this.calcCellSize(coord, cellSize_out);
-		double totalCellWidthReq = U_CameraViewport.calcCellWidthRequirement(grid, cellSize_out.getWidth());
-		double totalCellHeightReq = U_CameraViewport.calcCellHeightRequirement(grid, cellSize_out.getHeight(), m_cellHudHeight);
-		totalCellSize_out.set(totalCellWidthReq, totalCellHeightReq);
+		this.calcCellSize(coord, layout_out.cellSize);
+		double totalCellWidthReq = U_CameraViewport.calcCellWidthRequirement(grid, layout_out.cellSize.getWidth());
+		double totalCellHeightReq = U_CameraViewport.calcCellHeightRequirement(grid, layout_out.cellSize.getHeight(), m_cellHudHeight);
+		layout_out.cellSizePlusExtras.set(totalCellWidthReq, totalCellHeightReq);
 		
-		window_out.set(this.getWindowWidthSansScroll(), this.getWindowHeightSansScroll());
+		layout_out.window.set(this.getWindowWidthSansScroll(), this.getWindowHeightSansScroll());
 		
-		this.calcTopLeftOffset(cellSize_out, window_out, topLeftOffset_out);
+		this.calcTopLeftOffset(layout_out.cellSize, layout_out.window, layout_out.topLeftOffset);
 
-		widthSmaller_out.value = false;
-		heightSmaller_out.value = false;
+		layout_out.widthSmaller.value = false;
+		layout_out.heightSmaller.value = false;
 		
-		if( window_out.getWidth() < totalCellWidthReq )
+		if( layout_out.window.getWidth() < totalCellWidthReq )
 		{
-			window_out.incHeight(-m_scrollBarWidthDiv2*2);
-			widthSmaller_out.value = true;
+			layout_out.window.incHeight(-m_scrollBarWidthDiv2*2);
+			layout_out.widthSmaller.value = true;
 		}
 
-		if( window_out.getHeight() < totalCellHeightReq )
+		if( layout_out.window.getHeight() < totalCellHeightReq )
 		{
-			window_out.incWidth(-m_scrollBarWidthDiv2*2);
-			heightSmaller_out.value = true;
+			layout_out.window.incWidth(-m_scrollBarWidthDiv2*2);
+			layout_out.heightSmaller.value = true;
 		}
 		
-		if( !widthSmaller_out.value && window_out.getWidth() < totalCellWidthReq )
+		if( !layout_out.widthSmaller.value && layout_out.window.getWidth() < totalCellWidthReq )
 		{
-			window_out.incHeight(-m_scrollBarWidthDiv2*2);			
-			widthSmaller_out.value = true;
+			layout_out.window.incHeight(-m_scrollBarWidthDiv2*2);			
+			layout_out.widthSmaller.value = true;
 		}
 	}
 }

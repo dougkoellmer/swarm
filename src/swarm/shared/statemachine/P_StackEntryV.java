@@ -120,19 +120,15 @@ class P_StackEntryV
 	
 	void remove(FilterTarget target, FilterMatch match_nullable, Class<? extends Object> stateClass_nullable, StateArgs args_nullable, Object ... argValues)
 	{
-		//--- DRK > Early out for the "clear all" case.
+		//--- DRK > Early out for the "remove all queue" case.
 		if( match_nullable == null && stateClass_nullable == null && args_nullable == null )
 		{
-			if( target == target.getScope().HISTORY )
-			{
-				clearHistory();
-			}
-			else
+			if( target == target.getScope().QUEUE )
 			{
 				clearQueue();
+				
+				return;
 			}
-			
-			return;
 		}
 		
 		argValues = argValues == null ? DUMMY_ARGS : argValues;

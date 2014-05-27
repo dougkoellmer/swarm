@@ -47,8 +47,6 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		CHANGING_FROM_SNAP
 	};
 	
-	public static int USE_NATURAL_HEIGHT = -1;
-	
 	private static final Logger s_logger = Logger.getLogger(VisualCell.class.getName());
 	
 	//private static final String SPINNER_HTML = "<img src='/r.img/spinner.gif?v=1' />";
@@ -375,7 +373,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	
 	public int calcNaturalHeight()
 	{
-		int naturalHeight = this.getElement().getScrollHeight();
+		int naturalHeight = m_contentPanel.getElement().getScrollHeight();
 		naturalHeight = naturalHeight < m_defaultHeight ? m_defaultHeight : naturalHeight;
 		
 		return naturalHeight;
@@ -383,7 +381,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	
 	public int calcNaturalWidth()
 	{
-		int naturalWidth = this.getElement().getScrollWidth();
+		int naturalWidth = m_contentPanel.getElement().getScrollWidth();
 		naturalWidth = naturalWidth < m_defaultWidth ? m_defaultWidth : naturalWidth;
 		
 		return naturalWidth;
