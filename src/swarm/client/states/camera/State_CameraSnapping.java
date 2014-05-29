@@ -101,6 +101,8 @@ public class State_CameraSnapping extends A_State implements I_StateEventListene
 		m_internalCodeRepo.addSource(user);
 		m_internalCodeRepo.addSource(m_appContext.cellBufferMngr);
 		m_internalCodeRepo.addSource(m_appContext.codeCache);
+		
+		register(new Event_CameraSnapping_OnTargetCellAppeared());
 	}
 
 	void updateGridCoordinate(GridCoordinate targetCoordinate, CellAddress targetAddress_nullable, Point targetPoint)
@@ -256,6 +258,11 @@ public class State_CameraSnapping extends A_State implements I_StateEventListene
 	CellAddress getTargetAddress()
 	{
 		return m_targetAddress;
+	}
+	
+	@Override public BufferCell getCell()
+	{
+		return m_targetCell;
 	}
 	
 	@Override

@@ -3,6 +3,7 @@ package swarm.client.view.cell;
 import java.util.logging.Logger;
 
 import swarm.client.app.ClientAppConfig;
+import swarm.client.entities.BufferCell;
 import swarm.client.entities.Camera;
 import swarm.client.navigation.ScrollNavigator.I_ScrollListener;
 import swarm.client.navigation.FocusedLayout;
@@ -18,6 +19,7 @@ import swarm.client.states.camera.State_CameraSnapping;
 import swarm.client.states.camera.State_ViewingCell;
 import swarm.client.view.E_ZIndex;
 import swarm.client.view.I_UIElement;
+import swarm.client.view.U_Cell;
 import swarm.client.view.U_Css;
 import swarm.client.view.U_View;
 import swarm.client.view.ViewContext;
@@ -186,8 +188,8 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 			double scrollWidth = scrollElement.getScrollWidth();
 			double clientWidth = scrollElement.getClientWidth();
 			double diff = (hudWidth - viewWidth);// +  U_CameraViewport.getViewPadding(grid);
-			double scrollRatio = m_scrollX / (scrollWidth-clientWidth);
-			return -(diff * scrollRatio);
+			double scrollRatio = Math.round(m_scrollX / (scrollWidth-clientWidth));
+			return -Math.round(diff * scrollRatio);
 		}
 		else
 		{
@@ -360,6 +362,24 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 				}
 				else if( event.isFor(Event_Camera_OnCellSizeFound.class) || event.isFor(Event_CameraSnapping_OnTargetCellAppeared.class) )
 				{
+					if( event.isFor(Event_CameraSnapping_OnTargetCellAppeared.class) )
+					{
+						BufferCell cell = U_Cell.getBufferCell(event);
+						
+						if( cell == null )
+						{
+							s_logger.severe("DFDF");
+						}
+						
+						if( cell != null )
+						{
+							if( cell.getFocusedCellSize() == null || !cell.getFocusedCellSize().hasNaturalDimension() )
+							{
+								break;
+							}
+						}
+					}
+					
 					if( event.getContext().isEntered(State_ViewingCell.class) )
 					{
 						State_ViewingCell state = event.getState();

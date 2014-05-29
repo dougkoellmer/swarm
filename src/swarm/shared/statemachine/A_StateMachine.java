@@ -45,6 +45,8 @@ public abstract class A_StateMachine extends A_State
 		}
 		else
 		{
+			if( !isEnterable(stateClass, args) )  return false;
+			
 			A_State newState = m_context.getStateInstance(stateClass);
 			
 			if( !newState.isTransparent() )
@@ -178,8 +180,15 @@ public abstract class A_StateMachine extends A_State
 		return set_private(stateClass, args);
 	}
 	
+	protected boolean isEnterable(Class<? extends A_State> stateClass, StateArgs args)
+	{
+		return true;
+	}
+	
 	private boolean set_private(Class<? extends A_State> stateClass, StateArgs args)
 	{
+		if( !isEnterable(stateClass, args) )  return false;
+		
 		A_State currentState = this.getCurrentState();
 		
 //		if( currentState != null && currentState.getClass() == stateClass )
@@ -302,13 +311,25 @@ public abstract class A_StateMachine extends A_State
 		stateToEnter.m_previousState = isPush ? null : (this.m_currentState != null ? this.m_currentState.getClass() : null);
 		stateToEnter.m_parent = this;
 		
-		this.m_currentState = stateToEnter;
+		A_State currentState = this.m_currentState = stateToEnter;
 
-		this.m_currentState.didEnter_internal(args);
+		currentState.didEnter_internal(args);
 		
-		if( this.isForegrounded() )
+		boolean shouldForeground = true;
+		A_State stateV = m_currentState;
+		while( currentState != stateV )
 		{
-			this.m_currentState.didForeground_internal(null, null);
+			if( !stateV.isTransparent() )
+			{
+				shouldForeground = false;
+				break;
+			}
+			stateV = stateV.getStateBeneath();
+		}
+		
+		if( this.isForegrounded() && currentState.isEntered() && !currentState.isForegrounded() && shouldForeground )
+		{
+			currentState.didForeground_internal(null, null);
 		}
 	}
 

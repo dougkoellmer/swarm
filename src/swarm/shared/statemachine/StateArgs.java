@@ -92,10 +92,10 @@ public class StateArgs
 		return true;
 	}
 	
-	public boolean equals(Object ... values)
+	public boolean equals(Object ... argValues)
 	{
 		Object[] values_this = this.values != null ? this.values : DUMMY_VALUES;
-		Object[] values_that = values != null ? values : DUMMY_VALUES;
+		Object[] values_that = argValues != null ? argValues : DUMMY_VALUES;
 		int max = values_this.length > values_that.length ? values_this.length : values_that.length;
 		
 		for( int i = 0; i < max; i++ )
@@ -117,6 +117,36 @@ public class StateArgs
 		}
 		
 		return true;
+	}
+	
+	@Override public boolean equals(Object argValue)
+	{
+		if(values == null || values.length == 0 )
+		{
+			if( argValue == null )
+			{
+				return true;
+			}
+			else return false;
+		}
+		else
+		{
+			for( int i = 0; i < values.length; i++ )
+			{
+				Object ithValue = values[i];
+				
+				if( ithValue != null )
+				{
+					if( argValue == null )  return false;
+					
+					return ithValue.equals(argValue);
+				}
+			}
+			
+			if( argValue != null )  return false;
+			
+			return true;
+		}
 	}
 	
 	public boolean equals(StateArgs args)

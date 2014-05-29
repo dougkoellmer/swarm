@@ -25,9 +25,11 @@ import swarm.client.states.camera.Action_Camera_SnapToPoint;
 import swarm.client.states.camera.Event_CameraSnapping_OnTargetCellAppeared;
 import swarm.client.states.camera.Event_Camera_OnCellSizeFound;
 import swarm.client.states.camera.Event_GettingMapping_OnResponse;
+import swarm.client.states.camera.I_State_SnappingOrViewing;
 import swarm.client.states.camera.StateMachine_Camera;
 import swarm.client.states.camera.State_CameraSnapping;
 import swarm.client.states.camera.State_ViewingCell;
+import swarm.client.view.U_Cell;
 import swarm.client.view.U_Css;
 import swarm.client.view.ViewContext;
 import swarm.client.view.cell.VisualCell;
@@ -35,6 +37,7 @@ import swarm.client.view.cell.VisualCellContainer;
 import swarm.shared.debugging.U_Debug;
 import swarm.shared.entities.A_Grid;
 import swarm.shared.lang.Boolean;
+import swarm.shared.statemachine.A_StateContextForwarder;
 import swarm.shared.statemachine.I_StateEventListener;
 import swarm.shared.statemachine.StateEvent;
 import swarm.shared.structs.CellAddressMapping;
@@ -634,15 +637,23 @@ public class ScrollNavigator implements I_StateEventListener
 				{
 					this.onResize();
 				}
-				else if( event.isFor(Event_CameraSnapping_OnTargetCellAppeared.class) )
-				{
-					this.onResize();
-				}
+				
+				//--- DRK > This cas handled by the "visual cell pop" flow started by focuser.
+				//---		Kinda sloppy.
+//				else if( event.isFor(Event_CameraSnapping_OnTargetCellAppeared.class) )
+//				{
+//					BufferCell cell = U_Cell.getBufferCell(event);
+//					
+//					if( cell.getFocusedCellSize() != null && cell.getFocusedCellSize().hasNaturalDimension() )
+//					{
+//						this.onResize();
+//					}
+//				}
 				
 				break;
 			}
 		}
-	}
+	}	
 	
 	private void setTargetLayout(GridCoordinate gridCoord)
 	{

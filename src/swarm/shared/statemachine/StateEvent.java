@@ -198,6 +198,6 @@ public class StateEvent extends A_StateContextForwarder
 	
 	public boolean isFor(Class<? extends Object> stateObject, E_Event type)
 	{
-		return isFor(stateObject, type);
+		return isFor(stateObject) && isFor(type);
 	}
 }

@@ -97,7 +97,7 @@ public class State_ViewingCell extends A_State implements I_StateEventListener, 
 		txnMngr.flushRequestQueue();
 	}
 
-	public BufferCell getCell()
+	@Override public BufferCell getCell()
 	{
 		return m_cell;
 	}

@@ -70,6 +70,18 @@ public abstract class A_StateContextForwarder
 		return getContext_internal().getForegrounded(T);
 	}
 	
+	public <T extends A_State> T getForegrounded(Class<? extends A_State> ... T)
+	{
+		for( int i = 0; i < T.length; i++ )
+		{
+			A_State state = getForegrounded(T[i]);
+			
+			if( state != null )  return (T) state;
+		}
+		
+		return null;
+	}
+	
 	public boolean isForegrounded(Class<? extends A_State> T)
 	{
 		return this.getForegrounded(T) != null;
@@ -103,6 +115,23 @@ public abstract class A_StateContextForwarder
 	public <T extends A_State> T get(Class<? extends A_State> T)
 	{
 		return this.getEntered(T);
+	}
+	
+	public <T extends A_State> T get(Class<? extends A_State> ... T)
+	{
+		return this.getEntered(T);
+	}
+	
+	public <T extends A_State> T getEntered(Class<? extends A_State> ... T)
+	{
+		for( int i = 0; i < T.length; i++ )
+		{
+			T state = getEntered(T[i]);
+			
+			if( state != null )  return state;
+		}
+		
+		return null;
 	}
 	
 	public <T extends A_State> T getEntered(Class<? extends A_State> T)
