@@ -523,7 +523,7 @@ public class BrowserNavigator implements I_StateEventListener
 					{
 						Action_Camera_SnapToCoordinate.Args args = event.getActionArgs();
 						
-						Object userData = event.getActionArgs().values;
+						Object userData = event.getActionArgs().get();
 						if( userData == this.getClass() ) // signifies that snap was because of browser navigation event.
 						{
 							m_lastSnapAction = null;
