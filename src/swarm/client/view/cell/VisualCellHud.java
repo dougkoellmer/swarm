@@ -188,8 +188,17 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 			double scrollWidth = scrollElement.getScrollWidth();
 			double clientWidth = scrollElement.getClientWidth();
 			double diff = (hudWidth - viewWidth);// +  U_CameraViewport.getViewPadding(grid);
-			double scrollRatio = Math.round(m_scrollX / (scrollWidth-clientWidth));
-			return -Math.round(diff * scrollRatio);
+			if( m_width == m_minWidth )
+			{
+				diff += 1;
+			}
+			double scrollRatio = (m_scrollX / (scrollWidth-clientWidth));
+			double offset = -(Math.round(diff * scrollRatio));
+			
+//			s_logger.severe(m_width + "");
+			
+			
+			return offset;
 		}
 		else
 		{
@@ -382,7 +391,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 					
 					if( event.getContext().isEntered(State_ViewingCell.class) )
 					{
-						State_ViewingCell state = event.getState();
+						State_ViewingCell state = event.get(State_ViewingCell.class);
 						
 						this.setTargetPosition(state.getTargetCoord());
 						this.ensureTargetPosition();
@@ -394,7 +403,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 					}
 					else if( event.isEntered(State_CameraSnapping.class) )
 					{
-						State_CameraSnapping state = event.getState();
+						State_CameraSnapping state = event.get(State_CameraSnapping.class);
 						
 						this.setTargetWidth(state.getTargetCoord());
 						this.setTargetPosition(state.getTargetCoord());
@@ -496,8 +505,14 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 		
 		if( constrainByViewWidth )
 		{
-			double viewWidth = calcViewWidth(coord_nullable, camera, grid);		
+			double viewWidth = calcViewWidth(coord_nullable, camera, grid);
+			
 			m_targetWidth = Math.min(viewWidth, hudWidth);
+			
+			if( viewWidth < hudWidth  )
+			{
+				m_targetWidth -= 1;
+			}
 		}
 		else
 		{
