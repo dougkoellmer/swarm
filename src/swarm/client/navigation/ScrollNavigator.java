@@ -638,7 +638,7 @@ public class ScrollNavigator implements I_StateEventListener
 					this.onResize();
 				}
 				
-				//--- DRK > This cas handled by the "visual cell pop" flow started by focuser.
+				//--- DRK > This case handled by the "visual cell pop" flow started by focuser.
 				//---		Kinda sloppy.
 //				else if( event.isFor(Event_CameraSnapping_OnTargetCellAppeared.class) )
 //				{

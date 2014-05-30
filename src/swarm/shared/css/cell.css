@@ -112,7 +112,7 @@
 	position: absolute;
 	width:100%;
 	height:100%;
-	-webkit-transform:translate3d(0px, 0px, 0px); /*workaround for z-fighting bug on rightmost pixel column*/
+/* 	-webkit-transform:translate3d(0px, 0px, 0px); workaround for z-fighting bug on rightmost pixel column */
 }
 
 .cell_highlight

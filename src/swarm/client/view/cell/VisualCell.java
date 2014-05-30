@@ -8,6 +8,7 @@ import swarm.client.app.AppContext;
 import swarm.client.entities.BufferCell;
 import swarm.client.entities.I_BufferCellListener;
 import swarm.client.managers.CameraManager;
+import swarm.client.states.camera.StateMachine_Camera;
 import swarm.client.view.E_ZIndex;
 import swarm.client.view.S_UI;
 import swarm.client.view.U_Css;
@@ -40,6 +41,10 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 {
+	public static interface I_CodeListener
+	{
+		void onCodeLoaded(VisualCell cell);
+	}
 	static enum LayoutState
 	{
 		NOT_CHANGING,
@@ -69,6 +74,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		}
 	}
 	
+	private I_CodeListener m_codeListener;
 	private int m_id;
 	private final AbsolutePanel m_contentPanel = new AbsolutePanel();
 	private final UIBlocker	m_statusPanel = new UIBlocker();
@@ -163,6 +169,11 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		this.add(m_contentPanel);
 		this.add(m_statusPanel);
 		this.add(m_glassPanel);
+	}
+	
+	public void setCodeListener(I_CodeListener listener)
+	{
+		m_codeListener = listener;
 	}
 	
 	public BufferCell getBufferCell()
@@ -637,6 +648,8 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		m_codeSafetyLevel = code.getSafetyLevel();
 		
 		m_sandboxMngr.start(m_contentPanel.getElement(), code, cellNamespace, m_codeLoadListener);
+		
+		if( m_codeListener != null )  m_codeListener.onCodeLoaded(this);
 	}
 	
 	public E_CodeSafetyLevel getCodeSafetyLevel()

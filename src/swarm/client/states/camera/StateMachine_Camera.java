@@ -178,7 +178,7 @@ public class StateMachine_Camera extends A_StateMachine implements I_StateEventL
 
 		CellCodeManager codeMngr = m_appContext.codeMngr;
 
-		codeMngr.start(new CellCodeManager.I_SyncOrPreviewDelegate()
+		codeMngr.start(new CellCodeManager.I_Listener()
 		{
 			@Override
 			public void onCompilationFinished(CompilerResult result)

@@ -51,7 +51,7 @@ import com.google.gwt.http.client.RequestBuilder;
  */
 public class CellCodeManager implements I_TransactionResponseHandler
 {
-	public static interface I_SyncOrPreviewDelegate
+	public static interface I_Listener
 	{
 		void onCompilationFinished(CompilerResult result);
 	}
@@ -61,7 +61,7 @@ public class CellCodeManager implements I_TransactionResponseHandler
 	private final GridCoordinate m_utilCoord = new GridCoordinate();
 	private final A_Cell m_utilCell = new A_Cell(){};
 	
-	I_SyncOrPreviewDelegate m_syncOrPreviewErrorDelegate = null;
+	I_Listener m_syncOrPreviewErrorDelegate = null;
 	
 	private final MutableJsonQuery m_postQuery = new MutableJsonQuery();
 	private final MutableJsonQuery m_getQuery	 = new MutableJsonQuery();
@@ -78,7 +78,7 @@ public class CellCodeManager implements I_TransactionResponseHandler
 		m_getQuery.addCondition(null);
 	}
 	
-	public void start(I_SyncOrPreviewDelegate syncOrPreviewErrorDelegate)
+	public void start(I_Listener syncOrPreviewErrorDelegate)
 	{
 		ClientTransactionManager txnMngr = m_appContext.txnMngr;
 		txnMngr.addHandler(this);

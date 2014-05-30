@@ -2,11 +2,17 @@ package swarm.client.view.cell;
 
 import java.util.ArrayList;
 
+import swarm.shared.statemachine.*;
+
 import com.google.gwt.user.client.ui.Widget;
 
 import swarm.client.entities.BufferCell;
 import swarm.client.entities.I_BufferCellListener;
 import swarm.client.managers.CameraManager;
+import swarm.client.states.camera.I_State_SnappingOrViewing;
+import swarm.client.states.camera.StateMachine_Camera;
+import swarm.client.states.camera.State_CameraSnapping;
+import swarm.client.states.camera.State_ViewingCell;
 import swarm.client.structs.I_CellPoolDelegate;
 import swarm.client.view.ViewContext;
 import swarm.client.view.sandbox.SandboxManager;
@@ -54,16 +60,53 @@ public class VisualCellPool implements I_CellPoolDelegate
 	
 	private boolean m_poolNeedsCleaning = false;
 	
+	private final ViewContext m_viewContext;
+	
+	private final VisualCell.I_CodeListener m_codeListener = new VisualCell.I_CodeListener()
+	{
+		@Override
+		public void onCodeLoaded(VisualCell cell)
+		{
+			BufferCell bufferCell = cell.getBufferCell();
+			
+			if( bufferCell == null )  return;
+			if( bufferCell.getFocusedCellSize() == null )  return;
+			if( !bufferCell.getFocusedCellSize().hasNaturalDimension() )  return;
+			
+			StateMachine_Camera cameraMachine = m_viewContext.stateContext.get(StateMachine_Camera.class);
+			A_State state = cameraMachine.getCurrentState();
+			if( state instanceof I_State_SnappingOrViewing )
+			{
+				I_State_SnappingOrViewing snappingOrViewing = (I_State_SnappingOrViewing) state;
+				
+				if( snappingOrViewing.getTargetCoord().equals(bufferCell.getCoordinate()) )
+				{
+					//--- DRK > Hacky way of seeing if we're leaving the viewing state.
+					if( state instanceof State_ViewingCell && !bufferCell.isFocused() )
+					{
+						return;
+					}
+					
+					m_viewContext.scrollNavigator.onResize();
+				}
+			}
+		}
+	};
+	
 	VisualCellPool(final SandboxManager sandboxMngr, Widget cellContainer, final I_CellSpinnerFactory spinnerFactory, final ViewContext viewContext)
 	{
 		m_cellContainer = cellContainer;
+		m_viewContext = viewContext;
 		
 		m_visualCellClass = new I_Class<VisualCell>()
 		{
 			@Override
 			public VisualCell newInstance()
 			{
-				return new VisualCell(spinnerFactory.newSpinner(), sandboxMngr, viewContext.appContext.cameraMngr, viewContext.config.cellRetractionEasing, viewContext.config.cellSizeChangeTime_seconds);
+				VisualCell cell = new VisualCell(spinnerFactory.newSpinner(), sandboxMngr, viewContext.appContext.cameraMngr, viewContext.config.cellRetractionEasing, viewContext.config.cellSizeChangeTime_seconds);
+				cell.setCodeListener(m_codeListener);
+				
+				return cell;
 			}
 		};
 		

@@ -3,7 +3,7 @@ package swarm.client.managers;
 import java.util.ArrayList;
 
 import swarm.client.app.AppContext;
-import swarm.client.managers.CellCodeManager.I_SyncOrPreviewDelegate;
+import swarm.client.managers.CellCodeManager.I_Listener;
 import swarm.client.states.StateMachine_Base;
 import swarm.client.states.State_AsyncDialog;
 import swarm.client.structs.AccountInfo;

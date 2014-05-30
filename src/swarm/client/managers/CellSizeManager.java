@@ -6,7 +6,7 @@ import swarm.client.app.AppContext;
 import swarm.client.entities.A_ClientUser;
 import swarm.client.entities.BufferCell;
 import swarm.client.entities.UserCell;
-import swarm.client.managers.CellCodeManager.I_SyncOrPreviewDelegate;
+import swarm.client.managers.CellCodeManager.I_Listener;
 import swarm.client.transaction.ClientTransactionManager;
 import swarm.client.transaction.E_ResponseErrorControl;
 import swarm.client.transaction.E_ResponseSuccessControl;
