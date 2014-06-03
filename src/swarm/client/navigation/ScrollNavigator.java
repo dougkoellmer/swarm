@@ -148,6 +148,8 @@ public class ScrollNavigator implements I_StateEventListener
 	
 	private void onResize_private()
 	{
+		s_logger.severe("RESIZE_START");
+		
 		State_ViewingCell viewingState =  m_viewContext.stateContext.getEntered(State_ViewingCell.class);
 		State_CameraSnapping snappingState = m_viewContext.stateContext.getEntered(State_CameraSnapping.class);
 		
@@ -172,15 +174,18 @@ public class ScrollNavigator implements I_StateEventListener
 			
 			A_Grid grid = m_viewContext.appContext.gridMngr.getGrid();
 			grid.calcCoordTopLeftPoint(coord, 1, m_utilPoint1);
+			s_logger.severe("1: " + m_utilPoint1);
 			
 			double cellHudHeight = m_viewContext.appConfig.cellHudHeight;
 			double viewWidth = m_viewContext.appContext.cameraMngr.getCamera().getViewWidth();
 			double viewHeight = m_viewContext.appContext.cameraMngr.getCamera().getViewHeight();
 			
 			U_CameraViewport.calcConstrainedCameraPoint(grid, coord, m_utilPoint1, viewWidth, viewHeight, cellHudHeight, m_utilPoint1);
+			s_logger.severe("2: " + m_utilPoint1);
 			
 			//TODO: This series calls calcLayout twice.
 			this.adjustTargetSnapPoint_private(coord, m_utilPoint1);
+			s_logger.severe("3: " + m_utilPoint1);
 			this.setTargetLayout(coord);
 			
 			if( viewingState == null )
@@ -206,6 +211,8 @@ public class ScrollNavigator implements I_StateEventListener
 		{
 			this.updateCameraViewRect(true, false);
 		}
+		
+		s_logger.severe("RESIZE_END\n\n");
 	}
 	
 	private void updateCameraViewRect(boolean updateBuffer, boolean maintainApparentPosition)
