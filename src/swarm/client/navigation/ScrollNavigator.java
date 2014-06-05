@@ -148,7 +148,7 @@ public class ScrollNavigator implements I_StateEventListener
 	
 	private void onResize_private()
 	{
-		s_logger.severe("RESIZE_START");
+//		s_logger.severe("RESIZE_START");
 		
 		State_ViewingCell viewingState =  m_viewContext.stateContext.getEntered(State_ViewingCell.class);
 		State_CameraSnapping snappingState = m_viewContext.stateContext.getEntered(State_CameraSnapping.class);
@@ -170,22 +170,27 @@ public class ScrollNavigator implements I_StateEventListener
 				coord = snappingState.getTargetCoord();
 			}
 			
+			this.calcFocusedLayout(coord, m_layout);
+			
 			this.updateCameraViewRect(false, false);
 			
 			A_Grid grid = m_viewContext.appContext.gridMngr.getGrid();
 			grid.calcCoordTopLeftPoint(coord, 1, m_utilPoint1);
-			s_logger.severe("1: " + m_utilPoint1);
+//			s_logger.severe("1: " + m_utilPoint1 + " " + m_layout.window);
+			
 			
 			double cellHudHeight = m_viewContext.appConfig.cellHudHeight;
 			double viewWidth = m_viewContext.appContext.cameraMngr.getCamera().getViewWidth();
 			double viewHeight = m_viewContext.appContext.cameraMngr.getCamera().getViewHeight();
+//			s_logger.severe("[" + viewWidth + ", " + viewHeight + "]");
+//			s_logger.severe("scrollbar: " + m_scrollBarWidthDiv2*2);
 			
 			U_CameraViewport.calcConstrainedCameraPoint(grid, coord, m_utilPoint1, viewWidth, viewHeight, cellHudHeight, m_utilPoint1);
-			s_logger.severe("2: " + m_utilPoint1);
+//			s_logger.severe("2: " + m_utilPoint1);
 			
 			//TODO: This series calls calcLayout twice.
 			this.adjustTargetSnapPoint_private(coord, m_utilPoint1);
-			s_logger.severe("3: " + m_utilPoint1);
+//			s_logger.severe("3: " + m_utilPoint1);
 			this.setTargetLayout(coord);
 			
 			if( viewingState == null )
@@ -212,7 +217,7 @@ public class ScrollNavigator implements I_StateEventListener
 			this.updateCameraViewRect(true, false);
 		}
 		
-		s_logger.severe("RESIZE_END\n\n");
+//		s_logger.severe("RESIZE_END\n\n");
 	}
 	
 	private void updateCameraViewRect(boolean updateBuffer, boolean maintainApparentPosition)
@@ -680,8 +685,12 @@ public class ScrollNavigator implements I_StateEventListener
 		
 		this.calcFocusedLayout(bufferCell.getCoordinate(), m_layout);
 		
+//		s_logger.severe(m_layout.topLeftOffset +"");
+		
 		m_layout.topLeftOffset.incX(-this.getScrollX());
 		m_layout.topLeftOffset.incY(-this.getScrollY());
+		
+//		s_logger.severe(m_layout.topLeftOffset + "");
 		
 		visualCell.setTargetLayout(m_layout.cellSize.getWidth(), m_layout.cellSize.getHeight(), (int)m_layout.topLeftOffset.getX(), (int)m_layout.topLeftOffset.getY());
 	}
@@ -766,8 +775,6 @@ public class ScrollNavigator implements I_StateEventListener
 		layout_out.cellSizePlusExtras.set(totalCellWidthReq, totalCellHeightReq);
 		
 		layout_out.window.set(this.getWindowWidthSansScroll(), this.getWindowHeightSansScroll());
-		
-		this.calcTopLeftOffset(layout_out.cellSize, layout_out.window, layout_out.topLeftOffset);
 
 		layout_out.widthSmaller.value = false;
 		layout_out.heightSmaller.value = false;
@@ -789,5 +796,7 @@ public class ScrollNavigator implements I_StateEventListener
 			layout_out.window.incHeight(-m_scrollBarWidthDiv2*2);			
 			layout_out.widthSmaller.value = true;
 		}
+		
+		this.calcTopLeftOffset(layout_out.cellSize, layout_out.window, layout_out.topLeftOffset);
 	}
 }

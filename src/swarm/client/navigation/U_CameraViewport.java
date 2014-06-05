@@ -86,18 +86,25 @@ public class U_CameraViewport
 		double cellWidthReq = calcCellWidthRequirement(grid);
 		double cellHeightReq = calcCellHeightRequirement(grid, cellHudHeight);
 		
+		calcConstrainedCameraPoint(grid, coord, cameraPoint, viewWidth, viewHeight, cellWidthReq, cellHeightReq, cellHudHeight, point_out);
+	}
+	
+	public static void calcConstrainedCameraPoint(A_Grid grid, GridCoordinate coord, Point cameraPoint, double viewWidth, double viewHeight, double cellWidth, double cellHeight, double cellHudHeight, Point point_out)
+	{
+		s_utilPoint1.copy(cameraPoint); // in case cameraPoint and point_out are the same reference.
+		
 		calcViewWindowCenter(grid, coord, cellHudHeight, point_out);
 
-		if( viewWidth < cellWidthReq )
+		if( viewWidth < cellWidth )
 		{
-			double diff = (cellWidthReq - viewWidth)/2;
+			double diff = (cellWidth - viewWidth)/2;
 			double x = U_Math.clamp(s_utilPoint1.getX(), point_out.getX() - diff, point_out.getX() + diff);
 			point_out.setX(x);
 		}
 		
-		if( viewHeight < cellHeightReq )
+		if( viewHeight < cellHeight )
 		{
-			double diff = (cellHeightReq - viewHeight)/2;
+			double diff = (cellHeight - viewHeight)/2;
 			double y = U_Math.clamp(s_utilPoint1.getY(), point_out.getY() - diff, point_out.getY() + diff);
 			point_out.setY(y);
 		}
