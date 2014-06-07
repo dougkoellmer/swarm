@@ -188,10 +188,9 @@ public class ScrollNavigator implements I_StateEventListener
 			U_CameraViewport.calcConstrainedCameraPoint(grid, coord, m_utilPoint1, viewWidth, viewHeight, cellHudHeight, m_utilPoint1);
 //			s_logger.severe("2: " + m_utilPoint1);
 			
-			//TODO: This series calls calcLayout twice.
-			this.adjustTargetSnapPoint_private(coord, m_utilPoint1);
+			this.adjustTargetSnapPoint_private(coord, m_utilPoint1, m_layout);
 //			s_logger.severe("3: " + m_utilPoint1);
-			this.setTargetLayout(coord);
+			this.setTargetLayout(coord, m_layout);
 			
 			if( viewingState == null )
 			{
@@ -485,6 +484,11 @@ public class ScrollNavigator implements I_StateEventListener
 	
 	public void adjustTargetSnapPoint_private(GridCoordinate targetCoord, Point point_out)
 	{
+		adjustTargetSnapPoint_private(targetCoord, point_out, null);
+	}
+	
+	public void adjustTargetSnapPoint_private(GridCoordinate targetCoord, Point point_out, FocusedLayout layout_nullable)
+	{
 		State_ViewingCell viewingState = m_viewContext.stateContext.getEntered(State_ViewingCell.class);
 		if( viewingState != null )
 		{
@@ -496,13 +500,16 @@ public class ScrollNavigator implements I_StateEventListener
 		
 		A_Grid grid = this.m_viewContext.appContext.gridMngr.getGrid();
 		
-//		this.calcFocusedLayout(targetCoord, m_utilPoint1, m_utilRect1, m_utilRect2, m_utilCellSize1, m_utilBool1, m_utilBool2);
-		this.calcFocusedLayout(targetCoord, m_layout);
+		if( layout_nullable == null )
+		{
+			this.calcFocusedLayout(targetCoord, layout_nullable);
+			layout_nullable = m_layout;
+		}
 		
-		double newWindowWidth = m_layout.window.getWidth();
-		double newWindowHeight = m_layout.window.getHeight();
-		boolean widthSmaller = m_layout.widthSmaller.value;
-		boolean heightSmaller = m_layout.heightSmaller.value;
+		double newWindowWidth = layout_nullable.window.getWidth();
+		double newWindowHeight = layout_nullable.window.getHeight();
+		boolean widthSmaller = layout_nullable.widthSmaller.value;
+		boolean heightSmaller = layout_nullable.heightSmaller.value;
 
 		if( widthSmaller && heightSmaller )
 		{
@@ -521,7 +528,7 @@ public class ScrollNavigator implements I_StateEventListener
 					m_utilPoint2.incY(newWindowHeight/2);
 					m_utilPoint2.incY(m_scrollBarWidthDiv2);
 					
-					double offset = Math.min((m_layout.cellSizePlusExtras.getHeight() - defaultCellHeightReq)/2, (newWindowHeight - defaultCellHeightReq)/2);
+					double offset = Math.min((layout_nullable.cellSizePlusExtras.getHeight() - defaultCellHeightReq)/2, (newWindowHeight - defaultCellHeightReq)/2);
 					offset = Math.max(0, offset);
 					m_utilPoint2.incY(-offset);
 					point_out.setY(m_utilPoint2.getY());
@@ -535,7 +542,7 @@ public class ScrollNavigator implements I_StateEventListener
 					m_utilPoint2.incX(newWindowWidth/2);
 					m_utilPoint2.incX(m_scrollBarWidthDiv2);
 
-					double offset = Math.min((m_layout.cellSizePlusExtras.getWidth() - defaultCellWidthReq)/2, (newWindowWidth - defaultCellWidthReq)/2);
+					double offset = Math.min((layout_nullable.cellSizePlusExtras.getWidth() - defaultCellWidthReq)/2, (newWindowWidth - defaultCellWidthReq)/2);
 					offset = Math.max(0, offset);
 					m_utilPoint2.incX(-offset);
 					point_out.setX(m_utilPoint2.getX());
@@ -667,7 +674,7 @@ public class ScrollNavigator implements I_StateEventListener
 		}
 	}	
 	
-	private void setTargetLayout(GridCoordinate gridCoord)
+	private void setTargetLayout(GridCoordinate gridCoord, FocusedLayout layout_nullable)
 	{
 		CellBufferManager cellManager = m_viewContext.appContext.cellBufferMngr;
 		CellBuffer cellBuffer = cellManager.getDisplayBuffer();
@@ -675,24 +682,33 @@ public class ScrollNavigator implements I_StateEventListener
 		{
 			BufferCell bufferCell = cellBuffer.getCellAtAbsoluteCoord(gridCoord);
 			VisualCell visualCell = (VisualCell) bufferCell.getVisualization();
-			this.setTargetLayout(visualCell);		
+			this.setTargetLayout(visualCell, layout_nullable);		
 		}
 	}
 	
 	public void setTargetLayout(VisualCell visualCell)
 	{
+		setTargetLayout(visualCell, null);
+	}
+	
+	private void setTargetLayout(VisualCell visualCell, FocusedLayout layout_nullable)
+	{
 		BufferCell bufferCell = visualCell.getBufferCell();
 		
-		this.calcFocusedLayout(bufferCell.getCoordinate(), m_layout);
+		if( layout_nullable == null )
+		{
+			this.calcFocusedLayout(bufferCell.getCoordinate(), m_layout);
+			layout_nullable = m_layout;
+		}
 		
 //		s_logger.severe(m_layout.topLeftOffset +"");
 		
-		m_layout.topLeftOffset.incX(-this.getScrollX());
-		m_layout.topLeftOffset.incY(-this.getScrollY());
+		layout_nullable.topLeftOffset.incX(-this.getScrollX());
+		layout_nullable.topLeftOffset.incY(-this.getScrollY());
 		
 //		s_logger.severe(m_layout.topLeftOffset + "");
 		
-		visualCell.setTargetLayout(m_layout.cellSize.getWidth(), m_layout.cellSize.getHeight(), (int)m_layout.topLeftOffset.getX(), (int)m_layout.topLeftOffset.getY());
+		visualCell.setTargetLayout(layout_nullable.cellSize.getWidth(), layout_nullable.cellSize.getHeight(), (int)layout_nullable.topLeftOffset.getX(), (int)layout_nullable.topLeftOffset.getY());
 	}
 	
 	
