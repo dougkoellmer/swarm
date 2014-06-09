@@ -116,7 +116,7 @@ public class ScrollNavigator implements I_StateEventListener
 			
 		}, ScrollEvent.getType());
 		
-		this.toggleScrollBars(null);
+		this.toggleScrollBars(null, null);
 	}
 	
 	public void addScrollListener(I_ScrollListener listener)
@@ -153,8 +153,6 @@ public class ScrollNavigator implements I_StateEventListener
 		State_ViewingCell viewingState =  m_viewContext.stateContext.getEntered(State_ViewingCell.class);
 		State_CameraSnapping snappingState = m_viewContext.stateContext.getEntered(State_CameraSnapping.class);
 		
-		this.toggleScrollBars(viewingState);
-		
 		if( viewingState != null || snappingState != null )
 		{
 			//s_logger.severe(m_viewContext.appContext.cameraMngr.getCamera().getPosition()+"");
@@ -171,6 +169,8 @@ public class ScrollNavigator implements I_StateEventListener
 			}
 			
 			this.calcFocusedLayout(coord, m_layout);
+			
+			this.toggleScrollBars(viewingState, m_layout);
 			
 			this.updateCameraViewRect(false, false);
 			
@@ -347,7 +347,7 @@ public class ScrollNavigator implements I_StateEventListener
 		mouseLayerStyle.setProperty("height", heightProperty);
 	}
 	
-	private void toggleScrollBars(State_ViewingCell viewingState_nullable)
+	private void toggleScrollBars(State_ViewingCell viewingState_nullable, FocusedLayout layout_nullable)
 	{
 		if( viewingState_nullable != null && viewingState_nullable.isEntered() )
 		{			
@@ -357,21 +357,25 @@ public class ScrollNavigator implements I_StateEventListener
 			//Point centerPoint = m_utilPoint1;
 			//U_CameraViewport.calcViewWindowCenter(grid, viewingState_nullable.getCell().getCoordinate(), m_cellHudHeight, centerPoint);
 			
-//			this.calcFocusedLayout(targetCoord, m_utilPoint1, m_utilRect1, m_utilRect2, m_utilCellSize1, m_utilBool1, m_utilBool2);
-			this.calcFocusedLayout(targetCoord, m_layout);
-	
-			if( m_layout.widthSmaller.value )
+			if( layout_nullable == null )
 			{
-				putScrollBarX(m_layout.cellSizePlusExtras.getWidth());
+//				this.calcFocusedLayout(targetCoord, m_utilPoint1, m_utilRect1, m_utilRect2, m_utilCellSize1, m_utilBool1, m_utilBool2);
+				this.calcFocusedLayout(targetCoord, m_layout);
+				layout_nullable = m_layout;
+			}
+	
+			if( layout_nullable.widthSmaller.value )
+			{
+				putScrollBarX(layout_nullable.cellSizePlusExtras.getWidth());
 			}
 			else
 			{
 				clearScrollbarX();
 			}
 			
-			if( m_layout.heightSmaller.value )
+			if( layout_nullable.heightSmaller.value )
 			{
-				putScrollBarY(m_layout.cellSizePlusExtras.getHeight());
+				putScrollBarY(layout_nullable.cellSizePlusExtras.getHeight());
 			}
 			else
 			{
@@ -502,7 +506,7 @@ public class ScrollNavigator implements I_StateEventListener
 		
 		if( layout_nullable == null )
 		{
-			this.calcFocusedLayout(targetCoord, layout_nullable);
+			this.calcFocusedLayout(targetCoord, m_layout);
 			layout_nullable = m_layout;
 		}
 		
@@ -597,7 +601,7 @@ public class ScrollNavigator implements I_StateEventListener
 				{
 					State_ViewingCell state = event.getState();
 					
-					toggleScrollBars(state);
+					toggleScrollBars(state, null);
 					
 					boolean isScrollingX = isScrollingX();
 					boolean isScrollingY = isScrollingY();
@@ -631,7 +635,7 @@ public class ScrollNavigator implements I_StateEventListener
 					boolean isScrollingX = isScrollingX();
 					boolean isScrollingY = isScrollingY();
 					
-					toggleScrollBars((State_ViewingCell) event.getState());
+					toggleScrollBars((State_ViewingCell) event.getState(), null);
 					
 					if( isScrollingX || isScrollingY )
 					{
