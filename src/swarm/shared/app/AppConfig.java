@@ -10,4 +10,6 @@ public class AppConfig
 	public boolean verboseTransactions = false;
 	public String appId = null;
 	public String publicRecaptchaKey = null;
+	
+	public String homeAddress = null;
 }

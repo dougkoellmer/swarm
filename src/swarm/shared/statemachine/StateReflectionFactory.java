@@ -11,11 +11,11 @@ public class StateReflectionFactory implements I_StateFactory
 		}
 		catch (InstantiationException e)
 		{
-			e.printStackTrace();
+//			e.printStackTrace();
 		}
 		catch (IllegalAccessException e)
 		{
-			e.printStackTrace();
+//			e.printStackTrace();
 		}
 		
 		return null;
@@ -31,7 +31,7 @@ public class StateReflectionFactory implements I_StateFactory
 		}
 		catch (ClassNotFoundException e)
 		{
-			e.printStackTrace();
+//			e.printStackTrace();
 		}
 		
 		return null;
@@ -74,11 +74,11 @@ public class StateReflectionFactory implements I_StateFactory
 		}
 		catch (InstantiationException e)
 		{
-			e.printStackTrace();
+//			e.printStackTrace();
 		}
 		catch( IllegalAccessException e )
 		{
-			e.printStackTrace();
+//			e.printStackTrace();
 		}
 		
 		return action;

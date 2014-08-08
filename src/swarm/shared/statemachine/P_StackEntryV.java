@@ -177,7 +177,7 @@ class P_StackEntryV
 			
 			if( !remove )
 			{
-				if( match_nullable != null )
+				if( match_nullable != null && ithArgs != null )
 				{
 					if( match_nullable == target.MATCHING )
 					{

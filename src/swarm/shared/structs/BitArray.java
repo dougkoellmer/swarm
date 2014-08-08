@@ -32,6 +32,28 @@ public class BitArray extends A_JsonEncodable
 		m_blocks = null;
 	}
 	
+	public BitArray clone()
+	{
+		BitArray cloned = new BitArray();
+		cloned.m_bitCount = this.m_bitCount;
+		
+		if( this.m_blocks == null )
+		{
+			cloned.m_blocks = null;
+		}
+		else
+		{
+			cloned.m_blocks = new int[this.m_blocks.length];
+			
+			for( int i = 0; i < cloned.m_blocks.length; i++ )
+			{
+				cloned.m_blocks[i] = this.m_blocks[i];
+			}
+		}
+		
+		return cloned;
+	}
+	
 	public int[] getRawBlocks()
 	{
 		return m_blocks;
@@ -212,6 +234,12 @@ public class BitArray extends A_JsonEncodable
 	{
 		int bitIndexIntoBlock = calcBitIndexModBlock(bitIndex);
 		int blockIndex = calcBlockIndex(bitIndex, bitIndexIntoBlock);
+		
+		if( blockIndex >= m_blocks.length )
+		{
+			int i = 0;
+		}
+		
 		int block = m_blocks[blockIndex];
 		int blockBit = U_Bits.calcOrdinalBit(bitIndexIntoBlock);
 		
@@ -223,6 +251,7 @@ public class BitArray extends A_JsonEncodable
 		{
 			block &= ~blockBit;
 		}
+		
 		
 		m_blocks[blockIndex] = block;
 	}

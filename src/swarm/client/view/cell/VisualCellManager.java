@@ -128,8 +128,19 @@ public class VisualCellManager implements I_UIElement
 	private boolean updateCellTransforms(double timeStep, boolean isViewStateTransition)
 	{
 		CellBufferManager cellManager = m_viewContext.appContext.cellBufferMngr;
-		CellBuffer cellBuffer = cellManager.getDisplayBuffer();
 		
+		for( int i = 0; i < cellManager.getBufferCount(); i++ )
+		{
+			CellBuffer cellBuffer = cellManager.getDisplayBuffer(i);
+			
+			updateCellTransforms(cellBuffer, timeStep, isViewStateTransition);
+		}
+		
+		return true;
+	}
+	
+	private boolean updateCellTransforms(CellBuffer cellBuffer, double timeStep, boolean isViewStateTransition)
+	{
 		A_Grid grid = m_viewContext.appContext.gridMngr.getGrid(); // TODO: Get grid from somewhere else.
 		
 		int bufferSize = cellBuffer.getCellCount();
@@ -279,7 +290,17 @@ public class VisualCellManager implements I_UIElement
 	private void updateCellsIndividually(double timeStep)
 	{
 		CellBufferManager cellManager = m_viewContext.appContext.cellBufferMngr;
-		CellBuffer cellBuffer = cellManager.getDisplayBuffer();
+		
+		for( int i = 0; i < cellManager.getBufferCount(); i++ )
+		{
+			CellBuffer cellBuffer = cellManager.getDisplayBuffer(i);
+			
+			updateCellsIndividually(cellBuffer, timeStep);
+		}
+	}
+	
+	private void updateCellsIndividually(CellBuffer cellBuffer, double timeStep)
+	{
 		int bufferSize = cellBuffer.getCellCount();
 		
 		for ( int i = 0; i < bufferSize; i++ )
@@ -303,8 +324,7 @@ public class VisualCellManager implements I_UIElement
 		return m_lastBasePoint;
 	}
 	
-	@Override
-	public void onStateEvent(StateEvent event)
+	@Override public void onStateEvent(StateEvent event)
 	{
 		switch( event.getType() )
 		{

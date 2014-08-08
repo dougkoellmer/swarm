@@ -57,6 +57,47 @@ public class CellAddress extends A_JsonEncodable implements I_JsonComparable
 		return this.getParseError() == E_CellAddressParseError.NO_ERROR;
 	}
 	
+	public int getPartCount()
+	{
+		return m_parts.size();
+	}
+	
+	public CellAddress getParentAddress(String homeAddress)
+	{
+		if( this.getPartCount() == 1 )
+		{
+			CellAddress address = new CellAddress(homeAddress);
+			
+			if( address.isValid() )
+			{
+				if( !this.isEqualTo(address) )
+				{
+					return address;
+				}
+			}
+		}
+		else if( this.getPartCount() > 1 )
+		{
+			String parentAddress = "";
+			
+			for(int i = 0; i < this.getPartCount()-1; i++ )
+			{
+				parentAddress += this.getPart(i) + "/";
+			}
+			
+			CellAddress address = new CellAddress(parentAddress);
+			
+			if( !address.isValid() )
+			{
+				throw new Error();
+			}
+			
+			return address;
+		}
+		
+		return null;
+	}
+	
 	protected void init(String rawAddress)
 	{
 		m_caseSensitiveRawAddress = null;
@@ -92,9 +133,9 @@ public class CellAddress extends A_JsonEncodable implements I_JsonComparable
 		return "/" + m_caseSensitiveRawAddress;
 	}
 	
-	public String getPart(E_Part part)
+	public String getPart(int part)
 	{
-		return part.ordinal() >= m_parts.size() ? null : m_parts.get(part.ordinal());
+		return m_parts.get(part);
 	}
 	
 	private void parse(String rawAddress)

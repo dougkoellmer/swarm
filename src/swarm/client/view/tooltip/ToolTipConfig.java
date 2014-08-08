@@ -4,7 +4,7 @@ import swarm.client.view.alignment.AlignmentDefinition;
 
 public class ToolTipConfig
 {
-	private final String m_text;
+	private String m_text;
 	private final E_ToolTipMood m_severity;
 	private final E_ToolTipType m_type;
 	private final AlignmentDefinition m_alignment;
@@ -44,6 +44,11 @@ public class ToolTipConfig
 	public AlignmentDefinition getAlignmentDefinition()
 	{
 		return m_alignment;
+	}
+	
+	public void setText(String text)
+	{
+		m_text = text;
 	}
 	
 	public String getText()

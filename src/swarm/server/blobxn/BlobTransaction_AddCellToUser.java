@@ -68,7 +68,7 @@ private static final Logger s_logger = Logger.getLogger(BlobTransaction_AddCellT
 		ServerCellAddress address = m_createCellTransaction.getAddresses()[0];
 		if( m_checkUsernameMatch )
 		{
-			String usernamePart = address.getPart(CellAddress.E_Part.USERNAME);
+			String usernamePart = address.getPart(CellAddress.E_Part.USERNAME.ordinal());
 			if( usernamePart == null || !m_session.getUsername().equals(usernamePart))
 			{
 				throw new BlobException("Username doesn't match username part of cell address..." + m_session.getUsername() + ", " + usernamePart);

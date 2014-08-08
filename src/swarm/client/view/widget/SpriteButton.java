@@ -1,5 +1,7 @@
 package swarm.client.view.widget;
 
+import swarm.client.view.U_Css;
+
 import com.google.gwt.dom.client.Element;
 
 public class SpriteButton extends BaseButton
@@ -17,6 +19,11 @@ public class SpriteButton extends BaseButton
 		m_sprite.addClassName("sm_icon");
 		
 		this.setSpriteId(spriteId);
+	}
+	
+	public void setInnerTransform(String transform)
+	{
+		U_Css.setTransform(m_sprite, transform);
 	}
 	
 	@Override
