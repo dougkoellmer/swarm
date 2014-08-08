@@ -269,25 +269,22 @@ public class StateMachine_Base extends A_StateMachine implements I_TransactionRe
 		
 		gridManager.start(new GridManager.I_Listener()
 		{
-			@Override
-			public void onGridUpdate()
+			@Override public void onGridUpdate()
 			{
-				StateMachine_Base.this.perform(StateMachine_Base.OnGridUpdate.class);
+				perform(StateMachine_Base.OnGridUpdate.class);
 			}
 		});
 		
 		userManager.start(new UserManager.I_Listener()
 		{
-			@Override
-			public void onUserPopulated()
+			@Override public void onUserPopulated()
 			{
-				StateMachine_Base.this.perform(OnUserPopulated.class);
+				perform(OnUserPopulated.class);
 			}
 
-			@Override
-			public void onUserDidClear()
+			@Override public void onUserDidClear()
 			{
-				StateMachine_Base.this.perform(OnUserCleared.class);
+				perform(OnUserCleared.class);
 			}
 
 			@Override

@@ -256,13 +256,13 @@ public class A_ClientApp extends A_App implements I_TimeSource
 		m_appContext.userMngr = new UserManager(m_appContext, m_appConfig.user);
 		m_appContext.requestPathMngr = new RequestPathManager(m_appContext.jsonFactory, m_appConfig.verboseTransactions);
 		m_appContext.txnMngr = new ClientTransactionManager(m_appContext.requestPathMngr, m_appContext.jsonFactory, m_appConfig.libVersion, m_appConfig.appVersion);
-		m_appContext.gridMngr = new GridManager(m_appContext.txnMngr, m_appContext.jsonFactory, m_appConfig.grid);
+		m_appContext.gridMngr = new GridManager(m_appContext, m_appConfig.grid);
 		m_appContext.cameraMngr = new CameraManager(m_appContext.gridMngr, camera, m_appConfig.minSnapTime, m_appConfig.snapTimeRange);
 		m_appContext.addressMngr = m_appContext.addressMngr != null ? m_appContext.addressMngr : new CellAddressManager(m_appContext, m_appConfig.addressCacheSize, m_appConfig.addressCacheExpiration_seconds, this);
 		m_appContext.accountMngr = new ClientAccountManager(signInValidator, signUpValidator, m_appContext.txnMngr, m_appContext.jsonFactory);
 		m_appContext.codeMngr = new CellCodeManager(m_appContext);
 		m_appContext.cellSizeMngr = new CellSizeManager(m_appContext);
-		m_appContext.cellBufferMngr = new CellBufferManager(m_appContext.codeMngr, m_appContext.cellSizeMngr);
+		m_appContext.cellBufferMngr = new CellBufferManager(m_appContext.codeMngr, m_appContext.cellSizeMngr, m_appConfig.metaLevelCount);
 		
 		//--- DRK > Configure transaction stuff.
 		m_appContext.requestPathMngr.register(E_RequestPath.values());
@@ -352,12 +352,12 @@ public class A_ClientApp extends A_App implements I_TimeSource
 		};
 		timer.scheduleRepeating(m_appConfig.framerate_milliseconds);*/
 		
-		requestAnimationFrameLoop();
+		requestAnimationFrameLoop(this);
 	}
 	
-	private native void requestAnimationFrameLoop()
+	private native void requestAnimationFrameLoop(A_ClientApp app)
 	/*-{
-			var thisArg = this;
+			var thisArg = app;
 		
 			function update()
 			{

@@ -89,7 +89,7 @@ public class State_CameraSnapping extends A_State implements I_StateEventListene
 	{
 		m_appContext = appContext;
 		
-		m_snapBufferManager = new CellBufferManager(m_appContext.codeMngr, m_appContext.cellSizeMngr);
+		m_snapBufferManager = new CellBufferManager(m_appContext.codeMngr, m_appContext.cellSizeMngr, 1);
 		
 		UserManager userManager = m_appContext.userMngr;
 		A_ClientUser user = userManager.getUser();
@@ -109,6 +109,7 @@ public class State_CameraSnapping extends A_State implements I_StateEventListene
 	{
 		StateMachine_Camera machine = this.getParent();
 		
+		CellAddress oldTargetAddress = m_targetAddress;
 		m_targetAddress = targetAddress_nullable;
 		
 		boolean firstUpdate = m_targetGridCoordinate.isEqualTo(INVALID);
@@ -148,6 +149,11 @@ public class State_CameraSnapping extends A_State implements I_StateEventListene
 		}
 		else
 		{
+			if( m_targetAddress == null && oldTargetAddress != null )
+			{
+				m_targetAddress = oldTargetAddress;
+			}
+			
 			//--- DRK > Same target cell as last time, but target position might
 			//---		have changed enough to require loading/deleting of different nearby cells
 			this.updateSnapBufferManager(true);
@@ -186,7 +192,7 @@ public class State_CameraSnapping extends A_State implements I_StateEventListene
 			return;
 		}
 		
-		CellBuffer displayBuffer = m_snapBufferManager.getDisplayBuffer();
+		CellBuffer displayBuffer = m_snapBufferManager.getBaseDisplayBuffer();
 		
 		//--- DRK > Not entering here should be an impossible case, but avoid a null pointer exception just to be sure.
 		if( displayBuffer.isInBoundsAbsolute(m_targetGridCoordinate) )
@@ -255,7 +261,7 @@ public class State_CameraSnapping extends A_State implements I_StateEventListene
 		return m_targetGridCoordinate;
 	}
 	
-	CellAddress getTargetAddress()
+	public CellAddress getTargetAddress()
 	{
 		return m_targetAddress;
 	}
@@ -300,7 +306,7 @@ public class State_CameraSnapping extends A_State implements I_StateEventListene
 	{
 		if( m_targetCell != null )  return;
 		
-		m_targetCell = m_appContext.cellBufferMngr.getDisplayBuffer().getCellAtAbsoluteCoord(m_targetGridCoordinate);
+		m_targetCell = m_appContext.cellBufferMngr.getBaseDisplayBuffer().getCellAtAbsoluteCoord(m_targetGridCoordinate);
 		
 		if( m_targetCell != null && fireEvent )
 		{

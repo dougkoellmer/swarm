@@ -290,7 +290,7 @@ public class UserManager implements I_TransactionResponseHandler, ClientAccountM
 			
 			Iterator<? extends UserCell> cellIterator = user.getCells();
 			
-			CellBuffer buffer = m_appContext.cellBufferMngr.getDisplayBuffer();
+			CellBuffer buffer = m_appContext.cellBufferMngr.getBaseDisplayBuffer();
 			
 			while( cellIterator.hasNext() )
 			{

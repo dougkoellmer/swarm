@@ -291,7 +291,7 @@ public class StateMachine_Camera extends A_StateMachine implements I_StateEventL
 			
 			//--- DRK > As soon as target cell comes into sight, we start trying to populate
 			//---		it with compiled_dynamic and source html from the snapping state's html source(s).
-			CellBuffer buffer = bufferMngr.getDisplayBuffer();
+			CellBuffer buffer = bufferMngr.getBaseDisplayBuffer();
 			if( buffer.getSubCellCount() == 1 )
 			{
 				if( buffer.isInBoundsAbsolute(snappingState.getTargetCoord()) )

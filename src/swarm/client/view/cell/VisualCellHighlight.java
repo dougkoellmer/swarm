@@ -3,6 +3,7 @@ package swarm.client.view.cell;
 import swarm.client.app.AppContext;
 import swarm.client.entities.BufferCell;
 import swarm.client.entities.Camera;
+import swarm.client.entities.ClientGrid;
 import swarm.client.managers.CellBuffer;
 import swarm.client.managers.CellBufferManager;
 import swarm.client.navigation.MouseNavigator;
@@ -21,6 +22,7 @@ import swarm.client.view.ViewConfig;
 import swarm.client.view.ViewContext;
 import swarm.shared.app.S_CommonApp;
 import swarm.shared.debugging.U_Debug;
+import swarm.shared.entities.A_Grid;
 import swarm.shared.utils.U_Math;
 import swarm.shared.statemachine.A_Action;
 import swarm.shared.statemachine.StateEvent;
@@ -75,17 +77,20 @@ public class VisualCellHighlight extends FlowPanel implements I_UIElement
 			return;
 		}
 		
-		CellBuffer buffer = m_viewContext.appContext.cellBufferMngr.getDisplayBuffer();
-		int subCellDim = buffer.getSubCellCount();
+		CellBuffer buffer = m_viewContext.appContext.cellBufferMngr.getBaseDisplayBuffer();
+		int subCellDim = m_viewContext.appContext.cellBufferMngr.getSubCellCount();
 		
+		ClientGrid grid = m_viewContext.appContext.gridMngr.getGrid();
 		Camera camera = m_viewContext.appContext.cameraMngr.getCamera();
 		Point basePoint = null;
 		double highlightScaling = camera.calcDistanceRatio();
 		
 		GridCoordinate mouseCoord = navManager.getMouseGridCoord();
+		boolean owned = grid.isTaken(mouseCoord, 1);
+		
 		BufferCell cell = buffer.getCellAtAbsoluteCoord(mouseCoord);
 		
-		if( cell == null )
+		if( !owned )
 		{
 			this.setVisible(false);
 			
@@ -111,7 +116,7 @@ public class VisualCellHighlight extends FlowPanel implements I_UIElement
 		//---		out enough that it doesn't really matter...you'd really have to look for it to notice a discrepancy.
 		
 		VisualCellManager cellManager = m_viewContext.cellMngr;
-		VisualCell visualCell = (VisualCell) cell.getVisualization();
+		VisualCell visualCell = (VisualCell) (cell != null ? cell.getVisualization() : null);
 		double lastScaling = cellManager.getLastScaling();
 		Point lastBasePoint = cellManager.getLastBasePoint();
 		
@@ -123,20 +128,20 @@ public class VisualCellHighlight extends FlowPanel implements I_UIElement
 		//TODO: Assuming square cell size.
 		double apparentCellPixelsX = 0, apparentCellPixelsY = 0;
 		
-		int defaultCellWidth = cell.getGrid().getCellWidth();
-		int defaultCellHeight = cell.getGrid().getCellHeight();
-		int visualCellWidth = visualCell.getWidth();
-		int visualCellHeight = visualCell.getHeight();
+		int defaultCellWidth = grid.getCellWidth();
+		int defaultCellHeight = grid.getCellHeight();
+		int visualCellWidth = visualCell != null ? visualCell.getWidth() : defaultCellWidth;
+		int visualCellHeight = visualCell != null ? visualCell.getHeight() : defaultCellHeight;
 		
-		if( buffer.getSubCellCount() > 1 )
+		if( subCellDim > 1 )
 		{
 			apparentCellPixelsX = ((defaultCellWidth / ((double) subCellDim)) * lastScaling);
 			apparentCellPixelsY = ((defaultCellHeight / ((double) subCellDim)) * lastScaling);
 		}
 		else
 		{
-			apparentCellPixelsX = (defaultCellWidth + cell.getGrid().getCellPadding()) * lastScaling;
-			apparentCellPixelsY = (defaultCellHeight + cell.getGrid().getCellPadding()) * lastScaling;
+			apparentCellPixelsX = (defaultCellWidth + grid.getCellPadding()) * lastScaling;
+			apparentCellPixelsY = (defaultCellHeight + grid.getCellPadding()) * lastScaling;
 		}
 		
 		double deltaPixelsX = apparentCellPixelsX * deltaM;
@@ -144,8 +149,8 @@ public class VisualCellHighlight extends FlowPanel implements I_UIElement
 
 		basePoint.copy(lastBasePoint);
 		basePoint.inc(deltaPixelsX, deltaPixelsY, 0);
-		basePoint.incX(((double)visualCell.getXOffset())*lastScaling);
-		basePoint.incY(((double)visualCell.getYOffset())*lastScaling);
+		basePoint.incX((visualCell != null ? (double)visualCell.getXOffset() : 0.0)*lastScaling);
+		basePoint.incY((visualCell != null ? (double)visualCell.getYOffset() : 0.0)*lastScaling);
 		double y = basePoint.getY();
 		
 		if( m_viewContext.stateContext.isEntered(State_ViewingCell.class) )

@@ -7,7 +7,7 @@ import java.util.logging.Logger;
 
 
 import swarm.client.entities.BufferCell;
-import swarm.client.structs.CellPool;
+import swarm.client.structs.BufferCellPool;
 import swarm.client.structs.I_LocalCodeRepository;
 import swarm.shared.utils.U_Bits;
 import swarm.shared.debugging.U_Debug;
@@ -35,19 +35,20 @@ public class CellBuffer
 	private int m_width = 0;
 	private int m_height = 0;
 	
-	private int m_subCellDimension = 1;
+	private final int m_subCellCount;
 	
 	private final CellBufferManager m_parent;
 	private final CellCodeManager m_codeMngr;
 	private final CellSizeManager m_cellSizeMngr;
-	private final CellPool m_cellPool;
+	private final BufferCellPool m_cellPool;
 	
-	CellBuffer(CellBufferManager parent, CellCodeManager codeMngr, CellPool cellPool, CellSizeManager cellSizeMngr)
+	CellBuffer(CellBufferManager parent, CellCodeManager codeMngr, BufferCellPool cellPool, CellSizeManager cellSizeMngr, int subCellCount)
 	{
 		m_codeMngr = codeMngr;
 		m_cellPool = cellPool;
 		m_cellSizeMngr = cellSizeMngr;
 		m_parent = parent;
+		m_subCellCount = subCellCount;
 	}
 	
 	public GridCoordinate getCoordinate()
@@ -55,20 +56,9 @@ public class CellBuffer
 		return m_coordinate;
 	}
 	
-	void setCellSize(int size)
-	{
-		if ( !U_Bits.isPowerOfTwo(size) )
-		{
-			U_Debug.ASSERT(false, "setCellSize1");
-			return;
-		}
-		
-		m_subCellDimension = size;
-	}
-	
 	public int getSubCellCount()
 	{
-		return m_subCellDimension;
+		return m_subCellCount;
 	}
 	
 	public int getWidth()
@@ -180,7 +170,7 @@ public class CellBuffer
 		return isInBoundsRelative(relativeM, relativeN);
 	}
 	
-	void imposeBuffer(A_Grid grid, CellBuffer otherBuffer, I_LocalCodeRepository localCodeSource, int options__extends__smF_BufferUpdateOption)
+	void imposeBuffer(A_Grid grid, CellBuffer otherBuffer, I_LocalCodeRepository localCodeSource, int currentSubCellCount, int options__extends__smF_BufferUpdateOption)
 	{		
 		boolean createVisualizations = (options__extends__smF_BufferUpdateOption & F_BufferUpdateOption.CREATE_VISUALIZATIONS) != 0;
 		boolean communicateWithServer = (options__extends__smF_BufferUpdateOption & F_BufferUpdateOption.COMMUNICATE_WITH_SERVER) != 0;
@@ -199,203 +189,163 @@ public class CellBuffer
 		GridCoordinate absCoord = s_utilCoord1;
 		GridCoordinate relThisCoord = s_utilCoord2;
 		
-		//--- DRK > Easy case is when we have a size change...then everything is recycled.
-		if ( otherSubCellCountDim != thisSubCellCountDim )
+		
+		/*HashMap<String, smBufferCell> debug_dict = new HashMap<String, smBufferCell>();
+		int debug_otherBufferHitCount = 0;
+		for ( i = 0; i < otherBuffer.getCellCount(); i++ )
 		{
-			U_Debug.ASSERT(false); // asserting here until zoomed-out meta cells are implemented.
-			
-			for ( i = 0; i < thisCellCount; i++ )
+			smBufferCell debug_cell = otherBuffer.getCellAtIndex(i);
+			if ( this.isTouching(debug_cell.getCoordinate()) )
 			{
-				m = i % m_width;
-				n = i / m_width;
-			
-				ithCell = null;
-				
+				debug_dict.put(debug_cell.getCoordinate().writeString(), debug_cell);
+				debug_otherBufferHitCount++;
+			}
+		}*/
+		
+		GridCoordinate relOtherCoord = s_utilCoord3;
+		
+		int startM = 0, finishM = m_width, deltaM = 1;
+		int startN = 0, finishN = m_height, deltaN = 1;
+		
+		if ( this.m_coordinate.getM() < otherBuffer.m_coordinate.getM() )
+		{
+			startM = m_width - 1;
+			finishM = -1;
+			deltaM = -1;
+		}
+		
+		if ( this.m_coordinate.getN() < otherBuffer.m_coordinate.getN() )
+		{
+			startN = m_height - 1;
+			finishN = -1;
+			deltaN = -1;
+		}
+		
+		for ( n = startN; n != finishN; n+=deltaN )
+		{
+			for ( m = startM; m != finishM; m+=deltaM )
+			{
 				relThisCoord.set(m, n);
+				
 				this.relativeToAbsolute(relThisCoord, absCoord);
+				otherBuffer.absoluteToRelative(absCoord, relOtherCoord);
+				
+				if( !grid.isTaken(absCoord) )
+				{
+					continue;
+				}
 				
 				cellRecycled = false;
 				
-				if ( i < otherBuffer.m_cells.size() )
-				{
-					ithCell = otherBuffer.m_cells.get(i);
-					otherBuffer.m_cells.set(i, null);
-					cellRecycled = true;
-				}
-				else
-				{
-					ithCell = m_cellPool.allocCell(grid, this.m_subCellDimension, createVisualizations);
-				}
+				BufferCell otherCell = null;
 				
-				this.m_cells.set(i, ithCell);
-				
-				ithCell.getCoordinate().copy(absCoord);
-				
-				m_codeMngr.populateCell(ithCell, localCodeSource, m_subCellDimension, cellRecycled, communicateWithServer, E_CodeType.SPLASH);
-			}
-		}
-		
-		//--- DRK > Hard case is when cell size is the same...then we have to do all kinds of teh crazy algorithms to
-		//---		be as efficient in our cell-reuse as possible.
-		else
-		{
-			/*HashMap<String, smBufferCell> debug_dict = new HashMap<String, smBufferCell>();
-			int debug_otherBufferHitCount = 0;
-			for ( i = 0; i < otherBuffer.getCellCount(); i++ )
-			{
-				smBufferCell debug_cell = otherBuffer.getCellAtIndex(i);
-				if ( this.isTouching(debug_cell.getCoordinate()) )
+				if ( otherBuffer.isTouching(absCoord) )
 				{
-					debug_dict.put(debug_cell.getCoordinate().writeString(), debug_cell);
-					debug_otherBufferHitCount++;
-				}
-			}*/
-			
-			GridCoordinate relOtherCoord = s_utilCoord3;
-			
-			int startM = 0, finishM = m_width, deltaM = 1;
-			int startN = 0, finishN = m_height, deltaN = 1;
-			
-			if ( this.m_coordinate.getM() < otherBuffer.m_coordinate.getM() )
-			{
-				startM = m_width - 1;
-				finishM = -1;
-				deltaM = -1;
-			}
-			
-			if ( this.m_coordinate.getN() < otherBuffer.m_coordinate.getN() )
-			{
-				startN = m_height - 1;
-				finishN = -1;
-				deltaN = -1;
-			}
-			
-			for ( n = startN; n != finishN; n+=deltaN )
-			{
-				for ( m = startM; m != finishM; m+=deltaM )
-				{
-					relThisCoord.set(m, n);
+					otherCell = otherBuffer.getCellAtRelativeCoord(relOtherCoord);
 					
-					this.relativeToAbsolute(relThisCoord, absCoord);
-					otherBuffer.absoluteToRelative(absCoord, relOtherCoord);
-					
-					if( !grid.isTaken(absCoord) )
+					//--- DRK > Can be null when a cell is created between buffer imposings (e.g. a new account is created
+					//---		in b33hive). In this case, the grid coordinate is marked as taken, but there's no cell there
+					//---		yet, so, we make one.
+					//---		There used to be an assert inside here, to catch algorithmic problems...so those problems could
+					//---		still theoretically still exist, and we're just patching over them by creating a new cell...oh well.
+					if ( otherCell == null )
 					{
-						continue;
+						otherCell = m_cellPool.allocCell(grid, m_subCellCount, createVisualizations);
 					}
 					
-					cellRecycled = false;
+					//--- DRK > Splice the still-visible cell from the other buffer into this buffer.
+					otherBuffer.setCell(relOtherCoord.getM(), relOtherCoord.getN(), null);
+					this.setCell(m, n, otherCell);
 					
-					BufferCell otherCell = null;
 					
-					if ( otherBuffer.isTouching(absCoord) )
+					//--- DRK > If possible, fill in the gap that is left in the other buffer with the cell
+					//---		from the other buffer at the same m, n location that was skipped.
+					BufferCell cellToTransfer = otherBuffer.getCellAtRelativeCoord(relThisCoord);
+					if ( cellToTransfer != null )
 					{
-						otherCell = otherBuffer.getCellAtRelativeCoord(relOtherCoord);
-						
-						//--- DRK > Can be null when a cell is created between buffer imposings (e.g. a new account is created
-						//---		in b33hive). In this case, the grid coordinate is marked as taken, but there's no cell there
-						//---		yet, so, we make one.
-						//---		There used to be an assert inside here, to catch algorithmic problems...so those problems could
-						//---		still theoretically still exist, and we're just patching over them by creating a new cell...oh well.
-						if ( otherCell == null )
+						if ( this.isTouching(cellToTransfer.getCoordinate()) )
 						{
-							otherCell = m_cellPool.allocCell(grid, this.m_subCellDimension, createVisualizations);
-						}
-						
-						//--- DRK > Splice the still-visible cell from the other buffer into this buffer.
-						otherBuffer.setCell(relOtherCoord.getM(), relOtherCoord.getN(), null);
-						this.setCell(m, n, otherCell);
-						
-						
-						//--- DRK > If possible, fill in the gap that is left in the other buffer with the cell
-						//---		from the other buffer at the same m, n location that was skipped.
-						BufferCell cellToTransfer = otherBuffer.getCellAtRelativeCoord(relThisCoord);
-						if ( cellToTransfer != null )
-						{
-							if ( this.isTouching(cellToTransfer.getCoordinate()) )
-							{
-								// nothing to do...i think
-							}
-							else
-							{
-								otherBuffer.setCell(m, n, null);
-								otherBuffer.setCell(relOtherCoord.getM(), relOtherCoord.getN(), cellToTransfer);
-							}
+							// nothing to do...i think
 						}
 						else
 						{
-							// nothing to do...i think
+							otherBuffer.setCell(m, n, null);
+							otherBuffer.setCell(relOtherCoord.getM(), relOtherCoord.getN(), cellToTransfer);
 						}
 					}
 					else
 					{
-						otherCell = otherBuffer.getCellAtRelativeCoord(relThisCoord);
-						
-						if ( otherCell != null )
-						{							
-							/*if ( this.isTouching(otherCell.getCoordinate()) ) // collides with reusable cell
+						// nothing to do...i think
+					}
+				}
+				else
+				{
+					otherCell = otherBuffer.getCellAtRelativeCoord(relThisCoord);
+					
+					if ( otherCell != null )
+					{							
+						/*if ( this.isTouching(otherCell.getCoordinate()) ) // collides with reusable cell
+						{
+							this.absoluteToRelative(otherCell.getCoordinate(), relThisCoord);
+							
+							var indexOfCollision = coordsToIndex(relThisCoord.getM(), relThisCoord.getN());
+							
+							if ( currentIndex > indexOfCollision )
 							{
-								this.absoluteToRelative(otherCell.getCoordinate(), relThisCoord);
-								
-								var indexOfCollision = coordsToIndex(relThisCoord.getM(), relThisCoord.getN());
-								
-								if ( currentIndex > indexOfCollision )
-								{
-									//--- DRK > This cell was transferred into the gap left by a splice, so we can safely
-									//---		recycle it despite there being a collision.
-									otherBuffer.setCell(m, n, null);
-								}
-								else
-								{
-									//--- DRK > This cell represents a pending splice that has yet to take place, so we must make a freshy.
-									otherCell = pool.allocCell();
-								}
+								//--- DRK > This cell was transferred into the gap left by a splice, so we can safely
+								//---		recycle it despite there being a collision.
+								otherBuffer.setCell(m, n, null);
 							}
 							else
 							{
-								otherBuffer.setCell(m, n, null);
-								otherCell.m_visualization.cellRecycled();
-							}*/
-							
-							otherBuffer.setCell(m, n, null);
-							cellRecycled = true;
+								//--- DRK > This cell represents a pending splice that has yet to take place, so we must make a freshy.
+								otherCell = pool.allocCell();
+							}
 						}
 						else
 						{
-							otherCell = m_cellPool.allocCell(grid, this.m_subCellDimension, createVisualizations);
-						}
+							otherBuffer.setCell(m, n, null);
+							otherCell.m_visualization.cellRecycled();
+						}*/
 						
-						this.setCell(m, n, otherCell);
+						otherBuffer.setCell(m, n, null);
+						cellRecycled = true;
+					}
+					else
+					{
+						otherCell = m_cellPool.allocCell(grid, m_subCellCount, createVisualizations);
 					}
 					
-					BufferCell imposedCell = getCellAtRelativeCoord(relThisCoord);
-					imposedCell.getCoordinate().copy(absCoord);
-					
-					m_codeMngr.populateCell(imposedCell, localCodeSource, m_subCellDimension, cellRecycled, communicateWithServer, E_CodeType.SPLASH);
-					
-					s_utilMapping.getCoordinate().copy(imposedCell.getCoordinate());
-					
-					m_cellSizeMngr.populateCellSize(s_utilMapping, this.m_parent, imposedCell);
+					this.setCell(m, n, otherCell);
 				}
-			}
-			
-			/*int debug_nonNullCount = 0;
-			int debug_thisBufferHitCount = 0;
-			for ( i = 0; i < this.getCellCount(); i++ )
-			{
-				smBufferCell debug_cell = this.m_cells.get(i);
 				
-				String debug_stringRep = debug_cell.getCoordinate().writeString();
+				BufferCell imposedCell = getCellAtRelativeCoord(relThisCoord);
+				imposedCell.getCoordinate().copy(absCoord);
 				
-				if ( debug_dict.containsKey(debug_stringRep) )
-				{
-					smU_Debug.ASSERT(debug_cell == debug_dict.get(debug_stringRep), "imposeBuffer2");
-					debug_thisBufferHitCount++;
-				}
+				m_codeMngr.populateCell(imposedCell, localCodeSource, m_subCellCount, cellRecycled, communicateWithServer, E_CodeType.SPLASH);
+				
+				s_utilMapping.getCoordinate().copy(imposedCell.getCoordinate());
+				
+				m_cellSizeMngr.populateCellSize(s_utilMapping, this.m_parent, imposedCell);
 			}
-			
-			smU_Debug.ASSERT(debug_otherBufferHitCount == debug_thisBufferHitCount, "imposeBuffer3");*/
 		}
+		
+		/*int debug_nonNullCount = 0;
+		int debug_thisBufferHitCount = 0;
+		for ( i = 0; i < this.getCellCount(); i++ )
+		{
+			smBufferCell debug_cell = this.m_cells.get(i);
+			
+			String debug_stringRep = debug_cell.getCoordinate().writeString();
+			
+			if ( debug_dict.containsKey(debug_stringRep) )
+			{
+				smU_Debug.ASSERT(debug_cell == debug_dict.get(debug_stringRep), "imposeBuffer2");
+				debug_thisBufferHitCount++;
+			}
+		}
+		
+		smU_Debug.ASSERT(debug_otherBufferHitCount == debug_thisBufferHitCount, "imposeBuffer3");*/
 		
 		if( flushPopulator )
 		{

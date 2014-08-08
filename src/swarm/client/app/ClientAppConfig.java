@@ -1,6 +1,7 @@
 package swarm.client.app;
 
 import swarm.client.entities.A_ClientUser;
+import swarm.client.entities.ClientGrid;
 import swarm.client.view.ViewController;
 import swarm.shared.app.AppConfig;
 import swarm.shared.entities.A_Grid;
@@ -9,6 +10,7 @@ public class ClientAppConfig extends AppConfig
 {
 	public double floatingHistoryUpdateFreq_seconds = .75;
 	public double cellHudHeight;
+	public int metaLevelCount = 1;
 	public double minSnapTime = .8;
 	public double snapTimeRange = 1;
 	public int framerate_milliseconds = 33;
@@ -26,7 +28,7 @@ public class ClientAppConfig extends AppConfig
 	public double codeCacheExpiration_seconds = 60 * 5;
 	
 	public A_ClientUser user;
-	public A_Grid grid;
+	public ClientGrid grid;
 	public ViewController viewController;
 	
 	public int maxSubCellDimension = 1;

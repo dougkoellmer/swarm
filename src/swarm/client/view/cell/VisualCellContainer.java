@@ -90,9 +90,11 @@ public class VisualCellContainer extends FlowPanel implements ResizeHandler, I_U
 	private final VisualCellCropper[] m_cropper = new VisualCellCropper[2];
 	
 	private final AlignmentDefinition m_statusAlignment = new AlignmentDefinition();
+	private final AlignmentDefinition m_snapTargetAlignment = new AlignmentDefinition();
 	
 	private boolean m_showingMappingNotFound = false;
 	
+	private final ToolTipConfig m_snapTargetConfig = new ToolTipConfig(E_ToolTipType.STATUS, m_snapTargetAlignment, "");
 	private final ToolTipConfig m_gettingAddressTipConfig = new ToolTipConfig(E_ToolTipType.STATUS, m_statusAlignment, "Resolving address...");
 	private final ToolTipConfig m_mappingNotFoundTipConfig = new ToolTipConfig(E_ToolTipType.NOTIFICATION, m_statusAlignment, "Address not found!", E_ToolTipMood.OOPS);
 	
@@ -142,6 +144,13 @@ public class VisualCellContainer extends FlowPanel implements ResizeHandler, I_U
 		m_statusAlignment.setPosition(E_AlignmentType.SLAVE_ANCHOR_VERTICAL, E_AlignmentPosition.RIGHT_OR_BOTTOM);
 		m_statusAlignment.setPadding(E_AlignmentType.SLAVE_ANCHOR_HORIZONTAL, S_UI.ADDRESS_STATUS_TOOL_TIP_PADDING);
 		m_statusAlignment.setPadding(E_AlignmentType.SLAVE_ANCHOR_VERTICAL, S_UI.ADDRESS_STATUS_TOOL_TIP_PADDING);
+		
+		m_snapTargetAlignment.setPosition(E_AlignmentType.MASTER_ANCHOR_HORIZONTAL, E_AlignmentPosition.LEFT_OR_TOP);
+		m_snapTargetAlignment.setPosition(E_AlignmentType.MASTER_ANCHOR_VERTICAL, E_AlignmentPosition.RIGHT_OR_BOTTOM);
+		m_snapTargetAlignment.setPosition(E_AlignmentType.SLAVE_ANCHOR_HORIZONTAL, E_AlignmentPosition.LEFT_OR_TOP);
+		m_snapTargetAlignment.setPosition(E_AlignmentType.SLAVE_ANCHOR_VERTICAL, E_AlignmentPosition.RIGHT_OR_BOTTOM);
+		m_snapTargetAlignment.setPadding(E_AlignmentType.SLAVE_ANCHOR_HORIZONTAL, S_UI.ADDRESS_STATUS_TOOL_TIP_PADDING);
+		m_snapTargetAlignment.setPadding(E_AlignmentType.SLAVE_ANCHOR_VERTICAL, S_UI.ADDRESS_STATUS_TOOL_TIP_PADDING);
 	}
 	
 	public FlowPanel getMouseEnabledLayer()
@@ -175,7 +184,7 @@ public class VisualCellContainer extends FlowPanel implements ResizeHandler, I_U
 	private void updateCroppers()
 	{
 		//--- DRK > If cell sub count is 1, it means we can match the bottom/right sides of the grid exactly.
-		int cellSubCount = m_viewContext.appContext.cellBufferMngr.getDisplayBuffer().getSubCellCount();
+		int cellSubCount = m_viewContext.appContext.cellBufferMngr.getBaseDisplayBuffer().getSubCellCount();
 		if( cellSubCount == 0 || cellSubCount == 1 )
 		{
 			hideCroppers();

@@ -83,7 +83,7 @@ public class VisualCellFocuser extends FlowPanel implements I_UIElement
 	
 	private boolean popUpTargetCell(A_State state)
 	{
-		CellBuffer buffer = m_appContext.cellBufferMngr.getDisplayBuffer();
+		CellBuffer buffer = m_appContext.cellBufferMngr.getBaseDisplayBuffer();
 		
 		if( buffer.getSubCellCount() == 1 )
 		{
@@ -312,7 +312,7 @@ public class VisualCellFocuser extends FlowPanel implements I_UIElement
 			{
 				if( m_poppedCell != null )
 				{
-					CellBuffer buffer = m_appContext.cellBufferMngr.getDisplayBuffer();
+					CellBuffer buffer = m_appContext.cellBufferMngr.getBaseDisplayBuffer();
 					
 					if( buffer.getSubCellCount() != 1 || !buffer.isInBoundsAbsolute(m_poppedCellCoord) )
 					{

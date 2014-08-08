@@ -94,7 +94,7 @@ public class CellSizeManager implements I_TransactionResponseHandler
 		{
 			if( manager == targetBufferMngr_nullable )  continue;
 			
-			CellBuffer buffer = manager.getDisplayBuffer();
+			CellBuffer buffer = manager.getBaseDisplayBuffer();
 			
 			if( buffer.getSubCellCount() == 1 )
 			{
@@ -182,7 +182,7 @@ public class CellSizeManager implements I_TransactionResponseHandler
 			CellBufferManager.Iterator iterator = m_appContext.getRegisteredBufferMngrs();
 			for( CellBufferManager manager = null; (manager = iterator.next()) != null; )
 			{
-				CellBuffer buffer = manager.getDisplayBuffer();
+				CellBuffer buffer = manager.getBaseDisplayBuffer();
 				
 				//--- DRK > Cell data is only requested if we're close enough to see individually rendered cells.
 				//---		If we've since zoomed out, we cache the data as above, but otherwise ignore it.
@@ -219,7 +219,7 @@ public class CellSizeManager implements I_TransactionResponseHandler
 			CellBufferManager.Iterator iterator = m_appContext.getRegisteredBufferMngrs();
 			for( CellBufferManager manager = null; (manager = iterator.next()) != null; )
 			{
-				CellBuffer buffer = manager.getDisplayBuffer();
+				CellBuffer buffer = manager.getBaseDisplayBuffer();
 				
 				//--- DRK > Cell data is only requested if we're close enough to see individually rendered cells.
 				//---		If we've since zoomed out, we cache the data as above, but otherwise ignore it.

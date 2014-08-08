@@ -1,6 +1,7 @@
 package swarm.client.managers;
 
 import swarm.client.app.AppContext;
+import swarm.client.entities.ClientGrid;
 import swarm.client.states.StateMachine_Base;
 import swarm.client.structs.AccountInfo;
 import swarm.client.transaction.E_TransactionAction;
@@ -32,18 +33,20 @@ public class GridManager implements I_TransactionResponseHandler
 	private static final Boolean s_utilBool = new Boolean();
 	
 	private I_Listener m_listener = null;
-	private final A_Grid m_grid;
+	private final ClientGrid m_grid;
 	private final ClientTransactionManager m_txnMngr;
 	private final A_JsonFactory m_jsonFactory;
+	private final AppContext m_appContext;
 	
-	public GridManager(ClientTransactionManager txnMngr, A_JsonFactory jsonFactory, A_Grid grid)
+	public GridManager(AppContext appContext, ClientGrid grid)
 	{
-		m_jsonFactory = jsonFactory;
-		m_txnMngr = txnMngr;
+		m_appContext = appContext;
+		m_jsonFactory = m_appContext.jsonFactory;
+		m_txnMngr = m_appContext.txnMngr;
 		m_grid = grid;
 	}
 	
-	public A_Grid getGrid()
+	public ClientGrid getGrid()
 	{
 		return m_grid;
 	}
@@ -87,9 +90,8 @@ public class GridManager implements I_TransactionResponseHandler
 		s_utilBool.value = false;
 		
 		I_Callback callback = new I_Callback()
-		{			
-			@Override
-			public void invoke(Object... args)
+		{
+			@Override public void invoke(Object... args)
 			{
 				if( !m_grid.isTaken(s_utilMapping1.getCoordinate()) )
 				{
@@ -103,6 +105,11 @@ public class GridManager implements I_TransactionResponseHandler
 		
 		return s_utilBool.value;
 	}
+	
+	private void onGridUpdate()
+	{
+		m_listener.onGridUpdate();
+	}
 
 	@Override
 	public E_ResponseSuccessControl onResponseSuccess(TransactionRequest request, TransactionResponse response)
@@ -111,7 +118,7 @@ public class GridManager implements I_TransactionResponseHandler
 		{
 			if( this.updateGridSizeFromJson(response.getJsonArgs()))
 			{
-				m_listener.onGridUpdate();
+				onGridUpdate();
 			}
 			
 			return E_ResponseSuccessControl.BREAK;
@@ -129,7 +136,7 @@ public class GridManager implements I_TransactionResponseHandler
 			
 			if( resized || newCellTaken )
 			{
-				m_listener.onGridUpdate();
+				onGridUpdate();
 			}
 			
 			return E_ResponseSuccessControl.CONTINUE;
