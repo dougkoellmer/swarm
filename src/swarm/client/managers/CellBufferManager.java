@@ -69,7 +69,7 @@ public class CellBufferManager implements I_LocalCodeRepository
 	private CellBufferPair[] m_bufferPairs = null;
 	private final CellCodeManager m_codeMngr;
 	private final CellSizeManager m_sizeMngr;
-	private final int m_metaLevelCount;
+	private final int m_levelCount;
 	
 	
 	public CellBufferManager(CellCodeManager codeMngr, CellSizeManager cellSizeMngr, int metaLevelCount) 
@@ -77,7 +77,7 @@ public class CellBufferManager implements I_LocalCodeRepository
 		m_cellPool = new BufferCellPool();
 		m_codeMngr = codeMngr;
 		m_sizeMngr = cellSizeMngr;
-		m_metaLevelCount = metaLevelCount;
+		m_levelCount = metaLevelCount + 1;
 		
 		createBufferPairs();
 	}
@@ -86,7 +86,7 @@ public class CellBufferManager implements I_LocalCodeRepository
 	{
 		CellBufferPair[] oldPairs = m_bufferPairs;
 		
-		m_bufferPairs = new CellBufferPair[m_metaLevelCount];
+		m_bufferPairs = new CellBufferPair[m_levelCount];
 		
 		for( int i = 0; i < m_bufferPairs.length; i++ )
 		{
@@ -131,7 +131,7 @@ public class CellBufferManager implements I_LocalCodeRepository
 		}
 	}
 
-	public void update(A_Grid grid, Camera camera, I_LocalCodeRepository alternativeCodeSource, int options__extends__smF_BufferUpdateOption)
+	public void update(ClientGrid grid, Camera camera, I_LocalCodeRepository alternativeCodeSource, int options__extends__smF_BufferUpdateOption)
 	{
 		m_updateCount++;
 		

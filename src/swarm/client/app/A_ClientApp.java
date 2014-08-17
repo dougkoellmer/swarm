@@ -402,7 +402,7 @@ public class A_ClientApp extends A_App implements I_TimeSource
 			{
 				var unsupportedHtml =	"<table class='sm_unsupported_platform_font' style='width:100%; height:100%;'><tr><td style='vertical-align:middle; text-align:center;'>" +
 										"<img style='width:280px; height:255px;' src='/r.img/b33.png'/><br><br><br>" +
-										"Please upgrade to the latest version of your browser in order to access b33hive." +
+										"Please upgrade to the latest version of your browser in order to access this website." +
 										"</td></tr></table>";
 				$doc.body.innerHTML = unsupportedHtml;
 			}

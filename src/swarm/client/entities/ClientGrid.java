@@ -33,6 +33,17 @@ public class ClientGrid extends A_Grid
 		return ownership.isSet(bitIndex);
 	}
 	
+	public boolean isTaken(int m, int n, int subCellCount)
+	{
+		if( m_ownership == null )  return false;
+		
+		int gridSizeSub = getSubDimension(getWidth(), subCellCount);
+		
+		int bitIndex = calcBitIndex(m, n, gridSizeSub);
+		
+		return isTaken(bitIndex, subCellCount);
+	}
+	
 	private int getSubDimension(int dimension, int subCellCount)
 	{
 		//--- DRK > Not relying on mantissa-chopping round-down integer division
@@ -40,21 +51,43 @@ public class ClientGrid extends A_Grid
 		return (dimension - (dimension % subCellCount)) / subCellCount;
 	}
 	
-	private int calcBitIndex(int row, int col, int subCellCount)
+	public boolean isObscured(int m, int n, int subCellCount, int potentiallyObscuringSubCellCount)
+	{
+		if( potentiallyObscuringSubCellCount <= subCellCount )  return false;
+		
+		for( int currentSubCellCount = subCellCount*2; currentSubCellCount <= potentiallyObscuringSubCellCount; currentSubCellCount *= 2)
+		{
+			m = getSubDimension(m, 2);
+			n = getSubDimension(n, 2);
+			
+			if( isTaken(m, n, subCellCount) )
+			{
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	private int calcMetaBitIndexFromRawCoords(int rawRow, int rawCol, int subCellCount)
 	{
 		int gridSize = this.getWidth();
 		int gridSizeSub = getSubDimension(gridSize, subCellCount);
 //		int bitIndex = row * (gridSize/subCellCount) + col/subCellCount;
-		int rowSub = getSubDimension(row, subCellCount);
-		int colSub = getSubDimension(row, subCellCount);
-		int bitIndex = rowSub * gridSizeSub + colSub;
+		int rowSub = getSubDimension(rawRow, subCellCount);
+		int colSub = getSubDimension(rawCol, subCellCount);
 		
-		return bitIndex;
+		return calcBitIndex(rowSub, colSub, gridSizeSub);
+	}
+	
+	private int calcBitIndex(int row, int col, int gridSize)
+	{
+		return row * gridSize + col;
 	}
 	
 	public boolean isTaken(GridCoordinate coordinate, int subCellCount)
 	{
-		int bitIndex = calcBitIndex(coordinate.getM(), coordinate.getN(), /*subCelCount=*/1);
+		int bitIndex = calcBitIndex(coordinate.getN(), coordinate.getM(), getSubDimension(getWidth(), subCellCount));
 		
 		return isTaken(bitIndex, subCellCount);
 	}
@@ -63,6 +96,7 @@ public class ClientGrid extends A_Grid
 	{
 		int rawOwnershipCount = 0;
 		int blockSize = subCellCount/2;
+		int rawGridSize = getWidth();
 		
 		for( int row = rawRow; row < rawRow + subCellCount; row+=blockSize  )
 		{
@@ -74,7 +108,7 @@ public class ClientGrid extends A_Grid
 					
 					for( int col_sub = col; col_sub < col+blockSize; col_sub++ )
 					{
-						int gridBitIndex = calcBitIndex(row_sub, col_sub, /*subCellCount=*/1);
+						int gridBitIndex = calcBitIndex(row_sub, col_sub, rawGridSize);
 						
 						if( m_ownership.isSet(gridBitIndex) )
 						{
@@ -129,13 +163,13 @@ public class ClientGrid extends A_Grid
 		{
 			m_metaOwnership[i] = new BitArray(currentMetaGridSize*currentMetaGridSize);
 			
-			for( int row = 0; row < gridSize; row+=subCellCount )
+			for( int rawRow = 0; rawRow < gridSize; rawRow+=subCellCount )
 			{
-				for( int col = 0; col < gridSize; col+=subCellCount )
+				for( int rawCol = 0; rawCol < gridSize; rawCol+=subCellCount )
 				{
-					if( ownsMetaCell(row, col, subCellCount) )
+					if( ownsMetaCell(rawRow, rawCol, subCellCount) )
 					{
-						int metaBitIndex = calcBitIndex(row, col, subCellCount);
+						int metaBitIndex = calcMetaBitIndexFromRawCoords(rawRow, rawCol, subCellCount);
 
 						m_metaOwnership[i].set(metaBitIndex, true);
 					}
@@ -145,5 +179,30 @@ public class ClientGrid extends A_Grid
 			subCellCount *= 2;
 			currentMetaGridSize /= 2;
 		}
+	}
+	
+	@Override public String toString()
+	{
+		final GridCoordinate coord = new GridCoordinate();
+		String toReturn = "";
+		for( int row = 0; row < getHeight(); row++ )
+		{
+			for( int col = 0; col < getWidth(); col++ )
+			{
+				coord.set(col, row);
+				if( isTaken(coord) )
+				{
+					toReturn += "0";
+				}
+				else
+				{
+					toReturn += " ";
+				}
+			}
+			
+			toReturn += "\n";
+		}
+		
+		return toReturn;
 	}
 }

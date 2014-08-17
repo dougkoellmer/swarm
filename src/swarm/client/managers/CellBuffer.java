@@ -6,7 +6,10 @@ import java.util.logging.Logger;
 
 
 
+
+
 import swarm.client.entities.BufferCell;
+import swarm.client.entities.ClientGrid;
 import swarm.client.structs.BufferCellPool;
 import swarm.client.structs.I_LocalCodeRepository;
 import swarm.shared.utils.U_Bits;
@@ -170,7 +173,7 @@ public class CellBuffer
 		return isInBoundsRelative(relativeM, relativeN);
 	}
 	
-	void imposeBuffer(A_Grid grid, CellBuffer otherBuffer, I_LocalCodeRepository localCodeSource, int currentSubCellCount, int options__extends__smF_BufferUpdateOption)
+	void imposeBuffer(ClientGrid grid, CellBuffer otherBuffer, I_LocalCodeRepository localCodeSource, int currentSubCellCount, int options__extends__smF_BufferUpdateOption)
 	{		
 		boolean createVisualizations = (options__extends__smF_BufferUpdateOption & F_BufferUpdateOption.CREATE_VISUALIZATIONS) != 0;
 		boolean communicateWithServer = (options__extends__smF_BufferUpdateOption & F_BufferUpdateOption.COMMUNICATE_WITH_SERVER) != 0;
@@ -188,6 +191,23 @@ public class CellBuffer
 		
 		GridCoordinate absCoord = s_utilCoord1;
 		GridCoordinate relThisCoord = s_utilCoord2;
+		
+		//--- DRK > We're currently "below" the zoom level of this buffer so early-out and clear other buffer of its cells.
+		if( currentSubCellCount < m_subCellCount )
+		{
+			for( i = 0; i < otherBuffer.m_cells.size(); i++ )
+			{
+				BufferCell ithCellFromOtherBuffer = otherBuffer.m_cells.get(i);
+				
+				if( ithCellFromOtherBuffer != null )
+				{
+					m_cellPool.deallocCell(ithCellFromOtherBuffer);
+					otherBuffer.m_cells.set(i, null);
+				}
+			}
+			
+			return;
+		}
 		
 		
 		/*HashMap<String, smBufferCell> debug_dict = new HashMap<String, smBufferCell>();
@@ -230,9 +250,19 @@ public class CellBuffer
 				this.relativeToAbsolute(relThisCoord, absCoord);
 				otherBuffer.absoluteToRelative(absCoord, relOtherCoord);
 				
-				if( !grid.isTaken(absCoord) )
+				if( !grid.isTaken(absCoord, currentSubCellCount) )
 				{
 					continue;
+				}
+				else
+				{
+					if( currentSubCellCount > m_subCellCount )
+					{
+						if( grid.isObscured(absCoord.getM(), absCoord.getN(), m_subCellCount, currentSubCellCount) )
+						{
+							continue;
+						}
+					}
 				}
 				
 				cellRecycled = false;

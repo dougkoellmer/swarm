@@ -1,6 +1,7 @@
 package swarm.client.managers;
 
 import swarm.client.entities.Camera;
+import swarm.client.entities.ClientGrid;
 import swarm.client.structs.BufferCellPool;
 import swarm.client.structs.I_LocalCodeRepository;
 import swarm.shared.entities.A_Grid;
@@ -28,7 +29,7 @@ public class CellBufferPair
 		m_subCellCount = subCellCount;
 	}
 	
-	void update(A_Grid grid, Camera camera, I_LocalCodeRepository alternativeCodeSource, int options__extends__smF_BufferUpdateOption, int subCellCount)
+	void update(ClientGrid grid, Camera camera, I_LocalCodeRepository alternativeCodeSource, int options__extends__smF_BufferUpdateOption, int subCellCount)
 	{
 		//--- DRK > Calculate maximum "raw" buffer position and size, not caring about constraints.
 		this.calcRawBufferDimensions(camera, grid, m_subCellCount, m_utilCoord1, m_utilCoord2);
@@ -45,7 +46,6 @@ public class CellBufferPair
 		int gridHeightRemainder = m_subCellCount > 0 ? grid.getHeight() % m_subCellCount : 0;
 		int relativeGridHeight = grid.getHeight() == 0 ? 0 : (grid.getHeight() - gridHeightRemainder) / m_subCellCount;
 		relativeGridHeight += gridHeightRemainder > 0 ? 1 : 0;
-		
 		
 		if( m_utilCoord1.getM() < 0 )
 		{

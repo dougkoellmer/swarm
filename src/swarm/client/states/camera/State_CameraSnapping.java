@@ -8,6 +8,7 @@ import swarm.client.managers.CellBuffer;
 import swarm.client.entities.BufferCell;
 import swarm.client.managers.CellBufferManager;
 import swarm.client.entities.A_ClientUser;
+import swarm.client.entities.ClientGrid;
 import swarm.client.entities.E_CellNuke;
 import swarm.client.input.BrowserHistoryManager;
 import swarm.client.managers.CameraManager;
@@ -234,7 +235,7 @@ public class State_CameraSnapping extends A_State implements I_StateEventListene
 	
 	private void updateSnapBufferManager(boolean flushPopulator)
 	{
-		A_Grid grid = m_appContext.gridMngr.getGrid();
+		ClientGrid grid = m_appContext.gridMngr.getGrid();
 		I_LocalCodeRepository htmlSource = m_internalCodeRepo;
 		
 		int options = F_BufferUpdateOption.COMMUNICATE_WITH_SERVER;

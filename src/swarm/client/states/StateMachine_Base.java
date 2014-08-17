@@ -271,6 +271,7 @@ public class StateMachine_Base extends A_StateMachine implements I_TransactionRe
 		{
 			@Override public void onGridUpdate()
 			{
+				String value = gridManager.getGrid().toString();
 				perform(StateMachine_Base.OnGridUpdate.class);
 			}
 		});
