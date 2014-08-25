@@ -250,7 +250,7 @@ public class CellBuffer
 				this.relativeToAbsolute(relThisCoord, absCoord);
 				otherBuffer.absoluteToRelative(absCoord, relOtherCoord);
 				
-				if( !grid.isTaken(absCoord, currentSubCellCount) )
+				if( !grid.isTaken(absCoord, m_subCellCount) )
 				{
 					continue;
 				}
@@ -352,11 +352,15 @@ public class CellBuffer
 				BufferCell imposedCell = getCellAtRelativeCoord(relThisCoord);
 				imposedCell.getCoordinate().copy(absCoord);
 				
+//				s_logger.severe(m_subCellCount+"");
 				m_codeMngr.populateCell(imposedCell, localCodeSource, m_subCellCount, cellRecycled, communicateWithServer, E_CodeType.SPLASH);
 				
 				s_utilMapping.getCoordinate().copy(imposedCell.getCoordinate());
 				
-				m_cellSizeMngr.populateCellSize(s_utilMapping, this.m_parent, imposedCell);
+				if( m_subCellCount == 1 )
+				{
+					m_cellSizeMngr.populateCellSize(s_utilMapping, this.m_parent, imposedCell);
+				}
 			}
 		}
 		

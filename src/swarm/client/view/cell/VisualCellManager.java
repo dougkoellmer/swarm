@@ -153,12 +153,15 @@ public class VisualCellManager implements I_UIElement
 		int subCellCount = cellBuffer.getSubCellCount();
 		
 		Point basePoint = m_utilPoint1;
-		cellBuffer.getCoordinate().calcPoint(basePoint, grid.getCellWidth(), grid.getCellHeight(), grid.getCellPadding(), 1);
+		cellBuffer.getCoordinate().calcPoint(basePoint, grid.getCellWidth(), grid.getCellHeight(), grid.getCellPadding(), subCellCount);
 		camera.calcScreenPoint(basePoint, m_utilPoint2);
 		basePoint = m_utilPoint2;
 		basePoint.round();
 		
-		m_lastBasePoint.copy(basePoint);
+		if( subCellCount == 1 )
+		{
+			m_lastBasePoint.copy(basePoint);
+		}
 		
 		double scaling = U_Grid.calcCellScaling(distanceRatio, subCellCount, grid.getCellPadding(), grid.getCellWidth());
 		
@@ -282,7 +285,10 @@ public class VisualCellManager implements I_UIElement
 		}
 		m_container.getElement().getStyle().setDisplay(Display.BLOCK);
 		
-		m_lastScaling = scaling;
+		if( subCellCount == 1 )
+		{
+			m_lastScaling = scaling;
+		}
 		
 		return true;
 	}

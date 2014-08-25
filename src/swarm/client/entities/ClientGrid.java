@@ -87,7 +87,9 @@ public class ClientGrid extends A_Grid
 	
 	public boolean isTaken(GridCoordinate coordinate, int subCellCount)
 	{
-		int bitIndex = calcBitIndex(coordinate.getN(), coordinate.getM(), getSubDimension(getWidth(), subCellCount));
+		int m = getSubDimension(coordinate.getM(), subCellCount);
+		int n = getSubDimension(coordinate.getN(), subCellCount);
+		int bitIndex = calcBitIndex(n, m, getSubDimension(getWidth(), subCellCount));
 		
 		return isTaken(bitIndex, subCellCount);
 	}
@@ -181,22 +183,21 @@ public class ClientGrid extends A_Grid
 		}
 	}
 	
-	@Override public String toString()
+	public String toString(int subCellN)
 	{
 		final GridCoordinate coord = new GridCoordinate();
 		String toReturn = "";
-		for( int row = 0; row < getHeight(); row++ )
+		for( int row = 0; row < getHeight() / subCellN; row++ )
 		{
-			for( int col = 0; col < getWidth(); col++ )
+			for( int col = 0; col < getWidth() / subCellN; col++ )
 			{
-				coord.set(col, row);
-				if( isTaken(coord) )
+				if( isTaken(col, row, subCellN) )
 				{
 					toReturn += "0";
 				}
 				else
 				{
-					toReturn += " ";
+					toReturn += "  ";
 				}
 			}
 			
@@ -204,5 +205,10 @@ public class ClientGrid extends A_Grid
 		}
 		
 		return toReturn;
+	}
+	
+	@Override public String toString()
+	{
+		return toString(2);
 	}
 }

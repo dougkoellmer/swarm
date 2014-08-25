@@ -83,9 +83,6 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	private final MutableCode m_utilCode = new MutableCode(E_CodeType.values());
 	private BufferCell m_bufferCell = null;
 	
-	//private final ArrayList<Image> //m_backgroundImages = new ArrayList<Image>();
-	private int m_currentImageIndex = -1;
-	
 	private int m_subCellDimension = -1;
 	private int m_width = 0;
 	private int m_height = 0;
@@ -274,11 +271,6 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	{
 		if( m_isValidated )  return;
 		
-		if( m_currentImageIndex != -1 )
-		{
-			//m_backgroundImages.get(m_currentImageIndex).getElement().getStyle().setDisplay(Display.NONE);
-		}
-		
 		if( m_subCellDimension == 1 )
 		{
 			this.flushLayout();
@@ -286,19 +278,20 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 			this.getElement().getStyle().setPaddingBottom(m_padding, Unit.PX);
 			//m_backgroundPanel.setSize(m_width+m_padding + "px", m_height+m_padding + "px");
 			
-			m_currentImageIndex = 0;
-			//m_backgroundImages.get(m_currentImageIndex).getElement().getStyle().setDisplay(Display.BLOCK);
-			
 			//--- DRK > Rare case of jumping from beyond max imaged zoom to all the way to cell size 1,
 			//---		but could technically happen with bad frame rate or something, so clearing this here just in case.
 			//m_backgroundPanel.getElement().getStyle().clearBackgroundColor();
+			
+			m_contentPanel.addStyleName("visual_cell_content");
 		}
 		else if( m_subCellDimension > 1 )
 		{
-			U_Debug.ASSERT(false, "not implemented");
-			/*this.setStatusHtml(null, false); // shouldn't have to be done, but what the hell.
+//			U_Debug.ASSERT(false, "not implemented");
+			this.setStatusHtml(null, false); // shouldn't have to be done, but what the hell.
 			
 			this.setSize(m_width+"px", m_height+"px");
+			this.getElement().getStyle().clearPaddingRight();
+			this.getElement().getStyle().clearPaddingBottom();
 			//m_backgroundPanel.setSize(m_width+"px", m_height+"px");
 			
 			if( m_subCellDimension > S_CommonApp.MAX_IMAGED_CELL_SIZE )
@@ -308,12 +301,9 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 			else
 			{
 				//m_backgroundPanel.getElement().getStyle().clearBackgroundColor();
-				
-				m_currentImageIndex = U_Bits.calcBitPosition(m_subCellDimension);
-				//m_backgroundImages.get(m_currentImageIndex).getElement().getStyle().setDisplay(Display.BLOCK);
 			}
 			
-			m_contentPanel.removeStyleName("visual_cell_content");*/
+			m_contentPanel.removeStyleName("visual_cell_content");
 		}
 		
 		m_isValidated = true;
@@ -359,8 +349,6 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	public void onCreate(BufferCell bufferCell, int width, int height, int padding, int subCellDimension)
 	{
 		m_bufferCell = bufferCell;
-		
-		m_currentImageIndex = -1;
 		
 		onCreatedOrRecycled(width, height, padding, subCellDimension);
 	}
@@ -444,11 +432,6 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		m_bufferCell = null;
 		m_isFocused = false;
 		m_subCellDimension = -1;
-		
-		if( m_currentImageIndex != -1 )
-		{
-			//m_backgroundImages.get(m_currentImageIndex).getElement().getStyle().setDisplay(Display.NONE);
-		}
 
 		if( !E_CodeSafetyLevel.isStatic(m_codeSafetyLevel) )
 		{

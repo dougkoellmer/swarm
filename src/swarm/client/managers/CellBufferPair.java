@@ -1,5 +1,7 @@
 package swarm.client.managers;
 
+import java.util.logging.Logger;
+
 import swarm.client.entities.Camera;
 import swarm.client.entities.ClientGrid;
 import swarm.client.structs.BufferCellPool;
@@ -10,6 +12,8 @@ import swarm.shared.structs.Point;
 
 public class CellBufferPair
 {
+	private static final Logger s_logger = Logger.getLogger(CellBufferPair.class.getName());
+	
 	private final GridCoordinate m_utilCoord1 = new GridCoordinate();
 	private final GridCoordinate m_utilCoord2 = new GridCoordinate();
 	
@@ -36,7 +40,7 @@ public class CellBufferPair
 		int newBufferWidth = m_utilCoord2.getM();
 		int newBufferHeight = m_utilCoord2.getN();
 		
-		//s_logger.severe("Raw: " + m_utilCoord1.toString() + " " + newBufferWidth + " " + newBufferHeight);		
+//		s_logger.severe("Raw: " + m_subCellCount + " " + m_utilCoord1.toString() + " " + newBufferWidth + " " + newBufferHeight);		
 		
 		//--- DRK > Constrain both the position and size of the buffer if necessary so it maps onto the grid in a minimal fashion.
 		//---		The following is capable of creating a buffer with zero cells, which is perfectly acceptable.
@@ -70,8 +74,8 @@ public class CellBufferPair
 			newBufferHeight = newBufferHeight > 0 ? newBufferHeight : 0;
 		}
 		
-		//s_logger.severe("Constrained: " + m_utilCoord1.toString() + " " + newBufferWidth + " " + newBufferHeight);
-		//s_logger.severe("");
+//		s_logger.severe("Constrained: " + m_utilCoord1.toString() + " " + newBufferWidth + " " + newBufferHeight);
+//		s_logger.severe("");
 		
 		m_backBuffer.setExtents(m_utilCoord1.getM(), m_utilCoord1.getN(), newBufferWidth, newBufferHeight);
 		m_backBuffer.imposeBuffer(grid, m_displayBuffer, alternativeCodeSource, subCellCount, options__extends__smF_BufferUpdateOption);

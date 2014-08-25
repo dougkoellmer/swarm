@@ -249,11 +249,17 @@ public class CellCodeManager implements I_TransactionResponseHandler
 			}
 			else
 			{
-				U_Debug.ASSERT(eType != E_CodeType.SOURCE, "populateCell2");
-				
-				// TODO: Need to put image url for generated meta image.
+				final String html = "<img style='width:100%; height:100%;' src='r.img/cell_size_"+cellSize+".png'></img>";
+				setStaticHtml(html, eType, cell);
 			}
 		}
+	}
+	
+	private void setStaticHtml(String html, E_CodeType type, A_Cell cell)
+	{
+		Code code = new Code(html, E_CodeType.values());
+		code.setSafetyLevel(E_CodeSafetyLevel.NO_SANDBOX_STATIC);
+		cell.setCode(type, code);
 	}
 	
 	private void onGetCellDataSuccess(TransactionRequest request, TransactionResponse response)
@@ -273,10 +279,7 @@ public class CellCodeManager implements I_TransactionResponseHandler
 		{
 			//TODO: Get this from somewhere else.
 			final String OPEN_CELL_CODE = "<div style='width:100%; height:100%; background-color:#BBBBBB;'></div>";
-			
-			code = new Code(OPEN_CELL_CODE, E_CodeType.values());
-			code.setSafetyLevel(E_CodeSafetyLevel.NO_SANDBOX_STATIC);
-			m_utilCell.setCode(eCodeType, code);
+			setStaticHtml(OPEN_CELL_CODE, eCodeType, m_utilCell);
 		}
 		
 		boolean isCodeNull = code == null;
