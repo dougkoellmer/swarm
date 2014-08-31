@@ -1,5 +1,7 @@
 package swarm.client.view.cell;
 
+import java.util.logging.Logger;
+
 import swarm.client.app.AppContext;
 import swarm.client.entities.BufferCell;
 import swarm.client.entities.Camera;
@@ -34,7 +36,8 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Panel;
 
 public class VisualCellHighlight extends FlowPanel implements I_UIElement
-{	
+{
+	private static final Logger s_logger = Logger.getLogger(VisualCellHighlight.class.getName());
 	private final Point m_utilPoint1 = new Point();
 	
 	private double m_lastScaling = -1;
@@ -86,6 +89,7 @@ public class VisualCellHighlight extends FlowPanel implements I_UIElement
 		double highlightScaling = camera.calcDistanceRatio();
 		
 		GridCoordinate mouseCoord = navManager.getMouseGridCoord();
+		s_logger.severe(mouseCoord+"");
 		boolean owned = grid.isTaken(mouseCoord, 1);
 		
 		BufferCell cell = buffer.getCellAtAbsoluteCoord(mouseCoord);

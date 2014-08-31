@@ -39,7 +39,7 @@ public class ClientGrid extends A_Grid
 		
 		int gridSizeSub = getSubDimension(getWidth(), subCellCount);
 		
-		int bitIndex = calcBitIndex(m, n, gridSizeSub);
+		int bitIndex = calcBitIndex(n, m, gridSizeSub);
 		
 		return isTaken(bitIndex, subCellCount);
 	}
@@ -60,7 +60,7 @@ public class ClientGrid extends A_Grid
 			m = getSubDimension(m, 2);
 			n = getSubDimension(n, 2);
 			
-			if( isTaken(m, n, subCellCount) )
+			if( isTaken(m, n, currentSubCellCount) )
 			{
 				return true;
 			}
@@ -83,15 +83,16 @@ public class ClientGrid extends A_Grid
 	private int calcBitIndex(int row, int col, int gridSize)
 	{
 		return row * gridSize + col;
-	}
+	}//15, 13, 431
 	
 	public boolean isTaken(GridCoordinate coordinate, int subCellCount)
 	{
-		int m = getSubDimension(coordinate.getM(), subCellCount);
-		int n = getSubDimension(coordinate.getN(), subCellCount);
-		int bitIndex = calcBitIndex(n, m, getSubDimension(getWidth(), subCellCount));
-		
-		return isTaken(bitIndex, subCellCount);
+		return isTaken(coordinate.getM(), coordinate.getN(), subCellCount);
+//		int m = getSubDimension(coordinate.getM(), subCellCount);
+//		int n = getSubDimension(coordinate.getN(), subCellCount);
+//		int bitIndex = calcBitIndex(n, m, getSubDimension(getWidth(), subCellCount));
+//		
+//		return isTaken(bitIndex, subCellCount);
 	}
 	
 	private boolean ownsMetaCell(int rawRow, int rawCol, int subCellCount)
@@ -193,11 +194,11 @@ public class ClientGrid extends A_Grid
 			{
 				if( isTaken(col, row, subCellN) )
 				{
-					toReturn += "0";
+					toReturn += "O";
 				}
 				else
 				{
-					toReturn += "  ";
+					toReturn += "X";
 				}
 			}
 			

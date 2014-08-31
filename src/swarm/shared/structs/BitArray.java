@@ -258,6 +258,8 @@ public class BitArray extends A_JsonEncodable
 	
 	public boolean isSet(int bitIndex)
 	{
+		if( bitIndex < 0 )  return false;
+		
 		int bitIndexIntoBlock = calcBitIndexModBlock(bitIndex);
 		int blockIndex = calcBlockIndex(bitIndex, bitIndexIntoBlock);
 		int block = m_blocks[blockIndex];
