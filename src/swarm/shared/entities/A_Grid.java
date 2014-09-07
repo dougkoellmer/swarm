@@ -31,20 +31,25 @@ public abstract class A_Grid extends A_JsonEncodable
 	{
 	}
 	
-	public void calcCoordTopLeftPoint(GridCoordinate coordinate, int subCellDimension, Point point_out)
+	public void calcCoordTopLeftPoint(GridCoordinate coord, int subCellDimension, Point point_out)
+	{
+		calcCoordTopLeftPoint(coord.getM(), coord.getN(), subCellDimension, point_out);
+	}
+	
+	public void calcCoordTopLeftPoint(int m, int n, int subCellDimension, Point point_out)
 	{
 		m_cellWidth = m_cellWidth * subCellDimension;
 		m_cellHeight = m_cellHeight * subCellDimension;
 		m_cellPadding = m_cellPadding * subCellDimension;
-		double x = coordinate.getM() * m_cellWidth + (coordinate.getM() * m_cellPadding);
-		double y = coordinate.getN() * m_cellHeight + (coordinate.getN() * m_cellPadding);
+		double x = m * m_cellWidth + (m * m_cellPadding);
+		double y = n * m_cellHeight + (n * m_cellPadding);
 		
 		point_out.set(x, y, 0.0);
 	}
 	
 	public void calcCoordCenterPoint(GridCoordinate coordinate, int subCellDimension, Point point_out)
 	{
-		calcCoordTopLeftPoint(coordinate, subCellDimension, point_out);
+		calcCoordTopLeftPoint(coordinate.getM(), coordinate.getN(), subCellDimension, point_out);
 		
 		//--- TODO(DRK): Probably needs to take into account padding for higher sub-cell dimensions.
 		double cellWidth = m_cellWidth * subCellDimension;

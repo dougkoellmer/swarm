@@ -123,7 +123,7 @@ public class VisualCellHighlight extends FlowPanel implements I_UIElement
 		double lastScaling = cellManager.getLastScaling();
 		Point lastBasePoint = cellManager.getLastBasePoint();
 		
-		s_logger.severe(""+lastBasePoint + " " + lastScaling);
+//		s_logger.severe(""+lastBasePoint + " " + lastScaling);
 		
 		int bufferM = buffer.getCoordinate().getM();//buffer.getCoordinate().getM() * subCellDim;
 		int bufferN = buffer.getCoordinate().getN();//buffer.getCoordinate().getN() * subCellDim;

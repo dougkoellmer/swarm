@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 import swarm.client.app.S_Client;
 import swarm.client.entities.Camera;
 import swarm.client.entities.BufferCell;
+import swarm.client.entities.ClientGrid;
 import swarm.client.managers.CellBuffer;
 import swarm.client.managers.CellBufferManager;
 import swarm.client.states.StateMachine_Base;
@@ -14,6 +15,7 @@ import swarm.client.states.camera.Action_ViewingCell_Refresh;
 import swarm.client.states.camera.StateMachine_Camera;
 import swarm.client.states.camera.State_CameraSnapping;
 import swarm.client.states.camera.State_ViewingCell;
+import swarm.client.view.E_ZIndex;
 import swarm.client.view.I_UIElement;
 import swarm.client.view.U_Css;
 import swarm.client.view.ViewContext;
@@ -22,10 +24,12 @@ import swarm.shared.debugging.U_Debug;
 import swarm.shared.entities.A_Grid;
 import swarm.shared.entities.U_Grid;
 import swarm.shared.statemachine.StateEvent;
+import swarm.shared.structs.BitArray;
 import swarm.shared.structs.CellAddress;
 import swarm.shared.structs.Point;
 
 import com.google.gwt.dom.client.Style.Display;
+import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
@@ -44,6 +48,7 @@ public class VisualCellManager implements I_UIElement
 	
 	private final Point m_utilPoint1 = new Point();
 	private final Point m_utilPoint2 = new Point();
+	private final Point m_canvasBackingUtilPoint = new Point(0, 0, 0);
 	
 	private final Point m_lastBasePoint = new Point();
 	
@@ -56,6 +61,8 @@ public class VisualCellManager implements I_UIElement
 	private final VisualCellPool m_cellPool;
 	
 	private final int m_cellDestroyLimitWhileMoving = 1;
+	
+	private CanvasBacking m_backing = null;
 	
 	public VisualCellManager(ViewContext viewContext, Panel container) 
 	{
@@ -133,15 +140,35 @@ public class VisualCellManager implements I_UIElement
 		{
 			CellBuffer cellBuffer = cellManager.getDisplayBuffer(i);
 			
-			updateCellTransforms(cellBuffer, timeStep, isViewStateTransition);
+			updateCellTransforms(cellManager, cellBuffer, timeStep, isViewStateTransition);
 		}
 		
 		return true;
 	}
 	
-	private boolean updateCellTransforms(CellBuffer cellBuffer, double timeStep, boolean isViewStateTransition)
+	private void updateBacking(ClientGrid grid)
 	{
-		A_Grid grid = m_viewContext.appContext.gridMngr.getGrid(); // TODO: Get grid from somewhere else.
+		if( m_backing == null )
+		{
+			m_backing = new CanvasBacking();
+			m_backing.getCanvas().getElement().getStyle().setPosition(Position.ABSOLUTE);
+			m_backing.getCanvas().getElement().getStyle().setLeft(0, Unit.PX);
+			m_backing.getCanvas().getElement().getStyle().setTop(0, Unit.PX);
+			m_backing.getCanvas().getElement().getStyle().setProperty("transformOrigin", "0px 0px 0px");
+			m_backing.getCanvas().addStyleName("sm_canvas_backing");
+			E_ZIndex.CELL_BACKING.assignTo(m_backing.getCanvas());
+		}
+		
+		int pixelsPerCell = grid.getCellWidth()/grid.getCellPadding();
+		int physicalWidth = (int) grid.calcPixelWidth();
+		int logicalSize = (pixelsPerCell+1)*grid.getWidth();
+						
+		m_backing.set("rgb(255,0,0)", logicalSize, physicalWidth, pixelsPerCell, 1, grid.getBaseOwnership());
+	}
+	
+	private boolean updateCellTransforms(CellBufferManager manager, CellBuffer cellBuffer, double timeStep, boolean isViewStateTransition)
+	{
+		ClientGrid grid = m_viewContext.appContext.gridMngr.getGrid(); // TODO: Get grid from somewhere else.
 		
 		int bufferSize = cellBuffer.getCellCount();
 		int bufferWidth = cellBuffer.getWidth();
@@ -150,24 +177,51 @@ public class VisualCellManager implements I_UIElement
 		
 		double distanceRatio = camera.calcDistanceRatio();
 		
-		int subCellCount = cellBuffer.getSubCellCount();
+		int bufferSubCellCount = cellBuffer.getSubCellCount();
 		
 		Point basePoint = m_utilPoint1;
-		cellBuffer.getCoordinate().calcPoint(basePoint, grid.getCellWidth(), grid.getCellHeight(), grid.getCellPadding(), subCellCount);
+		cellBuffer.getCoordinate().calcPoint(basePoint, grid.getCellWidth(), grid.getCellHeight(), grid.getCellPadding(), bufferSubCellCount);
 		camera.calcScreenPoint(basePoint, m_utilPoint2);
 		basePoint = m_utilPoint2;
 		basePoint.round();
 		
-		if( subCellCount == 1 )
+		boolean showingBacking = false;
+		
+		if( bufferSubCellCount == 1 )
 		{
 			m_lastBasePoint.copy(basePoint);
+			
+			if( manager.getSubCellCount() > 1 )
+			{
+				BitArray ownership = grid.getBaseOwnership();
+				
+				if( m_backing == null && ownership != null )
+				{
+					updateBacking(grid);
+					
+					m_container.add(m_backing.getCanvas());
+				}
+				
+				if( m_backing != null )
+				{
+					m_backing.getCanvas().setVisible(true);
+					showingBacking = true;
+				}
+			}
+			else
+			{
+				if( m_backing != null )
+				{
+					m_backing.getCanvas().setVisible(false);
+				}
+			}
 		}
 		
-		double scaling = U_Grid.calcCellScaling(distanceRatio, subCellCount, grid.getCellPadding(), grid.getCellWidth());
+		double scaling = U_Grid.calcCellScaling(distanceRatio, bufferSubCellCount, grid.getCellPadding(), grid.getCellWidth());
 		
 		double cellWidthPlusPadding = -1;
 		double cellHeightPlusPadding = -1;
-		if( subCellCount == 1 )
+		if( bufferSubCellCount == 1 )
 		{
 			cellWidthPlusPadding = (grid.getCellWidth() + grid.getCellPadding()) * scaling;
 			cellHeightPlusPadding = (grid.getCellHeight() + grid.getCellPadding()) * scaling;
@@ -193,6 +247,19 @@ public class VisualCellManager implements I_UIElement
 		int windowHeight = (int) m_viewContext.scrollNavigator.getWindowHeight();
 	
 		String scaleProperty = scaling < NO_SCALING ? U_Css.createScaleTransform(scaling, use3dTransforms) : null;
+		
+		String transformProperty = m_viewContext.appContext.platformInfo.getTransformProperty();
+		
+		if( showingBacking )
+		{
+			int offset = grid.getCellPadding()/2;
+			m_canvasBackingUtilPoint.set(offset, offset, 0);
+			camera.calcScreenPoint(m_canvasBackingUtilPoint, m_canvasBackingUtilPoint);
+			m_canvasBackingUtilPoint.round();
+			String translateProperty = U_Css.createTranslateTransform(m_canvasBackingUtilPoint.getX(), m_canvasBackingUtilPoint.getY(), use3dTransforms);
+			String transform = scaleProperty != null ? translateProperty + " " + scaleProperty : translateProperty;
+			m_backing.getCanvas().getElement().getStyle().setProperty(transformProperty, transform);
+		}
 		
 		//--- DRK > NOTE: ALL DOM-manipulation related to cells should occur within this block.
 		//---		This might be an extraneous optimization in some browsers if they themselves have
@@ -274,7 +341,6 @@ public class VisualCellManager implements I_UIElement
 				
 				String translateProperty = U_Css.createTranslateTransform(translateX, translateY, use3dTransforms);
 				String transform = scaleProperty != null ? translateProperty + " " + scaleProperty : translateProperty;
-				String transformProperty = m_viewContext.appContext.platformInfo.getTransformProperty();
 				ithVisualCell.getElement().getStyle().setProperty(transformProperty, transform);
 				
 				if( ithVisualCell.getParent() == null )
@@ -285,7 +351,7 @@ public class VisualCellManager implements I_UIElement
 		}
 		m_container.getElement().getStyle().setDisplay(Display.BLOCK);
 		
-		if( subCellCount == 1 )
+		if( bufferSubCellCount == 1 )
 		{
 			m_lastScaling = scaling;
 		}
@@ -409,6 +475,8 @@ public class VisualCellManager implements I_UIElement
 					//---		lagging of the cell visualizations with very rapid resizes of the window.
 					//---		Also, if the camera is still and the itself gets grid updated, visual cells won't appear until
 					//---		we move the camera again.
+					ClientGrid grid = m_viewContext.appContext.gridMngr.getGrid();
+					updateBacking(grid);
 					this.updateCellTransforms(0.0);
 				}
 				else if( event.getAction() == Action_Camera_SnapToPoint.class )

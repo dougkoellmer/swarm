@@ -12,7 +12,6 @@ public class CanvasBacking
 {
 	private final Canvas m_canvas = Canvas.createIfSupported();
 	
-	private int m_color = 0xFFFFFFFF;
 	private BitArray m_bitArray = null;
 	private int m_logicalGridSize;
 	private int m_cellSize;
@@ -26,15 +25,18 @@ public class CanvasBacking
 		
 	}
 	
-	public void set(int color, int logicalGridSize, int physicalGridSize, int logicalCellSize, int gapSize, BitArray array_cloned)
+	public Canvas getCanvas()
+	{
+		return m_canvas;
+	}
+	
+	public void set(String color, int logicalGridSize, int physicalGridSize, int logicalCellSize, int gapSize, BitArray array_cloned)
 	{
 		m_logicalGridSize = logicalGridSize;
 		m_physicalGridSize = physicalGridSize;
-		m_color = color;
 		m_cellSize = logicalCellSize;
 		m_gapSize = gapSize;
-		String int_hexed = Integer.toHexString(color);
-		m_fillStyle = CssColor.make(int_hexed);
+		m_fillStyle = CssColor.make(color);
 		
 		updateSize();
 		
@@ -59,28 +61,39 @@ public class CanvasBacking
 		m_canvas.setWidth(m_physicalGridSize + "px");
 		m_canvas.setHeight(m_physicalGridSize + "px");
 		m_canvas.setCoordinateSpaceWidth(m_logicalGridSize);
-		m_canvas.setCoordinateSpaceWidth(m_physicalGridSize);
+		m_canvas.setCoordinateSpaceHeight(m_logicalGridSize);
 	}
+
+	 public final native void noBlur(Context2d context)
+	 /*-{
+			context.webkitImageSmoothingEnabled = false;
+			context.mozImageSmoothingEnabled = false;
+			context.imageSmoothingEnabled = false; /// future
+	 }-*/;
 	
 	private void draw()
 	{
 		Context2d context = m_canvas.getContext2d();
 		context.setFillStyle(m_fillStyle);
+		noBlur(context);
 		
 		if( m_bitArray == null )  return;
 		
 		int totalCellSize = m_cellSize + m_gapSize;
+		int across = m_logicalGridSize / totalCellSize;
 		
 		for(int i = 0; i < m_bitArray.getBitCount(); i++ )
 		{
-			int modWidth = i % m_logicalGridSize;
-			int row = (i - modWidth) / m_logicalGridSize;
+			if( !m_bitArray.isSet(i) )  continue;
+			
+			int modWidth = i % across;
+			int row = (i - modWidth) / across;
 			int col = modWidth;
 			
 			int row_canvas = row * totalCellSize;
 			int col_canvas = col * totalCellSize;
 			
-			context.fillRect(row_canvas, col_canvas, m_cellSize, m_cellSize);
+			context.fillRect(col_canvas, row_canvas, m_cellSize, m_cellSize);
 		}
 	}
 }

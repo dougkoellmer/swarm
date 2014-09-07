@@ -13,6 +13,11 @@ import swarm.shared.utils.U_Bits;
 public class ClientGrid extends A_Grid
 {
 	private BitArray[] m_metaOwnership = new BitArray[0];
+	
+	public BitArray getBaseOwnership()
+	{
+		return m_ownership;
+	}
 
 	private boolean isTaken(int bitIndex, int subCellCount)
 	{
