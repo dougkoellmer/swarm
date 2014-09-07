@@ -89,7 +89,6 @@ public class VisualCellHighlight extends FlowPanel implements I_UIElement
 		double highlightScaling = camera.calcDistanceRatio();
 		
 		GridCoordinate mouseCoord = navManager.getMouseGridCoord();
-		s_logger.severe(mouseCoord+"");
 		boolean owned = grid.isTaken(mouseCoord, 1);
 		
 		BufferCell cell = buffer.getCellAtAbsoluteCoord(mouseCoord);
@@ -124,8 +123,10 @@ public class VisualCellHighlight extends FlowPanel implements I_UIElement
 		double lastScaling = cellManager.getLastScaling();
 		Point lastBasePoint = cellManager.getLastBasePoint();
 		
-		int bufferM = buffer.getCoordinate().getM() * subCellDim;
-		int bufferN = buffer.getCoordinate().getN() * subCellDim;
+		s_logger.severe(""+lastBasePoint + " " + lastScaling);
+		
+		int bufferM = buffer.getCoordinate().getM();//buffer.getCoordinate().getM() * subCellDim;
+		int bufferN = buffer.getCoordinate().getN();//buffer.getCoordinate().getN() * subCellDim;
 		int deltaM = mouseCoord.getM() - bufferM;
 		int deltaN = mouseCoord.getN() - bufferN;
 		
@@ -137,12 +138,12 @@ public class VisualCellHighlight extends FlowPanel implements I_UIElement
 		int visualCellWidth = visualCell != null ? visualCell.getWidth() : defaultCellWidth;
 		int visualCellHeight = visualCell != null ? visualCell.getHeight() : defaultCellHeight;
 		
-		if( subCellDim > 1 )
-		{
-			apparentCellPixelsX = ((defaultCellWidth / ((double) subCellDim)) * lastScaling);
-			apparentCellPixelsY = ((defaultCellHeight / ((double) subCellDim)) * lastScaling);
-		}
-		else
+//		if( subCellDim > 1 )
+//		{
+//			apparentCellPixelsX = (((defaultCellWidth+ grid.getCellPadding()) / ((double) subCellDim)) * lastScaling);
+//			apparentCellPixelsY = (((defaultCellHeight+ grid.getCellPadding()) / ((double) subCellDim)) * lastScaling);
+//		}
+//		else
 		{
 			apparentCellPixelsX = (defaultCellWidth + grid.getCellPadding()) * lastScaling;
 			apparentCellPixelsY = (defaultCellHeight + grid.getCellPadding()) * lastScaling;
@@ -168,6 +169,8 @@ public class VisualCellHighlight extends FlowPanel implements I_UIElement
 		this.setSize(width, height);
 		this.getElement().getStyle().setProperty("top", y + "px");
 		this.getElement().getStyle().setProperty("left", basePoint.getX() + "px");
+		
+//		s_logger.severe(y + " " + basePoint.getX());
 		
 		ViewConfig viewConfig = m_viewContext.config;
 		
