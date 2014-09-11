@@ -402,7 +402,10 @@ public class CellCodeManager implements I_TransactionResponseHandler
 						{
 							BufferCell cell = buffer.getCellAtAbsoluteCoord(m_utilCoord);
 							
-							cell.onSyncResponseSuccess(splashScreenCode, compiledCode);
+							if( cell != null )
+							{
+								cell.onSyncResponseSuccess(splashScreenCode, compiledCode);
+							}
 						}
 					}
 				}
@@ -451,13 +454,16 @@ public class CellCodeManager implements I_TransactionResponseHandler
 				{
 					BufferCell cell = buffer.getCellAtAbsoluteCoord(m_utilCoord);
 	
-					if( isSync )
+					if( cell != null )
 					{
-						cell.onSyncResponseError();
-					}
-					else
-					{
-						cell.onGetResponseError(eCodeType);
+						if( isSync )
+						{
+							cell.onSyncResponseError();
+						}
+						else
+						{
+							cell.onGetResponseError(eCodeType);
+						}
 					}
 				}
 			}

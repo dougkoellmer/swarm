@@ -148,20 +148,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		
 		m_contentPanel.addStyleName("visual_cell_content");
 		
-		this.getElement().getStyle().setOpacity(.5);
-		
-		/*int maxImages = smS_App.MAX_CELL_IMAGES;
-		int currentBit = 1;
-		for( int i = 0; i <= 1; i++ )
-		{
-			Image image = new Image();
-			image.setUrl("/r.img/cell_size_" + currentBit + ".png");
-			image.getElement().getStyle().setDisplay(Display.NONE);
-			//m_backgroundImages.add(image);
-			//m_backgroundPanel.add(image);
-			
-			currentBit <<= 1;
-		}*/
+//		this.getElement().getStyle().setOpacity(.5);
 		
 		U_Css.allowUserSelect(m_contentPanel.getElement(), false);
 		

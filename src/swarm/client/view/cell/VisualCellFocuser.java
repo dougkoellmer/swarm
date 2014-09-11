@@ -108,12 +108,16 @@ public class VisualCellFocuser extends FlowPanel implements I_UIElement
 			if( buffer.isInBoundsAbsolute(targetCoord) )
 			{
 				BufferCell cell = buffer.getCellAtAbsoluteCoord(targetCoord);
-				VisualCell visualCell = (VisualCell) cell.getVisualization();
-				popUp(visualCell);
-				m_poppedCell = visualCell;
-				m_poppedCellCoord.copy(cell.getCoordinate());
 				
-				return true;
+				if( cell != null )
+				{
+					VisualCell visualCell = (VisualCell) cell.getVisualization();
+					popUp(visualCell);
+					m_poppedCell = visualCell;
+					m_poppedCellCoord.copy(cell.getCoordinate());
+					
+					return true;
+				}
 			}
 		}
 		
@@ -314,7 +318,7 @@ public class VisualCellFocuser extends FlowPanel implements I_UIElement
 				{
 					CellBuffer buffer = m_appContext.cellBufferMngr.getBaseDisplayBuffer();
 					
-					if( buffer.getSubCellCount() != 1 || !buffer.isInBoundsAbsolute(m_poppedCellCoord) )
+					if( buffer.getSubCellCount() != 1 || !buffer.isInBoundsAbsolute(m_poppedCellCoord) || buffer.getCellAtAbsoluteCoord(m_poppedCellCoord) == null )
 					{
 						//--- DRK > Used to push down cell here, but strictly speaking it shouldn't be necessary,
 						//---		and might actually be dangerous, like if the cell is recycled, popped up, then

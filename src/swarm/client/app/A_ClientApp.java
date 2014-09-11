@@ -261,7 +261,7 @@ public class A_ClientApp extends A_App implements I_TimeSource
 		m_appContext.addressMngr = m_appContext.addressMngr != null ? m_appContext.addressMngr : new CellAddressManager(m_appContext, m_appConfig.addressCacheSize, m_appConfig.addressCacheExpiration_seconds, this);
 		m_appContext.accountMngr = new ClientAccountManager(signInValidator, signUpValidator, m_appContext.txnMngr, m_appContext.jsonFactory);
 		m_appContext.codeMngr = new CellCodeManager(m_appContext);
-		m_appContext.cellSizeMngr = new CellSizeManager(m_appContext);
+		m_appContext.cellSizeMngr = m_appContext.cellSizeMngr != null ? m_appContext.cellSizeMngr : new CellSizeManager(m_appContext);
 		m_appContext.cellBufferMngr = new CellBufferManager(m_appContext.codeMngr, m_appContext.cellSizeMngr, m_appConfig.metaLevelCount);
 		
 		//--- DRK > Configure transaction stuff.

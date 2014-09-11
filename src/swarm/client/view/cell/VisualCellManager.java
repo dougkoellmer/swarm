@@ -156,14 +156,14 @@ public class VisualCellManager implements I_UIElement
 			m_backing.getCanvas().getElement().getStyle().setTop(0, Unit.PX);
 			m_backing.getCanvas().getElement().getStyle().setProperty("transformOrigin", "0px 0px 0px");
 			m_backing.getCanvas().addStyleName("sm_canvas_backing");
-			E_ZIndex.CELL_BACKING.assignTo(m_backing.getCanvas());
+//			E_ZIndex.CELL_BACKING.assignTo(m_backing.getCanvas());
 		}
 		
 		int pixelsPerCell = grid.getCellWidth()/grid.getCellPadding();
 		int physicalWidth = (int) grid.calcPixelWidth();
 		int logicalSize = (pixelsPerCell+1)*grid.getWidth();
 						
-		m_backing.set("rgb(255,0,0)", logicalSize, physicalWidth, pixelsPerCell, 1, grid.getBaseOwnership());
+		m_backing.set("rgb(255,255,255)", logicalSize, physicalWidth, pixelsPerCell, 1, grid.getBaseOwnership());
 	}
 	
 	private boolean updateCellTransforms(CellBufferManager manager, CellBuffer cellBuffer, double timeStep, boolean isViewStateTransition)

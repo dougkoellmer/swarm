@@ -275,6 +275,7 @@ public class CellAddressManager implements I_TransactionResponseHandler
 				//--- DRK > At least one case where this is validly null...when user cell is created when user is created.
 				//---		The user is populated, and calls into a method that eventually reaches here...but, the grid/buffer
 				//---		hasn't had a chance to update yet and actually create the cell.
+				//---		MUCH LATER NOTE: Can also be null cause we're at a different meta cell leve.
 				if( cell != null )
 				{
 					cell.onAddressFound(address);

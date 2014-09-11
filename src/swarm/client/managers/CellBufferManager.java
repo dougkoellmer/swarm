@@ -196,6 +196,8 @@ public class CellBufferManager implements I_LocalCodeRepository
 		{
 			thisCell = displayBuffer.getCellAtAbsoluteCoord(coordinate);
 			
+			if( thisCell == null )  return false;
+			
 			if( thisCell.getStatus(eType) == E_CodeStatus.HAS_CODE )
 			{
 				toReturn = thisCell.getCode(eType);

@@ -1,11 +1,3 @@
-- immutable state args
-
-- once we have immutable state args, make sure a static final empty state args instance is used instead of passing null anywhere to actions/states
-
-- two action types...normal one that we have now, and one that returns args to the view
-
-- use a pool for state events
-
 - finish throttling code if it's not finished
 
 - "isfor" that can take arguments

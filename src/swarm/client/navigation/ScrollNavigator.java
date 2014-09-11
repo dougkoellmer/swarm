@@ -685,8 +685,12 @@ public class ScrollNavigator implements I_StateEventListener
 		if( cellBuffer.isInBoundsAbsolute(gridCoord) )
 		{
 			BufferCell bufferCell = cellBuffer.getCellAtAbsoluteCoord(gridCoord);
-			VisualCell visualCell = (VisualCell) bufferCell.getVisualization();
-			this.setTargetLayout(visualCell, layout_nullable);		
+			
+			if( bufferCell != null )
+			{
+				VisualCell visualCell = (VisualCell) bufferCell.getVisualization();
+				this.setTargetLayout(visualCell, layout_nullable);
+			}
 		}
 	}
 	
@@ -739,9 +743,10 @@ public class ScrollNavigator implements I_StateEventListener
 		
 		CellBufferManager cellManager = m_viewContext.appContext.cellBufferMngr;
 		CellBuffer cellBuffer = cellManager.getBaseDisplayBuffer();
-		if( cellBuffer.isInBoundsAbsolute(coord) )
+		BufferCell bufferCell = cellBuffer.getCellAtAbsoluteCoord(coord);
+		
+		if( bufferCell != null )
 		{
-			BufferCell bufferCell = cellBuffer.getCellAtAbsoluteCoord(coord);
 			VisualCell visualCell = (VisualCell) bufferCell.getVisualization();
 			
 			calcCellSize(visualCell, size_out);

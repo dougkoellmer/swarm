@@ -102,7 +102,7 @@ public class CellSizeManager implements I_TransactionResponseHandler
 				{
 					BufferCell cellFromOtherBuffer = buffer.getCellAtAbsoluteCoord(coord);
 					
-					if( cellFromOtherBuffer.getFocusedCellSize().isExplicit() )
+					if( cellFromOtherBuffer != null && cellFromOtherBuffer.getFocusedCellSize().isExplicit() )
 					{
 						cellSize_out.copy(cellFromOtherBuffer.getFocusedCellSize());
 						
@@ -229,7 +229,7 @@ public class CellSizeManager implements I_TransactionResponseHandler
 					{
 						BufferCell cell = buffer.getCellAtAbsoluteCoord(m_utilMapping.getCoordinate());
 
-						if( !cell.getFocusedCellSize().isExplicitOrNatural() ) // should maybe be "pending", but covering all cases here.
+						if( cell != null && !cell.getFocusedCellSize().isExplicitOrNatural() ) // should maybe be "pending", but covering all cases here.
 						{
 							cell.getFocusedCellSize().setToDefaults();
 						}
