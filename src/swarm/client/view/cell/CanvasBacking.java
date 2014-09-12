@@ -12,11 +12,6 @@ public class CanvasBacking
 {
 	private final Canvas m_canvas = Canvas.createIfSupported();
 	
-	private BitArray m_bitArray = null;
-	private int m_logicalGridSize;
-	private int m_cellSize;
-	private int m_gapSize;
-	private int m_physicalGridSize;
 	private CssColor m_fillStyle;
 	private final CssColor m_gapStyle = CssColor.make("rgba(0,0,0,0)");
 	
@@ -25,75 +20,63 @@ public class CanvasBacking
 		
 	}
 	
+	public void setColor(String color)
+	{
+		m_fillStyle = CssColor.make(color);
+	}
+	
 	public Canvas getCanvas()
 	{
 		return m_canvas;
 	}
 	
-	public void set(String color, int logicalGridSize, int physicalGridSize, int logicalCellSize, int gapSize, BitArray array_cloned)
+	public void onResize(int width, int height)
 	{
-		m_logicalGridSize = logicalGridSize;
-		m_physicalGridSize = physicalGridSize;
-		m_cellSize = logicalCellSize;
-		m_gapSize = gapSize;
-		m_fillStyle = CssColor.make(color);
-		
-		updateSize();
-		
-		if( m_bitArray != null )
-		{
-			clear();
-		}
-		m_bitArray = array_cloned.clone();
-		
-		draw();
+		m_canvas.setWidth(width + "px");
+		m_canvas.setHeight(height + "px");
+		m_canvas.setCoordinateSpaceWidth(width);
+		m_canvas.setCoordinateSpaceHeight(height);
 	}
+	
+	public void update(int startX, int startY, int startM, int startN, int across, int down, int cellSize, int gapSize, int totalGridSize, BitArray ownership)
+	{
+ 		clear();
+		
+		Context2d context = m_canvas.getContext2d();
+		context.setFillStyle(m_fillStyle);
+		
+		int totalCellSize = cellSize + gapSize;
+		int limit_n = startN + down;
+		int limit_m = startM + across;
+//		limit_n = limit_n < totalGridSize ? limit_n : totalGridSize-1;
+//		limit_m = limit_m < totalGridSize ? limit_m : totalGridSize-1;
+//		
+		for( int n = startN; n < limit_n; n++, startY+=totalCellSize )
+		{
+			int currX = startX;
+			for( int m = startM; m < limit_m; m++, currX+=totalCellSize )
+			{
+				int index = n*totalGridSize + m;
+				
+				if( index > ownership.getBitCount() )
+				{
+					int blah = 10;
+				}
+				
+				if( !ownership.isSet(index) )  continue;
+				
+				context.fillRect(currX, startY, cellSize, cellSize);
+			}
+		}
+	}
+	
 	
 	private void clear()
 	{
+		int width = m_canvas.getCoordinateSpaceWidth();
+		int height = m_canvas.getCoordinateSpaceHeight();
 		Context2d context = m_canvas.getContext2d();
 		context.setFillStyle(m_gapStyle);
-		context.fillRect(0, 0, m_logicalGridSize, m_logicalGridSize);
-	}
-	
-	private void updateSize()
-	{
-		m_canvas.setWidth(m_physicalGridSize + "px");
-		m_canvas.setHeight(m_physicalGridSize + "px");
-		m_canvas.setCoordinateSpaceWidth(m_logicalGridSize);
-		m_canvas.setCoordinateSpaceHeight(m_logicalGridSize);
-	}
-
-	 public final native void noBlur(Context2d context)
-	 /*-{
-			context.webkitImageSmoothingEnabled = false;
-			context.mozImageSmoothingEnabled = false;
-			context.imageSmoothingEnabled = false; /// future
-	 }-*/;
-	
-	private void draw()
-	{
-		Context2d context = m_canvas.getContext2d();
-		context.setFillStyle(m_fillStyle);
-		noBlur(context);
-		
-		if( m_bitArray == null )  return;
-		
-		int totalCellSize = m_cellSize + m_gapSize;
-		int across = m_logicalGridSize / totalCellSize;
-		
-		for(int i = 0; i < m_bitArray.getBitCount(); i++ )
-		{
-			if( !m_bitArray.isSet(i) )  continue;
-			
-			int modWidth = i % across;
-			int row = (i - modWidth) / across;
-			int col = modWidth;
-			
-			int row_canvas = row * totalCellSize;
-			int col_canvas = col * totalCellSize;
-			
-			context.fillRect(col_canvas, row_canvas, m_cellSize, m_cellSize);
-		}
+		context.clearRect(0, 0, width, height);
 	}
 }
