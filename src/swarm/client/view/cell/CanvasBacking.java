@@ -10,14 +10,20 @@ import com.google.gwt.canvas.dom.client.FillStrokeStyle;
 
 public class CanvasBacking
 {
+	public static interface I_Skipper
+	{
+		int skip(int m, int n);
+	}
+	
 	private final Canvas m_canvas = Canvas.createIfSupported();
 	
 	private CssColor m_fillStyle;
 	private final CssColor m_gapStyle = CssColor.make("rgba(0,0,0,0)");
+	private final I_Skipper m_skipper;
 	
-	public CanvasBacking()
+	public CanvasBacking(I_Skipper skipper)
 	{
-		
+		m_skipper = skipper;
 	}
 	
 	public void setColor(String color)
@@ -38,23 +44,21 @@ public class CanvasBacking
 		m_canvas.setCoordinateSpaceHeight(height);
 	}
 	
-	public void update(int startX, int startY, int startM, int startN, int across, int down, int cellSize, int gapSize, int totalGridSize, BitArray ownership)
+	public void update(double startX, double startY, int startM, int startN, int across, int down, double cellSize, double cellSizePlusPadding, int totalGridSize, BitArray ownership)
 	{
  		clear();
 		
 		Context2d context = m_canvas.getContext2d();
 		context.setFillStyle(m_fillStyle);
 		
-		int totalCellSize = cellSize + gapSize;
 		int limit_n = startN + down;
 		int limit_m = startM + across;
 //		limit_n = limit_n < totalGridSize ? limit_n : totalGridSize-1;
 //		limit_m = limit_m < totalGridSize ? limit_m : totalGridSize-1;
 //		
-		for( int n = startN; n < limit_n; n++, startY+=totalCellSize )
+		for( int n = startN; n < limit_n; n++ )
 		{
-			int currX = startX;
-			for( int m = startM; m < limit_m; m++, currX+=totalCellSize )
+			for( int m = startM; m < limit_m; m+=m_skipper.skip(m, n) )
 			{
 				int index = n*totalGridSize + m;
 				
@@ -65,7 +69,10 @@ public class CanvasBacking
 				
 				if( !ownership.isSet(index) )  continue;
 				
-				context.fillRect(currX, startY, cellSize, cellSize);
+				double currX = startX + (m - startM)*cellSizePlusPadding;
+				double currY = startY + (n - startN)*cellSizePlusPadding;
+				
+				context.fillRect(currX, currY, cellSize, cellSize);
 			}
 		}
 	}

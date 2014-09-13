@@ -150,17 +150,23 @@ public class VisualCellManager implements I_UIElement
 	{
 		if( m_backing == null )
 		{
-			m_backing = new CanvasBacking();
+			m_backing = new CanvasBacking(new CanvasBacking.I_Skipper()
+			{
+				@Override public int skip(int m, int n)
+				{
+					return 1;
+				}
+			});
+			
 			m_backing.getCanvas().getElement().getStyle().setPosition(Position.ABSOLUTE);
 			m_backing.getCanvas().getElement().getStyle().setLeft(0, Unit.PX);
 			m_backing.getCanvas().getElement().getStyle().setTop(0, Unit.PX);
 			m_backing.getCanvas().getElement().getStyle().setProperty("transformOrigin", "0px 0px 0px");
 			m_backing.getCanvas().addStyleName("sm_canvas_backing");
 			resizeBacking();
+			
 //			E_ZIndex.CELL_BACKING.assignTo(m_backing.getCanvas());
 		}
-		
-		int pixelsPerCell = grid.getCellWidth()/grid.getCellPadding();
 						
 //		m_backing.setColor("rgb(255,255,255)");
 		m_backing.setColor("rgb(255,0,0)");
@@ -226,7 +232,7 @@ public class VisualCellManager implements I_UIElement
 		double scaling = U_Grid.calcCellScaling(distanceRatio, bufferSubCellCount, grid.getCellPadding(), grid.getCellWidth());
 		
 		double scaledCellWidth = ((double)grid.getCellWidth())*scaling;
-		double scaledCellPadding = ((double)grid.getCellPadding())*scaling;
+//		double scaledCellPadding = ((double)grid.getCellPadding())*scaling;
 		
 		double cellWidthPlusPadding = -1;
 		double cellHeightPlusPadding = -1;
@@ -268,7 +274,7 @@ public class VisualCellManager implements I_UIElement
 			m_backing.update
 			(
 				startX, startY, coord.getM(), coord.getN(), cellBuffer.getWidth(), cellBuffer.getHeight(),
-				(int)scaledCellWidth, (int)scaledCellPadding, grid.getWidth(), grid.getBaseOwnership()
+				scaledCellWidth, cellWidthPlusPadding, grid.getWidth(), grid.getBaseOwnership()
 			);
 		}
 		
