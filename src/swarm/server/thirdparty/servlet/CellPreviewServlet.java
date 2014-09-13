@@ -70,15 +70,37 @@ public class CellPreviewServlet extends A_BaseServlet
 		return s_previewHtml;
 	}
 	
+	private static ServerCellAddressMapping getMapping(String[] path)
+	{
+		ServerCellAddressMapping mapping = new ServerCellAddressMapping();
+		
+		for( int i = 0; i < path.length; i++ )
+		{
+			if( mapping.readString(path[i]) )
+			{
+				return mapping;
+			}
+		}
+		
+		return null;
+	}
+	
+	private static void error(HttpServletResponse nativeResponse, String message) throws IOException
+	{
+		PrintWriter writer = nativeResponse.getWriter();
+		nativeResponse.sendError(HttpServletResponse.SC_NOT_FOUND);
+		
+		writer.write(message);
+	}
+	
 	@Override
 	protected void doGetOrPost(HttpServletRequest nativeRequest, HttpServletResponse nativeResponse, boolean isGet) throws ServletException, IOException
 	{
 		//TODO: Get these from somewhere else.
 		int defaultCellWidth = 512;
 		int defaultCellHeight = 512;
-		
-		ServerContext context = A_ServerApp.getInstance().getContext();
 		PrintWriter writer = nativeResponse.getWriter();
+		ServerContext context = A_ServerApp.getInstance().getContext();
 		String uri = nativeRequest.getRequestURI();
 		E_CodeType codeType = E_CodeType.getCodeTypeFromURI(uri);
 		boolean raw = uri.contains("raw");
@@ -88,16 +110,19 @@ public class CellPreviewServlet extends A_BaseServlet
 		
 		if( codeType == null )
 		{
-			writer.write("Unrecognized code type!");
-			
-			return;
+			codeType = E_CodeType.COMPILED;
 		}
 		
 		//TODO: Also allow cell address uri.
 		String[] pathComponents = uri.split("/");
-		String mappingString = pathComponents[pathComponents.length-1];
-		ServerCellAddressMapping mapping = new ServerCellAddressMapping(mappingString);
+		ServerCellAddressMapping mapping = getMapping(pathComponents);
 		
+		if( mapping == null )
+		{
+			error(nativeResponse, "No address or mapping parsed from URL.");
+			
+			return;
+		}
 		
 		I_BlobManager blobMngr = context.blobMngrFactory.create(E_BlobCacheLevel.PERSISTENT);
 		try
@@ -106,7 +131,7 @@ public class CellPreviewServlet extends A_BaseServlet
 			
 			if( cell == null )
 			{
-				writer.write("Cell came up null!");
+				error(nativeResponse, "No cell found!");
 				
 				return;
 			}
@@ -138,7 +163,7 @@ public class CellPreviewServlet extends A_BaseServlet
 								
 								if( safetyLevel == E_CodeSafetyLevel.VIRTUAL_STATIC_SANDBOX )
 								{
-									String namespace = mappingString+S_Caja.CAJA_NAMESPACE_SUFFIX;
+									String namespace = mapping.writeString()+S_Caja.CAJA_NAMESPACE_SUFFIX;
 									String cajaDivs = S_Caja.CAJA_DIVS_START.replaceAll("\\{\\{namespace\\}\\}", namespace);
 									html = cajaDivs + html + S_Caja.CAJA_DIVS_END;
 								}
@@ -149,7 +174,7 @@ public class CellPreviewServlet extends A_BaseServlet
 								cellSize.setIfDefault(defaultCellWidth, defaultCellHeight);
 								String cellSizeString = "width:"+cellSize.getWidth()+"px; height:"+cellSize.getHeight()+"px;";
 								
-								String frameSrc = "/r.preview/"+codeType.toString().toLowerCase()+"/raw/"+mappingString;
+								String frameSrc = "/r.preview/"+codeType.toString().toLowerCase()+"/raw/"+mapping.writeString();
 								previewHtml = previewHtml.replaceAll("\\{\\{cellSize\\}\\}", cellSizeString);
 								previewHtml = previewHtml.replaceAll("\\{\\{frameSrc\\}\\}", frameSrc);
 								

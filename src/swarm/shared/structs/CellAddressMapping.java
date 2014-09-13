@@ -50,23 +50,32 @@ public class CellAddressMapping extends A_JsonEncodable implements I_JsonCompara
 		this.m_coordinate.copy(mapping.getCoordinate());
 	}
 	
-	private void readString(String value)
+	public boolean readString(String value)
 	{
 		String[] coords = value.split("x");
 		
-		if( coords.length >= 2 )
+		try
 		{
-			this.m_coordinate.readStrings(coords);
+			if( coords.length >= 2 )
+			{
+				this.m_coordinate.readStrings(coords);
+			}
+			
+			if( coords.length == 3 )
+			{
+				m_subCellDimension = Integer.parseInt(coords[2]);
+			}
+			else
+			{
+				m_subCellDimension = 1;
+			}
+		}
+		catch(NumberFormatException e)
+		{
+			return false;
 		}
 		
-		if( coords.length == 3 )
-		{
-			m_subCellDimension = Integer.parseInt(coords[2]);
-		}
-		else
-		{
-			m_subCellDimension = 1;
-		}
+		return coords.length > 1;
 	}
 	
 	protected void initCoordinate()
