@@ -25,6 +25,7 @@ import swarm.server.data.blob.BlobException;
 import swarm.server.data.blob.BlobManagerFactory;
 import swarm.server.data.blob.E_BlobCacheLevel;
 import swarm.server.data.blob.I_BlobManager;
+import swarm.server.entities.E_GridType;
 import swarm.server.entities.ServerCell;
 import swarm.server.session.SessionManager;
 import swarm.server.structs.ServerCellAddressMapping;
@@ -72,7 +73,7 @@ public class CellPreviewServlet extends A_BaseServlet
 	
 	private static ServerCellAddressMapping getMapping(String[] path)
 	{
-		ServerCellAddressMapping mapping = new ServerCellAddressMapping();
+		ServerCellAddressMapping mapping = new ServerCellAddressMapping(E_GridType.ACTIVE);
 		
 		for( int i = 0; i < path.length; i++ )
 		{
@@ -119,7 +120,7 @@ public class CellPreviewServlet extends A_BaseServlet
 		
 		if( mapping == null )
 		{
-			error(nativeResponse, "No address or mapping parsed from URL.");
+			error(nativeResponse, "No valid address or mapping parsed from URL.");
 			
 			return;
 		}

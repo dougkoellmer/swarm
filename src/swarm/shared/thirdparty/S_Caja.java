@@ -4,9 +4,9 @@ public class S_Caja
 {
 	public static final String CAJA_NAMESPACE_SUFFIX = "___";
 	
-	public static final String OUTER_CONTAINER_STYLE = "position: relative; overflow: hidden; display: block; margin: 0px; padding: 0px;";
+	public static final String OUTER_CONTAINER_STYLE = "position: absolute; width:100%; overflow: hidden; display: block; margin: 0px; padding: 0px;";
 	public static final String OUTER_CONTAINER_CLASS = "caja-vdoc-outer caja-vdoc-wrapper";
-	public static final String INNER_CONTAINER_STYLE = "display: block; position: relative;";
+	public static final String INNER_CONTAINER_STYLE = "overflow:hidden; width:100%; display: block; position: absolute;";
 	public static final String INNER_CONTAINER_CLASS = "static-caja-vdoc caja-vdoc-inner caja-vdoc-wrapper vdoc-container___";
 	
 	public static final String OUTER_DIV = "<div style='"+OUTER_CONTAINER_STYLE+"' class='"+OUTER_CONTAINER_CLASS+"'>";
