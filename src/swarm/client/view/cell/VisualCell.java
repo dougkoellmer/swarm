@@ -422,7 +422,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		m_isFocused = false;
 		m_subCellDimension = -1;
 
-		if( !E_CodeSafetyLevel.isStatic(m_codeSafetyLevel) )
+		if( !m_codeSafetyLevel.isStatic() )
 		{
 			this.insertSafeHtml("");
 		}

@@ -164,7 +164,7 @@ public class VisualCellPool implements I_CellPoolDelegate
 	
 	private void destroyVisualCell(VisualCell cell)
 	{
-		if( E_CodeSafetyLevel.isStatic(cell.getCodeSafetyLevel()) )
+		if( cell.getCodeSafetyLevel().isStatic() )
 		{
 			m_poolNeedsCleaning = true;
 		}

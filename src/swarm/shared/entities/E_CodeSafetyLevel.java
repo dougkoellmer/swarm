@@ -12,7 +12,8 @@ public enum E_CodeSafetyLevel implements I_SerializableEnum
 	VIRTUAL_STATIC_SANDBOX("REQUIRES_STATIC_SANDBOX", "REQUIRES_SANDBOX"),
 	VIRTUAL_DYNAMIC_SANDBOX("REQUIRES_VIRTUAL_SANDBOX", "REQUIRES_DYNAMIC_SANDBOX"),
 	LOCAL_SANDBOX,
-	REMOTE_SANDBOX;
+	REMOTE_SANDBOX,
+	META_IMAGE;
 	
 	private String m_oldNames[];
 	
@@ -21,9 +22,9 @@ public enum E_CodeSafetyLevel implements I_SerializableEnum
 		m_oldNames = oldNames;
 	}
 	
-	public static boolean isStatic(E_CodeSafetyLevel value)
+	public boolean isStatic()
 	{
-		return value == NO_SANDBOX_STATIC || value == VIRTUAL_STATIC_SANDBOX;
+		return this == NO_SANDBOX_STATIC || this == VIRTUAL_STATIC_SANDBOX || this == META_IMAGE;
 	}
 	
 	public boolean isVirtual()

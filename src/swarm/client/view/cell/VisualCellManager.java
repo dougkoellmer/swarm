@@ -480,7 +480,7 @@ public class VisualCellManager implements I_UIElement
 				{
 					Action_Camera_SetViewSize.Args args = event.getActionArgs();
 					
-					if( args.updateBuffer() )
+//					if( args.updateBuffer() )
 					{
 						if( m_backing != null )
 						{

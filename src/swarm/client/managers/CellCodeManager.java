@@ -249,8 +249,10 @@ public class CellCodeManager implements I_TransactionResponseHandler
 			}
 			else
 			{
-				final String html = "<img style='width:100%; height:100%;' src='/img/cell_content/meta/"+cellSize+"/"+absCoord.writeString()+".png?v="+m_appContext.config.appVersion+"'></img>";
-				setStaticHtml(html, eType, cell);
+				String url = "/img/cell_content/meta/"+cellSize+"/"+absCoord.writeString()+".png?v="+m_appContext.config.appVersion;
+				Code code = new Code(url, E_CodeType.SPLASH);
+				code.setSafetyLevel(E_CodeSafetyLevel.META_IMAGE);
+				cell.setCode(E_CodeType.SPLASH, code);
 			}
 		}
 	}

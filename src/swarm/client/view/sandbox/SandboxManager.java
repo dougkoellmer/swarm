@@ -47,6 +47,7 @@ public class SandboxManager
 		{
 			case NO_SANDBOX_STATIC:
 			case NO_SANDBOX_DYNAMIC:
+			case META_IMAGE:
 			{
 				if( m_cajaSandboxMngr != null )
 				{
@@ -55,7 +56,16 @@ public class SandboxManager
 				
 				m_iframeSandboxMngr.stop(host);
 				
-				host.setInnerHTML(code.getRawCode());
+				if( codeLevel == E_CodeSafetyLevel.META_IMAGE )
+				{
+					String img = "<img style='width:100%;height:100%;' src='"+code.getRawCode()+"' />";
+					host.setInnerHTML(img);
+				}
+				else
+				{
+					host.setInnerHTML(code.getRawCode());
+				}
+				
 				listener.onCodeLoad();
 				
 				break;
