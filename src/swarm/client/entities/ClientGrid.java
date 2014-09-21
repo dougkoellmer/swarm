@@ -56,16 +56,18 @@ public class ClientGrid extends A_Grid
 		return (dimension - (dimension % subCellCount)) / subCellCount;
 	}
 	
-	public int getObscureOffset(int m, int n, int subCellCount, int potentiallyObscuringSubCellCount)
+	public int getObscureOffset(int m, int n, int subCellCount, int highestSubCellCount)
 	{
-		if( potentiallyObscuringSubCellCount <= subCellCount )  return 0;
+		if( highestSubCellCount <= subCellCount )  return 0;
 		
-		for( int currentSubCellCount = subCellCount*2; currentSubCellCount <= potentiallyObscuringSubCellCount; currentSubCellCount *= 2)
+		for( int currentSubCellCount = highestSubCellCount; currentSubCellCount > subCellCount; currentSubCellCount /= 2)
 		{
-			m = getSubDimension(m, 2);
-			n = getSubDimension(n, 2);
+			int relativeSubCellCount = currentSubCellCount / subCellCount;
 			
-			if( isTaken(m, n, currentSubCellCount) )
+			int m_sub = getSubDimension(m, relativeSubCellCount);
+			int n_sub = getSubDimension(n, relativeSubCellCount);
+			
+			if( isTaken(m_sub, n_sub, currentSubCellCount) )
 			{
 				return currentSubCellCount;
 			}

@@ -196,35 +196,30 @@ public class CellBuffer
 		{
 			for ( m = m_coord.getM(); m < limitM; m++ )
 			{
-				if( !grid.isTaken(m, n, m_subCellCount) )
+				if( currentSubCellCount > m_subCellCount )
 				{
-					continue;
-				}
-				else
-				{
-					if( currentSubCellCount > m_subCellCount )
+					int offset = grid.getObscureOffset(m, n, m_subCellCount, currentSubCellCount);
+					
+					if( offset > 0 )
 					{
-						int offset = grid.getObscureOffset(m, n, m_subCellCount, currentSubCellCount);
+						int modOffset = (m*m_subCellCount) % offset;
 						
-						if( offset > 0 )
+						modOffset = offset - modOffset;
+						modOffset = (modOffset == 0 ? offset : modOffset);
+						
+						modOffset /= m_subCellCount;
+						
+						if( modOffset > 1 )
 						{
-//							int modOffset = (absCoord.getM()*m_subCellCount) % offset;
-//							
-//							modOffset = offset - modOffset;
-//							modOffset = (modOffset == 0 ? offset : modOffset);
-//							
-//							modOffset /= m_subCellCount;
-//							
-//							if( modOffset != 0 )
-//							{
-//								m += modOffset;
-//								m -= 1; // cancel out next increment in for loop
-//							}
-							
-							continue;
+							m += modOffset;
+							m -= 1; // cancel out next increment in for loop
 						}
+						
+						continue;
 					}
 				}
+				
+				if( !grid.isTaken(m, n, m_subCellCount) )  continue;
 				
 				if( swap(m, n, otherBuffer, this) )  continue;
 				
