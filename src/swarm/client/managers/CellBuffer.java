@@ -226,6 +226,8 @@ public class CellBuffer
 		
 		int startM = 0, finishM = m_width, deltaM = 1;
 		int startN = 0, finishN = m_height, deltaN = 1;
+		int lowerM = startM;
+		int upperM = finishM;
 		
 		if ( this.m_coordinate.getM() < otherBuffer.m_coordinate.getM() )
 		{
@@ -243,12 +245,11 @@ public class CellBuffer
 		
 		for ( n = startN; n != finishN; n+=deltaN )
 		{
-			for ( m = startM; m != finishM; m+=deltaM )
+			for ( m = startM; m >= lowerM && m < upperM; m+=deltaM )
 			{
 				relThisCoord.set(m, n);
 				
 				this.relativeToAbsolute(relThisCoord, absCoord);
-				otherBuffer.absoluteToRelative(absCoord, relOtherCoord);
 				
 				if( !grid.isTaken(absCoord, m_subCellCount) )
 				{
@@ -258,12 +259,41 @@ public class CellBuffer
 				{
 					if( currentSubCellCount > m_subCellCount )
 					{
-						if( grid.isObscured(absCoord.getM(), absCoord.getN(), m_subCellCount, currentSubCellCount) )
+						int offset = grid.getObscureOffset(absCoord.getM(), absCoord.getN(), m_subCellCount, currentSubCellCount);
+						
+						if( offset > 0 )
 						{
+//							if( currentSubCellCount == 8 && m_subCellCount == 4 )
+//							{
+//								s_logger.severe("");
+//							}
+//							
+//							int modOffset = (absCoord.getM()*m_subCellCount) % offset;
+//							
+//							if( deltaM < 0 )
+//							{
+//								modOffset = -(modOffset == 0 ? offset : modOffset);
+//							}
+//							else
+//							{
+//								modOffset = offset - modOffset;
+//								modOffset = (modOffset == 0 ? offset : modOffset);
+//							}
+//							
+//							modOffset /= m_subCellCount;
+//							
+////							if( modOffset != 0 )
+//							{
+//								m += modOffset;
+//								m += -deltaM; // cancel out next increment in for loop
+//							}
+							
 							continue;
 						}
 					}
 				}
+				
+				otherBuffer.absoluteToRelative(absCoord, relOtherCoord);
 				
 				cellRecycled = false;
 				
