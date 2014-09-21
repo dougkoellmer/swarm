@@ -69,7 +69,24 @@ public class ClientGrid extends A_Grid
 			
 			if( isTaken(m_sub, n_sub, currentSubCellCount) )
 			{
-				return currentSubCellCount;
+				int modOffset = (m*subCellCount) % currentSubCellCount;
+				
+				modOffset = currentSubCellCount - modOffset;
+				modOffset = (modOffset == 0 ? currentSubCellCount : modOffset);
+				
+				modOffset /= subCellCount;
+				
+				if( modOffset > 1 )
+				{
+					m += modOffset;
+					m -= 1; // cancel out next increment in for loop
+					
+					return modOffset;
+				}
+				else
+				{
+					return 0;
+				}
 			}
 		}
 		

@@ -146,7 +146,7 @@ public class VisualCellManager implements I_UIElement
 		return true;
 	}
 	
-	private void initBacking(ClientGrid grid)
+	private void initBacking(final ClientGrid grid)
 	{
 		if( m_backing == null )
 		{
@@ -154,7 +154,10 @@ public class VisualCellManager implements I_UIElement
 			{
 				@Override public int skip(int m, int n)
 				{
-					return 1;
+					CellBufferManager cellManager = m_viewContext.appContext.cellBufferMngr;
+					int offset = grid.getObscureOffset(m, n, 1, cellManager.getSubCellCount());
+					
+					return offset;
 				}
 			});
 			

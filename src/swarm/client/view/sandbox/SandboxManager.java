@@ -58,6 +58,8 @@ public class SandboxManager
 				
 				if( codeLevel == E_CodeSafetyLevel.META_IMAGE )
 				{
+					listener.onElementPrimedForMeta();
+					
 					String img = "<img style='width:100%;height:100%;' src='"+code.getRawCode()+"' />";
 					host.setInnerHTML(img);
 				}

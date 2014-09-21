@@ -29,7 +29,10 @@ import swarm.shared.structs.MutableCode;
 import swarm.shared.structs.Point;
 import swarm.shared.structs.Rect;
 
+import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.dom.client.Style.Unit;
@@ -71,6 +74,15 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		public void onCodeLoad()
 		{
 			m_this.setStatusHtml(null, false);
+		}
+
+		@Override
+		public void onElementPrimedForMeta()
+		{
+			if( m_this.m_codeSafetyLevel == E_CodeSafetyLevel.META_IMAGE )
+			{
+				m_this.addImagesLoadedListener(m_this.m_contentPanel.getElement());
+			}
 		}
 	}
 	
@@ -122,6 +134,12 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	private final double m_sizeChangeTime;
 	private final double m_retractionEasing;
 	
+	private boolean m_metaImageLoaded = false;
+	
+	private final JavaScriptObject m_imagesLoaded;
+	private final JavaScriptObject m_imagesLoaded_onDone;
+	private final JavaScriptObject m_imagesLoaded_onAlways;
+	
 	public VisualCell(I_CellSpinner spinner, SandboxManager sandboxMngr, CameraManager cameraMngr, double retractionEasing, double sizeChangeTime)
 	{
 		m_retractionEasing = retractionEasing;
@@ -131,6 +149,10 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		m_sizeChangeTime = sizeChangeTime;
 		m_id = s_currentId;
 		s_currentId++;
+		
+		m_imagesLoaded = newImagesLoaded(m_contentPanel.getElement());
+		m_imagesLoaded_onDone = newImagesLoaded_onDone();
+		m_imagesLoaded_onAlways = newImagesLoaded_onAlways();
 		
 		this.addStyleName("visual_cell");
 		m_glassPanel.addStyleName("sm_cell_glass");
@@ -156,6 +178,29 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		this.add(m_statusPanel);
 		this.add(m_glassPanel);
 	}
+	
+	private static native JavaScriptObject newImagesLoaded(Element element)
+	/*-{
+			return new $wnd.imagesLoaded( element );
+	}-*/;
+	
+	private native JavaScriptObject newImagesLoaded_onDone()
+	/*-{
+			var thisArg = this;
+			return function(instance)
+			{
+				thisArg.@swarm.client.view.cell.VisualCell::m_metaImageLoaded = true;
+			}
+	}-*/;
+	
+	private native JavaScriptObject newImagesLoaded_onAlways()
+	/*-{
+			var thisArg = this;
+			return function(instance)
+			{
+				thisArg.@swarm.client.view.cell.VisualCell::removeImagesLoadedListener();
+			}
+	}-*/;
 	
 	public void setCodeListener(I_CodeListener listener)
 	{
@@ -418,9 +463,12 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	
 	public void onDestroy()
 	{
+		m_metaImageLoaded = false;
 		m_bufferCell = null;
 		m_isFocused = false;
 		m_subCellDimension = -1;
+		
+		removeImagesLoadedListener();
 
 		if( m_codeSafetyLevel != null && !m_codeSafetyLevel.isStatic() )
 		{
@@ -619,9 +667,57 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		
 		m_codeSafetyLevel = code.getSafetyLevel();
 		
+		m_metaImageLoaded = false;
+		
+		removeImagesLoadedListener();
+		
 		m_sandboxMngr.start(m_contentPanel.getElement(), code, cellNamespace, m_codeLoadListener);
 		
 		if( m_codeListener != null )  m_codeListener.onCodeLoaded(this);
+	}
+	
+	private void onImageLoaded(JavaScriptObject instance)
+	{
+		m_metaImageLoaded = true;
+		
+		removeImagesLoadedListener();
+		s_logger.severe("image loaded");
+	}
+	
+	private void onImageLoadedOrNot(JavaScriptObject instance)
+	{
+		removeImagesLoadedListener();
+	}
+	
+	private native void removeImagesLoadedListener()
+	/*-{
+			var thisArg = this;
+			var imgLoad = thisArg.@swarm.client.view.cell.VisualCell::m_imagesLoaded;
+			
+			var onDone = thisArg.@swarm.client.view.cell.VisualCell::m_imagesLoaded_onDone;
+			var onAlways = thisArg.@swarm.client.view.cell.VisualCell::m_imagesLoaded_onAlways;
+			
+			imgLoad.off('done', onDone);
+			imgLoad.off('always', onAlways);
+	}-*/;
+	
+	private native void addImagesLoadedListener(Element element)
+	/*-{
+			var thisArg = this;
+			var imgLoad = thisArg.@swarm.client.view.cell.VisualCell::m_imagesLoaded;
+			
+			var onDone = thisArg.@swarm.client.view.cell.VisualCell::m_imagesLoaded_onDone;
+			var onAlways = thisArg.@swarm.client.view.cell.VisualCell::m_imagesLoaded_onAlways;
+
+			imgLoad.on('done', onDone);
+			imgLoad.on('always', onAlways);
+	}-*/;
+	
+	public boolean isMetaLoaded()
+	{
+		if( m_codeSafetyLevel != E_CodeSafetyLevel.META_IMAGE )  return false;
+		
+		return m_metaImageLoaded;
 	}
 	
 	public E_CodeSafetyLevel getCodeSafetyLevel()

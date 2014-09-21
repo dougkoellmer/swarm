@@ -58,8 +58,18 @@ public class CanvasBacking
 //		
 		for( int n = startN; n < limit_n; n++ )
 		{
-			for( int m = startM; m < limit_m; m+=m_skipper.skip(m, n) )
+			for( int m = startM; m < limit_m; m++ )
 			{
+				int skip = m_skipper.skip(m, n);
+				
+				if( skip > 1 )
+				{
+					m += skip;
+					m -= 1;
+					
+					continue;
+				}
+				
 				int index = n*totalGridSize + m;
 				
 				if( index > ownership.getBitCount() )

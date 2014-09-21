@@ -200,20 +200,10 @@ public class CellBuffer
 				{
 					int offset = grid.getObscureOffset(m, n, m_subCellCount, currentSubCellCount);
 					
-					if( offset > 0 )
+					if( offset > 1 )
 					{
-						int modOffset = (m*m_subCellCount) % offset;
-						
-						modOffset = offset - modOffset;
-						modOffset = (modOffset == 0 ? offset : modOffset);
-						
-						modOffset /= m_subCellCount;
-						
-						if( modOffset > 1 )
-						{
-							m += modOffset;
-							m -= 1; // cancel out next increment in for loop
-						}
+						m += offset;
+						m -= 1; // cancel out next increment in for loop
 						
 						continue;
 					}
