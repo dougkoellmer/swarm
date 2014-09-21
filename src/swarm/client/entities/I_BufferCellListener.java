@@ -10,7 +10,7 @@ import swarm.shared.structs.Code;
  */
 public interface I_BufferCellListener
 {
-	void onCellRecycled(int width, int height, int padding, int subCellDimension);
+//	void onCellRecycled(int width, int height, int padding, int subCellDimension);
 	
 	void setCode(Code code, String namespace);
 	

@@ -28,15 +28,14 @@ public class CellBuffer
 {
 	private static final Logger s_logger = Logger.getLogger(CellBuffer.class.getName());
 	
-	private static final GridCoordinate s_utilCoord1 = new GridCoordinate();
-	private static final GridCoordinate s_utilCoord2 = new GridCoordinate();
-	private static final GridCoordinate s_utilCoord3 = new GridCoordinate();
 	private static final CellAddressMapping s_utilMapping = new CellAddressMapping();
 	
-	private final GridCoordinate m_coordinate = new GridCoordinate();
-	private final ArrayList<BufferCell> m_cells = new ArrayList<BufferCell>();
+	private final GridCoordinate m_coord = new GridCoordinate();
+//	private final ArrayList<BufferCell> m_cells = new ArrayList<BufferCell>();
 	private int m_width = 0;
 	private int m_height = 0;
+	
+	private final ArrayList<BufferCell> m_cellList = new ArrayList<BufferCell>();
 	
 	private final int m_subCellCount;
 	
@@ -56,7 +55,7 @@ public class CellBuffer
 	
 	public GridCoordinate getCoordinate()
 	{
-		return m_coordinate;
+		return m_coord;
 	}
 	
 	public int getSubCellCount()
@@ -76,182 +75,128 @@ public class CellBuffer
 	
 	public int getCellCount()
 	{
-		return m_cells.size();
+		return m_cellList.size();
 	}
 	
 	void setExtents(int m, int n, int width, int height)
 	{
-		int size = width * height;
-		
-		m_coordinate.set(m, n);
+		m_coord.set(m, n);
 		
 		m_width = width;
 		m_height = height;
-		
-		while ( m_cells.size() < size )
-		{
-			m_cells.add(null);
-		}
-		
-		while ( m_cells.size() > size )
-		{
-			BufferCell cellRemoved = m_cells.remove(m_cells.size()-1);
-			if( cellRemoved != null )
-			{
-				U_Debug.ASSERT(false, "setExtents1");
-			}
-		}
 	}
 	
 	public BufferCell getCellAtIndex(int index)
 	{
-		return m_cells.get(index);
-	}
-	
-	private void setCell(int m, int n, BufferCell cell)
-	{
-		if ( !isInBoundsRelative(m, n) )
-		{
-			U_Debug.ASSERT(false, "smCellBuffer::setCell1");
-			return;
-		}
-		
-		m_cells.set(m + n * m_width, cell);
+		return m_cellList.get(index);
 	}
 	
 	public boolean isInBoundsAbsolute(GridCoordinate absolute)
 	{
-		this.absoluteToRelative(absolute, s_utilCoord1);
-
-		return isInBoundsRelative(s_utilCoord1.getM(), s_utilCoord1.getN());
+		return isInBoundsAbsolute(absolute.getM(), absolute.getN());
 	}
 	
-	public boolean isInBoundsRelative(int m, int n)
+	public boolean isInBoundsAbsolute(int m, int n)
 	{
-		return m >= 0 && m < m_width && n >= 0 && n < m_height;
-	}
-	
-	private int coordsToIndex(int m, int n)
-	{
-		return m + n * m_width;
+		return m >= m_coord.getM() && m < m_coord.getM()+m_width && n >= m_coord.getN() && n < m_coord.getN()+m_height;
 	}
 	
 	public BufferCell getCellAtAbsoluteCoord(GridCoordinate absoluteCoord)
 	{
-		absoluteToRelative(absoluteCoord, s_utilCoord1);
-		return getCellAtRelativeCoord(s_utilCoord1);
+		return getCellAtAbsoluteCoord(absoluteCoord.getM(), absoluteCoord.getN());
 	}
 	
-	public BufferCell getCellAtRelativeCoord(GridCoordinate relativeCoord)
+	public BufferCell getCellAtAbsoluteCoord(int m, int n)
 	{
-		if ( !isInBoundsRelative(relativeCoord.getM(), relativeCoord.getN()) )
+		for( int i = 0; i < m_cellList.size(); i++ )
 		{
-			return null;
+			BufferCell ithCell = m_cellList.get(i);
+			
+			if( ithCell.getCoordinate().isEqualTo(m, n) )
+			{
+				return ithCell;
+			}
 		}
 		
-		return m_cells.get(relativeCoord.getM() + relativeCoord.getN() * m_width);
+		return null;
 	}
 	
-	public void absoluteToRelative(GridCoordinate absCoord, GridCoordinate coord_out)
+	private BufferCell removeCellAtAbsCoord(int m, int n)
 	{
-		int relativeM = absCoord.getM() - this.m_coordinate.getM();
-		int relativeN = absCoord.getN() - this.m_coordinate.getN();
-		coord_out.set(relativeM, relativeN);
+		for( int i = 0; i < m_cellList.size(); i++ )
+		{
+			BufferCell ithCell = m_cellList.get(i);
+			
+			if( ithCell == null )  continue;
+			
+			if( ithCell.getCoordinate().isEqualTo(m, n) )
+			{
+				m_cellList.set(i, null);
+				
+				return ithCell;
+			}
+		}
+		
+		return null;
 	}
 	
-	public void relativeToAbsolute(GridCoordinate relCoord, GridCoordinate coord_out)
+	private static boolean swap(int m, int n, CellBuffer from, CellBuffer to)
 	{
-		int absoluteM = relCoord.getM() + this.m_coordinate.getM();
-		int absoluteN = relCoord.getN() + this.m_coordinate.getN();
-		coord_out.set(absoluteM, absoluteN);
-	}
-	
-	public boolean isTouching(GridCoordinate absCoord)
-	{
-		int relativeM = absCoord.getM() - this.m_coordinate.getM();
-		int relativeN = absCoord.getN() - this.m_coordinate.getN();
-		return isInBoundsRelative(relativeM, relativeN);
+		BufferCell cell = from.removeCellAtAbsCoord(m, n);
+		
+		if( cell == null )  return false;
+		
+		to.m_cellList.add(cell);
+		
+		return true;
 	}
 	
 	void imposeBuffer(ClientGrid grid, CellBuffer otherBuffer, I_LocalCodeRepository localCodeSource, int currentSubCellCount, int options__extends__smF_BufferUpdateOption)
-	{		
+	{
 		boolean createVisualizations = (options__extends__smF_BufferUpdateOption & F_BufferUpdateOption.CREATE_VISUALIZATIONS) != 0;
 		boolean communicateWithServer = (options__extends__smF_BufferUpdateOption & F_BufferUpdateOption.COMMUNICATE_WITH_SERVER) != 0;
 		boolean flushPopulator = (options__extends__smF_BufferUpdateOption & F_BufferUpdateOption.FLUSH_CELL_POPULATOR) != 0;
-		
-		BufferCell ithCell = null;
+
 		int i;
-		boolean cellRecycled;
 		int m, n;
 		
-		int otherSubCellCountDim = otherBuffer.getSubCellCount();
-		int thisSubCellCountDim = this.getSubCellCount();
-		int thisCellCount = this.getCellCount();
 		int otherBufferCellCount = otherBuffer.getCellCount();
 		
-		GridCoordinate absCoord = s_utilCoord1;
-		GridCoordinate relThisCoord = s_utilCoord2;
 		
 		//--- DRK > We're currently "below" the zoom level of this buffer so early-out and clear other buffer of its cells.
 		if( currentSubCellCount < m_subCellCount )
 		{
-			for( i = 0; i < otherBuffer.m_cells.size(); i++ )
+			for( i = 0; i < otherBuffer.m_cellList.size(); i++ )
 			{
-				BufferCell ithCellFromOtherBuffer = otherBuffer.m_cells.get(i);
+				BufferCell ithCellFromOtherBuffer = otherBuffer.m_cellList.get(i);
 				
-				if( ithCellFromOtherBuffer != null )
-				{
-					m_cellPool.deallocCell(ithCellFromOtherBuffer);
-					otherBuffer.m_cells.set(i, null);
-				}
+				m_cellPool.deallocCell(ithCellFromOtherBuffer);
 			}
+			
+			
+			otherBuffer.m_cellList.clear();
 			
 			return;
 		}
 		
-		
-		/*HashMap<String, smBufferCell> debug_dict = new HashMap<String, smBufferCell>();
-		int debug_otherBufferHitCount = 0;
-		for ( i = 0; i < otherBuffer.getCellCount(); i++ )
+		for( i = 0; i < otherBufferCellCount; i++ )
 		{
-			smBufferCell debug_cell = otherBuffer.getCellAtIndex(i);
-			if ( this.isTouching(debug_cell.getCoordinate()) )
+			BufferCell ithCell = otherBuffer.m_cellList.get(i);
+			if( !this.isInBoundsAbsolute(ithCell.getCoordinate()) )
 			{
-				debug_dict.put(debug_cell.getCoordinate().writeString(), debug_cell);
-				debug_otherBufferHitCount++;
+				otherBuffer.m_cellList.set(i, null);
+				
+				m_cellPool.deallocCell(ithCell);
 			}
-		}*/
-		
-		GridCoordinate relOtherCoord = s_utilCoord3;
-		
-		int startM = 0, finishM = m_width, deltaM = 1;
-		int startN = 0, finishN = m_height, deltaN = 1;
-		int lowerM = startM;
-		int upperM = finishM;
-		
-		if ( this.m_coordinate.getM() < otherBuffer.m_coordinate.getM() )
-		{
-			startM = m_width - 1;
-			finishM = -1;
-			deltaM = -1;
 		}
-		
-		if ( this.m_coordinate.getN() < otherBuffer.m_coordinate.getN() )
+
+		int limitN = m_coord.getN() + m_height;
+		int limitM = m_coord.getM() + m_width;
+		for ( n = m_coord.getN(); n < limitN; n++ )
 		{
-			startN = m_height - 1;
-			finishN = -1;
-			deltaN = -1;
-		}
-		
-		for ( n = startN; n != finishN; n+=deltaN )
-		{
-			for ( m = startM; m >= lowerM && m < upperM; m+=deltaM )
+			for ( m = m_coord.getM(); m < limitM; m++ )
 			{
-				relThisCoord.set(m, n);
-				
-				this.relativeToAbsolute(relThisCoord, absCoord);
-				
-				if( !grid.isTaken(absCoord, m_subCellCount) )
+				if( !grid.isTaken(m, n, m_subCellCount) )
 				{
 					continue;
 				}
@@ -259,33 +204,21 @@ public class CellBuffer
 				{
 					if( currentSubCellCount > m_subCellCount )
 					{
-						int offset = grid.getObscureOffset(absCoord.getM(), absCoord.getN(), m_subCellCount, currentSubCellCount);
+						int offset = grid.getObscureOffset(m, n, m_subCellCount, currentSubCellCount);
 						
 						if( offset > 0 )
 						{
-//							if( currentSubCellCount == 8 && m_subCellCount == 4 )
-//							{
-//								s_logger.severe("");
-//							}
-//							
 //							int modOffset = (absCoord.getM()*m_subCellCount) % offset;
 //							
-//							if( deltaM < 0 )
-//							{
-//								modOffset = -(modOffset == 0 ? offset : modOffset);
-//							}
-//							else
-//							{
-//								modOffset = offset - modOffset;
-//								modOffset = (modOffset == 0 ? offset : modOffset);
-//							}
+//							modOffset = offset - modOffset;
+//							modOffset = (modOffset == 0 ? offset : modOffset);
 //							
 //							modOffset /= m_subCellCount;
 //							
-////							if( modOffset != 0 )
+//							if( modOffset != 0 )
 //							{
 //								m += modOffset;
-//								m += -deltaM; // cancel out next increment in for loop
+//								m -= 1; // cancel out next increment in for loop
 //							}
 							
 							continue;
@@ -293,168 +226,49 @@ public class CellBuffer
 					}
 				}
 				
-				otherBuffer.absoluteToRelative(absCoord, relOtherCoord);
+				if( swap(m, n, otherBuffer, this) )  continue;
 				
-				cellRecycled = false;
+				BufferCell newCell = m_cellPool.allocCell(grid, m_subCellCount, createVisualizations);
+				this.m_cellList.add(newCell);
 				
-				BufferCell otherCell = null;
-				
-				if ( otherBuffer.isTouching(absCoord) )
-				{
-					otherCell = otherBuffer.getCellAtRelativeCoord(relOtherCoord);
-					
-					//--- DRK > Can be null when a cell is created between buffer imposings (e.g. a new account is created
-					//---		in b33hive). In this case, the grid coordinate is marked as taken, but there's no cell there
-					//---		yet, so, we make one.
-					//---		There used to be an assert inside here, to catch algorithmic problems...so those problems could
-					//---		still theoretically still exist, and we're just patching over them by creating a new cell...oh well.
-					if ( otherCell == null )
-					{
-						otherCell = m_cellPool.allocCell(grid, m_subCellCount, createVisualizations);
-					}
-					
-					//--- DRK > Splice the still-visible cell from the other buffer into this buffer.
-					otherBuffer.setCell(relOtherCoord.getM(), relOtherCoord.getN(), null);
-					this.setCell(m, n, otherCell);
-					
-					
-					//--- DRK > If possible, fill in the gap that is left in the other buffer with the cell
-					//---		from the other buffer at the same m, n location that was skipped.
-					BufferCell cellToTransfer = otherBuffer.getCellAtRelativeCoord(relThisCoord);
-					if ( cellToTransfer != null )
-					{
-						if ( this.isTouching(cellToTransfer.getCoordinate()) )
-						{
-							// nothing to do...i think
-						}
-						else
-						{
-							otherBuffer.setCell(m, n, null);
-							otherBuffer.setCell(relOtherCoord.getM(), relOtherCoord.getN(), cellToTransfer);
-						}
-					}
-					else
-					{
-						// nothing to do...i think
-					}
-				}
-				else
-				{
-					otherCell = otherBuffer.getCellAtRelativeCoord(relThisCoord);
-					
-					if ( otherCell != null )
-					{							
-						/*if ( this.isTouching(otherCell.getCoordinate()) ) // collides with reusable cell
-						{
-							this.absoluteToRelative(otherCell.getCoordinate(), relThisCoord);
-							
-							var indexOfCollision = coordsToIndex(relThisCoord.getM(), relThisCoord.getN());
-							
-							if ( currentIndex > indexOfCollision )
-							{
-								//--- DRK > This cell was transferred into the gap left by a splice, so we can safely
-								//---		recycle it despite there being a collision.
-								otherBuffer.setCell(m, n, null);
-							}
-							else
-							{
-								//--- DRK > This cell represents a pending splice that has yet to take place, so we must make a freshy.
-								otherCell = pool.allocCell();
-							}
-						}
-						else
-						{
-							otherBuffer.setCell(m, n, null);
-							otherCell.m_visualization.cellRecycled();
-						}*/
-						
-						otherBuffer.setCell(m, n, null);
-						cellRecycled = true;
-					}
-					else
-					{
-						otherCell = m_cellPool.allocCell(grid, m_subCellCount, createVisualizations);
-					}
-					
-					this.setCell(m, n, otherCell);
-				}
-				
-				BufferCell imposedCell = getCellAtRelativeCoord(relThisCoord);
-				imposedCell.getCoordinate().copy(absCoord);
+				newCell.getCoordinate().set(m, n);
 				
 //				s_logger.severe(m_subCellCount+"");
-				m_codeMngr.populateCell(imposedCell, localCodeSource, m_subCellCount, cellRecycled, communicateWithServer, E_CodeType.SPLASH);
+				m_codeMngr.populateCell(newCell, localCodeSource, m_subCellCount, communicateWithServer, E_CodeType.SPLASH);
 				
-				s_utilMapping.getCoordinate().copy(imposedCell.getCoordinate());
+				s_utilMapping.getCoordinate().copy(newCell.getCoordinate());
 				
 				if( m_subCellCount == 1 )
 				{
-					m_cellSizeMngr.populateCellSize(s_utilMapping, this.m_parent, imposedCell);
+					m_cellSizeMngr.populateCellSize(s_utilMapping, this.m_parent, newCell);
 				}
 			}
 		}
-		
-		/*int debug_nonNullCount = 0;
-		int debug_thisBufferHitCount = 0;
-		for ( i = 0; i < this.getCellCount(); i++ )
-		{
-			smBufferCell debug_cell = this.m_cells.get(i);
-			
-			String debug_stringRep = debug_cell.getCoordinate().writeString();
-			
-			if ( debug_dict.containsKey(debug_stringRep) )
-			{
-				smU_Debug.ASSERT(debug_cell == debug_dict.get(debug_stringRep), "imposeBuffer2");
-				debug_thisBufferHitCount++;
-			}
-		}
-		
-		smU_Debug.ASSERT(debug_otherBufferHitCount == debug_thisBufferHitCount, "imposeBuffer3");*/
 		
 		if( flushPopulator )
 		{
 			m_codeMngr.flush();
 		}
 		
-		//int debug_nonNullCount = 0;
-		for ( i = 0; i < otherBufferCellCount; i++ )
+		for( i = 0; i < otherBufferCellCount; i++ )
 		{
-			ithCell = otherBuffer.m_cells.get(i);
-			
-			//--- DRK > The two known cases where you have orphaned cells is (a) when otherBuffer is larger,
-			//---		or (b) when otherBuffer has "weird" dimensions relative to thisBuffer, e.g. otherBuffer=4x2
-			//---		and thisBuffer=3x3 (there will be two orphaned cells, 3x0 and 3x1 of otherBuffer).
-			//---
-			//---		TODO: Case (b) is probably mitigatable in a fancier way, but I don't have time to figure it out right now.
-			//---		Anyway, all it means for now is n extra cell allocations in the pool.  Extreme screen resizes would
-			//---		kinda thrash the pool, but that in turn could be mitigated by occasionally garbage collecting
-			//---		the pool, if no good solution to case (b) could be found.
-			if ( ithCell != null )
+			BufferCell ithCell = otherBuffer.m_cellList.get(i);
+
+			if( ithCell != null )
 			{
+				otherBuffer.m_cellList.set(i, null);
 				m_cellPool.deallocCell(ithCell);
-				otherBuffer.m_cells.set(i, null);
-				
-				//debug_nonNullCount++;
 			}
 		}
-		
-		//--- DRK > The assert below was real old school, but finally tripped, and further review deemed that it wasn't valid,
-		//---		so the comment below in the if block was somewhat prophetic.  A valid case where the assert can trip is if otherBuffer is 5x2
-		//---		and thisBuffer is 3x3....otherBuffer will have 4 orphaned cells (the 2 rightmost columns), so debug_nonNullCount
-		//---		will equal 4....4 != 10 - 9, so the assert can trip even though it shouldn't.
-		/*if( otherBufferCellCount > thisCellCount )
-		{
-			//--- DRK > This might not be a valid smU_Debug.ASSERT case...if it trips, let me know.
-			String message = "nonNullCount, otherBufferCount, thisCellCount, " + debug_nonNullCount + " " + otherBufferCellCount + " " + thisCellCount;
-			smU_Debug.ASSERT(debug_nonNullCount == otherBufferCellCount - thisCellCount, message);
-		}*/
+
+		otherBuffer.m_cellList.clear();
 	}
 	
 	void drain()
 	{		
-		for ( int i = 0; i < this.m_cells.size(); i++ )
+		for ( int i = 0; i < this.m_cellList.size(); i++ )
 		{
-			BufferCell ithCell = this.m_cells.get(i);
+			BufferCell ithCell = this.m_cellList.get(i);
 			
 			if( ithCell != null )
 			{
@@ -462,7 +276,7 @@ public class CellBuffer
 			}
 		}
 		
-		this.m_cells.clear();
+		this.m_cellList.clear();
 		
 		this.setExtents(0, 0, 0, 0);
 	}

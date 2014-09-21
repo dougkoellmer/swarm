@@ -294,8 +294,8 @@ public class VisualCellManager implements I_UIElement
 				
 				//if( cells_nullable.length > 0 && !this.contains(cells_nullable, ithVisualCell) )  continue;
 				
-				int ix = i % bufferWidth;
-				int iy = i / bufferWidth;
+				int ix = ithBufferCell.getCoordinate().getM() - cellBuffer.getCoordinate().getM();
+				int iy = ithBufferCell.getCoordinate().getN() - cellBuffer.getCoordinate().getN();
 				
 				double offsetX = (ix * (cellWidthPlusPadding));
 				double offsetY = (iy * (cellHeightPlusPadding));

@@ -568,20 +568,20 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		this.getElement().getStyle().clearZIndex();
 	}
 
-	@Override
-	public void onCellRecycled(int width, int height, int padding, int subCellDimension)
-	{
-		if( subCellDimension != m_subCellDimension )
-		{
-			m_isValidated = false;
-		}
-		
-		this.onCreatedOrRecycled(width, height, padding, subCellDimension);
-
-		this.insertSafeHtml("");
-		
-		this.pushDown();
-	}
+//	@Override
+//	public void onCellRecycled(int width, int height, int padding, int subCellDimension)
+//	{
+//		if( subCellDimension != m_subCellDimension )
+//		{
+//			m_isValidated = false;
+//		}
+//		
+//		this.onCreatedOrRecycled(width, height, padding, subCellDimension);
+//
+//		this.insertSafeHtml("");
+//		
+//		this.pushDown();
+//	}
 	
 	@Override
 	public void onError(E_CodeType eType)

@@ -70,11 +70,16 @@ public class GridCoordinate extends A_JsonEncodable implements I_JsonComparable
 	@Override
 	public int hashCode()
 	{
+		return hashCode(m_m, m_n);
+	}
+	
+	public static int hashCode(int m, int n)
+	{
 		//--- DRK > This will technically start to collide if the grid ever gets larger than HASH_CODE_SEEDxHASH_CODE_SEED,
-		//---		but I think collisions are impossible in any practical sense because the overlap should only happen
-		//---		for coordinates on opposite sides of the grid (left/right), and one column down.  Even if this happened, it
-		//---		would mean more than a billion active users, heh, so we would have bigger fish to fry.
-		return m_m + m_n * HASH_CODE_SEED;
+				//---		but I think collisions are impossible in any practical sense because the overlap should only happen
+				//---		for coordinates on opposite sides of the grid (left/right), and one column down.  Even if this happened, it
+				//---		would mean more than a billion cells, heh, so we would have bigger fish to fry.
+				return m + n * HASH_CODE_SEED;
 	}
 	
 	public void setComponent(int component, int value)

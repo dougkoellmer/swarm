@@ -206,7 +206,7 @@ public class State_CameraSnapping extends A_State implements I_StateEventListene
 				//--- DRK > As an optimization, we only retrieve the source html if we're in the html state.
 				if( getContext().isForegrounded(StateMachine_EditingCode.class) )
 				{
-					populator.populateCell(cell, localCodeRepo, 1, false, true, E_CodeType.SOURCE);
+					populator.populateCell(cell, localCodeRepo, 1, true, E_CodeType.SOURCE);
 					
 					m_hasRequestedSourceCode = true;
 				}
@@ -214,7 +214,7 @@ public class State_CameraSnapping extends A_State implements I_StateEventListene
 			
 			if( !m_hasRequestedCompiledCode )
 			{
-				populator.populateCell(cell, localCodeRepo, 1, false, true, E_CodeType.COMPILED);
+				populator.populateCell(cell, localCodeRepo, 1, true, E_CodeType.COMPILED);
 
 				//--- DRK > NOTE that COMPILED_STATIC html will be retrieved implicitly because we update the buffer manager
 				//---		itself before we get into this method...it will be in the same batch too, automatically...cool.

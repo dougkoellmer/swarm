@@ -380,16 +380,6 @@ public class BufferCell extends A_Cell
 		return m_visualization;
 	}
 	
-	public void onCellRecycled(int cellSize)
-	{
-		this.clear_private();
-		
-		if( this.m_visualization != null )
-		{
-			m_visualization.onCellRecycled(m_grid.getCellWidth(), m_grid.getCellHeight(), m_grid.getCellPadding(), cellSize);
-		}
-	}
-	
 	public void onServerRequestCancelled(E_CodeType eType)
 	{
 		if( eType == E_CodeType.COMPILED )
@@ -428,4 +418,14 @@ public class BufferCell extends A_Cell
 		this.m_visualization = null;
 		this.m_grid = null;
 	}
+	
+//	public void onCellRecycled(int cellSize)
+//	{
+//		this.clear_private();
+//		
+//		if( this.m_visualization != null )
+//		{
+//			m_visualization.onCellRecycled(m_grid.getCellWidth(), m_grid.getCellHeight(), m_grid.getCellPadding(), cellSize);
+//		}
+//	}
 }

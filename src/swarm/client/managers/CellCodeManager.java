@@ -176,16 +176,11 @@ public class CellCodeManager implements I_TransactionResponseHandler
 		return txnMngr.containsDispatchedRequest(E_RequestPath.syncCode, m_postQuery);
 	}
 	
-	public void populateCell(BufferCell cell, I_LocalCodeRepository localHtmlSource, int cellSize, boolean recycled, boolean communicateWithServer, final E_CodeType eType)
+	public void populateCell(BufferCell cell, I_LocalCodeRepository localHtmlSource, int cellSize, boolean communicateWithServer, final E_CodeType eType)
 	{
 		ClientTransactionManager txnMngr = m_appContext.txnMngr;
 		
 		GridCoordinate absCoord = cell.getCoordinate();
-		
-		if ( recycled )
-		{
-			cell.onCellRecycled(cellSize);
-		}
 		
 		E_CodeStatus status = cell.getStatus(eType);
 	

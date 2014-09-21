@@ -73,7 +73,7 @@ public class State_ViewingCell extends A_State implements I_StateEventListener, 
 		//--- DRK > NOTE: Directly manipulating m_hasRequestedSourceHtml is a little hacky, but whatever.
 		if( getContext().isForegrounded(StateMachine_EditingCode.class) )
 		{
-			codeManager.populateCell(cell, localCodeRepo, 1, false, true, E_CodeType.SOURCE);
+			codeManager.populateCell(cell, localCodeRepo, 1, true, E_CodeType.SOURCE);
 			
 			this.m_hasRequestedSourceCode = true;
 		}
@@ -90,8 +90,8 @@ public class State_ViewingCell extends A_State implements I_StateEventListener, 
 			addyManager.getCellAddress(mapping, E_TransactionAction.QUEUE_REQUEST);
 		}
 		
-		codeManager.populateCell(cell, localCodeRepo, 1, false, true, E_CodeType.SPLASH);
-		codeManager.populateCell(cell, localCodeRepo, 1, false, true, E_CodeType.COMPILED);
+		codeManager.populateCell(cell, localCodeRepo, 1, true, E_CodeType.SPLASH);
+		codeManager.populateCell(cell, localCodeRepo, 1, true, E_CodeType.COMPILED);
 		
 		ClientTransactionManager txnMngr = m_appContext.txnMngr;
 		txnMngr.flushRequestQueue();
@@ -138,7 +138,7 @@ public class State_ViewingCell extends A_State implements I_StateEventListener, 
 			{
 				I_LocalCodeRepository localHtmlSource = ((StateMachine_Camera)this.getParent()).getCodeRepository();
 				CellCodeManager codeMngr = m_appContext.codeMngr;
-				codeMngr.populateCell(m_cell, localHtmlSource, 1, false, true, E_CodeType.SOURCE);
+				codeMngr.populateCell(m_cell, localHtmlSource, 1, true, E_CodeType.SOURCE);
 				
 				codeMngr.flush();
 				
