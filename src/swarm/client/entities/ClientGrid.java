@@ -56,9 +56,9 @@ public class ClientGrid extends A_Grid
 		return (dimension - (dimension % subCellCount)) / subCellCount;
 	}
 	
-	public boolean isObscured(int m, int n, int subCellCount, int potentiallyObscuringSubCellCount)
+	public int getObscureOffset(int m, int n, int subCellCount, int potentiallyObscuringSubCellCount)
 	{
-		if( potentiallyObscuringSubCellCount <= subCellCount )  return false;
+		if( potentiallyObscuringSubCellCount <= subCellCount )  return 0;
 		
 		for( int currentSubCellCount = subCellCount*2; currentSubCellCount <= potentiallyObscuringSubCellCount; currentSubCellCount *= 2)
 		{
@@ -67,11 +67,11 @@ public class ClientGrid extends A_Grid
 			
 			if( isTaken(m, n, currentSubCellCount) )
 			{
-				return true;
+				return currentSubCellCount;
 			}
 		}
 		
-		return false;
+		return 0;
 	}
 	
 	private int calcMetaBitIndexFromRawCoords(int rawRow, int rawCol, int subCellCount)
