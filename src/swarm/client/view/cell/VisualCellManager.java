@@ -6,6 +6,7 @@ import swarm.client.app.S_Client;
 import swarm.client.entities.Camera;
 import swarm.client.entities.BufferCell;
 import swarm.client.entities.ClientGrid;
+import swarm.client.entities.ClientGrid.Obscured;
 import swarm.client.managers.CellBuffer;
 import swarm.client.managers.CellBufferManager;
 import swarm.client.states.StateMachine_Base;
@@ -28,6 +29,7 @@ import swarm.shared.structs.BitArray;
 import swarm.shared.structs.CellAddress;
 import swarm.shared.structs.GridCoordinate;
 import swarm.shared.structs.Point;
+import swarm.shared.utils.U_Bits;
 
 import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.dom.client.Style.Position;
@@ -63,6 +65,8 @@ public class VisualCellManager implements I_UIElement
 	private final int m_cellDestroyLimitWhileMoving = 1;
 	
 	private CanvasBacking m_backing = null;
+	
+	private final ClientGrid.Obscured m_obscured = new ClientGrid.Obscured();
 	
 	public VisualCellManager(ViewContext viewContext, Panel container) 
 	{
@@ -155,9 +159,26 @@ public class VisualCellManager implements I_UIElement
 				@Override public int skip(int m, int n)
 				{
 					CellBufferManager cellManager = m_viewContext.appContext.cellBufferMngr;
-					int offset = grid.getObscureOffset(m, n, 1, cellManager.getSubCellCount());
+					if( grid.isObscured(m, n, 1, cellManager.getSubCellCount(), m_obscured) )
+					{
+						CellBuffer cellBuffer = cellManager.getDisplayBuffer(U_Bits.calcBitPosition(m_obscured.subCellDimension));
+						BufferCell cell = cellBuffer.getCellAtAbsoluteCoord(m_obscured.m, m_obscured.n);
+						VisualCell visualCell = (VisualCell) cell.getVisualization();
+						
+						if( visualCell.isMetaLoaded() )
+						{
+							return m_obscured.offset;
+						}
+					}
+					else
+					{
+						if( grid.isTaken(m, n, 1) )
+						{
+							return 2;
+						}
+					}
 					
-					return offset;
+					return 0;
 				}
 			});
 			

@@ -6,6 +6,10 @@ import swarm.shared.debugging.U_Debug;
 import swarm.shared.entities.E_CodeSafetyLevel;
 import swarm.shared.structs.Code;
 
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.ImageElement;
+import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 
 public class SandboxManager
@@ -58,10 +62,15 @@ public class SandboxManager
 				
 				if( codeLevel == E_CodeSafetyLevel.META_IMAGE )
 				{
-					listener.onElementPrimedForMeta();
+					ImageElement imageElement = Document.get().createImageElement();
+					imageElement.getStyle().setWidth(100, Unit.PCT);
+					imageElement.getStyle().setHeight(100, Unit.PCT);
+					listener.onElementPrimedForMeta(imageElement);
+					imageElement.setSrc(code.getRawCode());
 					
-					String img = "<img style='width:100%;height:100%;' src='"+code.getRawCode()+"' />";
-					host.setInnerHTML(img);
+					host.removeAllChildren();
+
+					host.appendChild(imageElement);
 				}
 				else
 				{

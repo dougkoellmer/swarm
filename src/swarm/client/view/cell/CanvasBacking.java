@@ -62,7 +62,11 @@ public class CanvasBacking
 			{
 				int skip = m_skipper.skip(m, n);
 				
-				if( skip > 1 )
+				if( skip == 1 )
+				{
+					continue;
+				}
+				else if( skip > 1 )
 				{
 					m += skip;
 					m -= 1;
@@ -71,11 +75,6 @@ public class CanvasBacking
 				}
 				
 				int index = n*totalGridSize + m;
-				
-				if( index > ownership.getBitCount() )
-				{
-					int blah = 10;
-				}
 				
 				if( !ownership.isSet(index) )  continue;
 				

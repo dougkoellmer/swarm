@@ -12,6 +12,15 @@ import swarm.shared.utils.U_Bits;
 
 public class ClientGrid extends A_Grid
 {
+	public static class Obscured
+	{
+		public int m;
+		public int n;
+		public int offset;
+		public int subCellDimension;
+	}
+	
+	
 	private BitArray[] m_metaOwnership = new BitArray[0];
 	
 	public BitArray getBaseOwnership()
@@ -56,9 +65,9 @@ public class ClientGrid extends A_Grid
 		return (dimension - (dimension % subCellCount)) / subCellCount;
 	}
 	
-	public int getObscureOffset(int m, int n, int subCellCount, int highestSubCellCount)
+	public boolean isObscured(int m, int n, int subCellCount, int highestSubCellCount, Obscured out)
 	{
-		if( highestSubCellCount <= subCellCount )  return 0;
+		if( highestSubCellCount <= subCellCount )  return false;
 		
 		for( int currentSubCellCount = highestSubCellCount; currentSubCellCount > subCellCount; currentSubCellCount /= 2)
 		{
@@ -76,21 +85,16 @@ public class ClientGrid extends A_Grid
 				
 				modOffset /= subCellCount;
 				
-				if( modOffset > 1 )
-				{
-					m += modOffset;
-					m -= 1; // cancel out next increment in for loop
-					
-					return modOffset;
-				}
-				else
-				{
-					return 0;
-				}
+				out.m = m_sub;
+				out.n = n_sub;
+				out.subCellDimension = currentSubCellCount;
+				out.offset = modOffset;
+				
+				return true;
 			}
 		}
 		
-		return 0;
+		return false;
 	}
 	
 	private int calcMetaBitIndexFromRawCoords(int rawRow, int rawCol, int subCellCount)

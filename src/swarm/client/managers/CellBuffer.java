@@ -44,6 +44,8 @@ public class CellBuffer
 	private final CellSizeManager m_cellSizeMngr;
 	private final BufferCellPool m_cellPool;
 	
+	private final ClientGrid.Obscured m_obscured = new ClientGrid.Obscured();
+	
 	CellBuffer(CellBufferManager parent, CellCodeManager codeMngr, BufferCellPool cellPool, CellSizeManager cellSizeMngr, int subCellCount)
 	{
 		m_codeMngr = codeMngr;
@@ -198,14 +200,19 @@ public class CellBuffer
 			{
 				if( currentSubCellCount > m_subCellCount )
 				{
-					int offset = grid.getObscureOffset(m, n, m_subCellCount, currentSubCellCount);
-					
-					if( offset > 1 )
+					if( grid.isObscured(m, n, m_subCellCount, currentSubCellCount, m_obscured) )
 					{
-						m += offset;
-						m -= 1; // cancel out next increment in for loop
-						
-						continue;
+						if( m_obscured.offset == 1 )
+						{
+							continue;
+						}
+						else if( m_obscured.offset > 1 )
+						{
+							m += m_obscured.offset;
+							m -= 1; // cancel out next increment in for loop
+							
+							continue;
+						}
 					}
 				}
 				
