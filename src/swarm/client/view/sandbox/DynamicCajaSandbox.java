@@ -8,7 +8,7 @@ import swarm.shared.debugging.U_Debug;
 import swarm.shared.structs.CodePrivileges;
 
 import com.google.gwt.core.client.JavaScriptObject;
-import com.google.gwt.user.client.Element;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.Window;
 
 public class DynamicCajaSandbox implements I_CellSandbox

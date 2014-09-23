@@ -7,7 +7,7 @@ import swarm.shared.thirdparty.S_Caja;
 
 import com.google.gwt.dom.client.Style.Overflow;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
+import com.google.gwt.dom.client.Element;;
 
 public class StaticCajaSandbox implements I_CellSandbox
 {

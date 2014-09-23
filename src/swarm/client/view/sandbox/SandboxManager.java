@@ -8,9 +8,10 @@ import swarm.shared.structs.Code;
 
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.ImageElement;
+import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
+import com.google.gwt.dom.client.Element;;
 
 public class SandboxManager
 {
@@ -42,6 +43,13 @@ public class SandboxManager
 		}
 	}
 	
+	private static final native Node removeAllChildren(Element element)
+	/*-{
+	    while (element.lastChild) {
+	      element.removeChild(element.lastChild);
+	    }
+	}-*/;
+	
 	public void start(Element host, Code code, String cellNamespace, I_CodeLoadListener listener)
 	{
 		E_CodeSafetyLevel codeLevel = code.getSafetyLevel();
@@ -67,8 +75,8 @@ public class SandboxManager
 					imageElement.getStyle().setHeight(100, Unit.PCT);
 					listener.onElementPrimedForMeta(imageElement);
 					imageElement.setSrc(code.getRawCode());
-					
-					host.removeAllChildren();
+
+					removeAllChildren(host);
 
 					host.appendChild(imageElement);
 				}

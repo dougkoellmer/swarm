@@ -47,6 +47,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	public static interface I_CodeListener
 	{
 		void onCodeLoaded(VisualCell cell);
+		void onMetaImageLoaded();
 	}
 	static enum LayoutState
 	{
@@ -278,8 +279,8 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		if( m_subCellDimension == 1 )
 		{
 			this.flushLayout();
-			this.getElement().getStyle().setPaddingRight(m_padding, Unit.PX);
-			this.getElement().getStyle().setPaddingBottom(m_padding, Unit.PX);
+//			this.getElement().getStyle().setPaddingRight(m_padding, Unit.PX);
+//			this.getElement().getStyle().setPaddingBottom(m_padding, Unit.PX);
 			//m_backgroundPanel.setSize(m_width+m_padding + "px", m_height+m_padding + "px");
 			
 			//--- DRK > Rare case of jumping from beyond max imaged zoom to all the way to cell size 1,
@@ -335,7 +336,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		}
 		
 		m_contentPanel.setSize(m_width + "px", m_height + "px");
-		this.setSize(totalWidth + "px", totalHeight + "px");
+		this.setSize(m_width + "px", m_height + "px");
 	}
 	
 	void removeCrop()
@@ -347,7 +348,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	
 	private void flushLayout()
 	{
-		this.setSize(m_width+m_padding + "px", m_height+m_padding + "px");
+		this.setSize(m_width + "px", m_height + "px");
 	}
 	
 	public void onCreate(BufferCell bufferCell, int width, int height, int padding, int subCellDimension)
@@ -645,6 +646,8 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	private void setMetaImageLoaded()
 	{
 		m_metaImageLoaded = true;
+		
+		m_codeListener.onMetaImageLoaded();
 	}
 	
 	private void setMetaImagesNotLoaded()

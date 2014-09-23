@@ -44,6 +44,11 @@ public class BufferCellPool
 		return m_pool.getAllocCount();
 	}
 	
+	public int getCheckOutCount()
+	{
+		return m_pool.getCheckOutCount();
+	}
+	
 	public BufferCell allocCell(A_Grid grid, int subCellDimension, boolean createVisualization)
 	{
 		BufferCell cell = m_pool.allocate();

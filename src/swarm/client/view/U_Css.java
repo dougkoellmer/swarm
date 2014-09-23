@@ -4,7 +4,7 @@ import swarm.client.app.PlatformInfo;
 import swarm.client.app.AppContext;
 
 import com.google.gwt.dom.client.Style.Unit;
-import com.google.gwt.user.client.Element;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.Widget;
 
 /**

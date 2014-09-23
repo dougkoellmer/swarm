@@ -68,6 +68,8 @@ public class VisualCellManager implements I_UIElement
 	
 	private final ClientGrid.Obscured m_obscured = new ClientGrid.Obscured();
 	
+	private boolean m_backingDirty = false;
+	
 	public VisualCellManager(ViewContext viewContext, Panel container) 
 	{
 		m_container = container;
@@ -131,25 +133,6 @@ public class VisualCellManager implements I_UIElement
 		return false;
 	}
 	
-	public boolean updateCellTransforms(double timeStep)
-	{
-		return this.updateCellTransforms(timeStep, false);
-	}
-	
-	private boolean updateCellTransforms(double timeStep, boolean isViewStateTransition)
-	{
-		CellBufferManager cellManager = m_viewContext.appContext.cellBufferMngr;
-		
-		for( int i = 0; i < cellManager.getBufferCount(); i++ )
-		{
-			CellBuffer cellBuffer = cellManager.getDisplayBuffer(i);
-			
-			updateCellTransforms(cellManager, cellBuffer, timeStep, isViewStateTransition);
-		}
-		
-		return true;
-	}
-	
 	private void initBacking(final ClientGrid grid)
 	{
 		if( m_backing == null )
@@ -200,6 +183,25 @@ public class VisualCellManager implements I_UIElement
 	{
 		Camera camera = m_viewContext.appContext.cameraMngr.getCamera();
 		m_backing.onResize((int)Math.ceil(camera.getViewWidth()), (int)Math.ceil(camera.getViewHeight()));
+	}
+	
+	private boolean updateCellTransforms(double timeStep)
+	{
+		return this.updateCellTransforms(timeStep, false);
+	}
+	
+	private boolean updateCellTransforms(double timeStep, boolean isViewStateTransition)
+	{
+		CellBufferManager cellManager = m_viewContext.appContext.cellBufferMngr;
+		
+		for( int i = 0; i < cellManager.getBufferCount(); i++ )
+		{
+			CellBuffer cellBuffer = cellManager.getDisplayBuffer(i);
+			
+			updateCellTransforms(cellManager, cellBuffer, timeStep, isViewStateTransition);
+		}
+		
+		return true;
 	}
 	
 	private boolean updateCellTransforms(CellBufferManager manager, CellBuffer cellBuffer, double timeStep, boolean isViewStateTransition)
@@ -294,6 +296,8 @@ public class VisualCellManager implements I_UIElement
 			int startX = (int) basePoint.getX();
 			int startY = (int) basePoint.getY();
 			GridCoordinate coord = cellBuffer.getCoordinate();
+		
+			m_backingDirty = false;
 			
 			m_backing.update
 			(
@@ -464,6 +468,10 @@ public class VisualCellManager implements I_UIElement
 						{
 							this.updateCellTransforms(event.getState().getLastTimeStep());
 						}
+						else if( m_backingDirty )
+						{
+							this.updateCellTransforms(event.getState().getLastTimeStep());
+						}
 						else
 						{
 							this.updateCellsIndividually(event.getState().getLastTimeStep());
@@ -547,6 +555,11 @@ public class VisualCellManager implements I_UIElement
 				break;
 			}
 		}
+	}
+	
+	public void onMetaCellLoaded()
+	{
+		m_backingDirty = true;
 	}
 	
 	private BufferCell getCurrentBufferCell()

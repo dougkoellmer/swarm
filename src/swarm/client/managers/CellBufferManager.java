@@ -131,7 +131,7 @@ public class CellBufferManager implements I_LocalCodeRepository
 		}
 	}
 
-	public void update(ClientGrid grid, Camera camera, I_LocalCodeRepository alternativeCodeSource, int options__extends__smF_BufferUpdateOption)
+	public void getCheckOutCount(ClientGrid grid, Camera camera, I_LocalCodeRepository alternativeCodeSource, int options__extends__smF_BufferUpdateOption)
 	{
 		m_updateCount++;
 		
@@ -157,6 +157,8 @@ public class CellBufferManager implements I_LocalCodeRepository
 		{
 			m_bufferPairs[i].update(grid, camera, alternativeCodeSource, options__extends__smF_BufferUpdateOption, subCellCount);
 		}
+		
+//		s_logger.severe(m_cellPool.getCheckOutCount()+"/" + m_cellPool.getAllocCount());
 	}
 	
 	public CellBuffer getDisplayBuffer(int index)

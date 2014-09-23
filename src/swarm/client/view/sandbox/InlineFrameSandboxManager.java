@@ -9,7 +9,7 @@ import swarm.shared.reflection.I_Class;
 
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.IFrameElement;
-import com.google.gwt.user.client.Element;
+import com.google.gwt.dom.client.Element;;
 
 public class InlineFrameSandboxManager
 {

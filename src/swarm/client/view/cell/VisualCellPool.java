@@ -32,7 +32,7 @@ public class VisualCellPool implements I_CellPoolDelegate
 		
 		void cleanCode()
 		{
-			for( int i = getAllocCount(); i < this.m_instances.size(); i++ )
+			for( int i = getCheckOutCount(); i < this.m_instances.size(); i++ )
 			{
 				VisualCell cell = this.m_instances.get(i);
 				
@@ -90,6 +90,12 @@ public class VisualCellPool implements I_CellPoolDelegate
 					m_viewContext.scrollNavigator.onResize();
 				}
 			}
+		}
+		
+		@Override public void onMetaImageLoaded()
+		{
+			//TODO: Sloppy dependency/callback chain here.
+			m_viewContext.cellMngr.onMetaCellLoaded();
 		}
 	};
 	

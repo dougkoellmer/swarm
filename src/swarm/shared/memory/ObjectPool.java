@@ -20,6 +20,11 @@ public class ObjectPool<T>
 	
 	public int getAllocCount()
 	{
+		return m_instances.size();
+	}
+	
+	public int getCheckOutCount()
+	{
 		return m_logicalSize;
 	}
 	
