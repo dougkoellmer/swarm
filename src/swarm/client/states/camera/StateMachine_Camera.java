@@ -287,7 +287,7 @@ public class StateMachine_Camera extends A_StateMachine implements I_StateEventL
 			
 			int options = F_BufferUpdateOption.CREATE_VISUALIZATIONS;
 			
-			bufferMngr.getCheckOutCount(m_appContext.gridMngr.getGrid(), m_appContext.cameraMngr.getCamera(), compiledStaticHtmlSource, options);
+			bufferMngr.update(m_appContext.gridMngr.getGrid(), m_appContext.cameraMngr.getCamera(), snappingState.getTargetCoord(), compiledStaticHtmlSource, options);
 			
 			//--- DRK > As soon as target cell comes into sight, we start trying to populate
 			//---		it with compiled_dynamic and source html from the snapping state's html source(s).
@@ -313,7 +313,7 @@ public class StateMachine_Camera extends A_StateMachine implements I_StateEventL
 		else
 		{
 			int options = F_BufferUpdateOption.ALL;
-			bufferMngr.getCheckOutCount(m_appContext.gridMngr.getGrid(), m_appContext.cameraMngr.getCamera(), m_codeRepo, options);
+			bufferMngr.update(m_appContext.gridMngr.getGrid(), m_appContext.cameraMngr.getCamera(), null, m_codeRepo, options);
 		}
 	}
 	

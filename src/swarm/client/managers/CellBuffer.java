@@ -155,6 +155,10 @@ public class CellBuffer
 	
 	void imposeBuffer(ClientGrid grid, CellBuffer otherBuffer, I_LocalCodeRepository localCodeSource, int currentSubCellCount, int options__extends__smF_BufferUpdateOption)
 	{
+		if( m_subCellCount == 16 )
+		{
+//			s_logger.severe("");
+		}
 		boolean createVisualizations = (options__extends__smF_BufferUpdateOption & F_BufferUpdateOption.CREATE_VISUALIZATIONS) != 0;
 		boolean communicateWithServer = (options__extends__smF_BufferUpdateOption & F_BufferUpdateOption.COMMUNICATE_WITH_SERVER) != 0;
 		boolean flushPopulator = (options__extends__smF_BufferUpdateOption & F_BufferUpdateOption.FLUSH_CELL_POPULATOR) != 0;

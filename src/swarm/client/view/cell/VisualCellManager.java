@@ -287,7 +287,9 @@ public class VisualCellManager implements I_UIElement
 		int windowWidth = (int) m_viewContext.scrollNavigator.getWindowWidth();
 		int windowHeight = (int) m_viewContext.scrollNavigator.getWindowHeight();
 	
-		String scaleProperty = scaling < NO_SCALING ? U_Css.createScaleTransform(scaling, use3dTransforms) : null;
+		String scaleProperty = scaling < NO_SCALING || scaling > 1-NO_SCALING ? U_Css.createScaleTransform(scaling, use3dTransforms) : null;
+		
+//		s_logger.severe(scaleProperty+"");
 		
 		String transformProperty = m_viewContext.appContext.platformInfo.getTransformProperty();
 		
@@ -387,6 +389,8 @@ public class VisualCellManager implements I_UIElement
 				String translateProperty = U_Css.createTranslateTransform(translateX, translateY, use3dTransforms);
 				String transform = scaleProperty != null ? translateProperty + " " + scaleProperty : translateProperty;
 				ithVisualCell.getElement().getStyle().setProperty(transformProperty, transform);
+				
+//				s_logger.severe(transform+"");
 				
 				if( ithVisualCell.getParent() == null )
 				{

@@ -244,7 +244,7 @@ public class State_CameraSnapping extends A_State implements I_StateEventListene
 			options |= F_BufferUpdateOption.FLUSH_CELL_POPULATOR;
 		}
 		
-		m_snapBufferManager.getCheckOutCount(grid, m_snapCamera, htmlSource, options);
+		m_snapBufferManager.update(grid, m_snapCamera, null, htmlSource, options);
 	}
 	
 	I_LocalCodeRepository getCompiledStaticHtmlSource()
@@ -280,6 +280,8 @@ public class State_CameraSnapping extends A_State implements I_StateEventListene
 		Constructor constructor_cast = (Constructor) constructor;
 		
 		m_appContext.registerBufferMngr(m_snapBufferManager);
+		
+		m_appContext.cellBufferMngr.overrideSubCellCount();
 		
 		m_targetGridCoordinate.copy(INVALID);
 		
@@ -342,6 +344,8 @@ public class State_CameraSnapping extends A_State implements I_StateEventListene
 	@Override
 	protected void willExit()
 	{
+		m_appContext.cellBufferMngr.removeOverrideSubCellCount();
+		
 		m_targetAddress = null;
 		m_targetCell = null;
 		

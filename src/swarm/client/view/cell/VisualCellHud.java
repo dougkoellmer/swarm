@@ -375,11 +375,6 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 					{
 						BufferCell cell = U_Cell.getBufferCell(event);
 						
-						if( cell == null )
-						{
-							s_logger.severe("DFDF");
-						}
-						
 						if( cell != null )
 						{
 							if( cell.getFocusedCellSize() == null || !cell.getFocusedCellSize().hasNaturalDimension() )

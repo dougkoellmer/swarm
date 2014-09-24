@@ -164,7 +164,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		
 		m_contentPanel.addStyleName("visual_cell_content");
 		
-		this.getElement().getStyle().setOpacity(.5);
+//		this.getElement().getStyle().setOpacity(.5);
 		
 		U_Css.allowUserSelect(m_contentPanel.getElement(), false);
 		
@@ -654,7 +654,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	{
 		if( m_metaImageLoaded )
 		{
-			s_logger.severe("");
+//			s_logger.severe("");
 		}
 		
 		m_metaImageLoaded = false;
@@ -679,7 +679,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 			imgLoad.on('done', function()
 			{
 				cell.@swarm.client.view.cell.VisualCell::setMetaImageLoaded()();
-				console.log("meta loaded!");
+//				console.log("meta loaded!");
 			});
 	}-*/;
 	

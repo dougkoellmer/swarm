@@ -52,7 +52,9 @@ public class VisualCellHighlight extends FlowPanel implements I_UIElement
 		
 		this.getElement().setAttribute("ondragstart", "return false;");
 		
-		E_ZIndex.CELL_HIGHLIGHT.assignTo(this);
+//		E_ZIndex.CELL_HIGHLIGHT.assignTo(this);
+		
+		this.getElement().getStyle().setBackgroundColor(m_viewContext.config.cellHighlightColor);
 		
 		this.setVisible(false);
 	}

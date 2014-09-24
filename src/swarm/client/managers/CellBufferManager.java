@@ -65,6 +65,7 @@ public class CellBufferManager implements I_LocalCodeRepository
 	
 	private final BufferCellPool m_cellPool;
 	private int m_currentSubCellCount = 1;
+	private Integer m_overrideSubCellCount = null;
 	
 	private CellBufferPair[] m_bufferPairs = null;
 	private final CellCodeManager m_codeMngr;
@@ -80,6 +81,16 @@ public class CellBufferManager implements I_LocalCodeRepository
 		m_levelCount = metaLevelCount + 1;
 		
 		createBufferPairs();
+	}
+	
+	public void overrideSubCellCount()
+	{
+		m_overrideSubCellCount = m_currentSubCellCount;
+	}
+	
+	public void removeOverrideSubCellCount()
+	{
+		m_overrideSubCellCount = null;
 	}
 	
 	private void createBufferPairs()
@@ -131,7 +142,7 @@ public class CellBufferManager implements I_LocalCodeRepository
 		}
 	}
 
-	public void getCheckOutCount(ClientGrid grid, Camera camera, I_LocalCodeRepository alternativeCodeSource, int options__extends__smF_BufferUpdateOption)
+	public void update(ClientGrid grid, Camera camera, GridCoordinate snappingCoordinate_nullable, I_LocalCodeRepository alternativeCodeSource, int options__extends__smF_BufferUpdateOption)
 	{
 		m_updateCount++;
 		
@@ -151,11 +162,11 @@ public class CellBufferManager implements I_LocalCodeRepository
 //		cellSize = cellSize <= 4 ? 1 : cellSize; // COMMENT OUT TO get correct cell sizes.
 		subCellCount = subCellCount > gridSizeUpperOf2 ? gridSizeUpperOf2 : subCellCount;
 		
-		m_currentSubCellCount = subCellCount;
+		m_currentSubCellCount = subCellCount == 1 || m_overrideSubCellCount == null ? subCellCount : m_overrideSubCellCount;
 		
 		for( int i = 0; i < m_bufferPairs.length; i++ )
 		{
-			m_bufferPairs[i].update(grid, camera, alternativeCodeSource, options__extends__smF_BufferUpdateOption, subCellCount);
+			m_bufferPairs[i].update(grid, camera, alternativeCodeSource, options__extends__smF_BufferUpdateOption, m_currentSubCellCount);
 		}
 		
 //		s_logger.severe(m_cellPool.getCheckOutCount()+"/" + m_cellPool.getAllocCount());
