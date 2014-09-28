@@ -681,7 +681,7 @@ public class ScrollNavigator implements I_StateEventListener
 	private void setTargetLayout(GridCoordinate gridCoord, FocusedLayout layout_nullable)
 	{
 		CellBufferManager cellManager = m_viewContext.appContext.cellBufferMngr;
-		CellBuffer cellBuffer = cellManager.getBaseDisplayBuffer();
+		CellBuffer cellBuffer = cellManager.getLowestDisplayBuffer();
 		if( cellBuffer.isInBoundsAbsolute(gridCoord) )
 		{
 			BufferCell bufferCell = cellBuffer.getCellAtAbsoluteCoord(gridCoord);
@@ -742,7 +742,7 @@ public class ScrollNavigator implements I_StateEventListener
 		A_Grid grid = m_viewContext.appContext.gridMngr.getGrid();
 		
 		CellBufferManager cellManager = m_viewContext.appContext.cellBufferMngr;
-		CellBuffer cellBuffer = cellManager.getBaseDisplayBuffer();
+		CellBuffer cellBuffer = cellManager.getLowestDisplayBuffer();
 		BufferCell bufferCell = cellBuffer.getCellAtAbsoluteCoord(coord);
 		
 		if( bufferCell != null )

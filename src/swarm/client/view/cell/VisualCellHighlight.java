@@ -82,7 +82,7 @@ public class VisualCellHighlight extends FlowPanel implements I_UIElement
 			return;
 		}
 		
-		CellBuffer buffer = m_viewContext.appContext.cellBufferMngr.getBaseDisplayBuffer();
+		CellBuffer buffer = m_viewContext.appContext.cellBufferMngr.getLowestDisplayBuffer();
 		int subCellDim = m_viewContext.appContext.cellBufferMngr.getSubCellCount();
 		
 		ClientGrid grid = m_viewContext.appContext.gridMngr.getGrid();

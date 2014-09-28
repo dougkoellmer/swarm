@@ -123,7 +123,7 @@ public class CellCodeManager implements I_TransactionResponseHandler
 		CellBufferManager.Iterator bufferManagerIterator = m_appContext.getRegisteredBufferMngrs();
 		for( CellBufferManager manager = null; (manager = bufferManagerIterator.next()) != null; )
 		{
-			CellBuffer buffer = manager.getBaseDisplayBuffer();
+			CellBuffer buffer = manager.getLowestDisplayBuffer();
 			
 			if( buffer.getSubCellCount() == 1 ) // NOTE: should always be the case for the snap buffer manager.
 			{
@@ -310,7 +310,7 @@ public class CellCodeManager implements I_TransactionResponseHandler
 		CellBufferManager.Iterator iterator = m_appContext.getRegisteredBufferMngrs();
 		for( CellBufferManager manager = null; (manager = iterator.next()) != null; )
 		{
-			CellBuffer buffer = manager.getBaseDisplayBuffer();
+			CellBuffer buffer = manager.getLowestDisplayBuffer();
 			
 			//--- DRK > Cell data is only requested if we're close enough to see individually rendered cells.
 			//---		If we've since zoomed out, we cache the data as above, but otherwise ignore it.
@@ -389,7 +389,7 @@ public class CellCodeManager implements I_TransactionResponseHandler
 				CellBufferManager.Iterator bufferManagerIterator = m_appContext.getRegisteredBufferMngrs();
 				for( CellBufferManager manager = null; (manager = bufferManagerIterator.next()) != null; )
 				{
-					CellBuffer buffer = manager.getBaseDisplayBuffer();
+					CellBuffer buffer = manager.getLowestDisplayBuffer();
 
 					//--- DRK > The user can technically commit their code and then navigate away while it's in transit to/from
 					//---		the server...that's why we have to dig and see if the cell is even visible anymore.
@@ -441,7 +441,7 @@ public class CellCodeManager implements I_TransactionResponseHandler
 		CellBufferManager.Iterator bufferManagerIterator = m_appContext.getRegisteredBufferMngrs();
 		for( CellBufferManager manager = null; (manager = bufferManagerIterator.next()) != null; )
 		{
-			CellBuffer buffer = manager.getBaseDisplayBuffer();
+			CellBuffer buffer = manager.getLowestDisplayBuffer();
 			
 			//--- DRK > Cell data is only requested if we're close enough to see individually rendered cells.
 			//---		If we've since zoomed out, we cache the data as above, but otherwise ignore it.

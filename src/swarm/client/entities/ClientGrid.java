@@ -170,10 +170,8 @@ public class ClientGrid extends A_Grid
 		return m_metaOwnership.length + 1;
 	}
 	
-	@Override public void readJson(I_JsonObject json, A_JsonFactory factory)
+	private void initMetaOwnership()
 	{
-		super.readJson(json, factory);
-		
 		int gridSize = this.getWidth();
 		
 		if( !U_Bits.isPowerOfTwo(gridSize) )  return;
@@ -210,6 +208,13 @@ public class ClientGrid extends A_Grid
 			subCellCount *= 2;
 			currentMetaGridSize /= 2;
 		}
+	}
+	
+	@Override public void readJson(I_JsonObject json, A_JsonFactory factory)
+	{
+		super.readJson(json, factory);
+		
+		initMetaOwnership();
 	}
 	
 	public String toString(int subCellN)

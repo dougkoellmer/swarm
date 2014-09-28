@@ -222,7 +222,7 @@ public class CellAddressManager implements I_TransactionResponseHandler
 	
 	private CellAddressMapping getMappingFromCellBuffer(CellAddress address)
 	{
-		CellBuffer displayBuffer = m_appContext.cellBufferMngr.getBaseDisplayBuffer();
+		CellBuffer displayBuffer = m_appContext.cellBufferMngr.getLowestDisplayBuffer();
 		
 		if( displayBuffer.getSubCellCount() == 1 )
 		{
@@ -248,7 +248,7 @@ public class CellAddressManager implements I_TransactionResponseHandler
 	
 	private CellAddress getAddressFromCellBuffer(CellAddressMapping mapping)
 	{
-		CellBuffer displayBuffer = m_appContext.cellBufferMngr.getBaseDisplayBuffer();
+		CellBuffer displayBuffer = m_appContext.cellBufferMngr.getLowestDisplayBuffer();
 		if( displayBuffer.getSubCellCount() == 1 )
 		{
 			BufferCell cell = displayBuffer.getCellAtAbsoluteCoord(mapping.getCoordinate());
@@ -264,7 +264,7 @@ public class CellAddressManager implements I_TransactionResponseHandler
 	
 	private void setBufferCellAddress(CellAddress address, CellAddressMapping mapping)
 	{
-		CellBuffer displayBuffer = m_appContext.cellBufferMngr.getBaseDisplayBuffer();
+		CellBuffer displayBuffer = m_appContext.cellBufferMngr.getLowestDisplayBuffer();
 		
 		if( displayBuffer.getSubCellCount() == 1 )
 		{

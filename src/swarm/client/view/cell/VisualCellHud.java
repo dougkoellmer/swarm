@@ -51,7 +51,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 	
 	private final ViewContext m_viewContext;
 	
-	private final double m_minWidth = 176 + 34;// TODO: GHETTO
+	private final double m_minWidth = 176 + 34 + 8;// TODO: GHETTO
 	private double m_width = 0;
 	private double m_baseWidth = 0;
 	private double m_targetWidth = 0;

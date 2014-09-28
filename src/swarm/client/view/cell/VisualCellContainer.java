@@ -184,7 +184,7 @@ public class VisualCellContainer extends FlowPanel implements ResizeHandler, I_U
 	private void updateCroppers()
 	{
 		//--- DRK > If cell sub count is 1, it means we can match the bottom/right sides of the grid exactly.
-		int cellSubCount = m_viewContext.appContext.cellBufferMngr.getBaseDisplayBuffer().getSubCellCount();
+		int cellSubCount = m_viewContext.appContext.cellBufferMngr.getLowestDisplayBuffer().getSubCellCount();
 		if( cellSubCount == 0 || cellSubCount == 1 )
 		{
 			hideCroppers();

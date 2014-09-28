@@ -148,6 +148,8 @@ public class CellBufferManager implements I_LocalCodeRepository
 		
 		if( m_bufferPairs == null )  return;
 		
+		
+		
 		//--- DRK > Figure out how big each cell is relative to a fully zoomed in cell.
 		int gridSize = grid.getWidth();
 		int gridSizeUpperOf2 = gridSize == 0 ? 0 : U_Bits.calcUpperPowerOfTwo(gridSize);
@@ -163,6 +165,10 @@ public class CellBufferManager implements I_LocalCodeRepository
 		subCellCount = subCellCount > gridSizeUpperOf2 ? gridSizeUpperOf2 : subCellCount;
 		
 		m_currentSubCellCount = subCellCount == 1 || m_overrideSubCellCount == null ? subCellCount : m_overrideSubCellCount;
+		
+		int index = U_Bits.calcBitPosition(m_currentSubCellCount);
+		index = index >= m_bufferPairs.length ? m_bufferPairs.length-1 : index;
+		m_currentSubCellCount = 0x1 << index;
 		
 		for( int i = 0; i < m_bufferPairs.length; i++ )
 		{
@@ -187,7 +193,14 @@ public class CellBufferManager implements I_LocalCodeRepository
 		return m_currentSubCellCount;
 	}
 	
-	public CellBuffer getBaseDisplayBuffer()
+	public CellBuffer getHighestDisplayBuffer()
+	{
+		int index = U_Bits.calcBitPosition(m_currentSubCellCount);
+		index = index >= m_bufferPairs.length ? m_bufferPairs.length-1 : index;
+		return m_bufferPairs != null ? m_bufferPairs[index].getDisplayBuffer() : null;
+	}
+	
+	public CellBuffer getLowestDisplayBuffer()
 	{
 		if( m_bufferPairs != null )
 		{
@@ -203,7 +216,7 @@ public class CellBufferManager implements I_LocalCodeRepository
 		Code toReturn = null;
 		BufferCell thisCell = null;
 		
-		CellBuffer displayBuffer = getBaseDisplayBuffer();
+		CellBuffer displayBuffer = getLowestDisplayBuffer();
 		
 		if( displayBuffer.isInBoundsAbsolute(coordinate) )
 		{

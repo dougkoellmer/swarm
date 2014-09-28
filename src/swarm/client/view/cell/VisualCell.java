@@ -135,7 +135,10 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	private final double m_sizeChangeTime;
 	private final double m_retractionEasing;
 	
+	private static final double META_IMAGE_LOAD_DELAY = .25;
 	private boolean m_metaImageLoaded = false;
+	private double m_metaImageTimeTracker = -1.0;
+	private Code m_metaCode = null;
 	
 	public VisualCell(I_CellSpinner spinner, SandboxManager sandboxMngr, CameraManager cameraMngr, double retractionEasing, double sizeChangeTime)
 	{
@@ -164,13 +167,15 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		
 		m_contentPanel.addStyleName("visual_cell_content");
 		
-//		this.getElement().getStyle().setOpacity(.5);
+		this.getElement().getStyle().setOpacity(.5);
 		
 		U_Css.allowUserSelect(m_contentPanel.getElement(), false);
 		
 		this.add(m_contentPanel);
 		this.add(m_statusPanel);
 		this.add(m_glassPanel);
+		
+		clearMetaImageState();
 	}
 	
 	public void setCodeListener(I_CodeListener listener)
@@ -205,6 +210,19 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	
 	public void update(double timeStep)
 	{
+		if( m_metaImageTimeTracker >= 0.0 )
+		{
+			m_metaImageTimeTracker += timeStep;
+			
+			if( m_metaImageTimeTracker >= META_IMAGE_LOAD_DELAY )
+			{
+				Code metaCode = m_metaCode;
+				setMetaImagesNotLoaded();
+				m_contentPanel.setVisible(false);
+				m_sandboxMngr.start(m_contentPanel.getElement(), metaCode, null, m_codeLoadListener);
+			}
+		}
+		
 		if( m_spinner.asWidget().getParent() != null )
 		{
 			m_spinner.update(timeStep);
@@ -316,8 +334,10 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	
 	void crop(int thisX, int thisY, int windowWidth, int windowHeight)
 	{
-		int totalWidth = m_width+m_padding;
-		int totalHeight = m_height+m_padding;
+//		int totalWidth = m_width+m_padding;
+//		int totalHeight = m_height+m_padding;
+		int totalWidth = m_width;
+		int totalHeight = m_height;
 		thisX -= m_xOffset;
 		thisY -= m_yOffset;
 		
@@ -335,8 +355,8 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 			totalHeight -= overflow;
 		}
 		
-		m_contentPanel.setSize(m_width + "px", m_height + "px");
-		this.setSize(m_width + "px", m_height + "px");
+		m_contentPanel.setSize(totalWidth + "px", totalHeight + "px");
+		this.setSize(totalWidth + "px", totalHeight + "px");
 	}
 	
 	void removeCrop()
@@ -584,21 +604,6 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	{
 		this.getElement().getStyle().clearZIndex();
 	}
-
-//	@Override
-//	public void onCellRecycled(int width, int height, int padding, int subCellDimension)
-//	{
-//		if( subCellDimension != m_subCellDimension )
-//		{
-//			m_isValidated = false;
-//		}
-//		
-//		this.onCreatedOrRecycled(width, height, padding, subCellDimension);
-//
-//		this.insertSafeHtml("");
-//		
-//		this.pushDown();
-//	}
 	
 	@Override
 	public void onError(E_CodeType eType)
@@ -638,7 +643,18 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		
 		setMetaImagesNotLoaded();
 		
-		m_sandboxMngr.start(m_contentPanel.getElement(), code, cellNamespace, m_codeLoadListener);
+		m_contentPanel.setVisible(true);
+		
+		if( m_codeSafetyLevel == E_CodeSafetyLevel.META_IMAGE )
+		{
+			m_sandboxMngr.stop(m_contentPanel.getElement());
+			m_metaImageTimeTracker = 0.0;
+			m_metaCode = code;
+		}
+		else
+		{
+			m_sandboxMngr.start(m_contentPanel.getElement(), code, cellNamespace, m_codeLoadListener);
+		}
 		
 		if( m_codeListener != null )  m_codeListener.onCodeLoaded(this);
 	}
@@ -646,6 +662,10 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	private void setMetaImageLoaded()
 	{
 		m_metaImageLoaded = true;
+		
+		clearMetaImageState();
+		
+		m_contentPanel.setVisible(true);
 		
 		m_codeListener.onMetaImageLoaded();
 	}
@@ -658,19 +678,15 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		}
 		
 		m_metaImageLoaded = false;
+		
+		clearMetaImageState();
 	}
 	
-//	private native void removeImagesLoadedListener()
-//	/*-{
-//			var thisArg = this;
-//			var imgLoad = thisArg.@swarm.client.view.cell.VisualCell::m_imagesLoaded;
-//			
-//			var onDone = thisArg.@swarm.client.view.cell.VisualCell::m_imagesLoaded_onDone;
-//			var onAlways = thisArg.@swarm.client.view.cell.VisualCell::m_imagesLoaded_onAlways;
-//			
-//			imgLoad.off('done', onDone);
-//			imgLoad.off('always', onAlways);
-//	}-*/;
+	private void clearMetaImageState()
+	{
+		m_metaImageTimeTracker = -1.0;
+		m_metaCode = null;
+	}
 	
 	private native void addImagesLoadedListener(VisualCell cell, Element element)
 	/*-{

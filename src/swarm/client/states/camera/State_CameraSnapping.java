@@ -193,7 +193,7 @@ public class State_CameraSnapping extends A_State implements I_StateEventListene
 			return;
 		}
 		
-		CellBuffer displayBuffer = m_snapBufferManager.getBaseDisplayBuffer();
+		CellBuffer displayBuffer = m_snapBufferManager.getLowestDisplayBuffer();
 		
 		//--- DRK > Not entering here should be an impossible case, but avoid a null pointer exception just to be sure.
 		if( displayBuffer.isInBoundsAbsolute(m_targetGridCoordinate) )
@@ -309,7 +309,7 @@ public class State_CameraSnapping extends A_State implements I_StateEventListene
 	{
 		if( m_targetCell != null )  return;
 		
-		m_targetCell = m_appContext.cellBufferMngr.getBaseDisplayBuffer().getCellAtAbsoluteCoord(m_targetGridCoordinate);
+		m_targetCell = m_appContext.cellBufferMngr.getLowestDisplayBuffer().getCellAtAbsoluteCoord(m_targetGridCoordinate);
 		
 		if( m_targetCell != null && fireEvent )
 		{

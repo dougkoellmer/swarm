@@ -44,7 +44,7 @@ public class CanvasBacking
 		m_canvas.setCoordinateSpaceHeight(height);
 	}
 	
-	public void update(double startX, double startY, int startM, int startN, int across, int down, double cellSize, double cellSizePlusPadding, int totalGridSize, BitArray ownership)
+	public void update(double startX_meta, double startY_meta, int startM, int startN, int across, int down, double cellSize, double cellSizePlusPadding, int totalGridSize, BitArray ownership, double metaCellSize, int metaSubCellCount, int startM_meta, int startN_meta)
 	{
  		clear();
 		
@@ -74,12 +74,21 @@ public class CanvasBacking
 					continue;
 				}
 				
+				int offsetM = m - startM_meta;
+				int offsetN = n - startN_meta;
+				int offsetM_mod = offsetM % metaSubCellCount;
+				int offsetN_mod = offsetN % metaSubCellCount;
+				offsetM -= offsetM_mod;
+				offsetN -= offsetN_mod;
+				offsetM /= metaSubCellCount;
+				offsetN /= metaSubCellCount;
+				
 				int index = n*totalGridSize + m;
 				
 				if( !ownership.isSet(index) )  continue;
 				
-				double currX = startX + (m - startM)*cellSizePlusPadding;
-				double currY = startY + (n - startN)*cellSizePlusPadding;
+				double currX = startX_meta + offsetM * metaCellSize + offsetM_mod * cellSizePlusPadding;
+				double currY = startY_meta + offsetN * metaCellSize + offsetN_mod * cellSizePlusPadding;
 				
 				context.fillRect(currX, currY, cellSize, cellSize);
 			}

@@ -152,5 +152,7 @@ public class SandboxManager
 		}
 		
 		m_iframeSandboxMngr.stop(host);
+		
+		removeAllChildren(host);
 	}
 }
