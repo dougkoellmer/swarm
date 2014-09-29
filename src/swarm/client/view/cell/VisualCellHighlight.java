@@ -25,6 +25,7 @@ import swarm.client.view.ViewContext;
 import swarm.shared.app.S_CommonApp;
 import swarm.shared.debugging.U_Debug;
 import swarm.shared.entities.A_Grid;
+import swarm.shared.entities.U_Grid;
 import swarm.shared.utils.U_Math;
 import swarm.shared.statemachine.A_Action;
 import swarm.shared.statemachine.StateEvent;
@@ -52,9 +53,9 @@ public class VisualCellHighlight extends FlowPanel implements I_UIElement
 		
 		this.getElement().setAttribute("ondragstart", "return false;");
 		
-//		E_ZIndex.CELL_HIGHLIGHT.assignTo(this);
+		E_ZIndex.CELL_HIGHLIGHT.assignTo(this);
 		
-		this.getElement().getStyle().setBackgroundColor(m_viewContext.config.cellHighlightColor);
+//		this.getElement().getStyle().setBackgroundColor(m_viewContext.config.cellHighlightColor);
 		
 		this.setVisible(false);
 	}
@@ -82,18 +83,15 @@ public class VisualCellHighlight extends FlowPanel implements I_UIElement
 			return;
 		}
 		
-		CellBuffer buffer = m_viewContext.appContext.cellBufferMngr.getLowestDisplayBuffer();
-		int subCellDim = m_viewContext.appContext.cellBufferMngr.getSubCellCount();
+		CellBuffer buffer_lowest = m_viewContext.appContext.cellBufferMngr.getLowestDisplayBuffer();
+		int subCellCount_highest = m_viewContext.appContext.cellBufferMngr.getSubCellCount();
 		
 		ClientGrid grid = m_viewContext.appContext.gridMngr.getGrid();
 		Camera camera = m_viewContext.appContext.cameraMngr.getCamera();
 		Point basePoint = null;
-		double highlightScaling = camera.calcDistanceRatio();
 		
 		GridCoordinate mouseCoord = navManager.getMouseGridCoord();
 		boolean owned = grid.isTaken(mouseCoord, 1);
-		
-		BufferCell cell = buffer.getCellAtAbsoluteCoord(mouseCoord);
 		
 		if( !owned )
 		{
@@ -101,7 +99,7 @@ public class VisualCellHighlight extends FlowPanel implements I_UIElement
 			
 			return;
 		}
-
+		
 		State_CameraSnapping snappingState = m_viewContext.stateContext.getEntered(State_CameraSnapping.class);
 		if( snappingState != null )
 		{
@@ -113,6 +111,10 @@ public class VisualCellHighlight extends FlowPanel implements I_UIElement
 			}
 		}
 		
+		CellBuffer buffer_highest = m_viewContext.appContext.cellBufferMngr.getHighestDisplayBuffer();
+		
+		BufferCell cell = buffer_lowest.getCellAtAbsoluteCoord(mouseCoord);	
+		
 		basePoint = m_utilPoint1;
 		
 		//--- DRK > For this case, we have to do all kinds of evil witch hackery to ensure that cell highlight lines up
@@ -122,42 +124,36 @@ public class VisualCellHighlight extends FlowPanel implements I_UIElement
 		
 		VisualCellManager cellManager = m_viewContext.cellMngr;
 		VisualCell visualCell = (VisualCell) (cell != null ? cell.getVisualization() : null);
-		double lastScaling = cellManager.getLastScaling();
+		double sizeScaling = cellManager.getLastScaling();
+		double distanceRatio = camera.calcDistanceRatio();
 		Point lastBasePoint = cellManager.getLastBasePoint();
 		
 //		s_logger.severe(""+lastBasePoint + " " + lastScaling);
 		
-		int bufferM = buffer.getCoordinate().getM();//buffer.getCoordinate().getM() * subCellDim;
-		int bufferN = buffer.getCoordinate().getN();//buffer.getCoordinate().getN() * subCellDim;
+		int bufferM = buffer_highest.getCoordinate().getM() * subCellCount_highest;
+		int bufferN = buffer_highest.getCoordinate().getN() * subCellCount_highest;
 		int deltaM = mouseCoord.getM() - bufferM;
 		int deltaN = mouseCoord.getN() - bufferN;
 		
-		//TODO: Assuming square cell size.
-		double apparentCellPixelsX = 0, apparentCellPixelsY = 0;
+		double lastMetaCellWidth = cellManager.getLastMetaCellWidth();
+		double lastMetaCellHeight = cellManager.getLastMetaCellHeight();
+		int deltaM_mod = deltaM % subCellCount_highest;
+		int deltaN_mod = deltaN % subCellCount_highest;
+		deltaM -= deltaM_mod;
+		deltaN -= deltaN_mod;
+		deltaM /= subCellCount_highest;
+		deltaN /= subCellCount_highest;
 		
 		int defaultCellWidth = grid.getCellWidth();
 		int defaultCellHeight = grid.getCellHeight();
-		int visualCellWidth = visualCell != null ? visualCell.getWidth() : defaultCellWidth;
-		int visualCellHeight = visualCell != null ? visualCell.getHeight() : defaultCellHeight;
 		
-//		if( subCellDim > 1 )
-//		{
-//			apparentCellPixelsX = (((defaultCellWidth+ grid.getCellPadding()) / ((double) subCellDim)) * lastScaling);
-//			apparentCellPixelsY = (((defaultCellHeight+ grid.getCellPadding()) / ((double) subCellDim)) * lastScaling);
-//		}
-//		else
-		{
-			apparentCellPixelsX = (defaultCellWidth + grid.getCellPadding()) * lastScaling;
-			apparentCellPixelsY = (defaultCellHeight + grid.getCellPadding()) * lastScaling;
-		}
-		
-		double deltaPixelsX = apparentCellPixelsX * deltaM;
-		double deltaPixelsY = apparentCellPixelsY * deltaN;
+		double deltaPixelsX = deltaM * lastMetaCellWidth + deltaM_mod*(((double)lastMetaCellWidth)/subCellCount_highest);
+		double deltaPixelsY = deltaN * lastMetaCellHeight + deltaN_mod*(((double)lastMetaCellHeight)/subCellCount_highest);
 
 		basePoint.copy(lastBasePoint);
 		basePoint.inc(deltaPixelsX, deltaPixelsY, 0);
-		basePoint.incX((visualCell != null ? (double)visualCell.getXOffset() : 0.0)*lastScaling);
-		basePoint.incY((visualCell != null ? (double)visualCell.getYOffset() : 0.0)*lastScaling);
+		basePoint.incX((visualCell != null ? (double)visualCell.getXOffset() : 0.0)*sizeScaling);
+		basePoint.incY((visualCell != null ? (double)visualCell.getYOffset() : 0.0)*sizeScaling);
 		double y = basePoint.getY();
 		
 		if( m_viewContext.stateContext.isEntered(State_ViewingCell.class) )
@@ -166,8 +162,11 @@ public class VisualCellHighlight extends FlowPanel implements I_UIElement
 			y += scrollElement.getScrollTop();
 		}
 		
-		String width = (visualCellWidth * highlightScaling) + "px";
-		String height = (visualCellHeight * highlightScaling) + "px";
+		
+		int visualCellWidth = visualCell != null ? visualCell.getWidth() : defaultCellWidth;
+		int visualCellHeight = visualCell != null ? visualCell.getHeight() : defaultCellHeight;
+		String width = (visualCellWidth * distanceRatio) + "px";
+		String height = (visualCellHeight * distanceRatio) + "px";
 		this.setSize(width, height);
 		this.getElement().getStyle().setProperty("top", y + "px");
 		this.getElement().getStyle().setProperty("left", basePoint.getX() + "px");
@@ -176,9 +175,9 @@ public class VisualCellHighlight extends FlowPanel implements I_UIElement
 		
 		ViewConfig viewConfig = m_viewContext.config;
 		
-		if( m_lastScaling != highlightScaling )
+		if( m_lastScaling != distanceRatio )
 		{
-			double scale =  Math.sqrt(highlightScaling);
+			double scale =  Math.sqrt(distanceRatio);
 			
 			int shadowSize = (int) (((double)viewConfig.cellHighlightMaxSize) * (scale));
 			shadowSize = (shadowSize < viewConfig.cellHighlightMinSize ? viewConfig.cellHighlightMinSize : shadowSize);
@@ -186,7 +185,7 @@ public class VisualCellHighlight extends FlowPanel implements I_UIElement
 			U_Css.setBoxShadow(this.getElement(), "0 0 "+(shadowSize/2)+"px "+(shadowSize/2)+"px " + m_viewContext.config.cellHighlightColor);
 		}
 		
-		m_lastScaling = highlightScaling;
+		m_lastScaling = distanceRatio;
 		
 		this.setVisible(true);
 	}

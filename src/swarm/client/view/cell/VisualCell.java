@@ -74,7 +74,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		@Override
 		public void onCodeLoad()
 		{
-			m_this.setStatusHtml(null, false);
+//			m_this.setStatusHtml(null, false);
 		}
 
 		@Override
@@ -355,6 +355,9 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 			totalHeight -= overflow;
 		}
 		
+		totalWidth = totalWidth >= 0 ? totalWidth : 0;
+		totalHeight = totalHeight >= 0 ? totalHeight : 0;
+		
 		m_contentPanel.setSize(totalWidth + "px", totalHeight + "px");
 		this.setSize(totalWidth + "px", totalHeight + "px");
 	}
@@ -411,7 +414,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		return naturalWidth;
 	}
 	
-	public void setTargetLayout(int width, int height, int xOffset, int yOffset)
+	public void setTargetLayout(int width, int height, int xOffset, int yOffset, int windowWidth, int windowHeight, int scrollX, int scrollY)
 	{
 		m_baseXOffset = m_xOffset;
 		m_baseYOffset = m_yOffset;
@@ -428,6 +431,8 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		{
 			m_baseChangeValue = m_cameraMngr.getWeightedSnapProgress();
 			m_layoutState = LayoutState.CHANGING_FROM_SNAP;
+			
+			constrainStatusBlocker(windowWidth, windowHeight, scrollX, scrollY);
 		}
 		else if( this.m_isFocused )
 		{
@@ -435,6 +440,66 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 			
 			m_startingXOffset = m_xOffset;
 			m_startingYOffset = m_yOffset;
+			
+			constrainStatusBlocker(windowWidth, windowHeight, scrollX, scrollY);
+		}
+	}
+	
+	private int calcSizeConstraint(int defaultSize, int scroll, int windowSize, int cellSize)
+	{
+		int size = defaultSize;
+		int subtraction = m_padding - scroll;
+		subtraction = subtraction < 0 ? 0 : subtraction;
+		size = windowSize - subtraction;
+		
+		int total = scroll + windowSize - m_padding;
+		
+		if( total > cellSize )
+		{
+			size -= (total - cellSize);
+		}
+		
+		return size;
+	}
+	
+	private void constrainStatusBlocker(int windowWidth, int windowHeight, int scrollX, int scrollY)
+	{
+		boolean constrain = false;
+		int top = 0, left = 0, width = m_width, height = m_height;
+		
+		if( scrollX > m_padding )
+		{
+			constrain = true;
+			left = scrollX - m_padding;
+		}
+		
+		if( scrollY > m_padding )
+		{
+			constrain = true;
+			top = scrollY - m_padding;
+		}
+		
+		if( m_width + m_padding > windowWidth )
+		{
+			constrain = true;
+			
+			width = calcSizeConstraint(width, scrollX, windowWidth, m_width);
+		}
+		
+		if( m_height + m_padding > windowHeight )
+		{
+			constrain = true;
+
+			height = calcSizeConstraint(height, scrollY, windowHeight, m_height);
+		}
+		
+		if( constrain )
+		{
+			m_statusPanel.constrain(top, left, width, height);
+		}
+		else
+		{
+			m_statusPanel.removeConstraints();
 		}
 	}
 	
@@ -506,6 +571,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	{
 		m_isSnapping = false; // just in case.
 		m_isFocused = false;
+		m_statusPanel.removeConstraints();
 		
 		this.m_glassPanel.setVisible(true);
 		this.removeStyleName("visual_cell_focused");
@@ -569,7 +635,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	{
 		m_layoutState = LayoutState.CHANGING_FROM_TIME;
 		m_baseChangeValue = 0;
-		this.setTargetLayout(m_defaultWidth, m_defaultHeight, 0, 0);
+		this.setTargetLayout(m_defaultWidth, m_defaultHeight, 0, 0, 0, 0, 0, 0);
 	}
 	
 	public void popUp()
@@ -633,6 +699,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	public void setCode(Code code, String cellNamespace)
 	{
 		this.setStatusHtml(null, false);
+		showLoading();
 		
 		/*if( m_sandboxMngr.isRunning() )
 		{

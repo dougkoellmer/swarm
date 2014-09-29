@@ -1,5 +1,6 @@
 package swarm.client.view.widget;
 
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
@@ -103,5 +104,21 @@ public class UIBlocker extends FlowPanel
 			
 			this.setVisible(true);
 		}
+	}
+	
+	public void constrain(int topOffset, int leftOffset, int maxWidth, int maxHeight)
+	{
+		m_innerContainer.getElement().getStyle().setTop(topOffset, Unit.PX);
+		m_innerContainer.getElement().getStyle().setLeft(leftOffset, Unit.PX);
+		m_innerContainer.getElement().getStyle().setProperty("maxWidth", maxWidth+"px");
+		m_innerContainer.getElement().getStyle().setProperty("maxHeight", maxHeight+"px");
+	}
+	
+	public void removeConstraints()
+	{
+		m_innerContainer.getElement().getStyle().clearTop();
+		m_innerContainer.getElement().getStyle().clearLeft();
+		m_innerContainer.getElement().getStyle().clearProperty("maxWidth");
+		m_innerContainer.getElement().getStyle().clearProperty("maxHeight");
 	}
 }

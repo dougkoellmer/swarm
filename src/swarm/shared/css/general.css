@@ -109,7 +109,7 @@ body, html, .sm_cell_container, .sm_tab_content_container,
 
 .sm_ui_blocker_inner
 {
-	position:absolute;
+	position:relative;
 	
 	top:0px;
 	left:0px;

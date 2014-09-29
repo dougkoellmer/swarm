@@ -53,8 +53,9 @@ public class VisualCellManager implements I_UIElement
 	private final Point m_utilPoint2 = new Point();
 	
 	private final Point m_lastBasePoint = new Point();
-	
 	private double m_lastScaling = 0;
+	private double m_lastMetaCellWidth = 0.0;
+	private double m_lastMetaCellHeight = 0.0;
 	
 	private final Dialog m_alertDialog;
 	
@@ -429,6 +430,8 @@ public class VisualCellManager implements I_UIElement
 		if( subCellCount_i == 1 )
 		{
 			m_lastScaling = sizeScaling;
+			m_lastMetaCellWidth = cellWidthPlusPadding;
+			m_lastMetaCellHeight = cellHeightPlusPadding;
 		}
 		
 		return true;
@@ -464,6 +467,16 @@ public class VisualCellManager implements I_UIElement
 	public double getLastScaling()
 	{
 		return m_lastScaling;
+	}
+	
+	public double getLastMetaCellWidth()
+	{
+		return m_lastMetaCellWidth;
+	}
+	
+	public double getLastMetaCellHeight()
+	{
+		return m_lastMetaCellHeight;
 	}
 	
 	public Point getLastBasePoint()

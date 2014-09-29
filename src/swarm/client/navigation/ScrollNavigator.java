@@ -716,7 +716,16 @@ public class ScrollNavigator implements I_StateEventListener
 		
 //		s_logger.severe(m_layout.topLeftOffset + "");
 		
-		visualCell.setTargetLayout(layout_nullable.cellSize.getWidth(), layout_nullable.cellSize.getHeight(), (int)layout_nullable.topLeftOffset.getX(), (int)layout_nullable.topLeftOffset.getY());
+		
+		A_Grid grid = this.m_viewContext.appContext.gridMngr.getGrid();
+		
+		visualCell.setTargetLayout
+		(
+			layout_nullable.cellSize.getWidth(), layout_nullable.cellSize.getHeight(),
+			(int)layout_nullable.topLeftOffset.getX(), (int)layout_nullable.topLeftOffset.getY(),
+			(int)layout_nullable.window.getWidth(), (int)(layout_nullable.window.getHeight() - (m_cellHudHeight + grid.getCellPadding())),
+			getScrollX(), getScrollY()
+		);
 	}
 	
 	
