@@ -36,6 +36,7 @@ import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.storage.client.Storage;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
@@ -53,8 +54,16 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	{
 		NOT_CHANGING,
 		CHANGING_FROM_TIME,
-		CHANGING_FROM_SNAP
+		CHANGING_FROM_SNAP;
 	};
+	
+	static enum E_MetaState
+	{
+		DELAYING,
+		LOADING,
+		RENDERING,
+		RENDERED;
+	}
 	
 	private static final Logger s_logger = Logger.getLogger(VisualCell.class.getName());
 	
@@ -74,7 +83,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		@Override
 		public void onCodeLoad()
 		{
-//			m_this.setStatusHtml(null, false);
+			m_this.setStatusHtml(null, false);
 		}
 
 		@Override
@@ -135,10 +144,14 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	private final double m_sizeChangeTime;
 	private final double m_retractionEasing;
 	
-	private static final double META_IMAGE_LOAD_DELAY = .25;
-	private boolean m_metaImageLoaded = false;
-	private double m_metaImageTimeTracker = -1.0;
+	private static final double META_IMAGE_LOAD_DELAY = 2.5;
+	private static final double META_IMAGE_RENDER_DELAY = 3;
+	
+	private double m_metaTimeTracker;
 	private Code m_metaCode = null;
+	private E_MetaState m_metaState = null;
+	
+	private final Storage m_localStorage = Storage.getLocalStorageIfSupported();
 	
 	public VisualCell(I_CellSpinner spinner, SandboxManager sandboxMngr, CameraManager cameraMngr, double retractionEasing, double sizeChangeTime)
 	{
@@ -149,7 +162,8 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		m_sizeChangeTime = sizeChangeTime;
 		m_id = s_currentId;
 		s_currentId++;
-
+		
+		stopMetaTimeTracker();
 		
 		this.addStyleName("visual_cell");
 		m_glassPanel.addStyleName("sm_cell_glass");
@@ -162,6 +176,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		E_ZIndex.CELL_STATUS.assignTo(m_statusPanel);
 		E_ZIndex.CELL_GLASS.assignTo(m_glassPanel);
 		E_ZIndex.CELL_CONTENT.assignTo(m_contentPanel);
+		E_ZIndex.CELL.assignTo(this);
 		
 		m_statusPanel.setVisible(false);
 		
@@ -210,16 +225,21 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	
 	public void update(double timeStep)
 	{
-		if( m_metaImageTimeTracker >= 0.0 )
+		if( m_metaTimeTracker >= 0.0 )
 		{
-			m_metaImageTimeTracker += timeStep;
+			m_metaTimeTracker += timeStep;
 			
-			if( m_metaImageTimeTracker >= META_IMAGE_LOAD_DELAY )
+			if( m_metaState == E_MetaState.DELAYING && m_metaTimeTracker >= META_IMAGE_LOAD_DELAY )
 			{
-				Code metaCode = m_metaCode;
-				setMetaImagesNotLoaded();
+				m_metaState = E_MetaState.LOADING;
 				m_contentPanel.setVisible(false);
-				m_sandboxMngr.start(m_contentPanel.getElement(), metaCode, null, m_codeLoadListener);
+				m_sandboxMngr.start(m_contentPanel.getElement(), m_metaCode, null, m_codeLoadListener);
+			}
+			else if( m_metaState == E_MetaState.RENDERING && m_metaTimeTracker >= META_IMAGE_RENDER_DELAY )
+			{
+				m_metaState = E_MetaState.RENDERED;
+				
+				//TODO "flush" image somehow?
 			}
 		}
 		
@@ -519,7 +539,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	
 	public void onDestroy()
 	{
-		setMetaImagesNotLoaded();
+		clearMetaImageState();
 		m_bufferCell = null;
 		m_isFocused = false;
 		m_subCellDimension = -1;
@@ -668,7 +688,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	
 	public void pushDown()
 	{
-		this.getElement().getStyle().clearZIndex();
+		E_ZIndex.CELL.assignTo(this);
 	}
 	
 	@Override
@@ -699,7 +719,6 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	public void setCode(Code code, String cellNamespace)
 	{
 		this.setStatusHtml(null, false);
-		showLoading();
 		
 		/*if( m_sandboxMngr.isRunning() )
 		{
@@ -707,16 +726,27 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		}*/
 		
 		m_codeSafetyLevel = code.getSafetyLevel();
-		
-		setMetaImagesNotLoaded();
+
+		clearMetaImageState();
 		
 		m_contentPanel.setVisible(true);
 		
 		if( m_codeSafetyLevel == E_CodeSafetyLevel.META_IMAGE )
 		{
 			m_sandboxMngr.stop(m_contentPanel.getElement());
-			m_metaImageTimeTracker = 0.0;
 			m_metaCode = code;
+			
+			boolean knownImage = m_localStorage == null ? false : m_localStorage.getItem(m_metaCode.getRawCode()) != null;
+			
+			if( knownImage )
+			{
+				m_sandboxMngr.start(m_contentPanel.getElement(), m_metaCode, null, m_codeLoadListener);
+			}
+			else
+			{
+				m_metaState = E_MetaState.DELAYING;
+				startMetaTimeTracker();
+			}
 		}
 		else
 		{
@@ -728,31 +758,32 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	
 	private void setMetaImageLoaded()
 	{
-		m_metaImageLoaded = true;
-		
-		clearMetaImageState();
-		
-		m_contentPanel.setVisible(true);
-		
-		m_codeListener.onMetaImageLoaded();
-	}
-	
-	private void setMetaImagesNotLoaded()
-	{
-		if( m_metaImageLoaded )
+		if( m_localStorage != null )
 		{
-//			s_logger.severe("");
+			m_localStorage.setItem(m_metaCode.getRawCode(), "");
 		}
 		
-		m_metaImageLoaded = false;
-		
-		clearMetaImageState();
+		m_metaState = E_MetaState.RENDERING;
+		startMetaTimeTracker();
+		m_contentPanel.setVisible(true);
+		m_codeListener.onMetaImageLoaded();
 	}
 	
 	private void clearMetaImageState()
 	{
-		m_metaImageTimeTracker = -1.0;
+		stopMetaTimeTracker();
+		m_metaState = null;
 		m_metaCode = null;
+	}
+	
+	private void stopMetaTimeTracker()
+	{
+		m_metaTimeTracker = -1.0;
+	}
+	
+	private void startMetaTimeTracker()
+	{
+		m_metaTimeTracker = 0.0;
 	}
 	
 	private native void addImagesLoadedListener(VisualCell cell, Element element)
@@ -766,11 +797,11 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 			});
 	}-*/;
 	
-	public boolean isMetaLoaded()
+	public E_MetaState getMetaState()
 	{
-		if( m_codeSafetyLevel != E_CodeSafetyLevel.META_IMAGE )  return false;
-		
-		return m_metaImageLoaded;
+		if( m_codeSafetyLevel != E_CodeSafetyLevel.META_IMAGE )  return null;
+
+		return m_metaState;
 	}
 	
 	public E_CodeSafetyLevel getCodeSafetyLevel()

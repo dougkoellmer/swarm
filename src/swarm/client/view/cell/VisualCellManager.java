@@ -20,6 +20,7 @@ import swarm.client.view.E_ZIndex;
 import swarm.client.view.I_UIElement;
 import swarm.client.view.U_Css;
 import swarm.client.view.ViewContext;
+import swarm.client.view.cell.VisualCell.E_MetaState;
 import swarm.client.view.dialog.Dialog;
 import swarm.shared.debugging.U_Debug;
 import swarm.shared.entities.A_Grid;
@@ -142,25 +143,28 @@ public class VisualCellManager implements I_UIElement
 			{
 				@Override public int skip(int m, int n)
 				{
-//					CellBufferManager cellManager = m_viewContext.appContext.cellBufferMngr;
-//					if( grid.isObscured(m, n, 1, cellManager.getSubCellCount(), m_obscured) )
-//					{
-//						CellBuffer cellBuffer = cellManager.getDisplayBuffer(U_Bits.calcBitPosition(m_obscured.subCellDimension));
-//						BufferCell cell = cellBuffer.getCellAtAbsoluteCoord(m_obscured.m, m_obscured.n);
-//						VisualCell visualCell = (VisualCell) cell.getVisualization();
-//						
-//						if( visualCell.isMetaLoaded() )
-//						{
-//							return m_obscured.offset;
-//						}
-//					}
-//					else
-//					{
-//						if( grid.isTaken(m, n, 1) )
-//						{
-//							return 2;
-//						}
-//					}
+					CellBufferManager cellManager = m_viewContext.appContext.cellBufferMngr;
+					if( grid.isObscured(m, n, 1, cellManager.getSubCellCount(), m_obscured) )
+					{
+						CellBuffer cellBuffer = cellManager.getDisplayBuffer(U_Bits.calcBitPosition(m_obscured.subCellDimension));
+						BufferCell cell = cellBuffer.getCellAtAbsoluteCoord(m_obscured.m, m_obscured.n);
+						VisualCell visualCell = (VisualCell) cell.getVisualization();
+						E_MetaState state = visualCell.getMetaState();
+						
+//						s_logger.severe(state+"");
+						
+						if( state == VisualCell.E_MetaState.RENDERED )
+						{
+							return m_obscured.offset;
+						}
+					}
+					else
+					{
+						if( grid.isTaken(m, n, 1) )
+						{
+							return 2;
+						}
+					}
 					
 					return 0;
 				}
@@ -201,8 +205,6 @@ public class VisualCellManager implements I_UIElement
 		{
 			CellBuffer cellBuffer = cellManager.getDisplayBuffer(i);
 			
-			if( cellBuffer.getSubCellCount() > cellManager.getSubCellCount() )  return true;
-			
 			updateCellTransforms(cellManager, cellBuffer, timeStep, isViewStateTransition);
 		}
 		
@@ -213,9 +215,6 @@ public class VisualCellManager implements I_UIElement
 	{
 		ClientGrid grid = m_viewContext.appContext.gridMngr.getGrid(); // TODO: Get grid from somewhere else.
 		CellBuffer cellBuffer_highest= manager.getHighestDisplayBuffer();
-		
-		int bufferSize = cellBuffer_i.getCellCount();
-		int bufferWidth = cellBuffer_i.getWidth();
 		
 		Camera camera = m_viewContext.appContext.cameraMngr.getCamera();
 		
@@ -240,7 +239,7 @@ public class VisualCellManager implements I_UIElement
 		{
 			m_lastBasePoint.copy(basePoint_highest);
 			
-			if( subCellCount_highest >= 1 )
+			if( subCellCount_highest > 1 )
 			{
 				BitArray ownership = grid.getBaseOwnership();
 				
@@ -339,6 +338,8 @@ public class VisualCellManager implements I_UIElement
 		//--	NOTE: Well, not ALL manipulation is in here, there are a few odds and ends done outside this...but most should be here.
 		m_container.getElement().getStyle().setDisplay(Display.NONE);
 		{
+			int bufferSize = cellBuffer_i.getCellCount();
+			
 			for ( int i = 0; i < bufferSize; i++ )
 			{
 				BufferCell ithBufferCell = cellBuffer_i.getCellAtIndex(i);

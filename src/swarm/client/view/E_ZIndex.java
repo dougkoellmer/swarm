@@ -22,6 +22,7 @@ public enum E_ZIndex
 	//-- DRK > These are assigned manually to elements' styles.
 	CELL_BACKING,
 	CELL_HIGHLIGHT,
+	CELL,
 	CELL_CONTENT,
 	CELL_STATUS,
 	CELL_GLASS,
