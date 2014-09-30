@@ -125,16 +125,6 @@ public class VisualCellManager implements I_UIElement
 		});
 	}
 	
-	private boolean contains(VisualCell[] cells, VisualCell cell)
-	{
-		for( int i = 0; i < cells.length; i++ )
-		{
-			if( cells[i] == cell )  return true;
-		}
-		
-		return false;
-	}
-	
 	private void initBacking(final ClientGrid grid)
 	{
 		if( m_backing == null )
@@ -198,76 +188,44 @@ public class VisualCellManager implements I_UIElement
 	private boolean updateCellTransforms(double timeStep, boolean isViewStateTransition)
 	{
 		CellBufferManager cellManager = m_viewContext.appContext.cellBufferMngr;
-		
-		int limit = cellManager.getBufferCount();
-		
-		for( int i = 0; i < limit; i++ )
-		{
-			CellBuffer cellBuffer = cellManager.getDisplayBuffer(i);
-			
-			updateCellTransforms(cellManager, cellBuffer, timeStep, isViewStateTransition);
-		}
-		
-		return true;
-	}
-	
-	private boolean updateCellTransforms(CellBufferManager manager, CellBuffer cellBuffer_i, double timeStep, boolean isViewStateTransition)
-	{
 		ClientGrid grid = m_viewContext.appContext.gridMngr.getGrid(); // TODO: Get grid from somewhere else.
-		CellBuffer cellBuffer_highest= manager.getHighestDisplayBuffer();
-		
 		Camera camera = m_viewContext.appContext.cameraMngr.getCamera();
+		CellBuffer cellBuffer_highest = cellManager.getHighestDisplayBuffer();
 		
+		int subCellCount_highest = cellManager.getSubCellCount();
 		double distanceRatio = camera.calcDistanceRatio();
-		
-		int subCellCount_i = cellBuffer_i.getSubCellCount();
-		int subCellCount_highest = manager.getSubCellCount();
 		
 		Point basePoint_highest = m_utilPoint1;
 		cellBuffer_highest.getCoordinate().calcPoint(basePoint_highest, grid.getCellWidth(), grid.getCellHeight(), grid.getCellPadding(), subCellCount_highest);
 		camera.calcScreenPoint(basePoint_highest, basePoint_highest);
 		basePoint_highest.round();
+		m_lastBasePoint.copy(basePoint_highest);
 		
-		Point basePoint_i = m_utilPoint2;
-		cellBuffer_i.getCoordinate().calcPoint(basePoint_i, grid.getCellWidth(), grid.getCellHeight(), grid.getCellPadding(), subCellCount_i);
-		camera.calcScreenPoint(basePoint_i, basePoint_i);
-		basePoint_i.round();
-		
-		boolean showingBacking = false;
-		
-		if( subCellCount_i == 1 )
+		if( subCellCount_highest > 1 )
 		{
-			m_lastBasePoint.copy(basePoint_highest);
+			BitArray ownership = grid.getBaseOwnership();
 			
-			if( subCellCount_highest > 1 )
+			if( m_backing == null && ownership != null )
 			{
-				BitArray ownership = grid.getBaseOwnership();
+				initBacking(grid);
 				
-				if( m_backing == null && ownership != null )
-				{
-					initBacking(grid);
-					
-					m_container.add(m_backing.getCanvas());
-				}
-				
-				if( m_backing != null )
-				{
-					m_backing.getCanvas().setVisible(true);
-					showingBacking = true;
-				}
+				m_container.add(m_backing.getCanvas());
 			}
-			else
+			
+			if( m_backing != null )
 			{
-				if( m_backing != null )
-				{
-					m_backing.getCanvas().setVisible(false);
-				}
+				m_backing.getCanvas().setVisible(true);
+			}
+		}
+		else
+		{
+			if( m_backing != null )
+			{
+				m_backing.getCanvas().setVisible(false);
 			}
 		}
 		
 		double positionScaling = U_Grid.calcCellScaling(distanceRatio, subCellCount_highest, grid.getCellPadding(), grid.getCellWidth());
-		double sizeScaling = U_Grid.calcCellScaling(distanceRatio, subCellCount_i, grid.getCellPadding(), grid.getCellWidth());
-		
 		double cellWidthPlusPadding = -1;
 		double cellHeightPlusPadding = -1;
 		
@@ -288,6 +246,43 @@ public class VisualCellManager implements I_UIElement
 			
 			positionScaling = cellWidthPlusPadding / grid.getCellWidth();
 		}
+		
+		int limit = cellManager.getBufferCount();
+		
+		for( int i = 0; i < limit; i++ )
+		{
+			CellBuffer cellBuffer = cellManager.getDisplayBuffer(i);
+			
+			updateCellTransforms
+			(
+				cellManager, cellBuffer, timeStep, isViewStateTransition,
+				basePoint_highest, cellWidthPlusPadding, cellHeightPlusPadding, positionScaling
+			);
+		}
+		
+		return true;
+	}
+	
+	private boolean updateCellTransforms
+		(
+			CellBufferManager manager, CellBuffer cellBuffer_i, double timeStep, boolean isViewStateTransition,
+			Point basePoint_highest, double cellWidthPlusPadding, double cellHeightPlusPadding, double positionScaling
+		)
+	{
+		int subCellCount_i = cellBuffer_i.getSubCellCount();
+		int bufferSize = cellBuffer_i.getCellCount();
+		
+		if( subCellCount_i > 1 && bufferSize == 0 )  return true;
+		
+		CellBufferManager cellManager = m_viewContext.appContext.cellBufferMngr;
+		ClientGrid grid = m_viewContext.appContext.gridMngr.getGrid(); // TODO: Get grid from somewhere else.
+		Camera camera = m_viewContext.appContext.cameraMngr.getCamera();
+		CellBuffer cellBuffer_highest = cellManager.getHighestDisplayBuffer();
+		
+		int subCellCount_highest = cellManager.getSubCellCount();
+		
+		double distanceRatio = camera.calcDistanceRatio();
+		double sizeScaling = U_Grid.calcCellScaling(distanceRatio, subCellCount_i, grid.getCellPadding(), grid.getCellWidth());
 		
 		State_ViewingCell viewingState = m_viewContext.stateContext.getEntered(State_ViewingCell.class);
 		boolean isViewingCell = viewingState != null;
@@ -310,7 +305,7 @@ public class VisualCellManager implements I_UIElement
 		coordMOfHighest *= subCellCount_highest_div;
 		coordNOfHighest *= subCellCount_highest_div;
 		
-		if( showingBacking )
+		if( subCellCount_i == 1 && m_backing != null && m_backing.getCanvas().isVisible() )
 		{
 			int startX_meta = (int) basePoint_highest.getX();
 			int startY_meta = (int) basePoint_highest.getY();
@@ -337,9 +332,7 @@ public class VisualCellManager implements I_UIElement
 		//---		intelligent DOM-change batching, but we must assume that most browsers are retarded.
 		//--	NOTE: Well, not ALL manipulation is in here, there are a few odds and ends done outside this...but most should be here.
 		m_container.getElement().getStyle().setDisplay(Display.NONE);
-		{
-			int bufferSize = cellBuffer_i.getCellCount();
-			
+		{			
 			for ( int i = 0; i < bufferSize; i++ )
 			{
 				BufferCell ithBufferCell = cellBuffer_i.getCellAtIndex(i);
@@ -371,7 +364,7 @@ public class VisualCellManager implements I_UIElement
 					//--- DRK > At this point in swarm's life, we should only be hitting this block 
 					//---		on window resizes and only resizes. For some reason the scroll has to
 					//---		be included here...it's not apparent why, but resetting the translation
-					//---		removes the window's scroll. Happens for all browsers, so not a "bug",
+					//---		removes the window's scroll. Happens in all browsers, so not a "bug",
 					//---		but requires this "workaround" kind of as if it were a bug.
 					offsetX += ((double)ithVisualCell.getStartingXOffset())*positionScaling;
 					offsetY += ((double)ithVisualCell.getStartingYOffset())*positionScaling;

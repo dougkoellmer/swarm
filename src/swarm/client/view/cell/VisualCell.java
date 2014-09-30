@@ -144,7 +144,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	private final double m_sizeChangeTime;
 	private final double m_retractionEasing;
 	
-	private static final double META_IMAGE_LOAD_DELAY = 2.5;
+	private static final double META_IMAGE_LOAD_DELAY = .5;
 	private static final double META_IMAGE_RENDER_DELAY = 3;
 	
 	private double m_metaTimeTracker;
