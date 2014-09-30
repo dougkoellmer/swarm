@@ -756,11 +756,11 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		if( m_codeListener != null )  m_codeListener.onCodeLoaded(this);
 	}
 	
-	private void setMetaImageLoaded()
+	private void setMetaImageLoaded(String url)
 	{
 		if( m_localStorage != null )
 		{
-			m_localStorage.setItem(m_metaCode.getRawCode(), "");
+			m_localStorage.setItem(url, "");
 		}
 		
 		m_metaState = E_MetaState.RENDERING;
@@ -792,7 +792,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 			
 			imgLoad.on('done', function()
 			{
-				cell.@swarm.client.view.cell.VisualCell::setMetaImageLoaded()();
+				cell.@swarm.client.view.cell.VisualCell::setMetaImageLoaded(Ljava/lang/String;)(element.src);
 //				console.log("meta loaded!");
 			});
 	}-*/;
