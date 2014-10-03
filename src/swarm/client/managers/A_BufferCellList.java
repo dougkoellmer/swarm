@@ -47,7 +47,7 @@ abstract class A_BufferCellList
 		{
 			BufferCell ithCell = m_cellList.get(i);
 			
-			if( ithCell.getCoordinate().isEqualTo(m, n) )
+			if( ithCell != null && ithCell.getCoordinate().isEqualTo(m, n) )
 			{
 				return ithCell;
 			}

@@ -101,7 +101,7 @@ public class CellBuffer extends A_BufferCellList
 		{
 			if( m_killQueue.m_cellList.size() > 0 )
 			{
-				m_killQueue.m_cellList.get(index-m_cellList.size());
+				return m_killQueue.m_cellList.get(index-m_cellList.size());
 			}
 		}
 		
@@ -210,7 +210,10 @@ public class CellBuffer extends A_BufferCellList
 				if( !grid.isTaken(m, n, m_subCellCount) )  continue;
 				
 				if( swap(m, n, otherBuffer, this) )  continue;
-				if( swap(m, n, m_killQueue, this) )  continue;
+				if( swap(m, n, m_killQueue, this) )
+				{
+					continue;
+				}
 				
 				BufferCell newCell = m_cellPool.allocCell(grid, m_subCellCount, createVisualizations);
 				this.m_cellList.add(newCell);

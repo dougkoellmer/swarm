@@ -253,7 +253,7 @@ public class VisualCellManager implements I_UIElement
 		{
 			CellBuffer cellBuffer = cellManager.getDisplayBuffer(i);
 			
-			if( cellBuffer.getSubCellCount() > 1 && cellBuffer.getSubCellCount() == 0 )  continue;
+			if( cellBuffer.getSubCellCount() > 1 && cellBuffer.getCellCount() == 0 )  continue;
 			
 			updateCellTransforms
 			(

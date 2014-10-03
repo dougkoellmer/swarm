@@ -26,7 +26,11 @@ class CellKillQueue extends A_BufferCellList
 		{
 			BufferCell ithCell = m_cellList.get(i);
 			
-			if( ithCell.killSlowly_isItDeadQuestionMark() )
+			if( ithCell == null )
+			{
+				m_cellList.remove(i);
+			}
+			else if( ithCell.killSlowly_isItDeadQuestionMark() )
 			{
 				m_cellPool.deallocCell(ithCell);
 				m_cellList.remove(i);
