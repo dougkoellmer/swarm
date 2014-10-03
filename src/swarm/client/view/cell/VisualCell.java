@@ -852,4 +852,10 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 			this.m_statusPanel.setContent(null);
 		}
 	}
+
+	@Override
+	public boolean isLoaded()
+	{
+		return m_metaState != null && m_metaState.ordinal() >= E_MetaState.RENDERING.ordinal();
+	}
 }

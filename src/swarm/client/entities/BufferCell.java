@@ -35,6 +35,8 @@ public class BufferCell extends A_Cell
 	private CellAddress m_address = null;
 	private A_Grid m_grid = null;
 	
+	private int m_deathCountdown = -1;
+	
 	public BufferCell() 
 	{
 		this.setStatusAll(E_CodeStatus.NEEDS_CODE);
@@ -409,6 +411,8 @@ public class BufferCell extends A_Cell
 		m_isFocused = false;
 		m_address = null;
 		m_hasBeenPreviewed = false;
+		
+		m_deathCountdown = -1;
 	}
 	
 	public void onCellDestroyed()
@@ -417,6 +421,30 @@ public class BufferCell extends A_Cell
 		
 		this.m_visualization = null;
 		this.m_grid = null;
+	}
+	
+	public boolean isItDeadQuestionMark()
+	{
+		return m_deathCountdown == 0;
+	}
+	
+	public void sentenceToDeath(int countdown)
+	{
+		m_deathCountdown = countdown;
+	}
+	
+	public boolean killSlowly_isItDeadQuestionMark()
+	{
+		m_deathCountdown--;
+		
+		if( m_deathCountdown <= 0 )
+		{
+			m_deathCountdown = 0;
+			
+			return true;
+		}
+		
+		return false;
 	}
 	
 //	public void onCellRecycled(int cellSize)

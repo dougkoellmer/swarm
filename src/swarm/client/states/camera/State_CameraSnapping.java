@@ -244,7 +244,7 @@ public class State_CameraSnapping extends A_State implements I_StateEventListene
 			options |= F_BufferUpdateOption.FLUSH_CELL_POPULATOR;
 		}
 		
-		m_snapBufferManager.update(grid, m_snapCamera, null, htmlSource, options);
+		m_snapBufferManager.update_cameraMoving(grid, m_snapCamera, null, htmlSource, options);
 	}
 	
 	I_LocalCodeRepository getCompiledStaticHtmlSource()

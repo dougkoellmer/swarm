@@ -23,19 +23,29 @@ public class CellBufferPair
 	private CellBuffer m_displayBuffer;
 	private CellBuffer m_backBuffer;
 	
+	private final CellKillQueue m_killQueue;
+	
 	private final int m_subCellCount;
 	
 	CellBufferPair(CellBufferManager parent, CellCodeManager codeMngr, CellSizeManager cellSizeMngr, BufferCellPool pool, int subCellCount)
 	{
-		m_displayBuffer = new CellBuffer(parent, codeMngr, pool, cellSizeMngr, subCellCount);
-		m_backBuffer = new CellBuffer(parent, codeMngr, pool, cellSizeMngr, subCellCount);
+		m_killQueue = new CellKillQueue(pool);
+		m_displayBuffer = new CellBuffer(parent, codeMngr, pool, cellSizeMngr, subCellCount, m_killQueue);
+		m_backBuffer = new CellBuffer(parent, codeMngr, pool, cellSizeMngr, subCellCount, m_killQueue);
 		
 		m_subCellCount = subCellCount;
 	}
 	
-	void update(ClientGrid grid, Camera camera, I_LocalCodeRepository alternativeCodeSource, int options__extends__smF_BufferUpdateOption, int subCellCount)
+	void update_cameraStill()
 	{
-		//--- DRK > Calculate maximum "raw" buffer position and size, not caring about constraints.
+		m_killQueue.update();
+	}
+	
+	void update_cameraMoving(ClientGrid grid, Camera camera, I_LocalCodeRepository alternativeCodeSource, int options__extends__smF_BufferUpdateOption, int subCellCount)
+	{
+		m_killQueue.update();
+		
+		//--- DRK > Calculate maximum "raw" buffer position and size based on camera viewport, not caring about grid constraints.
 		this.calcRawBufferDimensions(camera, grid, m_subCellCount, m_utilCoord1, m_utilCoord2);
 		int newBufferWidth = m_utilCoord2.getM();
 		int newBufferHeight = m_utilCoord2.getN();
@@ -43,7 +53,7 @@ public class CellBufferPair
 //		s_logger.severe("Raw: " + m_subCellCount + " " + m_utilCoord1.toString() + " " + newBufferWidth + " " + newBufferHeight);		
 		
 		//--- DRK > Constrain both the position and size of the buffer if necessary so it maps onto the grid in a minimal fashion.
-		//---		The following is capable of creating a buffer with zero cells, which is perfectly acceptable.
+		//---		The following is capable of creating a buffer of zero size, which is perfectly acceptable.
 		int gridWidthRemainder = m_subCellCount > 0 ? grid.getWidth() % m_subCellCount : 0;
 		int relativeGridWidth = grid.getWidth() == 0 ? 0 : (grid.getWidth() - gridWidthRemainder) / m_subCellCount;
 		relativeGridWidth += gridWidthRemainder > 0 ? 1 : 0;
@@ -146,5 +156,9 @@ public class CellBufferPair
 	{
 		m_displayBuffer.drain();
 		m_backBuffer.drain();
+		
+		//--- DRK > Don't think this is really ever necessary as of this
+		//---		iteration of swarm, but here's some future proofing for ya.
+		m_killQueue.drain();
 	}
 }

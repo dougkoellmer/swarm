@@ -8,8 +8,10 @@ import java.util.logging.Logger;
 
 
 
+
 import swarm.client.entities.BufferCell;
 import swarm.client.entities.ClientGrid;
+import swarm.client.entities.I_BufferCellListener;
 import swarm.client.structs.BufferCellPool;
 import swarm.client.structs.I_LocalCodeRepository;
 import swarm.shared.utils.U_Bits;
@@ -24,7 +26,7 @@ import swarm.shared.structs.GridCoordinate;
  * ...
  * @author 
  */
-public class CellBuffer
+public class CellBuffer extends A_BufferCellList
 {
 	private static final Logger s_logger = Logger.getLogger(CellBuffer.class.getName());
 	
@@ -35,24 +37,25 @@ public class CellBuffer
 	private int m_width = 0;
 	private int m_height = 0;
 	
-	private final ArrayList<BufferCell> m_cellList = new ArrayList<BufferCell>();
-	
 	private final int m_subCellCount;
 	
 	private final CellBufferManager m_parent;
 	private final CellCodeManager m_codeMngr;
 	private final CellSizeManager m_cellSizeMngr;
-	private final BufferCellPool m_cellPool;
 	
 	private final ClientGrid.Obscured m_obscured = new ClientGrid.Obscured();
 	
-	CellBuffer(CellBufferManager parent, CellCodeManager codeMngr, BufferCellPool cellPool, CellSizeManager cellSizeMngr, int subCellCount)
+	private final CellKillQueue m_killQueue;
+	
+	CellBuffer(CellBufferManager parent, CellCodeManager codeMngr, BufferCellPool cellPool, CellSizeManager cellSizeMngr, int subCellCount, CellKillQueue killQueue)
 	{
+		super(cellPool);
+		
 		m_codeMngr = codeMngr;
-		m_cellPool = cellPool;
 		m_cellSizeMngr = cellSizeMngr;
 		m_parent = parent;
 		m_subCellCount = subCellCount;
+		m_killQueue = killQueue;
 	}
 	
 	public GridCoordinate getCoordinate()
@@ -77,7 +80,7 @@ public class CellBuffer
 	
 	public int getCellCount()
 	{
-		return m_cellList.size();
+		return m_cellList.size() + m_killQueue.m_cellList.size();
 	}
 	
 	void setExtents(int m, int n, int width, int height)
@@ -90,7 +93,19 @@ public class CellBuffer
 	
 	public BufferCell getCellAtIndex(int index)
 	{
-		return m_cellList.get(index);
+		if( index < m_cellList.size() )
+		{
+			return m_cellList.get(index);
+		}
+		else
+		{
+			if( m_killQueue.m_cellList.size() > 0 )
+			{
+				m_killQueue.m_cellList.get(index-m_cellList.size());
+			}
+		}
+		
+		return null;
 	}
 	
 	public boolean isInBoundsAbsolute(GridCoordinate absolute)
@@ -108,52 +123,7 @@ public class CellBuffer
 		return getCellAtAbsoluteCoord(absoluteCoord.getM(), absoluteCoord.getN());
 	}
 	
-	public BufferCell getCellAtAbsoluteCoord(int m, int n)
-	{
-		for( int i = 0; i < m_cellList.size(); i++ )
-		{
-			BufferCell ithCell = m_cellList.get(i);
-			
-			if( ithCell.getCoordinate().isEqualTo(m, n) )
-			{
-				return ithCell;
-			}
-		}
-		
-		return null;
-	}
-	
-	private BufferCell removeCellAtAbsCoord(int m, int n)
-	{
-		for( int i = 0; i < m_cellList.size(); i++ )
-		{
-			BufferCell ithCell = m_cellList.get(i);
-			
-			if( ithCell == null )  continue;
-			
-			if( ithCell.getCoordinate().isEqualTo(m, n) )
-			{
-				m_cellList.set(i, null);
-				
-				return ithCell;
-			}
-		}
-		
-		return null;
-	}
-	
-	private static boolean swap(int m, int n, CellBuffer from, CellBuffer to)
-	{
-		BufferCell cell = from.removeCellAtAbsCoord(m, n);
-		
-		if( cell == null )  return false;
-		
-		to.m_cellList.add(cell);
-		
-		return true;
-	}
-	
-	void imposeBuffer(ClientGrid grid, CellBuffer otherBuffer, I_LocalCodeRepository localCodeSource, int currentSubCellCount, int options__extends__smF_BufferUpdateOption)
+	void imposeBuffer(ClientGrid grid, CellBuffer otherBuffer, I_LocalCodeRepository localCodeSource, int highestSubCellCount, int options__extends__smF_BufferUpdateOption)
 	{
 		if( m_subCellCount == 16 )
 		{
@@ -166,33 +136,39 @@ public class CellBuffer
 		int i;
 		int m, n;
 		
-		int otherBufferCellCount = otherBuffer.getCellCount();
-		
-		
-		//--- DRK > We're currently "below" the zoom level of this buffer so early-out and clear other buffer of its cells.
-		if( currentSubCellCount < m_subCellCount )
+		int otherBufferCellCount = otherBuffer.m_cellList.size();
+
+		if( highestSubCellCount < m_subCellCount )
 		{
-			for( i = 0; i < otherBuffer.m_cellList.size(); i++ )
+			for( i = otherBufferCellCount-1; i >= 0 ; i-- )
 			{
 				BufferCell ithCellFromOtherBuffer = otherBuffer.m_cellList.get(i);
 				
-				m_cellPool.deallocCell(ithCellFromOtherBuffer);
+				if( !this.isInBoundsAbsolute(ithCellFromOtherBuffer.getCoordinate()) )
+				{
+					m_cellPool.deallocCell(ithCellFromOtherBuffer);
+				}
+				else
+				{
+					m_killQueue.sentenceToDeath(ithCellFromOtherBuffer);
+				}
 			}
-			
 			
 			otherBuffer.m_cellList.clear();
 			
 			return;
 		}
-		
-		for( i = 0; i < otherBufferCellCount; i++ )
+		else
 		{
-			BufferCell ithCell = otherBuffer.m_cellList.get(i);
-			if( !this.isInBoundsAbsolute(ithCell.getCoordinate()) )
+			for( i = 0; i < otherBuffer.m_cellList.size(); i++ )
 			{
-				otherBuffer.m_cellList.set(i, null);
+				BufferCell ithCellFromOtherBuffer = otherBuffer.m_cellList.get(i);
 				
-				m_cellPool.deallocCell(ithCell);
+				if( !this.isInBoundsAbsolute(ithCellFromOtherBuffer.getCoordinate()) )
+				{
+					m_cellPool.deallocCell(ithCellFromOtherBuffer);
+					otherBuffer.m_cellList.set(i, null);
+				}
 			}
 		}
 
@@ -202,20 +178,31 @@ public class CellBuffer
 		{
 			for ( m = m_coord.getM(); m < limitM; m++ )
 			{
-				if( currentSubCellCount > m_subCellCount )
+				if( highestSubCellCount > m_subCellCount )
 				{
-					if( grid.isObscured(m, n, m_subCellCount, currentSubCellCount, m_obscured) )
+					if( grid.isObscured(m, n, m_subCellCount, highestSubCellCount, m_obscured) )
 					{
-						if( m_obscured.offset == 1 )
+						CellBuffer higherBuffer = m_parent.getDisplayBuffer(U_Bits.calcBitPosition(m_obscured.subCellDimension));
+						BufferCell cell = higherBuffer.getCellAtAbsoluteCoord(m_obscured.m, m_obscured.n);
+						
+						if( cell != null )
 						{
-							continue;
-						}
-						else if( m_obscured.offset > 1 )
-						{
-							m += m_obscured.offset;
-							m -= 1; // cancel out next increment in for loop
+							I_BufferCellListener visualization = cell.getVisualization();
 							
-							continue;
+							if( visualization.isLoaded() )
+							{
+								if( m_obscured.offset == 1 )
+								{
+									continue;
+								}
+								else if( m_obscured.offset > 1 )
+								{
+									m += m_obscured.offset;
+									m -= 1; // cancel out next increment in for loop
+									
+									continue;
+								}
+							}
 						}
 					}
 				}
@@ -223,6 +210,7 @@ public class CellBuffer
 				if( !grid.isTaken(m, n, m_subCellCount) )  continue;
 				
 				if( swap(m, n, otherBuffer, this) )  continue;
+				if( swap(m, n, m_killQueue, this) )  continue;
 				
 				BufferCell newCell = m_cellPool.allocCell(grid, m_subCellCount, createVisualizations);
 				this.m_cellList.add(newCell);
@@ -252,27 +240,25 @@ public class CellBuffer
 
 			if( ithCell != null )
 			{
-				otherBuffer.m_cellList.set(i, null);
-				m_cellPool.deallocCell(ithCell);
+				m_killQueue.sentenceToDeath(ithCell);
 			}
 		}
 
 		otherBuffer.m_cellList.clear();
 	}
 	
-	void drain()
-	{		
-		for ( int i = 0; i < this.m_cellList.size(); i++ )
-		{
-			BufferCell ithCell = this.m_cellList.get(i);
-			
-			if( ithCell != null )
-			{
-				m_cellPool.deallocCell(ithCell);
-			}
-		}
+	@Override public BufferCell getCellAtAbsoluteCoord(int m, int n)
+	{
+		BufferCell fromSuper = super.getCellAtAbsoluteCoord(m, n);
 		
-		this.m_cellList.clear();
+		if( fromSuper != null )  return fromSuper;
+		
+		return m_killQueue.getCellAtAbsoluteCoord(m, n);
+	}
+	
+	@Override void drain()
+	{
+		super.drain();
 		
 		this.setExtents(0, 0, 0, 0);
 	}

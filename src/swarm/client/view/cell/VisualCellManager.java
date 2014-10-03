@@ -253,6 +253,8 @@ public class VisualCellManager implements I_UIElement
 		{
 			CellBuffer cellBuffer = cellManager.getDisplayBuffer(i);
 			
+			if( cellBuffer.getSubCellCount() > 1 && cellBuffer.getSubCellCount() == 0 )  continue;
+			
 			updateCellTransforms
 			(
 				cellManager, cellBuffer, timeStep, isViewStateTransition,
@@ -271,8 +273,6 @@ public class VisualCellManager implements I_UIElement
 	{
 		int subCellCount_i = cellBuffer_i.getSubCellCount();
 		int bufferSize = cellBuffer_i.getCellCount();
-		
-		if( subCellCount_i > 1 && bufferSize == 0 )  return true;
 		
 		CellBufferManager cellManager = m_viewContext.appContext.cellBufferMngr;
 		ClientGrid grid = m_viewContext.appContext.gridMngr.getGrid(); // TODO: Get grid from somewhere else.
@@ -325,6 +325,21 @@ public class VisualCellManager implements I_UIElement
 			);
 		}
 		
+		Point basePoint = null;
+		if( subCellCount_i > subCellCount_highest )
+		{
+			basePoint = m_utilPoint2;
+			cellBuffer_highest.getCoordinate().calcPoint(basePoint, grid.getCellWidth(), grid.getCellHeight(), grid.getCellPadding(), subCellCount_i);
+			int sizeMultiplier = subCellCount_i / subCellCount_highest;
+			
+			cellWidthPlusPadding *= sizeMultiplier;
+			cellHeightPlusPadding *= sizeMultiplier;
+		}
+		else
+		{
+			basePoint = basePoint_highest;
+		}
+		
 //		s_logger.severe(subCellCount_buffer + " " + subCellCount_highest + " " +cellWidthPlusPadding + " " + cellWidth_div);
 		
 		//--- DRK > NOTE: ALL DOM-manipulation related to cells should occur within this block.
@@ -341,15 +356,28 @@ public class VisualCellManager implements I_UIElement
 				
 				VisualCell ithVisualCell = (VisualCell) ithBufferCell.getVisualization();
 				
-				int offset_m = ithBufferCell.getCoordinate().getM() - coordMOfHighest;
-				int offset_n = ithBufferCell.getCoordinate().getN() - coordNOfHighest;
-				int offset_m_mod = offset_m % subCellCount_highest_div;
-				int offset_n_mod = offset_n % subCellCount_highest_div;
+				double offsetX, offsetY;
 				
-				double offsetX = (((offset_m-offset_m_mod)/subCellCount_highest_div) * (cellWidthPlusPadding));
-				double offsetY = (((offset_n-offset_n_mod)/subCellCount_highest_div) * (cellHeightPlusPadding));
-				offsetX += offset_m_mod * cellWidth_div;
-				offsetY += offset_n_mod * cellHeight_div;
+				if( subCellCount_i <= subCellCount_highest )
+				{
+					int offset_m = ithBufferCell.getCoordinate().getM() - coordMOfHighest;
+					int offset_n = ithBufferCell.getCoordinate().getN() - coordNOfHighest;
+					int offset_m_mod = offset_m % subCellCount_highest_div;
+					int offset_n_mod = offset_n % subCellCount_highest_div;
+					
+					offsetX = (((offset_m-offset_m_mod)/subCellCount_highest_div) * (cellWidthPlusPadding));
+					offsetY = (((offset_n-offset_n_mod)/subCellCount_highest_div) * (cellHeightPlusPadding));
+					offsetX += offset_m_mod * cellWidth_div;
+					offsetY += offset_n_mod * cellHeight_div;
+				}
+				else
+				{
+					int offset_m = ithBufferCell.getCoordinate().getM() - cellBuffer_i.getCoordinate().getM();
+					int offset_n = ithBufferCell.getCoordinate().getN() - cellBuffer_i.getCoordinate().getN();
+					
+					offsetX = cellWidthPlusPadding * offset_m;
+					offsetY = cellHeightPlusPadding * offset_n;
+				}
 				
 				ithVisualCell.update(timeStep);
 				ithVisualCell.validate();
@@ -375,8 +403,8 @@ public class VisualCellManager implements I_UIElement
 					offsetY += scrollY;
 				}
 				
-				double translateX = basePoint_highest.getX() + offsetX;
-				double translateY = basePoint_highest.getY() + offsetY;
+				double translateX = basePoint.getX() + offsetX;
+				double translateY = basePoint.getY() + offsetY;
 				
 				if( isViewingCell )
 				{

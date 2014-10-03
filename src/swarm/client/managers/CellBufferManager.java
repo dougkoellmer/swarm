@@ -141,14 +141,23 @@ public class CellBufferManager implements I_LocalCodeRepository
 			ithPair.drain();
 		}
 	}
+	
+	public void update_cameraStill()
+	{
+		if( m_bufferPairs == null )  return;
+		
+		for( int i = 0; i < m_bufferPairs.length; i++ )
+		{
+			CellBufferPair ithPair = m_bufferPairs[i];
+			ithPair.update_cameraStill();
+		}
+	}
 
-	public void update(ClientGrid grid, Camera camera, GridCoordinate snappingCoordinate_nullable, I_LocalCodeRepository alternativeCodeSource, int options__extends__smF_BufferUpdateOption)
+	public void update_cameraMoving(ClientGrid grid, Camera camera, GridCoordinate snappingCoordinate_nullable, I_LocalCodeRepository alternativeCodeSource, int options__extends__smF_BufferUpdateOption)
 	{
 		m_updateCount++;
 		
 		if( m_bufferPairs == null )  return;
-		
-		
 		
 		//--- DRK > Figure out how big each cell is relative to a fully zoomed in cell.
 		int gridSize = grid.getWidth();
@@ -170,9 +179,9 @@ public class CellBufferManager implements I_LocalCodeRepository
 		index = index >= m_bufferPairs.length ? m_bufferPairs.length-1 : index;
 		m_currentSubCellCount = 0x1 << index;
 		
-		for( int i = 0; i < m_bufferPairs.length; i++ )
+		for( int i = m_bufferPairs.length-1; i >= 0; i-- )
 		{
-			m_bufferPairs[i].update(grid, camera, alternativeCodeSource, options__extends__smF_BufferUpdateOption, m_currentSubCellCount);
+			m_bufferPairs[i].update_cameraMoving(grid, camera, alternativeCodeSource, options__extends__smF_BufferUpdateOption, m_currentSubCellCount);
 		}
 		
 //		s_logger.severe(m_cellPool.getCheckOutCount()+"/" + m_cellPool.getAllocCount());

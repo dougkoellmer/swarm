@@ -25,4 +25,6 @@ public interface I_BufferCellListener
 	void onFocusGained();
 	
 	void onFocusLost();
+	
+	boolean isLoaded();
 }
