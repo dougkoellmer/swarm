@@ -329,7 +329,9 @@ public class VisualCellManager implements I_UIElement
 		if( subCellCount_i > subCellCount_highest )
 		{
 			basePoint = m_utilPoint2;
-			cellBuffer_highest.getCoordinate().calcPoint(basePoint, grid.getCellWidth(), grid.getCellHeight(), grid.getCellPadding(), subCellCount_i);
+			cellBuffer_i.getCoordinate().calcPoint(basePoint, grid.getCellWidth(), grid.getCellHeight(), grid.getCellPadding(), subCellCount_i);
+			camera.calcScreenPoint(basePoint, basePoint);
+			basePoint.round();
 			int sizeMultiplier = subCellCount_i / subCellCount_highest;
 			
 			cellWidthPlusPadding *= sizeMultiplier;

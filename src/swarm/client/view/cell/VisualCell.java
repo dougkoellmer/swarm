@@ -176,13 +176,12 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		E_ZIndex.CELL_STATUS.assignTo(m_statusPanel);
 		E_ZIndex.CELL_GLASS.assignTo(m_glassPanel);
 		E_ZIndex.CELL_CONTENT.assignTo(m_contentPanel);
-		E_ZIndex.CELL.assignTo(this);
 		
 		m_statusPanel.setVisible(false);
 		
 		m_contentPanel.addStyleName("visual_cell_content");
 		
-		this.getElement().getStyle().setOpacity(.5);
+//		this.getElement().getStyle().setOpacity(.5);
 		
 		U_Css.allowUserSelect(m_contentPanel.getElement(), false);
 		
@@ -399,6 +398,10 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		m_bufferCell = bufferCell;
 		
 		onCreatedOrRecycled(width, height, padding, subCellDimension);
+		
+		int bitPosition = U_Bits.calcBitPosition(subCellDimension);
+		E_ZIndex zIndex = E_ZIndex.values()[E_ZIndex.CELL_1.ordinal() - bitPosition];
+		zIndex.assignTo(this);
 	}
 	
 	private void onCreatedOrRecycled(int width, int height, int padding, int subCellDimension)
@@ -688,7 +691,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	
 	public void pushDown()
 	{
-		E_ZIndex.CELL.assignTo(this);
+		E_ZIndex.CELL_1.assignTo(this);
 	}
 	
 	@Override
@@ -736,7 +739,16 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 			m_sandboxMngr.stop(m_contentPanel.getElement());
 			m_metaCode = code;
 			
-			boolean knownImage = m_localStorage == null ? false : m_localStorage.getItem(m_metaCode.getRawCode()) != null;
+			boolean knownImage = false;
+			
+			if( canCheckLocalAvailability() )
+			{
+				knownImage = isLocallyAvailable(m_metaCode.getRawCode());
+			}
+			else
+			{
+				knownImage = m_localStorage == null ? false : m_localStorage.getItem(m_metaCode.getRawCode()) != null;
+			}
 			
 			if( knownImage )
 			{
@@ -758,7 +770,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	
 	private void setMetaImageLoaded(String url)
 	{
-		if( m_localStorage != null )
+		if( !canCheckLocalAvailability() && m_localStorage != null )
 		{
 			m_localStorage.setItem(url, "");
 		}
@@ -795,6 +807,22 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 				cell.@swarm.client.view.cell.VisualCell::setMetaImageLoaded(Ljava/lang/String;)(element.src);
 //				console.log("meta loaded!");
 			});
+	}-*/;
+	
+	private static native boolean canCheckLocalAvailability()
+	/*-{
+			return typeof $wnd.navigator.mozIsLocallyAvailable !== 'undefined';
+	}-*/;
+	
+	private static native boolean isLocallyAvailable(String url)
+	/*-{
+			var loc = window.location;
+    		var url = "" + loc.protocol + "//" + loc.host + url;
+    		
+			if( $wnd.navigator.mozIsLocallyAvailable(url, true) )
+			{
+				return true;
+			}
 	}-*/;
 	
 	public E_MetaState getMetaState()
