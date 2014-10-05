@@ -183,7 +183,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		
 		m_contentPanel.addStyleName("visual_cell_content");
 		
-		this.getElement().getStyle().setOpacity(.5);
+//		this.getElement().getStyle().setOpacity(.5);
 		
 		U_Css.allowUserSelect(m_contentPanel.getElement(), false);
 		
@@ -742,13 +742,15 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 			
 			boolean knownImage = false;
 			
+			String url = getAbsoluteUrl(m_metaCode.getRawCode());
+			
 			if( canCheckLocalAvailability() )
 			{
-				knownImage = isLocallyAvailable(m_metaCode.getRawCode());
+				knownImage = isLocallyAvailable(url);
 			}
 			else
 			{
-				knownImage = m_localStorage == null ? false : m_localStorage.getItem(m_metaCode.getRawCode()) != null;
+				knownImage = m_localStorage == null ? false : m_localStorage.getItem(url) != null;
 			}
 			
 			if( knownImage )
@@ -815,11 +817,16 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 			return typeof $wnd.navigator.mozIsLocallyAvailable !== 'undefined';
 	}-*/;
 	
+	private static native String getAbsoluteUrl(String url)
+	/*-{
+		var loc = window.location;
+		var url = "" + loc.protocol + "//" + loc.host + url;
+		
+		return url;
+	}-*/;
+	
 	private static native boolean isLocallyAvailable(String url)
 	/*-{
-			var loc = window.location;
-    		var url = "" + loc.protocol + "//" + loc.host + url;
-    		
 			if( $wnd.navigator.mozIsLocallyAvailable(url, true) )
 			{
 				return true;
