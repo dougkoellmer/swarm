@@ -401,7 +401,12 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		
 		onCreatedOrRecycled(width, height, padding, subCellDimension);
 		
-		int bitPosition = U_Bits.calcBitPosition(subCellDimension);
+		setDefaultZIndex();
+	}
+	
+	public void setDefaultZIndex()
+	{
+		int bitPosition = U_Bits.calcBitPosition(m_subCellDimension);
 		E_ZIndex zIndex = E_ZIndex.values()[E_ZIndex.CELL_1.ordinal() - bitPosition];
 		zIndex.assignTo(this);
 	}

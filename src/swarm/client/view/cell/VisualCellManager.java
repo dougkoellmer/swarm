@@ -134,28 +134,28 @@ public class VisualCellManager implements I_UIElement
 			{
 				@Override public int skip(int m, int n)
 				{
-//					CellBufferManager cellManager = m_viewContext.appContext.cellBufferMngr;
-//					if( grid.isObscured(m, n, 1, cellManager.getSubCellCount(), m_obscured) )
-//					{
-//						CellBuffer cellBuffer = cellManager.getDisplayBuffer(U_Bits.calcBitPosition(m_obscured.subCellDimension));
-//						BufferCell cell = cellBuffer.getCellAtAbsoluteCoord(m_obscured.m, m_obscured.n);
-//						VisualCell visualCell = (VisualCell) cell.getVisualization();
-//						E_MetaState state = visualCell.getMetaState();
-//						
-////						s_logger.severe(state+"");
-//						
-//						if( state == VisualCell.E_MetaState.RENDERED )
-//						{
-//							return m_obscured.offset;
-//						}
-//					}
-//					else
-//					{
-//						if( grid.isTaken(m, n, 1) )
-//						{
-//							return 2;
-//						}
-//					}
+					CellBufferManager cellManager = m_viewContext.appContext.cellBufferMngr;
+					if( grid.isObscured(m, n, 1, cellManager.getSubCellCount(), m_obscured) )
+					{
+						CellBuffer cellBuffer = cellManager.getDisplayBuffer(U_Bits.calcBitPosition(m_obscured.subCellDimension));
+						BufferCell cell = cellBuffer.getCellAtAbsoluteCoord(m_obscured.m, m_obscured.n);
+						VisualCell visualCell = (VisualCell) cell.getVisualization();
+						E_MetaState state = visualCell.getMetaState();
+						
+//						s_logger.severe(state+"");
+						
+						if( state == VisualCell.E_MetaState.RENDERED )
+						{
+							return m_obscured.offset;
+						}
+					}
+					else
+					{
+						if( grid.isTaken(m, n, 1) )
+						{
+							return 2;
+						}
+					}
 					
 					return 0;
 				}
@@ -171,8 +171,8 @@ public class VisualCellManager implements I_UIElement
 //			E_ZIndex.CELL_BACKING.assignTo(m_backing.getCanvas());
 		}
 						
-//		m_backing.setColor("rgb(255,255,255)");
-		m_backing.setColor("rgb(255,0,0)");
+		m_backing.setColor("rgb(255,255,255)");
+//		m_backing.setColor("rgb(255,0,0)");
 	}
 	
 	private void resizeBacking()
@@ -374,6 +374,11 @@ public class VisualCellManager implements I_UIElement
 					offsetY = (((offset_n-offset_n_mod)/subCellCount_highest_div) * (cellHeightPlusPadding));
 					offsetX += offset_m_mod * cellWidth_div;
 					offsetY += offset_n_mod * cellHeight_div;
+					
+					if( subCellCount_i > 1 )
+					{
+						ithVisualCell.setDefaultZIndex();
+					}
 				}
 				else
 				{
@@ -382,6 +387,20 @@ public class VisualCellManager implements I_UIElement
 					
 					offsetX = cellWidthPlusPadding * offset_m;
 					offsetY = cellHeightPlusPadding * offset_n;
+					
+					//--- DRK > Should always be true.
+					if( subCellCount_i > 1 )
+					{
+						//TODO: Probably has to be different logic if we're snapping.
+						if( subCellCount_highest == 1 )
+						{
+							E_ZIndex.CELL_META_ON_DEATH_ROW_ABOVE_CELL_1.assignTo(ithVisualCell);
+						}
+						else
+						{
+							ithVisualCell.setDefaultZIndex();
+						}
+					}
 				}
 				
 				ithVisualCell.update(timeStep);
