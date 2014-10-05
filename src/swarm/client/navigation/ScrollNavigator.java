@@ -743,6 +743,10 @@ public class ScrollNavigator implements I_StateEventListener
 		int height = cellSize.getHeight();
 		height = height == CellSize.NATURAL_DIMENSION ? visualCell.calcNaturalHeight() : height;
 		
+		A_Grid grid = m_viewContext.appContext.gridMngr.getGrid();
+		width = width < grid.getCellWidth() ? grid.getCellWidth() : width;
+		height = height < grid.getCellHeight() ? grid.getCellHeight() : height;
+		
 		size_out.setExplicit(width, height);
 	}	
 	
