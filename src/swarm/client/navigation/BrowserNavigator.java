@@ -87,6 +87,8 @@ public class BrowserNavigator implements I_StateEventListener
 	
 	private final ListenerManager<I_StateChangeListener> m_listenerManager = new ListenerManager<I_StateChangeListener>();
 	
+	private boolean m_doInitialBump = false;
+	
 	public BrowserNavigator(ViewContext viewContext, String defaultPageTitle, double floatingHistoryUpdateRate_seconds)
 	{
 		m_viewContext = viewContext;
@@ -250,11 +252,7 @@ public class BrowserNavigator implements I_StateEventListener
 							m_pushHistoryStateForFloating = false;
 							m_historyManager.setState(FLOATING_STATE_PATH, m_cameraMngr.getCamera().getPosition());
 							
-							//--- DRK > Give the camera a little bump to let new users know they're in a 3d environment.
-							m_utilPoint1.copy(m_cameraMngr.getCamera().getPosition());
-							m_utilPoint1.incZ(-m_viewContext.config.initialBumpDistance);
-							m_args_SnapToPoint.init(m_utilPoint1, false, false);
-							event.getContext().perform(Action_Camera_SnapToPoint.class, m_args_SnapToPoint);
+							m_doInitialBump = true;
 						}
 					}
 					
@@ -433,7 +431,18 @@ public class BrowserNavigator implements I_StateEventListener
 			
 			case DID_UPDATE:
 			{
-				if( event.getState() instanceof State_CameraFloating )
+				if( event.getState() instanceof StateMachine_Camera )
+				{
+					if( event.getState().getUpdateCount() == 1 && m_doInitialBump )
+					{
+						//--- DRK > Give the camera a little bump to let new users know they're in a 3d environment.
+						m_utilPoint1.copy(m_cameraMngr.getCamera().getPosition());
+						m_utilPoint1.incZ(-m_viewContext.config.initialBumpDistance);
+						m_args_SnapToPoint.init(m_utilPoint1, false, false);
+						event.getContext().perform(Action_Camera_SnapToPoint.class, m_args_SnapToPoint);
+					}
+				}
+				else if( event.getState() instanceof State_CameraFloating )
 				{
 					if( event.getState().isEntered() ) // just to make sure
 					{
