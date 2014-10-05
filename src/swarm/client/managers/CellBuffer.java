@@ -178,10 +178,13 @@ public class CellBuffer extends A_BufferCellList
 		{
 			for ( m = m_coord.getM(); m < limitM; m++ )
 			{
+				boolean obscured = false;
+				
 				if( highestSubCellCount > m_subCellCount )
 				{
 					if( grid.isObscured(m, n, m_subCellCount, highestSubCellCount, m_obscured) )
 					{
+						obscured = true;
 						CellBuffer higherBuffer = m_parent.getDisplayBuffer(U_Bits.calcBitPosition(m_obscured.subCellDimension));
 						BufferCell cell = higherBuffer.getCellAtAbsoluteCoord(m_obscured.m, m_obscured.n);
 						
@@ -208,12 +211,12 @@ public class CellBuffer extends A_BufferCellList
 				}
 				
 				if( !grid.isTaken(m, n, m_subCellCount) )  continue;
-				
 				if( swap(m, n, otherBuffer, this) )  continue;
-				if( swap(m, n, m_killQueue, this) )
-				{
-					continue;
-				}
+				if( swap(m, n, m_killQueue, this) )  continue;
+				
+				//--- DRK > If we're obscured then we attempt to swap an existing cell
+				//---		from the other buffer or the kill queue, but we don't make new cells.
+				if( obscured )  continue;
 				
 				BufferCell newCell = m_cellPool.allocCell(grid, m_subCellCount, createVisualizations);
 				this.m_cellList.add(newCell);
