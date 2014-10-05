@@ -52,7 +52,7 @@ public class CanvasBacking
 		
 		Context2d context = m_canvas.getContext2d();
 		context.setFillStyle(m_fillStyle);
-		cellSize = Math.floor(cellSize);
+		cellSize -= 1.0;
 		
 		int limit_n = startN + down;
 		int limit_m = startM + across;
@@ -93,8 +93,12 @@ public class CanvasBacking
 				double currX = startX_meta + offsetM * metaCellSize + offsetM_mod * cellSizePlusPadding;
 				double currY = startY_meta + offsetN * metaCellSize + offsetN_mod * cellSizePlusPadding;
 				
-				currX = Math.ceil(currX);
-				currY = Math.ceil(currY);
+//				currX = Math.ceil(currX)+1.0;
+//				currY = Math.ceil(currY)+1.0;
+//				currX += 1.0;
+//				currY += 1.0;
+				currX += .5;
+				currY += .5;
 		
 				context.fillRect(currX, currY, cellSize, cellSize);
 			}
