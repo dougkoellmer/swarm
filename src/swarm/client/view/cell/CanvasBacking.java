@@ -42,6 +42,8 @@ public class CanvasBacking
 		m_canvas.setHeight(height + "px");
 		m_canvas.setCoordinateSpaceWidth(width);
 		m_canvas.setCoordinateSpaceHeight(height);
+		
+//		m_canvas.getElement().getStyle().setZIndex(15);
 	}
 	
 	public void update(double startX_meta, double startY_meta, int startM, int startN, int across, int down, double cellSize, double cellSizePlusPadding, int totalGridSize, BitArray ownership, double metaCellSize, int metaSubCellCount, int startM_meta, int startN_meta)
@@ -50,6 +52,7 @@ public class CanvasBacking
 		
 		Context2d context = m_canvas.getContext2d();
 		context.setFillStyle(m_fillStyle);
+		cellSize = Math.floor(cellSize);
 		
 		int limit_n = startN + down;
 		int limit_m = startM + across;
@@ -74,6 +77,10 @@ public class CanvasBacking
 					continue;
 				}
 				
+				int index = n*totalGridSize + m;
+				
+				if( !ownership.isSet(index) )  continue;
+				
 				int offsetM = m - startM_meta;
 				int offsetN = n - startN_meta;
 				int offsetM_mod = offsetM % metaSubCellCount;
@@ -83,13 +90,12 @@ public class CanvasBacking
 				offsetM /= metaSubCellCount;
 				offsetN /= metaSubCellCount;
 				
-				int index = n*totalGridSize + m;
-				
-				if( !ownership.isSet(index) )  continue;
-				
 				double currX = startX_meta + offsetM * metaCellSize + offsetM_mod * cellSizePlusPadding;
 				double currY = startY_meta + offsetN * metaCellSize + offsetN_mod * cellSizePlusPadding;
 				
+				currX = Math.ceil(currX);
+				currY = Math.ceil(currY);
+		
 				context.fillRect(currX, currY, cellSize, cellSize);
 			}
 		}

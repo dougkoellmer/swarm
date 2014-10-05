@@ -52,6 +52,7 @@ public class VisualCellManager implements I_UIElement
 	
 	private final Point m_utilPoint1 = new Point();
 	private final Point m_utilPoint2 = new Point();
+	private final Point m_utilPoint3 = new Point();
 	
 	private final Point m_lastBasePoint = new Point();
 	private double m_lastScaling = 0;
@@ -133,28 +134,28 @@ public class VisualCellManager implements I_UIElement
 			{
 				@Override public int skip(int m, int n)
 				{
-					CellBufferManager cellManager = m_viewContext.appContext.cellBufferMngr;
-					if( grid.isObscured(m, n, 1, cellManager.getSubCellCount(), m_obscured) )
-					{
-						CellBuffer cellBuffer = cellManager.getDisplayBuffer(U_Bits.calcBitPosition(m_obscured.subCellDimension));
-						BufferCell cell = cellBuffer.getCellAtAbsoluteCoord(m_obscured.m, m_obscured.n);
-						VisualCell visualCell = (VisualCell) cell.getVisualization();
-						E_MetaState state = visualCell.getMetaState();
-						
-//						s_logger.severe(state+"");
-						
-						if( state == VisualCell.E_MetaState.RENDERED )
-						{
-							return m_obscured.offset;
-						}
-					}
-					else
-					{
-						if( grid.isTaken(m, n, 1) )
-						{
-							return 2;
-						}
-					}
+//					CellBufferManager cellManager = m_viewContext.appContext.cellBufferMngr;
+//					if( grid.isObscured(m, n, 1, cellManager.getSubCellCount(), m_obscured) )
+//					{
+//						CellBuffer cellBuffer = cellManager.getDisplayBuffer(U_Bits.calcBitPosition(m_obscured.subCellDimension));
+//						BufferCell cell = cellBuffer.getCellAtAbsoluteCoord(m_obscured.m, m_obscured.n);
+//						VisualCell visualCell = (VisualCell) cell.getVisualization();
+//						E_MetaState state = visualCell.getMetaState();
+//						
+////						s_logger.severe(state+"");
+//						
+//						if( state == VisualCell.E_MetaState.RENDERED )
+//						{
+//							return m_obscured.offset;
+//						}
+//					}
+//					else
+//					{
+//						if( grid.isTaken(m, n, 1) )
+//						{
+//							return 2;
+//						}
+//					}
 					
 					return 0;
 				}
@@ -198,8 +199,10 @@ public class VisualCellManager implements I_UIElement
 		Point basePoint_highest = m_utilPoint1;
 		cellBuffer_highest.getCoordinate().calcPoint(basePoint_highest, grid.getCellWidth(), grid.getCellHeight(), grid.getCellPadding(), subCellCount_highest);
 		camera.calcScreenPoint(basePoint_highest, basePoint_highest);
-		basePoint_highest.round();
-		m_lastBasePoint.copy(basePoint_highest);
+		Point basePoint_highest_rounded = m_utilPoint3;
+		basePoint_highest_rounded.copy(basePoint_highest);
+		basePoint_highest_rounded.round();
+		m_lastBasePoint.copy(basePoint_highest_rounded);
 		
 		if( subCellCount_highest > 1 )
 		{
@@ -258,7 +261,7 @@ public class VisualCellManager implements I_UIElement
 			updateCellTransforms
 			(
 				cellManager, cellBuffer, timeStep, isViewStateTransition,
-				basePoint_highest, cellWidthPlusPadding, cellHeightPlusPadding, positionScaling
+				basePoint_highest_rounded, basePoint_highest, cellWidthPlusPadding, cellHeightPlusPadding, positionScaling
 			);
 		}
 		
@@ -268,7 +271,7 @@ public class VisualCellManager implements I_UIElement
 	private boolean updateCellTransforms
 		(
 			CellBufferManager manager, CellBuffer cellBuffer_i, double timeStep, boolean isViewStateTransition,
-			Point basePoint_highest, double cellWidthPlusPadding, double cellHeightPlusPadding, double positionScaling
+			Point basePoint_highest_rounded, Point basePoint_highest, double cellWidthPlusPadding, double cellHeightPlusPadding, double positionScaling
 		)
 	{
 		int subCellCount_i = cellBuffer_i.getSubCellCount();
@@ -307,8 +310,8 @@ public class VisualCellManager implements I_UIElement
 		
 		if( subCellCount_i == 1 && m_backing != null && m_backing.getCanvas().isVisible() )
 		{
-			int startX_meta = (int) basePoint_highest.getX();
-			int startY_meta = (int) basePoint_highest.getY();
+			double startX_meta = basePoint_highest_rounded.getX();
+			double startY_meta = basePoint_highest_rounded.getY();
 			GridCoordinate coord = cellBuffer_i.getCoordinate();
 			double scaledCellWidth = cellWidth_div - grid.getCellPadding()*sizeScaling;
 			double scaledCellWidthPlusPadding = cellWidth_div;
@@ -339,7 +342,7 @@ public class VisualCellManager implements I_UIElement
 		}
 		else
 		{
-			basePoint = basePoint_highest;
+			basePoint = basePoint_highest_rounded;
 		}
 		
 //		s_logger.severe(subCellCount_buffer + " " + subCellCount_highest + " " +cellWidthPlusPadding + " " + cellWidth_div);
