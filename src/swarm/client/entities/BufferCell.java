@@ -35,7 +35,7 @@ public class BufferCell extends A_Cell
 	private CellAddress m_address = null;
 	private A_Grid m_grid = null;
 	
-	private int m_deathCountdown = -1;
+	private double m_deathCountdown = -1;
 	
 	public BufferCell() 
 	{
@@ -430,15 +430,14 @@ public class BufferCell extends A_Cell
 		return m_deathCountdown == 0;
 	}
 	
-	public void sentenceToDeath(int countdown)
+	public void sentenceToDeath(double countdown)
 	{
 		m_deathCountdown = countdown;
 	}
 	
-	public boolean killSlowly_isItDeadQuestionMark()
+	public boolean killSlowly_isItDeadQuestionMark(double timestep)
 	{
-//		m_deathCountdown -= timeStep;
-		m_deathCountdown--;
+		m_deathCountdown -= timestep;
 		
 		if( m_deathCountdown <= 0 )
 		{

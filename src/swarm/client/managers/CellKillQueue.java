@@ -7,7 +7,7 @@ import swarm.client.structs.BufferCellPool;
 
 class CellKillQueue extends A_BufferCellList
 {
-	private static final int DEATH_COUNTDOWN = 4;
+	private static final double DEATH_COUNTDOWN = .25;
 	
 	CellKillQueue(BufferCellPool pool)
 	{
@@ -30,7 +30,7 @@ class CellKillQueue extends A_BufferCellList
 			{
 				m_cellList.remove(i);
 			}
-			else if( ithCell.killSlowly_isItDeadQuestionMark() )
+			else if( ithCell.killSlowly_isItDeadQuestionMark(timestep) )
 			{
 				m_cellPool.deallocCell(ithCell);
 				m_cellList.remove(i);

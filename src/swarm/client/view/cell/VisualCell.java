@@ -71,7 +71,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	
 	//TODO: Move to config
 	private static final double META_IMAGE_LOAD_DELAY = .5;
-	private static final double META_IMAGE_RENDER_DELAY = 1.5;
+	private static final double META_IMAGE_RENDER_DELAY = 2.0;
 	
 	//private static final String SPINNER_HTML = "<img src='/r.img/spinner.gif?v=1' />";
 	
