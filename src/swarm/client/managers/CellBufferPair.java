@@ -36,14 +36,14 @@ public class CellBufferPair
 		m_subCellCount = subCellCount;
 	}
 	
-	void update_cameraStill()
+	void update_cameraStill(double timestep)
 	{
-		m_killQueue.update();
+		m_killQueue.update(timestep);
 	}
 	
-	void update_cameraMoving(ClientGrid grid, Camera camera, I_LocalCodeRepository alternativeCodeSource, int options__extends__smF_BufferUpdateOption, int subCellCount)
+	void update_cameraMoving(double timestep, ClientGrid grid, Camera camera, I_LocalCodeRepository alternativeCodeSource, int options__extends__smF_BufferUpdateOption, int subCellCount)
 	{
-		m_killQueue.update();
+		m_killQueue.update(timestep);
 		
 		//--- DRK > Calculate maximum "raw" buffer position and size based on camera viewport, not caring about grid constraints.
 		this.calcRawBufferDimensions(camera, grid, m_subCellCount, m_utilCoord1, m_utilCoord2);

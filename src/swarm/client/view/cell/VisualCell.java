@@ -49,6 +49,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	{
 		void onCodeLoaded(VisualCell cell);
 		void onMetaImageLoaded();
+		void onMetaImageRendered();
 	}
 	static enum LayoutState
 	{
@@ -66,6 +67,10 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	}
 	
 	private static final Logger s_logger = Logger.getLogger(VisualCell.class.getName());
+	
+	//TODO: Move to config
+	private static final double META_IMAGE_LOAD_DELAY = .5;
+	private static final double META_IMAGE_RENDER_DELAY = 1.5;
 	
 	//private static final String SPINNER_HTML = "<img src='/r.img/spinner.gif?v=1' />";
 	
@@ -144,9 +149,6 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	private final double m_sizeChangeTime;
 	private final double m_retractionEasing;
 	
-	private static final double META_IMAGE_LOAD_DELAY = .5;
-	private static final double META_IMAGE_RENDER_DELAY = 3;
-	
 	private double m_metaTimeTracker;
 	private Code m_metaCode = null;
 	private E_MetaState m_metaState = null;
@@ -181,7 +183,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		
 		m_contentPanel.addStyleName("visual_cell_content");
 		
-//		this.getElement().getStyle().setOpacity(.5);
+		this.getElement().getStyle().setOpacity(.5);
 		
 		U_Css.allowUserSelect(m_contentPanel.getElement(), false);
 		
@@ -237,8 +239,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 			else if( m_metaState == E_MetaState.RENDERING && m_metaTimeTracker >= META_IMAGE_RENDER_DELAY )
 			{
 				m_metaState = E_MetaState.RENDERED;
-				
-				//TODO "flush" image somehow?
+				m_codeListener.onMetaImageRendered();
 			}
 		}
 		

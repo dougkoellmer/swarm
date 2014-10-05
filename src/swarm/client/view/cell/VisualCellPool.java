@@ -96,6 +96,14 @@ public class VisualCellPool implements I_CellPoolDelegate
 		{
 			//TODO: Sloppy dependency/callback chain here.
 			m_viewContext.cellMngr.onMetaCellLoaded();
+			
+			m_viewContext.stateContext.perform(StateMachine_Camera.SignalBufferDirty.class);
+		}
+
+		@Override
+		public void onMetaImageRendered()
+		{
+			m_viewContext.cellMngr.onMetaCellRendered();
 		}
 	};
 	

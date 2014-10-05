@@ -72,6 +72,8 @@ public class CellBufferManager implements I_LocalCodeRepository
 	private final CellSizeManager m_sizeMngr;
 	private final int m_levelCount;
 	
+	private boolean m_dirty = false;
+	
 	
 	public CellBufferManager(CellCodeManager codeMngr, CellSizeManager cellSizeMngr, int metaLevelCount) 
 	{
@@ -142,18 +144,18 @@ public class CellBufferManager implements I_LocalCodeRepository
 		}
 	}
 	
-	public void update_cameraStill()
+	public void update_cameraStill(double timestep)
 	{
 		if( m_bufferPairs == null )  return;
 		
 		for( int i = 0; i < m_bufferPairs.length; i++ )
 		{
 			CellBufferPair ithPair = m_bufferPairs[i];
-			ithPair.update_cameraStill();
+			ithPair.update_cameraStill(timestep);
 		}
 	}
 
-	public void update_cameraMoving(ClientGrid grid, Camera camera, GridCoordinate snappingCoordinate_nullable, I_LocalCodeRepository alternativeCodeSource, int options__extends__smF_BufferUpdateOption)
+	public void update_cameraMoving(double timestep, ClientGrid grid, Camera camera, GridCoordinate snappingCoordinate_nullable, I_LocalCodeRepository alternativeCodeSource, int options__extends__smF_BufferUpdateOption)
 	{
 		m_updateCount++;
 		
@@ -181,7 +183,7 @@ public class CellBufferManager implements I_LocalCodeRepository
 		
 		for( int i = m_bufferPairs.length-1; i >= 0; i-- )
 		{
-			m_bufferPairs[i].update_cameraMoving(grid, camera, alternativeCodeSource, options__extends__smF_BufferUpdateOption, m_currentSubCellCount);
+			m_bufferPairs[i].update_cameraMoving(timestep, grid, camera, alternativeCodeSource, options__extends__smF_BufferUpdateOption, m_currentSubCellCount);
 		}
 		
 //		s_logger.severe(m_cellPool.getCheckOutCount()+"/" + m_cellPool.getAllocCount());

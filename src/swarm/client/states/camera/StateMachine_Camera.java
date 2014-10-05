@@ -71,6 +71,15 @@ public class StateMachine_Camera extends A_StateMachine implements I_StateEventL
 		private final CellAddress m_address;
 	}
 	
+	public static class SignalBufferDirty extends A_Action
+	{
+		@Override public void perform(StateArgs args)
+		{
+			StateMachine_Camera machine = this.getState();
+			machine.m_bufferDirty = true;
+		}
+	}
+	
 	private PendingSnap m_pendingSnap = null;
 	
 	private static final Logger s_logger = Logger.getLogger(StateMachine_Camera.class.getName());
@@ -82,6 +91,8 @@ public class StateMachine_Camera extends A_StateMachine implements I_StateEventL
 	private final Event_Camera_OnCellSizeFound.Args m_onCellSizeFoundArgs = new Event_Camera_OnCellSizeFound.Args();
 	
 	private final AppContext m_appContext;
+	
+	private boolean m_bufferDirty = false;
 	
 	public StateMachine_Camera(AppContext appContext, Action_Camera_SnapToCoordinate.I_Filter snapFilter)
 	{
@@ -98,6 +109,7 @@ public class StateMachine_Camera extends A_StateMachine implements I_StateEventL
 		register(new Event_Camera_OnCellSizeFound());
 		register(new Action_Camera_SnapToPoint(m_appContext.cameraMngr));
 		register(new Action_Camera_SetInitialPosition(m_appContext.cameraMngr));
+		register(new SignalBufferDirty());
 	}
 	
 	void snapToCellAddress(CellAddress address)
@@ -270,18 +282,19 @@ public class StateMachine_Camera extends A_StateMachine implements I_StateEventL
 	{
 		m_appContext.cameraMngr.update(timeStep);
 		
-		if( !m_appContext.cameraMngr.isCameraAtRest() )
+		if( !m_appContext.cameraMngr.isCameraAtRest() || m_bufferDirty )
 		{
-			updateBufferManager();
+			m_bufferDirty = false;
+			updateBufferManager(timeStep);
 		}
 		else
 		{
 			CellBufferManager bufferMngr = m_appContext.cellBufferMngr;
-			bufferMngr.update_cameraStill();
+			bufferMngr.update_cameraStill(timeStep);
 		}
 	}
 	
-	void updateBufferManager()
+	void updateBufferManager(double timestep)
 	{
 		CellBufferManager bufferMngr = m_appContext.cellBufferMngr;
 		
@@ -292,7 +305,7 @@ public class StateMachine_Camera extends A_StateMachine implements I_StateEventL
 			
 			int options = F_BufferUpdateOption.CREATE_VISUALIZATIONS;
 			
-			bufferMngr.update_cameraMoving(m_appContext.gridMngr.getGrid(), m_appContext.cameraMngr.getCamera(), snappingState.getTargetCoord(), compiledStaticHtmlSource, options);
+			bufferMngr.update_cameraMoving(timestep, m_appContext.gridMngr.getGrid(), m_appContext.cameraMngr.getCamera(), snappingState.getTargetCoord(), compiledStaticHtmlSource, options);
 			
 			//--- DRK > As soon as target cell comes into sight, we start trying to populate
 			//---		it with compiled_dynamic and source html from the snapping state's html source(s).
@@ -318,7 +331,7 @@ public class StateMachine_Camera extends A_StateMachine implements I_StateEventL
 		else
 		{
 			int options = F_BufferUpdateOption.ALL;
-			bufferMngr.update_cameraMoving(m_appContext.gridMngr.getGrid(), m_appContext.cameraMngr.getCamera(), null, m_codeRepo, options);
+			bufferMngr.update_cameraMoving(timestep, m_appContext.gridMngr.getGrid(), m_appContext.cameraMngr.getCamera(), null, m_codeRepo, options);
 		}
 	}
 	
@@ -345,7 +358,7 @@ public class StateMachine_Camera extends A_StateMachine implements I_StateEventL
 					//---		into the viewing state without an update in between.
 					//---		Arguably, a better strategy might be to force at least one or more updates between states.
 					//---		Either way, kinda hacky, but oh well.
-					this.updateBufferManager();
+					this.updateBufferManager(0.0);
 				}
 				
 				break;
@@ -357,7 +370,7 @@ public class StateMachine_Camera extends A_StateMachine implements I_StateEventL
 				{
 					m_appContext.cameraMngr.getCamera().onGridSizeChanged();
 					
-					updateBufferManager();
+					updateBufferManager(0.0);
 				}
 				
 				break;

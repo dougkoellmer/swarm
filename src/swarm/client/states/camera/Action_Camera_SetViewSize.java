@@ -66,7 +66,7 @@ public class Action_Camera_SetViewSize extends A_Action
 		
 		if( args_cast.m_updateBuffer )
 		{
-			machine.updateBufferManager();
+			machine.updateBufferManager(0.0);
 		}
 	}
 

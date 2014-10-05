@@ -170,8 +170,8 @@ public class VisualCellManager implements I_UIElement
 //			E_ZIndex.CELL_BACKING.assignTo(m_backing.getCanvas());
 		}
 						
-//		m_backing.setColor("rgb(255,255,255)");
-		m_backing.setColor("rgb(255,0,0)");
+		m_backing.setColor("rgb(255,255,255)");
+//		m_backing.setColor("rgb(255,0,0)");
 	}
 	
 	private void resizeBacking()
@@ -625,6 +625,11 @@ public class VisualCellManager implements I_UIElement
 	}
 	
 	public void onMetaCellLoaded()
+	{
+		m_backingDirty = true;
+	}
+	
+	public void onMetaCellRendered()
 	{
 		m_backingDirty = true;
 	}

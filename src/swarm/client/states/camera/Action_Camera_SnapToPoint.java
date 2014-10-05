@@ -79,7 +79,7 @@ public class Action_Camera_SnapToPoint extends smA_CameraAction
 		//---		took place, so we have to update the buffer manually instead of waiting for next time step.
 		if( instant )
 		{
-			machine.updateBufferManager();
+			machine.updateBufferManager(0.0);
 		}
 	}
 
