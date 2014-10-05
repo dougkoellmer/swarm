@@ -518,6 +518,10 @@ public class VisualCellManager implements I_UIElement
 				{
 					//boolean flushDestroyQueueIfMoving = (event.getState().getUpdateCount() % 8) == 0;
 					
+					Camera camera = m_viewContext.appContext.cameraMngr.getCamera();
+//					double zDelta = camera.getPosition().getZ() - camera.getPrevPosition().getZ();
+//					s_logger.severe(zDelta+"");
+					
 					if( event.getState() instanceof State_CameraSnapping )
 					{
 						int i = 0;

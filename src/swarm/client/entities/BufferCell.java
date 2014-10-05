@@ -35,7 +35,7 @@ public class BufferCell extends A_Cell
 	private CellAddress m_address = null;
 	private A_Grid m_grid = null;
 	
-	private double m_deathCountdown = -1;
+	private int m_deathCountdown = -1;
 	
 	public BufferCell() 
 	{
@@ -220,13 +220,15 @@ public class BufferCell extends A_Cell
 				{
 					m_visualization.setCode(code, this.getCellNamespace());
 					
-					U_Debug.ASSERT(compiledStatus == E_CodeStatus.WAITING_ON_CODE, "onFocusGained2 " + compiledStatus);
+					//--- DRK > This ASSERT and similar one below don't seem to make sense cause the case would have
+					//---		been caught upstream in the if/else.
+//					U_Debug.ASSERT(compiledStatus == E_CodeStatus.WAITING_ON_CODE, "onFocusGained2 " + compiledStatus);
 				}
 				else
 				{
 					m_visualization.onError(type);
 
-					U_Debug.ASSERT(compiledStatus == E_CodeStatus.WAITING_ON_CODE, "onFocusGained3 " + compiledStatus);
+//					U_Debug.ASSERT(compiledStatus == E_CodeStatus.WAITING_ON_CODE, "onFocusGained3 " + compiledStatus);
 				}
 			}
 		}
@@ -428,14 +430,15 @@ public class BufferCell extends A_Cell
 		return m_deathCountdown == 0;
 	}
 	
-	public void sentenceToDeath(double countdown)
+	public void sentenceToDeath(int countdown)
 	{
 		m_deathCountdown = countdown;
 	}
 	
-	public boolean killSlowly_isItDeadQuestionMark(double timeStep)
+	public boolean killSlowly_isItDeadQuestionMark()
 	{
-		m_deathCountdown -= timeStep;
+//		m_deathCountdown -= timeStep;
+		m_deathCountdown--;
 		
 		if( m_deathCountdown <= 0 )
 		{

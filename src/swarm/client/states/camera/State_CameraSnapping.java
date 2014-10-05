@@ -118,7 +118,7 @@ public class State_CameraSnapping extends A_State implements I_StateEventListene
 		
 		m_targetGridCoordinate.copy(targetCoordinate);
 		
-		m_snapCamera.getPosition().copy(targetPoint);
+		m_snapCamera.setPosition(targetPoint);
 		
 		if( !sameCoordinateAsLastTime )
 		{

@@ -52,7 +52,7 @@ public class Camera
 	private static final double DIRTY_VALUE = -1;
 	
 	private final Point m_position = new Point();
-	private final Vector m_velocity = new Vector();
+	private final Point m_prevPosition = new Point();
 	
 	private final Rect m_viewRect = new Rect();
 	
@@ -168,13 +168,36 @@ public class Camera
 		m_cachedMaxZ = DIRTY_VALUE;
 	}
 	
+	public void setPosition(Point point)
+	{
+		setPosition(point.getX(), point.getY(), point.getZ());
+	}
+	
+	public void setPosition(double x, double y, double z)
+	{
+		m_prevPosition.copy(m_position);
+		
+		m_position.set(x, y, z);
+	}
+	
+	public void incPosition(double x, double y, double z)
+	{
+		m_prevPosition.copy(m_position);
+		
+		m_position.inc(x, y, z);
+	}
+	
 	public Point getPosition()
 	{
 		return m_position;
 	}
-	
-	public Vector getVelocity()
+	public Point getPrevPosition()
 	{
-		return m_velocity;
+		return m_prevPosition;
+	}
+	
+	public void syncPrevPosition()
+	{
+		m_prevPosition.copy(m_position);
 	}
 }

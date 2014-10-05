@@ -21,6 +21,7 @@ public class CameraManager
 	private final Vector m_diffVector = new Vector();
 	private final Vector m_utilVector = new Vector();
 	private final Point m_utilPoint1 = new Point();
+	private final Point m_utilPoint2 = new Point();
 	
 	private double m_startY = 0;
 	private double m_lengthToTravel = 0;
@@ -84,6 +85,11 @@ public class CameraManager
 			m_cameraAtRestFrameCount++;
 			m_snapTime = 0;
 			
+			if( m_cameraAtRestFrameCount == 1 )
+			{
+				m_camera.syncPrevPosition();
+			}
+			
 			return;
 		}//s_logger.severe(m_camera.getPosition() + "");
 
@@ -103,8 +109,9 @@ public class CameraManager
 		m_utilVector.copy(m_diffVector);
 		m_utilVector.scaleByNumber(progressRatio);
 		
-		m_camera.getPosition().copy(m_cameraOrigin);
-		m_camera.getPosition().add(m_utilVector);
+		m_utilPoint2.copy(m_cameraOrigin);
+		m_utilPoint2.add(m_utilVector);
+		m_camera.setPosition(m_utilPoint2);
 		
 		m_camera.update();
 	}
@@ -126,7 +133,7 @@ public class CameraManager
 	
 	public void shiftCamera(double deltaX, double deltaY)
 	{
-		m_camera.getPosition().inc(deltaX, deltaY, 0);
+		m_camera.incPosition(deltaX, deltaY, 0);
 		m_targetPosition.inc(deltaX, deltaY, 0);
 		m_cameraOrigin.inc(deltaX, deltaY, 0);
 	}
@@ -234,7 +241,7 @@ public class CameraManager
 			constrainZ(m_targetPosition);
 		}
 		
-		m_camera.getPosition().copy(m_targetPosition);
+		m_camera.setPosition(m_targetPosition);
 		
 		m_camera.update();
 		

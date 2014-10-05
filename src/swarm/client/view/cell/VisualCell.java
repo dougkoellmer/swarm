@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 import swarm.client.app.A_ClientApp;
 import swarm.client.app.AppContext;
 import swarm.client.entities.BufferCell;
+import swarm.client.entities.Camera;
 import swarm.client.entities.I_BufferCellListener;
 import swarm.client.managers.CameraManager;
 import swarm.client.states.camera.StateMachine_Camera;
@@ -713,6 +714,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 			case COMPILED:
 			{
 				this.setStatusHtml("Problem contacting server.", false);
+				this.showEmptyContent();
 				
 				break;
 			}
@@ -740,20 +742,33 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 			m_sandboxMngr.stop(m_contentPanel.getElement());
 			m_metaCode = code;
 			
-			boolean knownImage = false;
+			boolean delayLoading = true;
 			
-			String url = getAbsoluteUrl(m_metaCode.getRawCode());
+			Camera camera = m_cameraMngr.getCamera();
+			double deltaZ = camera.getPosition().getZ() - camera.getPrevPosition().getZ();
 			
-			if( canCheckLocalAvailability() )
+			if( deltaZ == 0 )
 			{
-				knownImage = isLocallyAvailable(url);
+				delayLoading = false;
 			}
-			else
+			else 
 			{
-				knownImage = m_localStorage == null ? false : m_localStorage.getItem(url) != null;
+				boolean knownImage = false;
+				String url = getAbsoluteUrl(m_metaCode.getRawCode());
+				
+				if( canCheckLocalAvailability() )
+				{
+					knownImage = isLocallyAvailable(url);
+				}
+				else
+				{
+					knownImage = m_localStorage == null ? false : m_localStorage.getItem(url) != null;
+				}
+				
+				delayLoading = !knownImage;
 			}
 			
-			if( knownImage )
+			if( !delayLoading )
 			{
 				m_sandboxMngr.start(m_contentPanel.getElement(), m_metaCode, null, m_codeLoadListener);
 			}
