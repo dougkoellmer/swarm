@@ -85,7 +85,15 @@ public class State_Initializing extends A_State implements I_TransactionResponse
 				
 				transactionManager.addHandler(State_Initializing.this);
 				
-				gridManager.getGridData(E_TransactionAction.QUEUE_REQUEST);
+				if( !m_appContext.config.makeGridRequest )
+				{
+					m_requiredSuccessCount--;
+				}
+				else
+				{
+					gridManager.getGridData(E_TransactionAction.QUEUE_REQUEST);
+				}
+				
 				userManager.getPosition(E_TransactionAction.QUEUE_REQUEST);
 				
 				if( accountManager.isSignedIn() )

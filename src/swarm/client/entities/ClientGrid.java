@@ -170,7 +170,7 @@ public class ClientGrid extends A_Grid
 		return m_metaOwnership.length + 1;
 	}
 	
-	private void initMetaOwnership()
+	protected void initMetaOwnership()
 	{
 		int gridSize = this.getWidth();
 		

@@ -16,6 +16,8 @@ public class ClientAppConfig extends AppConfig
 	public int framerate_milliseconds = 33;
 	public double backOffDistance;
 	
+	public boolean makeGridRequest = true;
+	
 	public boolean useVirtualSandbox = true;
 	
 	public int addressCacheSize = 1024;
