@@ -394,7 +394,7 @@ public class VisualCellManager implements I_UIElement
 						//TODO: Probably has to be different logic if we're snapping.
 						if( subCellCount_highest == 1 )
 						{
-							E_ZIndex.CELL_META_ON_DEATH_ROW_ABOVE_CELL_1.assignTo(ithVisualCell);
+							ithVisualCell.setZIndex(E_ZIndex.CELL_META_ON_DEATH_ROW_ABOVE_CELL_1.get());
 						}
 						else
 						{
@@ -483,7 +483,7 @@ public class VisualCellManager implements I_UIElement
 		return true;
 	}
 	
-	private void updateCellsIndividually(double timeStep)
+	private void updateCellsWithNoTransforms(double timeStep)
 	{
 		CellBufferManager cellManager = m_viewContext.appContext.cellBufferMngr;
 		
@@ -491,11 +491,11 @@ public class VisualCellManager implements I_UIElement
 		{
 			CellBuffer cellBuffer = cellManager.getDisplayBuffer(i);
 			
-			updateCellsIndividually(cellBuffer, timeStep);
+			updateCellsWithNoTransforms(cellBuffer, timeStep);
 		}
 	}
 	
-	private void updateCellsIndividually(CellBuffer cellBuffer, double timeStep)
+	private void updateCellsWithNoTransforms(CellBuffer cellBuffer, double timeStep)
 	{
 		int bufferSize = cellBuffer.getCellCount();
 		
@@ -567,7 +567,7 @@ public class VisualCellManager implements I_UIElement
 						}
 						else
 						{
-							this.updateCellsIndividually(event.getState().getLastTimeStep());
+							this.updateCellsWithNoTransforms(event.getState().getLastTimeStep());
 						}
 					}
 					else

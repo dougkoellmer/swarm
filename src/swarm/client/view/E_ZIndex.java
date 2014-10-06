@@ -55,28 +55,28 @@ public enum E_ZIndex
 	TOOL_TIP_4,
 	TOOL_TIP_5;
 	
-	private int getZIndex()
+	public int get()
 	{
 		return this.ordinal();
 	}
 	
 	public void assignTo(IsWidget widget)
 	{
-		widget.asWidget().getElement().getStyle().setZIndex(this.getZIndex());
+		widget.asWidget().getElement().getStyle().setZIndex(this.get());
 	}
 	
 	public void assignTo(IsWidget widget, Enum offset)
 	{
-		widget.asWidget().getElement().getStyle().setZIndex(this.getZIndex() + offset.ordinal());
+		widget.asWidget().getElement().getStyle().setZIndex(this.get() + offset.ordinal());
 	}
 	
 	public void assignTo(Element element)
 	{
-		element.getStyle().setZIndex(this.getZIndex());
+		element.getStyle().setZIndex(this.get());
 	}
 	
 	public void assignTo(Element element, Enum offset)
 	{
-		element.getStyle().setZIndex(this.getZIndex() + offset.ordinal());
+		element.getStyle().setZIndex(this.get() + offset.ordinal());
 	}
 }

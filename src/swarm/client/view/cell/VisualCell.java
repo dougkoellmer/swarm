@@ -156,6 +156,10 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	
 	private final Storage m_localStorage = Storage.getLocalStorageIfSupported();
 	
+	
+	private int m_zIndex_default;
+	private int m_zIndex;
+	
 	public VisualCell(I_CellSpinner spinner, SandboxManager sandboxMngr, CameraManager cameraMngr, double retractionEasing, double sizeChangeTime)
 	{
 		m_retractionEasing = retractionEasing;
@@ -401,14 +405,27 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		
 		onCreatedOrRecycled(width, height, padding, subCellDimension);
 		
+		int bitPosition = U_Bits.calcBitPosition(m_subCellDimension);
+		E_ZIndex zIndex = E_ZIndex.values()[E_ZIndex.CELL_1.ordinal() - bitPosition];
+		
+		m_zIndex = -1;
+		m_zIndex_default = zIndex.get();
+		
 		setDefaultZIndex();
+	}
+	
+	public void setZIndex(int value)
+	{
+		if( value == m_zIndex )  return;
+		
+		m_zIndex = value;
+		
+		this.getElement().getStyle().setZIndex(m_zIndex);
 	}
 	
 	public void setDefaultZIndex()
 	{
-		int bitPosition = U_Bits.calcBitPosition(m_subCellDimension);
-		E_ZIndex zIndex = E_ZIndex.values()[E_ZIndex.CELL_1.ordinal() - bitPosition];
-		zIndex.assignTo(this);
+		this.setZIndex(m_zIndex_default);
 	}
 	
 	private void onCreatedOrRecycled(int width, int height, int padding, int subCellDimension)
@@ -887,6 +904,8 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 			
 			this.m_statusPanel.setContent(m_spinner.asWidget());
 		}
+		
+		showEmptyContent();
 	}
 
 	@Override
