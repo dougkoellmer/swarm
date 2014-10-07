@@ -592,6 +592,24 @@ public class ScrollNavigator implements I_StateEventListener
 					}
 				}*/
 				
+				if( event.getState() instanceof State_CameraSnapping )
+				{
+					State_CameraSnapping snappingState = event.getState();
+					BufferCell cell = snappingState.getCell();
+					if( cell != null )
+					{
+						VisualCell visualCell = (VisualCell) cell.getVisualization();
+						
+						//--- DRK > Probably can't ever be null, just being defensive.
+						if( visualCell != null )
+						{
+							int windowWidth = (int) getWindowWidth();
+							int windowHeight = (int) getWindowHeight();
+							visualCell.constrainStatusBlocker(windowWidth, modifyWindowHeightForCellStatusConstraint(windowHeight), 0, 0);
+						}
+					}
+				}
+				
 				break;
 			}
 			
@@ -623,6 +641,15 @@ public class ScrollNavigator implements I_StateEventListener
 					
 					m_scrollContainer.getElement().setScrollTop(0);
 					m_scrollContainer.getElement().setScrollLeft(0);
+					
+					
+					State_ViewingCell viewingState = event.getState();
+					BufferCell cell = viewingState.getCell();
+					VisualCell visualCell = (VisualCell) cell.getVisualization();
+					
+					int windowWidth = (int) getWindowWidth();
+					int windowHeight = (int) getWindowHeight();
+					visualCell.constrainStatusBlocker(windowWidth, modifyWindowHeightForCellStatusConstraint(windowHeight), 0, 0);
 				}
 				
 				break;
@@ -716,16 +743,19 @@ public class ScrollNavigator implements I_StateEventListener
 		
 //		s_logger.severe(m_layout.topLeftOffset + "");
 		
-		
-		A_Grid grid = this.m_viewContext.appContext.gridMngr.getGrid();
-		
 		visualCell.setTargetLayout
 		(
 			layout_nullable.cellSize.getWidth(), layout_nullable.cellSize.getHeight(),
 			(int)layout_nullable.topLeftOffset.getX(), (int)layout_nullable.topLeftOffset.getY(),
-			(int)layout_nullable.window.getWidth(), (int)(layout_nullable.window.getHeight() - (m_cellHudHeight + grid.getCellPadding())),
+			(int)layout_nullable.window.getWidth(), modifyWindowHeightForCellStatusConstraint((int) layout_nullable.window.getHeight()),
 			getScrollX(), getScrollY()
 		);
+	}
+	
+	private int modifyWindowHeightForCellStatusConstraint(int windowHeight)
+	{
+		A_Grid grid = this.m_viewContext.appContext.gridMngr.getGrid();
+		return (int) (windowHeight - (m_cellHudHeight + grid.getCellPadding()));
 	}
 	
 	

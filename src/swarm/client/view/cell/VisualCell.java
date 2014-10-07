@@ -89,7 +89,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		@Override
 		public void onCodeLoad()
 		{
-			m_this.setStatusHtml(null, false);
+			m_this.clearStatusHtml();
 		}
 
 		@Override
@@ -335,7 +335,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		else if( m_subCellDimension > 1 )
 		{
 //			U_Debug.ASSERT(false, "not implemented");
-			this.setStatusHtml(null, false); // shouldn't have to be done, but what the hell.
+			this.clearStatusHtml(); // shouldn't have to be done, but what the hell.
 			
 			this.setSize(m_width+"px", m_height+"px");
 			this.getElement().getStyle().clearPaddingRight();
@@ -465,8 +465,8 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	
 	public void setTargetLayout(int width, int height, int xOffset, int yOffset, int windowWidth, int windowHeight, int scrollX, int scrollY)
 	{
-		m_width = width < m_defaultWidth ? m_defaultWidth : width;
-		m_height = height < m_defaultHeight ? m_defaultHeight : height;
+		width = width < m_defaultWidth ? m_defaultWidth : width;
+		height = height < m_defaultHeight ? m_defaultHeight : height;
 		
 		m_baseXOffset = m_xOffset;
 		m_baseYOffset = m_yOffset;
@@ -514,7 +514,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		return size;
 	}
 	
-	private void constrainStatusBlocker(int windowWidth, int windowHeight, int scrollX, int scrollY)
+	public void constrainStatusBlocker(int windowWidth, int windowHeight, int scrollX, int scrollY)
 	{
 		boolean constrain = false;
 		int top = 0, left = 0, width = m_width, height = m_height;
@@ -732,7 +732,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		{
 			case SPLASH:
 			{
-				this.setStatusHtml(null, false);
+				this.clearStatusHtml();
 				this.showEmptyContent();
 				
 				break;
@@ -751,8 +751,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	@Override
 	public void setCode(Code code, String cellNamespace)
 	{
-		this.setStatusHtml(null, false);
-		this.showLoading();
+		this.clearStatusHtml();
 		
 		/*if( m_sandboxMngr.isRunning() )
 		{
@@ -784,7 +783,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 				boolean knownImage = false;
 				String url = getAbsoluteUrl(m_metaCode.getRawCode());
 				
-				if( canCheckLocalAvailability() )
+				if( canCheckMozLocalAvailability() )
 				{
 					knownImage = isLocallyAvailable(url);
 				}
@@ -798,6 +797,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 			
 			if( !delayLoading )
 			{
+				m_contentPanel.setVisible(false);
 				m_sandboxMngr.start(m_contentPanel.getElement(), m_metaCode, null, m_codeLoadListener);
 			}
 			else
@@ -814,9 +814,15 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		if( m_codeListener != null )  m_codeListener.onCodeLoaded(this);
 	}
 	
-	private void setMetaImageLoaded(String url)
+	private void onMetaImageLoadFailed()
 	{
-		if( !canCheckLocalAvailability() && m_localStorage != null )
+		//--- DRK > Should be invisible from upstream code...just making sure.
+		m_contentPanel.setVisible(false);
+	}
+	
+	private void onMetaImageLoaded(String url)
+	{
+		if( !canCheckMozLocalAvailability() && m_localStorage != null )
 		{
 			m_localStorage.setItem(url, "");
 		}
@@ -850,22 +856,27 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 			
 			imgLoad.on('done', function()
 			{
-				cell.@swarm.client.view.cell.VisualCell::setMetaImageLoaded(Ljava/lang/String;)(element.src);
+				cell.@swarm.client.view.cell.VisualCell::onMetaImageLoaded(Ljava/lang/String;)(element.src);
 //				console.log("meta loaded!");
+			});
+			
+			imgLoad.on('fail', function()
+			{
+				cell.@swarm.client.view.cell.VisualCell::onMetaImageLoadFailed()();
 			});
 	}-*/;
 	
-	private static native boolean canCheckLocalAvailability()
+	private static native boolean canCheckMozLocalAvailability()
 	/*-{
 			return typeof $wnd.navigator.mozIsLocallyAvailable !== 'undefined';
 	}-*/;
 	
 	private static native String getAbsoluteUrl(String url)
 	/*-{
-		var loc = window.location;
-		var url = "" + loc.protocol + "//" + loc.host + url;
-		
-		return url;
+			var loc = window.location;
+			var url = "" + loc.protocol + "//" + loc.host + url;
+			
+			return url;
 	}-*/;
 	
 	private static native boolean isLocallyAvailable(String url)
@@ -923,6 +934,11 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	private void setStatusHtml(String text, boolean forLoading)
 	{
 		m_statusPanel.setHtml(text);
+	}
+	
+	private void clearStatusHtml()
+	{
+		this.setStatusHtml(null, false);
 	}
 
 	@Override
