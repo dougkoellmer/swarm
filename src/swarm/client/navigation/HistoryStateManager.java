@@ -107,7 +107,8 @@ public class HistoryStateManager
 		}
 		else
 		{
-			return path;
+			String[] path_split = path.split("/");
+			return path_split[path_split.length-1];
 		}
 	}
 	

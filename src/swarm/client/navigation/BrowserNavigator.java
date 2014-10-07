@@ -261,13 +261,14 @@ public class BrowserNavigator implements I_StateEventListener
 					else
 					{
 						String path;
-						if( address == null )
+						if( address == null || address.getPartCount() == 0)
 						{
 							path = FLOATING_STATE_PATH;
 						}
 						else
 						{
-							path = address.getCasedRawLeadSlash();
+//							path = address.getCasedRawLeadSlash();
+							path = address.getPart(address.getPartCount()-1);
 							Document.get().setTitle(path); // manually doing this because for some reason history api sometimes won't set the title
 						}
 						

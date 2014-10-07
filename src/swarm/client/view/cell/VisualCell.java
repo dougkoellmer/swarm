@@ -412,6 +412,8 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		m_zIndex_default = zIndex.get();
 		
 		setDefaultZIndex();
+		
+		this.showEmptyContent();
 	}
 	
 	public void setZIndex(int value)
@@ -463,6 +465,9 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	
 	public void setTargetLayout(int width, int height, int xOffset, int yOffset, int windowWidth, int windowHeight, int scrollX, int scrollY)
 	{
+		m_width = width < m_defaultWidth ? m_defaultWidth : width;
+		m_height = height < m_defaultHeight ? m_defaultHeight : height;
+		
 		m_baseXOffset = m_xOffset;
 		m_baseYOffset = m_yOffset;
 		m_baseWidth = this.m_width;
@@ -736,7 +741,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 			case COMPILED:
 			{
 				this.setStatusHtml("Problem contacting server.", false);
-				this.showEmptyContent();
+//				this.showEmptyContent();
 				
 				break;
 			}
@@ -747,6 +752,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	public void setCode(Code code, String cellNamespace)
 	{
 		this.setStatusHtml(null, false);
+		this.showLoading();
 		
 		/*if( m_sandboxMngr.isRunning() )
 		{
@@ -905,7 +911,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 			this.m_statusPanel.setContent(m_spinner.asWidget());
 		}
 		
-		showEmptyContent();
+//		showEmptyContent();
 	}
 
 	@Override
