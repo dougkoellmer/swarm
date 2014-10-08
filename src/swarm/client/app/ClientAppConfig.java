@@ -3,6 +3,7 @@ package swarm.client.app;
 import swarm.client.entities.A_ClientUser;
 import swarm.client.entities.ClientGrid;
 import swarm.client.view.ViewController;
+import swarm.client.view.cell.SpritePlateAnimation;
 import swarm.shared.app.AppConfig;
 import swarm.shared.entities.A_Grid;
 

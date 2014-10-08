@@ -1,5 +1,6 @@
 package swarm.client.view;
 
+import swarm.client.view.cell.SpritePlateAnimation;
 import swarm.client.view.tabs.I_Tab;
 import swarm.shared.statemachine.I_StateEventListener;
 
@@ -18,6 +19,11 @@ public class ViewConfig
 	public double extraScrollArea = 50;
 	public double cellSizeChangeTime_seconds = 1;
 	public double cellRetractionEasing = 4;
+	
+	public int spinnerAnimationFrameCount;
+	public int spinnerAnimationFramesAcross;
+	public String spinnerAnimation;
+	public double spinnerAnimationFramerate = 1.0/30.0;
 	
 	public I_Tab[] tabs;
 }

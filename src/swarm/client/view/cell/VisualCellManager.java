@@ -130,32 +130,40 @@ public class VisualCellManager implements I_UIElement
 	{
 		if( m_backing == null )
 		{
-			m_backing = new CanvasBacking(new CanvasBacking.I_Skipper()
+			SpritePlateAnimation animation = new SpritePlateAnimation
+			(
+				m_viewContext.config.spinnerAnimation,
+				m_viewContext.config.spinnerAnimationFramerate,
+				m_viewContext.config.spinnerAnimationFrameCount,
+				m_viewContext.config.spinnerAnimationFramesAcross
+			);
+			
+			m_backing = new CanvasBacking(animation, new CanvasBacking.I_Skipper()
 			{
 				@Override public int skip(int m, int n)
 				{
-					CellBufferManager cellManager = m_viewContext.appContext.cellBufferMngr;
-					if( grid.isObscured(m, n, 1, cellManager.getSubCellCount(), m_obscured) )
-					{
-						CellBuffer cellBuffer = cellManager.getDisplayBuffer(U_Bits.calcBitPosition(m_obscured.subCellDimension));
-						BufferCell cell = cellBuffer.getCellAtAbsoluteCoord(m_obscured.m, m_obscured.n);
-						VisualCell visualCell = (VisualCell) cell.getVisualization();
-						E_MetaState state = visualCell.getMetaState();
-						
-//						s_logger.severe(state+"");
-						
-						if( state == VisualCell.E_MetaState.RENDERED )
-						{
-							return m_obscured.offset;
-						}
-					}
-					else
-					{
-						if( grid.isTaken(m, n, 1) )
-						{
-							return 2;
-						}
-					}
+//					CellBufferManager cellManager = m_viewContext.appContext.cellBufferMngr;
+//					if( grid.isObscured(m, n, 1, cellManager.getSubCellCount(), m_obscured) )
+//					{
+//						CellBuffer cellBuffer = cellManager.getDisplayBuffer(U_Bits.calcBitPosition(m_obscured.subCellDimension));
+//						BufferCell cell = cellBuffer.getCellAtAbsoluteCoord(m_obscured.m, m_obscured.n);
+//						VisualCell visualCell = (VisualCell) cell.getVisualization();
+//						E_MetaState state = visualCell.getMetaState();
+//						
+////						s_logger.severe(state+"");
+//						
+//						if( state == VisualCell.E_MetaState.RENDERED )
+//						{
+//							return m_obscured.offset;
+//						}
+//					}
+//					else
+//					{
+//						if( grid.isTaken(m, n, 1) )
+//						{
+//							return 2;
+//						}
+//					}
 					
 					return 0;
 				}
@@ -324,7 +332,7 @@ public class VisualCellManager implements I_UIElement
 			(
 				startX_meta, startY_meta, coord.getM(), coord.getN(), cellBuffer_i.getWidth(), cellBuffer_i.getHeight(),
 				scaledCellWidth, scaledCellWidthPlusPadding, grid.getWidth(), grid.getBaseOwnership(),
-				cellWidthPlusPadding, subCellCount_highest, coordMOfHighest, coordNOfHighest
+				cellWidthPlusPadding, subCellCount_highest, coordMOfHighest, coordNOfHighest, sizeScaling, timeStep
 			);
 		}
 		

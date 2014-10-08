@@ -7,6 +7,7 @@ import com.google.gwt.canvas.dom.client.Context;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.canvas.dom.client.CssColor;
 import com.google.gwt.canvas.dom.client.FillStrokeStyle;
+import com.google.gwt.dom.client.ImageElement;
 
 public class CanvasBacking
 {
@@ -20,10 +21,12 @@ public class CanvasBacking
 	private CssColor m_fillStyle;
 	private final CssColor m_gapStyle = CssColor.make("rgba(0,0,0,0)");
 	private final I_Skipper m_skipper;
+	private final SpritePlateAnimation m_animation;
 	
-	public CanvasBacking(I_Skipper skipper)
+	public CanvasBacking(SpritePlateAnimation animation, I_Skipper skipper)
 	{
 		m_skipper = skipper;
+		m_animation = animation;
 	}
 	
 	public void setColor(String color)
@@ -46,7 +49,7 @@ public class CanvasBacking
 //		m_canvas.getElement().getStyle().setZIndex(15);
 	}
 	
-	public void update(double startX_meta, double startY_meta, int startM, int startN, int across, int down, double cellSize, double cellSizePlusPadding, int totalGridSize, BitArray ownership, double metaCellSize, int metaSubCellCount, int startM_meta, int startN_meta)
+	public void update(double startX_meta, double startY_meta, int startM, int startN, int across, int down, double cellSize, double cellSizePlusPadding, int totalGridSize, BitArray ownership, double metaCellSize, int metaSubCellCount, int startM_meta, int startN_meta, double scaling, double timestep)
 	{
  		clear();
 		
@@ -56,8 +59,6 @@ public class CanvasBacking
 		
 		int limit_n = startN + down;
 		int limit_m = startM + across;
-//		limit_n = limit_n < totalGridSize ? limit_n : totalGridSize-1;
-//		limit_m = limit_m < totalGridSize ? limit_m : totalGridSize-1;
 //		
 		for( int n = startN; n < limit_n; n++ )
 		{
@@ -101,6 +102,11 @@ public class CanvasBacking
 				currY += .75;
 		
 				context.fillRect(currX, currY, cellSize, cellSize);
+				
+				if( m_animation != null )
+				{
+					m_animation.update(context, timestep, (int)currX, (int)currY, scaling);
+				}
 			}
 		}
 	}

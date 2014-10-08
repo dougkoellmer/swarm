@@ -414,6 +414,15 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		setDefaultZIndex();
 		
 		this.showEmptyContent();
+		
+		if( subCellDimension > 1 )
+		{
+			this.getElement().getStyle().setOpacity(0.0);
+		}
+		else
+		{
+			this.getElement().getStyle().setOpacity(1.0);
+		}
 	}
 	
 	public void setZIndex(int value)
