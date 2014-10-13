@@ -19,6 +19,9 @@ public class FpsViewer
 		
 		m_element = DOM.createDiv();
 		m_element.getStyle().setPosition(Position.ABSOLUTE);
+		m_element.addClassName("sm_fps_tracker");
+		m_element.getStyle().setZIndex(Integer.MAX_VALUE);
+		m_element.getStyle().setBackgroundColor("#00ff00");
 		m_container.appendChild(m_element);
 	}
 	

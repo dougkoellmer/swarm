@@ -17,10 +17,13 @@ public class SpritePlateSpinner extends FlowPanel implements I_CellSpinner
 	private double m_time = 0.0;
 	private int m_frame = 0;
 	
+	private final String m_baseClassName;
+	
 	public SpritePlateSpinner(String className, int frameCount, double frameRate)
 	{
 		m_frameCount = frameCount;
 		m_frameRate = frameRate;
+		m_baseClassName = className;
 		
 		String[] classNames = s_classNames.get(className);
 		
@@ -30,7 +33,8 @@ public class SpritePlateSpinner extends FlowPanel implements I_CellSpinner
 			
 			for( int i = 0; i < frameCount; i++ )
 			{
-				classNames[i] = className + "_" + i;
+				String paddedIndex = i < 10 ? "0"+i : i+"";
+				classNames[i] = className + "_" + paddedIndex;
 			}
 			
 			s_classNames.put(className, classNames);
@@ -45,11 +49,10 @@ public class SpritePlateSpinner extends FlowPanel implements I_CellSpinner
 	{
 		m_frame = frame % m_frameCount;
 		String newClassName = m_classNames[m_frame];
-		this.setStyleName(newClassName);
+		this.setStyleName(m_baseClassName + " " + newClassName);
 	}
 
-	@Override
-	public void update(double timeStep)
+	@Override public void update(double timeStep)
 	{
 		m_time += timeStep;
 		

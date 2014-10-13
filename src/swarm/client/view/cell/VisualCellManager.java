@@ -138,7 +138,10 @@ public class VisualCellManager implements I_UIElement
 				m_viewContext.config.spinnerAnimationFramesAcross
 			);
 			
-			m_backing = new CanvasBacking(animation, new CanvasBacking.I_Skipper()
+//			String color = "rgb(255,0,0)";
+			String color = "rgb(255,255,255)";
+			
+			m_backing = new CanvasBacking(animation, color, grid.getCellWidth(), grid.getCellHeight(), new CanvasBacking.I_Skipper()
 			{
 				@Override public int skip(int m, int n)
 				{
@@ -174,13 +177,11 @@ public class VisualCellManager implements I_UIElement
 			m_backing.getCanvas().getElement().getStyle().setTop(0, Unit.PX);
 			m_backing.getCanvas().getElement().getStyle().setProperty("transformOrigin", "0px 0px 0px");
 			m_backing.getCanvas().addStyleName("sm_canvas_backing");
+			E_ZIndex.CELL_BACKING.assignTo(m_backing.getCanvas());
 			resizeBacking();
 			
 //			E_ZIndex.CELL_BACKING.assignTo(m_backing.getCanvas());
 		}
-						
-		m_backing.setColor("rgb(255,255,255)");
-//		m_backing.setColor("rgb(255,0,0)");
 	}
 	
 	private void resizeBacking()
@@ -557,28 +558,28 @@ public class VisualCellManager implements I_UIElement
 						int i = 0;
 					}
 					
-					if( m_viewContext.appContext.cameraMngr.getAtRestFrameCount() >=2 )
-					{
-						m_cellPool.cleanPool();
-						
-						//--- DRK > This first condition ensures that we're still updating cell positions as they're potentially shrinking
-						//---		after exiting viewing or snapping state. There's probably a more efficient way to determine if they're actually shrinking.
-						//---		This is just a catch-all.
-						if( (event.getState().getPreviousState() == State_ViewingCell.class || event.getState().getPreviousState() == State_CameraSnapping.class) &&
-							event.getState().getTotalTimeInState() <= m_viewContext.config.cellSizeChangeTime_seconds )
-						{
-							this.updateCellTransforms(event.getState().getLastTimeStep());
-						}
-						else if( m_backingDirty )
-						{
-							this.updateCellTransforms(event.getState().getLastTimeStep());
-						}
-						else
-						{
-							this.updateCellsWithNoTransforms(event.getState().getLastTimeStep());
-						}
-					}
-					else
+//					if( m_viewContext.appContext.cameraMngr.getAtRestFrameCount() >=2 )
+//					{
+//						m_cellPool.cleanPool();
+//						
+//						//--- DRK > This first condition ensures that we're still updating cell positions as they're potentially shrinking
+//						//---		after exiting viewing or snapping state. There's probably a more efficient way to determine if they're actually shrinking.
+//						//---		This is just a catch-all.
+//						if( (event.getState().getPreviousState() == State_ViewingCell.class || event.getState().getPreviousState() == State_CameraSnapping.class) &&
+//							event.getState().getTotalTimeInState() <= m_viewContext.config.cellSizeChangeTime_seconds )
+//						{
+//							this.updateCellTransforms(event.getState().getLastTimeStep());
+//						}
+//						else if( m_backingDirty )
+//						{
+//							this.updateCellTransforms(event.getState().getLastTimeStep());
+//						}
+//						else
+//						{
+//							this.updateCellsWithNoTransforms(event.getState().getLastTimeStep());
+//						}
+//					}
+//					else
 					{
 						this.updateCellTransforms(event.getState().getLastTimeStep());
 					}

@@ -947,7 +947,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	
 	private void clearStatusHtml()
 	{
-		this.setStatusHtml(null, false);
+//		this.setStatusHtml(null, false);
 	}
 
 	@Override

@@ -20,8 +20,8 @@ public enum E_ZIndex
 	CODE_MIRROR_RELATED,
 	
 	//-- DRK > These are assigned manually to elements' styles.
-	CELL_BACKING,
 	CELL_HIGHLIGHT,
+	CELL_BACKING,
 	CELL_128,
 	CELL_64,
 	CELL_32,

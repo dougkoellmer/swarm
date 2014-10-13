@@ -1,5 +1,7 @@
 package swarm.client.view.cell;
 
+import java.util.logging.Logger;
+
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.canvas.dom.client.ImageData;
@@ -14,6 +16,8 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class SpritePlateAnimation
 {
+	private static final Logger s_logger = Logger.getLogger(SpritePlateAnimation.class.getName());
+	
 	private final double m_frameRate;
 	private double m_time = 0.0;
 	private int m_frame = 0;
@@ -39,6 +43,12 @@ public class SpritePlateAnimation
 	    	@Override public void onLoad(LoadEvent event)
 	        {
 	    		m_loaded = true;
+	    		m_frameWidth = m_image.getWidth() / m_framesAcross;
+	    		
+	    		int framesDown = m_frameCount / m_framesAcross;
+	    		framesDown += (m_frameCount % m_framesAcross) > 0 ? 1 : 0;
+	    				
+	    		m_frameHeight = m_image.getHeight() / framesDown;
 	        }
 	    });
 
@@ -47,20 +57,9 @@ public class SpritePlateAnimation
 	    img.setUrl(imageUrl);
 	}
 	
-	public void update(Context2d context, double timestep, int x, int y, double scaling)
+	public void update(double timestep)
 	{
 		if( !m_loaded )  return;
-		
-		int m = m_frame % m_framesAcross;
-		int n = (m_frame - m) / m_framesAcross;
-		int offsetX = m * m_frameWidth;
-		int offsetY = m * m_frameHeight;
-		x+=offsetX;
-		y+=offsetY;
-		int widthScaled = (int) (m_frameWidth * scaling);
-		int heightScaled = (int) (m_frameHeight * scaling);
-		
-		context.drawImage(m_image, offsetX, offsetY, m_frameWidth, m_frameHeight, x, y, widthScaled, heightScaled);
 		
 		m_time += timestep;
 		
@@ -70,5 +69,24 @@ public class SpritePlateAnimation
 			m_frame++;
 			m_frame = m_frame % m_frameCount;
 		}
+	}
+	
+	public void draw(Context2d context, double timestep, int x, int y, double scaling)
+	{
+		if( !m_loaded )  return;
+		
+		int m = m_frame % m_framesAcross;
+		int n = (m_frame) / m_framesAcross;
+		int offsetX = m * m_frameWidth;
+		int offsetY = n * m_frameHeight;
+		int widthScaled = (int) (m_frameWidth * scaling);
+		int heightScaled = (int) (m_frameHeight * scaling);
+		
+		x -= widthScaled/2;
+		y -= heightScaled/2;
+		
+//		s_logger.severe(m_frame + " " + m + " " + n);
+		
+		context.drawImage(m_image, offsetX, offsetY, m_frameWidth, m_frameHeight, x, y, widthScaled, heightScaled);
 	}
 }

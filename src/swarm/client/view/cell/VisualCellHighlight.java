@@ -55,7 +55,7 @@ public class VisualCellHighlight extends FlowPanel implements I_UIElement
 		
 		E_ZIndex.CELL_HIGHLIGHT.assignTo(this);
 		
-//		this.getElement().getStyle().setBackgroundColor(m_viewContext.config.cellHighlightColor);
+		this.getElement().getStyle().setBackgroundColor(m_viewContext.config.cellHighlightColor);
 		
 		this.setVisible(false);
 	}
