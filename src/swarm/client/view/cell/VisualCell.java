@@ -383,7 +383,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		totalWidth = totalWidth >= 0 ? totalWidth : 0;
 		totalHeight = totalHeight >= 0 ? totalHeight : 0;
 		
-		m_contentPanel.setSize(totalWidth + "px", totalHeight + "px");
+		m_contentPanel.setSize(m_defaultWidth + "px", m_defaultHeight + "px");
 		this.setSize(totalWidth + "px", totalHeight + "px");
 	}
 	
