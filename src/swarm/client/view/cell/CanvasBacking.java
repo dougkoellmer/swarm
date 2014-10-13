@@ -19,6 +19,47 @@ public class CanvasBacking
 		int skip(int m, int n);
 	}
 	
+	public static class UpdateConfig
+	{
+		double startX_meta, startY_meta;
+		int startM, startN;
+		int across, down;
+		double cellSize;
+		double cellSizePlusPadding;
+		int totalGridSize;
+		BitArray ownership;
+		double metaCellSize;
+		int metaSubCellCount;
+		int startM_meta, startN_meta;
+		double scaling;
+		double timestep;
+		
+		public void set
+		(
+			double startX_meta, double startY_meta, int startM, int startN, int across, int down, double cellSize,
+			double cellSizePlusPadding, int totalGridSize, BitArray ownership, double metaCellSize, int metaSubCellCount,
+			int startM_meta, int startN_meta, double scaling, double timestep
+		)
+		{
+			this.startX_meta = startX_meta;
+			this.startY_meta = startY_meta;
+			this.startM = startM;
+			this.startN = startN;
+			this.across = across;
+			this.down = down;
+			this.cellSize = cellSize;
+			this.cellSizePlusPadding = cellSizePlusPadding;
+			this.totalGridSize = totalGridSize;
+			this.ownership = ownership;
+			this.metaCellSize = metaCellSize;
+			this.metaSubCellCount = metaSubCellCount;
+			this.startM_meta = startM_meta;
+			this.startN_meta = startN_meta;
+			this.scaling = scaling;
+			this.timestep = timestep;
+		}
+	}
+	
 	private final Canvas m_canvas = Canvas.createIfSupported();
 	
 	private final Canvas m_stageCanvas = Canvas.createIfSupported();
@@ -41,10 +82,6 @@ public class CanvasBacking
 		setCanvasSize(m_stageCanvas, maxCellWidth, maxCellHeight);
 		
 		setColor(cellBackgroundColor);
-		
-//		RootPanel.get().add(m_stageCanvas);
-//		m_stageCanvasElement.getStyle().setZIndex(1000);
-//		m_stageCanvasElement.getStyle().setPosition(Position.FIXED);
 	}
 	
 	public void setColor(String color)
@@ -78,25 +115,26 @@ public class CanvasBacking
 		canvas.setCoordinateSpaceHeight(height);
 	}
 	
-	public void update(double startX_meta, double startY_meta, int startM, int startN, int across, int down, double cellSize, double cellSizePlusPadding, int totalGridSize, BitArray ownership, double metaCellSize, int metaSubCellCount, int startM_meta, int startN_meta, double scaling, double timestep)
+	public void update(UpdateConfig config)
 	{
  		clear();
 		
  		final double pinch = .75;
 		Context2d context = m_canvas.getContext2d();
 		Context2d stageContext = m_stageCanvas.getContext2d();
+		double cellSize = config.cellSize;
 		cellSize -= pinch*2;
 		
 		double cellSize_div2 = cellSize/2;
 		
-		int limit_n = startN + down;
-		int limit_m = startM + across;
+		int limit_n = config.startN + config.down;
+		int limit_m = config.startM + config.across;
 		
 		boolean foundFirstCell = false;
 //		
-		for( int n = startN; n < limit_n; n++ )
+		for( int n = config.startN; n < limit_n; n++ )
 		{
-			for( int m = startM; m < limit_m; m++ )
+			for( int m = config.startM; m < limit_m; m++ )
 			{
 				int skip = m_skipper.skip(m, n);
 				
@@ -112,35 +150,23 @@ public class CanvasBacking
 					continue;
 				}
 				
-				int index = n*totalGridSize + m;
+				int index = n*config.totalGridSize + m;
 				
-				if( !ownership.isSet(index) )  continue;
+				if( !config.ownership.isSet(index) )  continue;
 				
-				int offsetM = m - startM_meta;
-				int offsetN = n - startN_meta;
-				int offsetM_mod = offsetM % metaSubCellCount;
-				int offsetN_mod = offsetN % metaSubCellCount;
+				int offsetM = m - config.startM_meta;
+				int offsetN = n - config.startN_meta;
+				int offsetM_mod = offsetM % config.metaSubCellCount;
+				int offsetN_mod = offsetN % config.metaSubCellCount;
 				offsetM -= offsetM_mod;
 				offsetN -= offsetN_mod;
-				offsetM /= metaSubCellCount;
-				offsetN /= metaSubCellCount;
+				offsetM /= config.metaSubCellCount;
+				offsetN /= config.metaSubCellCount;
 				
-				double currX = startX_meta + offsetM * metaCellSize + offsetM_mod * cellSizePlusPadding;
-				double currY = startY_meta + offsetN * metaCellSize + offsetN_mod * cellSizePlusPadding;
+				double currX = config.startX_meta + offsetM * config.metaCellSize + offsetM_mod * config.cellSizePlusPadding;
+				double currY = config.startY_meta + offsetN * config.metaCellSize + offsetN_mod * config.cellSizePlusPadding;
 				currX += pinch;
 				currY += pinch;
-				
-				
-//				context.fillRect(currX, currY, cellSize, cellSize);
-//				
-//				if( m_animation != null )
-//				{
-//					currX += cellSize_div2;
-//					currY += cellSize_div2;
-//					m_animation.draw(context, timestep, (int)currX, (int)currY, scaling);
-//				}
-				
-				
 				
 				if( !foundFirstCell )
 				{
@@ -148,7 +174,7 @@ public class CanvasBacking
 					
 					if( m_animation != null )
 					{
-						m_animation.draw(stageContext, timestep, (int)cellSize_div2, (int)cellSize_div2, scaling);
+						m_animation.draw(stageContext, (int)cellSize_div2, (int)cellSize_div2, config.scaling);
 					}
 					
 					foundFirstCell = true;
@@ -158,7 +184,7 @@ public class CanvasBacking
 			}
 		}
 		
-		m_animation.update(timestep);
+		m_animation.update(config.timestep);
 	}
 	
 	

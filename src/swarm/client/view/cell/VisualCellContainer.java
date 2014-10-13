@@ -102,13 +102,11 @@ public class VisualCellContainer extends FlowPanel implements ResizeHandler, I_U
 	
 	private final ViewContext m_viewContext;
 	
-	private final FpsViewer m_fpsViewer;
+//	private final FpsViewer m_fpsViewer = new FpsViewer(this.getElement());
 	
 	public VisualCellContainer(ViewContext viewContext, ViewConfig config)
 	{		
 		m_viewContext = viewContext;
-		
-		m_fpsViewer = new FpsViewer(this.getElement());
 		
 		m_scrollContainer.addStyleName("sm_cell_scroll_container");
 		
@@ -276,7 +274,7 @@ public class VisualCellContainer extends FlowPanel implements ResizeHandler, I_U
 				{
 					this.updateCroppers();
 					
-					m_fpsViewer.update(event.getState().getLastTimeStep());
+//					m_fpsViewer.update(event.getState().getLastTimeStep());
 				}
 				
 				if( event.getState() instanceof State_ViewingCell )

@@ -71,7 +71,7 @@ public class SpritePlateAnimation
 		}
 	}
 	
-	public void draw(Context2d context, double timestep, int x, int y, double scaling)
+	public void draw(Context2d context, int x, int y, double scaling)
 	{
 		if( !m_loaded )  return;
 		

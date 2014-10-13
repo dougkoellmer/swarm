@@ -64,14 +64,16 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		DELAYING,
 		LOADING,
 		RENDERING,
-		RENDERED;
+		SHOULD_BE_RENDERED_BY_NOW,
+		DEFINITELY_SHOULD_BE_RENDERED_BY_NOW;
 	}
 	
 	private static final Logger s_logger = Logger.getLogger(VisualCell.class.getName());
 	
 	//TODO: Move to config
 	private static final double META_IMAGE_LOAD_DELAY = .5;
-	private static final double META_IMAGE_RENDER_DELAY = 2.0;
+	private static final double META_IMAGE_RENDER_DELAY__SHOULD_BE = 2.0;
+	private static final double META_IMAGE_RENDER_DELAY__DEFINITELY_SHOULD_BE = 7.0;
 	
 	//private static final String SPINNER_HTML = "<img src='/r.img/spinner.gif?v=1' />";
 	
@@ -241,10 +243,16 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 				m_contentPanel.setVisible(false);
 				m_sandboxMngr.start(m_contentPanel.getElement(), m_metaCode, null, m_codeLoadListener);
 			}
-			else if( m_metaState == E_MetaState.RENDERING && m_metaTimeTracker >= META_IMAGE_RENDER_DELAY )
+			else if( m_metaState == E_MetaState.RENDERING && m_metaTimeTracker >= META_IMAGE_RENDER_DELAY__SHOULD_BE )
 			{
-				m_metaState = E_MetaState.RENDERED;
+				m_metaState = E_MetaState.SHOULD_BE_RENDERED_BY_NOW;
 				m_codeListener.onMetaImageRendered();
+				restartMetaTimeTracker();
+			}
+			else if( m_metaState == E_MetaState.SHOULD_BE_RENDERED_BY_NOW && m_metaTimeTracker >= META_IMAGE_RENDER_DELAY__DEFINITELY_SHOULD_BE )
+			{
+				m_metaState = E_MetaState.DEFINITELY_SHOULD_BE_RENDERED_BY_NOW;
+				stopMetaTimeTracker();
 			}
 		}
 		
@@ -415,14 +423,14 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		
 		this.showEmptyContent();
 		
-		if( subCellDimension > 1 )
-		{
-			this.getElement().getStyle().setOpacity(0.0);
-		}
-		else
-		{
-			this.getElement().getStyle().setOpacity(1.0);
-		}
+//		if( subCellDimension > 1 )
+//		{
+//			this.getElement().getStyle().setOpacity(0.0);
+//		}
+//		else
+//		{
+//			this.getElement().getStyle().setOpacity(1.0);
+//		}
 	}
 	
 	public void setZIndex(int value)
@@ -812,7 +820,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 			else
 			{
 				m_metaState = E_MetaState.DELAYING;
-				startMetaTimeTracker();
+				restartMetaTimeTracker();
 			}
 		}
 		else
@@ -837,7 +845,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		}
 		
 		m_metaState = E_MetaState.RENDERING;
-		startMetaTimeTracker();
+		restartMetaTimeTracker();
 		m_contentPanel.setVisible(true);
 		m_codeListener.onMetaImageLoaded();
 	}
@@ -854,7 +862,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		m_metaTimeTracker = -1.0;
 	}
 	
-	private void startMetaTimeTracker()
+	private void restartMetaTimeTracker()
 	{
 		m_metaTimeTracker = 0.0;
 	}
@@ -947,7 +955,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	
 	private void clearStatusHtml()
 	{
-//		this.setStatusHtml(null, false);
+		this.setStatusHtml(null, false);
 	}
 
 	@Override

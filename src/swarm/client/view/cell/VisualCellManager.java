@@ -71,7 +71,8 @@ public class VisualCellManager implements I_UIElement
 	
 	private final ClientGrid.Obscured m_obscured = new ClientGrid.Obscured();
 	
-	private boolean m_backingDirty = false;
+	private final CanvasBacking.UpdateConfig m_backingConfig = new CanvasBacking.UpdateConfig();
+	private boolean m_needToUpdateBacking = false;
 	
 	public VisualCellManager(ViewContext viewContext, Panel container) 
 	{
@@ -141,32 +142,36 @@ public class VisualCellManager implements I_UIElement
 //			String color = "rgb(255,0,0)";
 			String color = "rgb(255,255,255)";
 			
-			m_backing = new CanvasBacking(animation, color, grid.getCellWidth(), grid.getCellHeight(), new CanvasBacking.I_Skipper()
+			//--- DRK > Max dimensions could actually be a bit smaller cause of padding...eh.
+			int maxCellWidth = grid.getCellWidth()/2;
+			int maxCellHeight = grid.getCellHeight()/2;
+			
+			m_backing = new CanvasBacking(animation, color, maxCellWidth, maxCellHeight, new CanvasBacking.I_Skipper()
 			{
 				@Override public int skip(int m, int n)
 				{
-//					CellBufferManager cellManager = m_viewContext.appContext.cellBufferMngr;
-//					if( grid.isObscured(m, n, 1, cellManager.getSubCellCount(), m_obscured) )
-//					{
-//						CellBuffer cellBuffer = cellManager.getDisplayBuffer(U_Bits.calcBitPosition(m_obscured.subCellDimension));
-//						BufferCell cell = cellBuffer.getCellAtAbsoluteCoord(m_obscured.m, m_obscured.n);
-//						VisualCell visualCell = (VisualCell) cell.getVisualization();
-//						E_MetaState state = visualCell.getMetaState();
-//						
-////						s_logger.severe(state+"");
-//						
-//						if( state == VisualCell.E_MetaState.RENDERED )
-//						{
-//							return m_obscured.offset;
-//						}
-//					}
-//					else
-//					{
-//						if( grid.isTaken(m, n, 1) )
-//						{
-//							return 2;
-//						}
-//					}
+					CellBufferManager cellManager = m_viewContext.appContext.cellBufferMngr;
+					if( grid.isObscured(m, n, 1, cellManager.getSubCellCount(), m_obscured) )
+					{
+						CellBuffer cellBuffer = cellManager.getDisplayBuffer(U_Bits.calcBitPosition(m_obscured.subCellDimension));
+						BufferCell cell = cellBuffer.getCellAtAbsoluteCoord(m_obscured.m, m_obscured.n);
+						VisualCell visualCell = (VisualCell) cell.getVisualization();
+						E_MetaState state = visualCell.getMetaState();
+						
+//						s_logger.severe(state+"");
+						
+						if( state == VisualCell.E_MetaState.DEFINITELY_SHOULD_BE_RENDERED_BY_NOW )
+						{
+							return m_obscured.offset;
+						}
+					}
+					else
+					{
+						if( grid.isTaken(m, n, 1) )
+						{
+							return 2;
+						}
+					}
 					
 					return 0;
 				}
@@ -190,13 +195,69 @@ public class VisualCellManager implements I_UIElement
 		m_backing.onResize((int)Math.ceil(camera.getViewWidth()), (int)Math.ceil(camera.getViewHeight()));
 	}
 	
-	private boolean updateCellTransforms(double timeStep)
+	private void updateCanvasBacking()
 	{
-		return this.updateCellTransforms(timeStep, false);
+		if( m_backing == null )  return;
+		
+		if( m_needToUpdateBacking )
+		{
+			m_backing.getCanvas().setVisible(true);
+			m_backing.update(m_backingConfig);
+		}
+		else
+		{
+			m_backing.getCanvas().setVisible(false);
+		}
 	}
 	
-	private boolean updateCellTransforms(double timeStep, boolean isViewStateTransition)
+	private void updateCellsWithNoTransforms(double timeStep)
 	{
+		m_needToUpdateBacking = false;
+		
+		CellBufferManager cellManager = m_viewContext.appContext.cellBufferMngr;
+		
+		for( int i = 0; i < cellManager.getBufferCount(); i++ )
+		{
+			CellBuffer cellBuffer = cellManager.getDisplayBuffer(i);
+			
+			updateCellsWithNoTransforms(cellBuffer, timeStep);
+		}
+		
+		updateCanvasBacking();
+	}
+	
+	private void updateCellsWithNoTransforms(CellBuffer cellBuffer, double timeStep)
+	{
+		int bufferSize = cellBuffer.getCellCount();
+		
+		for ( int i = 0; i < bufferSize; i++ )
+		{
+			BufferCell ithBufferCell = cellBuffer.getCellAtIndex(i);
+			
+			if( ithBufferCell == null ) continue;
+			
+			VisualCell ithVisualCell = (VisualCell) ithBufferCell.getVisualization();
+			
+			if( ithVisualCell == null )  continue;
+			
+			if( cellBuffer.getSubCellCount() > 1 && ithVisualCell.getMetaState() != VisualCell.E_MetaState.DEFINITELY_SHOULD_BE_RENDERED_BY_NOW )
+			{
+				m_needToUpdateBacking = true;
+			}
+			
+			ithVisualCell.update(timeStep);
+		}
+	}
+	
+	private void updateCellTransforms(double timeStep)
+	{
+		this.updateCellTransforms(timeStep, false);
+	}
+	
+	private void updateCellTransforms(double timeStep, boolean isViewStateTransition)
+	{
+		m_needToUpdateBacking = false;
+		
 		CellBufferManager cellManager = m_viewContext.appContext.cellBufferMngr;
 		ClientGrid grid = m_viewContext.appContext.gridMngr.getGrid(); // TODO: Get grid from somewhere else.
 		Camera camera = m_viewContext.appContext.cameraMngr.getCamera();
@@ -274,10 +335,10 @@ public class VisualCellManager implements I_UIElement
 			);
 		}
 		
-		return true;
+		updateCanvasBacking();
 	}
 	
-	private boolean updateCellTransforms
+	private void updateCellTransforms
 		(
 			CellBufferManager manager, CellBuffer cellBuffer_i, double timeStep, boolean isViewStateTransition,
 			Point basePoint_highest_rounded, Point basePoint_highest, double cellWidthPlusPadding, double cellHeightPlusPadding, double positionScaling
@@ -327,9 +388,7 @@ public class VisualCellManager implements I_UIElement
 //			double scaledCellWidth = ((double)grid.getCellWidth())*sizeScaling;
 //			double scaledCellWidthPlusPadding = ((double)grid.getCellWidth()+grid.getCellPadding())*sizeScaling;
 			
-			m_backingDirty = false;
-			
-			m_backing.update
+			m_backingConfig.set
 			(
 				startX_meta, startY_meta, coord.getM(), coord.getN(), cellBuffer_i.getWidth(), cellBuffer_i.getHeight(),
 				scaledCellWidth, scaledCellWidthPlusPadding, grid.getWidth(), grid.getBaseOwnership(),
@@ -369,6 +428,11 @@ public class VisualCellManager implements I_UIElement
 				if( ithBufferCell == null )  continue;
 				
 				VisualCell ithVisualCell = (VisualCell) ithBufferCell.getVisualization();
+				
+				if( subCellCount_i > 1 && ithVisualCell.getMetaState() != VisualCell.E_MetaState.DEFINITELY_SHOULD_BE_RENDERED_BY_NOW )
+				{
+					m_needToUpdateBacking = true;
+				}
 				
 				double offsetX, offsetY;
 				
@@ -488,35 +552,6 @@ public class VisualCellManager implements I_UIElement
 			m_lastMetaCellWidth = cellWidthPlusPadding;
 			m_lastMetaCellHeight = cellHeightPlusPadding;
 		}
-		
-		return true;
-	}
-	
-	private void updateCellsWithNoTransforms(double timeStep)
-	{
-		CellBufferManager cellManager = m_viewContext.appContext.cellBufferMngr;
-		
-		for( int i = 0; i < cellManager.getBufferCount(); i++ )
-		{
-			CellBuffer cellBuffer = cellManager.getDisplayBuffer(i);
-			
-			updateCellsWithNoTransforms(cellBuffer, timeStep);
-		}
-	}
-	
-	private void updateCellsWithNoTransforms(CellBuffer cellBuffer, double timeStep)
-	{
-		int bufferSize = cellBuffer.getCellCount();
-		
-		for ( int i = 0; i < bufferSize; i++ )
-		{
-			BufferCell ithBufferCell = cellBuffer.getCellAtIndex(i);
-			
-			if( ithBufferCell == null ) continue;
-			
-			VisualCell ithVisualCell = (VisualCell) ithBufferCell.getVisualization();
-			ithVisualCell.update(timeStep);
-		}
 	}
 	
 	public double getLastScaling()
@@ -549,37 +584,26 @@ public class VisualCellManager implements I_UIElement
 				{
 					//boolean flushDestroyQueueIfMoving = (event.getState().getUpdateCount() % 8) == 0;
 					
-					Camera camera = m_viewContext.appContext.cameraMngr.getCamera();
-//					double zDelta = camera.getPosition().getZ() - camera.getPrevPosition().getZ();
-//					s_logger.severe(zDelta+"");
+//					s_logger.severe(""+m_viewContext.appContext.cameraMngr.getAtRestFrameCount());
 					
-					if( event.getState() instanceof State_CameraSnapping )
+					if( m_viewContext.appContext.cameraMngr.getAtRestFrameCount() > 2 )
 					{
-						int i = 0;
+						m_cellPool.cleanPool();
+						
+						//--- DRK > This first condition ensures that we're still updating cell positions as they're potentially shrinking
+						//---		after exiting viewing or snapping state. There's probably a more efficient way to determine if they're actually shrinking.
+						//---		This is just a catch-all for now.
+						if( (event.getState().getPreviousState() == State_ViewingCell.class || event.getState().getPreviousState() == State_CameraSnapping.class) &&
+							event.getState().getTotalTimeInState() <= m_viewContext.config.cellSizeChangeTime_seconds )
+						{
+							this.updateCellTransforms(event.getState().getLastTimeStep());
+						}
+						else
+						{
+							this.updateCellsWithNoTransforms(event.getState().getLastTimeStep());
+						}
 					}
-					
-//					if( m_viewContext.appContext.cameraMngr.getAtRestFrameCount() >=2 )
-//					{
-//						m_cellPool.cleanPool();
-//						
-//						//--- DRK > This first condition ensures that we're still updating cell positions as they're potentially shrinking
-//						//---		after exiting viewing or snapping state. There's probably a more efficient way to determine if they're actually shrinking.
-//						//---		This is just a catch-all.
-//						if( (event.getState().getPreviousState() == State_ViewingCell.class || event.getState().getPreviousState() == State_CameraSnapping.class) &&
-//							event.getState().getTotalTimeInState() <= m_viewContext.config.cellSizeChangeTime_seconds )
-//						{
-//							this.updateCellTransforms(event.getState().getLastTimeStep());
-//						}
-//						else if( m_backingDirty )
-//						{
-//							this.updateCellTransforms(event.getState().getLastTimeStep());
-//						}
-//						else
-//						{
-//							this.updateCellsWithNoTransforms(event.getState().getLastTimeStep());
-//						}
-//					}
-//					else
+					else
 					{
 						this.updateCellTransforms(event.getState().getLastTimeStep());
 					}
@@ -614,7 +638,7 @@ public class VisualCellManager implements I_UIElement
 				{
 					Action_Camera_SetViewSize.Args args = event.getActionArgs();
 					
-//					if( args.updateBuffer() )
+					if( args.updateBuffer() )
 					{
 						if( m_backing != null )
 						{
@@ -635,17 +659,17 @@ public class VisualCellManager implements I_UIElement
 					initBacking(grid);
 					this.updateCellTransforms(0.0);
 				}
-				else if( event.getAction() == Action_Camera_SnapToPoint.class )
-				{
-					Action_Camera_SnapToPoint.Args args = event.getActionArgs();
-					
-					//--- DRK(TODO): Don't really like this null check here...necessary because of legacy
-					//---			 code using null snap args to simply change to floating state.
-					if( args == null || args.isInstant() )
-					{
-						this.updateCellTransforms(0.0);
-					}
-				}
+//				else if( event.getAction() == Action_Camera_SnapToPoint.class )
+//				{
+//					Action_Camera_SnapToPoint.Args args = event.getActionArgs();
+//					
+//					//--- DRK(TODO): Don't really like this null check here...necessary because of legacy
+//					//---			 code using null snap args to simply change to floating state.
+//					if( args == null || args.isInstant() )
+//					{
+//						this.updateCellTransforms(0.0);
+//					}
+//				}
 				else if( event.getAction() == Action_ViewingCell_Refresh.class )
 				{
 					//--- DRK > Used to clear alerts here, but moved it to the actual refresh button handler.
@@ -661,12 +685,10 @@ public class VisualCellManager implements I_UIElement
 	
 	public void onMetaCellLoaded()
 	{
-		m_backingDirty = true;
 	}
 	
 	public void onMetaCellRendered()
 	{
-		m_backingDirty = true;
 	}
 	
 	private BufferCell getCurrentBufferCell()
