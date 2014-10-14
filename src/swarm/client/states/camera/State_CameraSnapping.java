@@ -107,7 +107,7 @@ public class State_CameraSnapping extends A_State implements I_StateEventListene
 	}
 
 	void updateGridCoordinate(GridCoordinate targetCoordinate, CellAddress targetAddress_nullable, Point targetPoint)
-	{
+	{		
 		StateMachine_Camera machine = this.getParent();
 		
 		CellAddress oldTargetAddress = m_targetAddress;
@@ -326,6 +326,8 @@ public class State_CameraSnapping extends A_State implements I_StateEventListene
 		
 		if ( m_appContext.cameraMngr.isCameraAtRest() )
 		{
+//			s_logger.severe(""+m_targetGridCoordinate);
+			
 			State_ViewingCell.Constructor constructor = new State_ViewingCell.Constructor(m_targetCell);
 			
 			if( m_targetAddress != null )
@@ -348,7 +350,6 @@ public class State_CameraSnapping extends A_State implements I_StateEventListene
 		
 		m_targetAddress = null;
 		m_targetCell = null;
-		
 		m_targetGridCoordinate.copy(INVALID);
 		
 		//--- DRK > Might implement a more elegant expiry system for cells/code hanging out in the snap buffer,

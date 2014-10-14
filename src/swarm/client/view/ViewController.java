@@ -81,9 +81,8 @@ public class ViewController extends Object implements I_StateEventListener
 		addStateListener(m_viewContext.mouseNavigator);
 		addStateListener(m_viewContext.browserNavigator); 
 		addStateListener(m_viewContext.scrollNavigator);
-		addStateListener(m_viewContext.cellMngr);
 		addStateListener(m_viewContext.splitPanel);
-		
+		addStateListener(m_viewContext.cellMngr);
 		addStateListener(highlighter);
 		addStateListener(focuser);
 		//addStateListener(new smVisualCellHud((Panel)cellContainer, m_appConfig));

@@ -215,7 +215,7 @@ public class BufferCell extends A_Cell
 				//---	NOTE: This above problem might be because I was an idiot and didn't have a WAITING_ON_CODE case defined above...now there is one.
 				
 				E_CodeStatus splashStatus = this.getStatus(E_CodeType.SPLASH);
-				Code code = this.getCode(type);
+				Code code = this.getCode(E_CodeType.SPLASH);
 				if( splashStatus == E_CodeStatus.HAS_CODE && code != null && code.isStandInFor(E_CodeType.COMPILED))
 				{
 					m_visualization.setCode(code, this.getCellNamespace());
