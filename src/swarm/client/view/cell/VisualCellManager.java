@@ -586,7 +586,7 @@ public class VisualCellManager implements I_UIElement
 					
 //					s_logger.severe(""+m_viewContext.appContext.cameraMngr.getAtRestFrameCount());
 					
-					if( m_viewContext.appContext.cameraMngr.getAtRestFrameCount() > 2 )
+					if( m_viewContext.appContext.cameraMngr.getAtRestFrameCount() >= 2 )
 					{
 						m_cellPool.cleanPool();
 						
@@ -597,6 +597,8 @@ public class VisualCellManager implements I_UIElement
 							event.getState().getTotalTimeInState() <= m_viewContext.config.cellSizeChangeTime_seconds )
 						{
 							this.updateCellTransforms(event.getState().getLastTimeStep());
+							
+							s_logger.severe("updateCellTransforms >=2");
 						}
 						else
 						{
@@ -605,6 +607,7 @@ public class VisualCellManager implements I_UIElement
 					}
 					else
 					{
+						s_logger.severe("updateCellTransforms <2");
 						this.updateCellTransforms(event.getState().getLastTimeStep());
 					}
 				}
@@ -638,8 +641,9 @@ public class VisualCellManager implements I_UIElement
 				{
 					Action_Camera_SetViewSize.Args args = event.getActionArgs();
 					
-//					if( args.updateBuffer() )
+					if( args.updateBuffer() )
 					{
+						s_logger.severe("onResize updateBuffer()==true");
 						if( m_backing != null )
 						{
 							resizeBacking();
@@ -647,6 +651,10 @@ public class VisualCellManager implements I_UIElement
 						
 						this.updateCellTransforms(0.0);
 					}
+//					else
+//					{
+//						s_logger.severe("onResize updateBuffer()==false");
+//					}
 				}
 				else if( event.getAction() == StateMachine_Base.OnGridUpdate.class )
 				{					
@@ -659,17 +667,19 @@ public class VisualCellManager implements I_UIElement
 					initBacking(grid);
 					this.updateCellTransforms(0.0);
 				}
-//				else if( event.getAction() == Action_Camera_SnapToPoint.class )
-//				{
-//					Action_Camera_SnapToPoint.Args args = event.getActionArgs();
-//					
-//					//--- DRK(TODO): Don't really like this null check here...necessary because of legacy
-//					//---			 code using null snap args to simply change to floating state.
-//					if( args == null || args.isInstant() )
-//					{
-//						this.updateCellTransforms(0.0);
-//					}
-//				}
+				else if( event.getAction() == Action_Camera_SnapToPoint.class )
+				{
+					Action_Camera_SnapToPoint.Args args = event.getActionArgs();
+					
+					//--- DRK(TODO): Don't really like this null check here...necessary because of legacy
+					//---			 code using null snap args to simply change to floating state.
+					if( args == null || args.isInstant() )
+					{
+						s_logger.severe("SnapToPoint");;
+						
+						this.updateCellTransforms(0.0);
+					}
+				}
 				else if( event.getAction() == Action_ViewingCell_Refresh.class )
 				{
 					//--- DRK > Used to clear alerts here, but moved it to the actual refresh button handler.
