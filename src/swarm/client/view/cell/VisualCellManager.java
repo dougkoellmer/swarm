@@ -598,7 +598,7 @@ public class VisualCellManager implements I_UIElement
 						{
 							this.updateCellTransforms(event.getState().getLastTimeStep());
 							
-							s_logger.severe("updateCellTransforms >=2");
+//							s_logger.severe("updateCellTransforms >=2");
 						}
 						else
 						{
@@ -607,7 +607,8 @@ public class VisualCellManager implements I_UIElement
 					}
 					else
 					{
-						s_logger.severe("updateCellTransforms <2");
+//						s_logger.severe("updateCellTransforms <2");
+						
 						this.updateCellTransforms(event.getState().getLastTimeStep());
 					}
 				}
@@ -643,7 +644,8 @@ public class VisualCellManager implements I_UIElement
 					
 					if( args.updateBuffer() )
 					{
-						s_logger.severe("onResize updateBuffer()==true");
+//						s_logger.severe("onResize updateBuffer()==true");
+						
 						if( m_backing != null )
 						{
 							resizeBacking();
@@ -675,7 +677,7 @@ public class VisualCellManager implements I_UIElement
 					//---			 code using null snap args to simply change to floating state.
 					if( args == null || args.isInstant() )
 					{
-						s_logger.severe("SnapToPoint");;
+//						s_logger.severe("SnapToPoint");;
 						
 						this.updateCellTransforms(0.0);
 					}

@@ -71,6 +71,8 @@ public class ClientGrid extends A_Grid
 		
 		for( int currentSubCellCount = highestSubCellCount; currentSubCellCount > subCellCount; currentSubCellCount /= 2)
 		{
+			if( modifySubCellCount(currentSubCellCount) != currentSubCellCount )  continue;
+			
 			int relativeSubCellCount = currentSubCellCount / subCellCount;
 			
 			int m_sub = getSubDimension(m, relativeSubCellCount);
@@ -239,6 +241,11 @@ public class ClientGrid extends A_Grid
 		}
 		
 		return toReturn;
+	}
+	
+	public int modifySubCellCount(int subCellCount)
+	{
+		return subCellCount;
 	}
 	
 	@Override public String toString()

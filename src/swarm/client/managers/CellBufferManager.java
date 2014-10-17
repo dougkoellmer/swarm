@@ -154,15 +154,6 @@ public class CellBufferManager implements I_LocalCodeRepository
 			ithPair.update_cameraStill(timestep);
 		}
 	}
-	
-	private static int modifySubCellCount(int subCellCount)
-	{
-		if( subCellCount == 1 )  return subCellCount;
-		if( subCellCount == 2 )  return 4;
-		if( subCellCount == 8 )  return 16;
-		
-		return subCellCount;
-	}
 
 	public void update_cameraMoving(double timestep, ClientGrid grid, Camera camera, GridCoordinate snappingCoordinate_nullable, I_LocalCodeRepository alternativeCodeSource, int options__extends__smF_BufferUpdateOption)
 	{
@@ -184,7 +175,7 @@ public class CellBufferManager implements I_LocalCodeRepository
 //		cellSize = cellSize <= 4 ? 1 : cellSize; // COMMENT OUT TO get correct cell sizes.
 		subCellCount = subCellCount > gridSizeUpperOf2 ? gridSizeUpperOf2 : subCellCount;
 		
-		subCellCount = modifySubCellCount(subCellCount);
+		subCellCount = grid.modifySubCellCount(subCellCount);
 		
 		m_currentSubCellCount = subCellCount == 1 || m_overrideSubCellCount == null ? subCellCount : m_overrideSubCellCount;
 		

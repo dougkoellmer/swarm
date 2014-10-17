@@ -368,6 +368,7 @@ public class VisualCellContainer extends FlowPanel implements ResizeHandler, I_U
 	@Override
 	public void onResize(ResizeEvent event)
 	{
-		this.onResize();
+//		super.onResize(event);
+//		this.onResize();
 	}
 }

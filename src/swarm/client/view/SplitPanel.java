@@ -420,6 +420,8 @@ public class SplitPanel extends SplitLayoutPanel implements I_UIElement
 	{
 		super.onResize();
 		
+//		s_logger.severe("ON RESIZE");
+		
 		m_tabPanelWidth = m_splitter.getAbsoluteLeft();
 		
 		/*double rootPanelWidth = RootPanel.get().getOffsetWidth();
