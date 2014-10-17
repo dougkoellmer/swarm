@@ -123,6 +123,10 @@ public class VisualCellHudInner extends HorizontalPanel implements I_StateEventL
 					
 					m_viewContext.stateContext.perform(Action_Camera_SnapToAddress.class, m_args_SnapToAddress);
 				}
+				else
+				{
+					backOff();
+				}
 			}
 		});
 		
@@ -159,21 +163,7 @@ public class VisualCellHudInner extends HorizontalPanel implements I_StateEventL
 			{
 				if( !m_close.isEnabled() )  return;
 
-				State_ViewingCell viewingState = m_viewContext.stateContext.getEntered(State_ViewingCell.class);
-				if( viewingState == null )
-				{
-					s_utilPoint1.copy(VisualCellHudInner.this.m_viewContext.appContext.cameraMngr.getCamera().getPosition());
-				}
-				else
-				{
-					A_Grid grid = viewingState.getCell().getGrid();
-					viewingState.getTargetCoord().calcCenterPoint(s_utilPoint1, grid.getCellWidth(), grid.getCellHeight(), grid.getCellPadding(), 1);
-				}
-				
-				s_utilPoint1.incZ(VisualCellHudInner.this.m_viewContext.appConfig.backOffDistance);
-				
-				m_args_SetCameraTarget.init(s_utilPoint1, false, true);
-				m_viewContext.stateContext.perform(Action_Camera_SnapToPoint.class, m_args_SetCameraTarget);
+				backOff();
 			}
 		});
 		
@@ -183,6 +173,25 @@ public class VisualCellHudInner extends HorizontalPanel implements I_StateEventL
 		toolTipper.addTip(m_forward, new ToolTipConfig(E_ToolTipType.MOUSE_OVER, "Go forward."));
 		toolTipper.addTip(m_refresh, new ToolTipConfig(E_ToolTipType.MOUSE_OVER, "Refresh this cell."));
 		toolTipper.addTip(m_close, new ToolTipConfig(E_ToolTipType.MOUSE_OVER, "Back off."));
+	}
+	
+	private void backOff()
+	{
+		State_ViewingCell viewingState = m_viewContext.stateContext.getEntered(State_ViewingCell.class);
+		if( viewingState == null )
+		{
+			s_utilPoint1.copy(VisualCellHudInner.this.m_viewContext.appContext.cameraMngr.getCamera().getPosition());
+		}
+		else
+		{
+			A_Grid grid = viewingState.getCell().getGrid();
+			viewingState.getTargetCoord().calcCenterPoint(s_utilPoint1, grid.getCellWidth(), grid.getCellHeight(), grid.getCellPadding(), 1);
+		}
+		
+		s_utilPoint1.incZ(VisualCellHudInner.this.m_viewContext.appConfig.backOffDistance);
+		
+		m_args_SetCameraTarget.init(s_utilPoint1, false, true);
+		m_viewContext.stateContext.perform(Action_Camera_SnapToPoint.class, m_args_SetCameraTarget);
 	}
 	
 	private void updateCloseButton()
@@ -235,7 +244,8 @@ public class VisualCellHudInner extends HorizontalPanel implements I_StateEventL
 			
 			if( address == null )
 			{
-				m_up.setEnabled(false);
+//				m_up.setEnabled(false);
+				m_up.setEnabled(true);
 				m_parentAddress = null;
 			}
 			else
@@ -244,7 +254,8 @@ public class VisualCellHudInner extends HorizontalPanel implements I_StateEventL
 				
 				if( address == null )
 				{
-					m_up.setEnabled(false);
+//					m_up.setEnabled(false);
+					m_up.setEnabled(true);
 					m_parentAddress = null;
 				}
 				else
