@@ -48,6 +48,8 @@ public class VisualCellManager implements I_UIElement
 	private static final double NO_SCALING = .99999;
 	private static final Logger s_logger = Logger.getLogger(VisualCellManager.class.getName());
 	
+	private static final double FLUSH_CODE_RATE = .1;
+	
 	private Panel m_container = null;
 	
 	private final Point m_utilPoint1 = new Point();
@@ -73,6 +75,8 @@ public class VisualCellManager implements I_UIElement
 	
 	private final CanvasBacking.UpdateConfig m_backingConfig = new CanvasBacking.UpdateConfig();
 	private boolean m_needToUpdateBacking = false;
+	
+	private double m_flushCodeTimer = 0.0;
 	
 	public VisualCellManager(ViewContext viewContext, Panel container) 
 	{
@@ -158,6 +162,8 @@ public class VisualCellManager implements I_UIElement
 						VisualCell visualCell = (VisualCell) cell.getVisualization();
 						E_MetaState state = visualCell.getMetaState();
 						
+						//function nkb(a,b,c){var d,e,f,g,i;f=a.b.t.d.e;if(xc(a.c,b,c,1,f.e,a.b.p)){e=s0(f,bCb(a.b.p.e));d=g0(e,a.b.p.b,a.b.p.c);i=d.i;g=yhb(i);if(g==(dib(),$hb)){return a.b.p.d}}else{if(zc(a.c,b,c,1)){return 2}}return 0}
+						
 //						s_logger.severe(state+"");
 						
 						if( state == VisualCell.E_MetaState.DEFINITELY_SHOULD_BE_RENDERED_BY_NOW )
@@ -230,6 +236,18 @@ public class VisualCellManager implements I_UIElement
 	{
 		int bufferSize = cellBuffer.getCellCount();
 		
+		boolean keepTryingToFlush = true;
+		
+ 		if( cellBuffer.getSubCellCount() == 1 && tryFlushingSnappingOrFocusedCell() )
+ 		{
+ 			keepTryingToFlush = false;
+ 		}
+ 		
+		if( keepTryingToFlush && m_flushCodeTimer < FLUSH_CODE_RATE )
+		{
+			keepTryingToFlush = false;
+		}
+		
 		for ( int i = 0; i < bufferSize; i++ )
 		{
 			BufferCell ithBufferCell = cellBuffer.getCellAtIndex(i);
@@ -239,6 +257,12 @@ public class VisualCellManager implements I_UIElement
 			VisualCell ithVisualCell = (VisualCell) ithBufferCell.getVisualization();
 			
 			if( ithVisualCell == null )  continue;
+			
+			if( keepTryingToFlush )
+			{
+				keepTryingToFlush = !ithVisualCell.flushQueuedCode();
+				m_flushCodeTimer = 0.0;
+			}
 			
 			if( cellBuffer.getSubCellCount() > 1 && ithVisualCell.getMetaState() != VisualCell.E_MetaState.DEFINITELY_SHOULD_BE_RENDERED_BY_NOW )
 			{
@@ -412,6 +436,17 @@ public class VisualCellManager implements I_UIElement
 		{
 			basePoint = basePoint_highest_rounded;
 		}
+
+		boolean keepTryingToFlush = true;
+		
+ 		if( cellBuffer_i.getSubCellCount() == 1 && tryFlushingSnappingOrFocusedCell() )
+ 		{
+ 			keepTryingToFlush = false;
+ 		}
+		if( keepTryingToFlush && m_flushCodeTimer < FLUSH_CODE_RATE )
+		{
+			keepTryingToFlush = false;
+		}
 		
 //		s_logger.severe(subCellCount_buffer + " " + subCellCount_highest + " " +cellWidthPlusPadding + " " + cellWidth_div);
 		
@@ -428,6 +463,12 @@ public class VisualCellManager implements I_UIElement
 				if( ithBufferCell == null )  continue;
 				
 				VisualCell ithVisualCell = (VisualCell) ithBufferCell.getVisualization();
+				
+				if( keepTryingToFlush )
+				{
+					keepTryingToFlush = !ithVisualCell.flushQueuedCode();
+					m_flushCodeTimer = 0.0;
+				}
 				
 				if( subCellCount_i > 1 && ithVisualCell.getMetaState() != VisualCell.E_MetaState.DEFINITELY_SHOULD_BE_RENDERED_BY_NOW )
 				{
@@ -554,6 +595,44 @@ public class VisualCellManager implements I_UIElement
 		}
 	}
 	
+	private boolean tryFlushingSnappingOrFocusedCell()
+	{
+		BufferCell snappingOrFocusedCell = null;
+		
+		State_ViewingCell viewingState = m_viewContext.stateContext.get(State_ViewingCell.class);
+		
+		if( viewingState != null )
+		{
+			snappingOrFocusedCell = viewingState.getCell();
+		}
+		else
+		{
+			State_CameraSnapping snappingState = m_viewContext.stateContext.get(State_CameraSnapping.class);
+			
+			if( snappingState != null )
+			{
+				snappingOrFocusedCell = snappingState.getCell();
+			}
+		}
+		
+		if( snappingOrFocusedCell != null )
+		{
+			VisualCell cell = (VisualCell) snappingOrFocusedCell.getVisualization();
+			
+			if( cell != null )
+			{
+				if( cell.flushQueuedCode() )
+				{
+					m_flushCodeTimer = 0.0;
+					
+					return true;
+				}
+			}
+		}
+		
+		return false;
+	}
+	
 	public double getLastScaling()
 	{
 		return m_lastScaling;
@@ -582,6 +661,9 @@ public class VisualCellManager implements I_UIElement
 			{
 				if( event.getState().getParent() instanceof StateMachine_Camera )
 				{
+					double timestep = event.getState().getLastTimeStep();
+					m_flushCodeTimer += timestep;
+					
 					//boolean flushDestroyQueueIfMoving = (event.getState().getUpdateCount() % 8) == 0;
 					
 //					s_logger.severe(""+m_viewContext.appContext.cameraMngr.getAtRestFrameCount());
@@ -596,20 +678,20 @@ public class VisualCellManager implements I_UIElement
 						if( (event.getState().getPreviousState() == State_ViewingCell.class || event.getState().getPreviousState() == State_CameraSnapping.class) &&
 							event.getState().getTotalTimeInState() <= m_viewContext.config.cellSizeChangeTime_seconds )
 						{
-							this.updateCellTransforms(event.getState().getLastTimeStep());
+							this.updateCellTransforms(timestep);
 							
 //							s_logger.severe("updateCellTransforms >=2");
 						}
 						else
 						{
-							this.updateCellsWithNoTransforms(event.getState().getLastTimeStep());
+							this.updateCellsWithNoTransforms(timestep);
 						}
 					}
 					else
 					{
 //						s_logger.severe("updateCellTransforms <2");
 						
-						this.updateCellTransforms(event.getState().getLastTimeStep());
+						this.updateCellTransforms(timestep);
 					}
 				}
 				

@@ -104,6 +104,18 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		}
 	}
 	
+	private static class QueuedSetCode
+	{
+		private final Code m_code;
+		private final String m_namespace;
+		
+		public QueuedSetCode(Code code, String namespace)
+		{
+			m_code = code;
+			m_namespace = namespace;
+		}
+	}
+	
 	private I_CodeListener m_codeListener;
 	private int m_id;
 	private final AbsolutePanel m_contentPanel = new AbsolutePanel();
@@ -161,6 +173,8 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	
 	private int m_zIndex_default;
 	private int m_zIndex;
+	
+	private QueuedSetCode m_queuedCode = null;
 	
 	public VisualCell(I_CellSpinner spinner, SandboxManager sandboxMngr, CameraManager cameraMngr, double retractionEasing, double sizeChangeTime)
 	{
@@ -448,7 +462,8 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	}
 	
 	private void onCreatedOrRecycled(int width, int height, int padding, int subCellDimension)
-	{		
+	{
+		m_queuedCode = null;
 		m_layoutState = LayoutState.NOT_CHANGING;
 		m_isFocused = false;
 		m_isValidated = false;
@@ -764,16 +779,48 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 			}
 		}
 	}
+	
+	public boolean flushQueuedCode()
+	{
+		if( m_queuedCode != null )
+		{
+			setCode_private(m_queuedCode.m_code, m_queuedCode.m_namespace);
+			m_queuedCode = null;
+			
+			return true;
+		}
+		
+		return false;
+	}
 
 	@Override
 	public void setCode(Code code, String cellNamespace)
 	{
-		this.clearStatusHtml();
-		
 		/*if( m_sandboxMngr.isRunning() )
 		{
 			m_sandboxMngr.stop(m_contentPanel.getElement());
 		}*/
+		
+		if( m_subCellDimension == 1 )
+		{
+			boolean isSnappingOrFocused = m_isSnapping || m_isFocused;
+			
+			if( !isSnappingOrFocused )
+			{
+				m_queuedCode = new QueuedSetCode(code, cellNamespace);
+				
+				return;
+			}
+		}
+		
+		setCode_private(code, cellNamespace);
+	}
+		
+	private void setCode_private(Code code, String cellNamespace)
+	{
+		this.clearStatusHtml();
+		
+		m_queuedCode = null;
 		
 		m_codeSafetyLevel = code.getSafetyLevel();
 
@@ -921,7 +968,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		m_utilCode.setRawCode(html);
 		m_utilCode.setSafetyLevel(E_CodeSafetyLevel.NO_SANDBOX_STATIC);
 		
-		this.setCode(m_utilCode, "");
+		this.setCode_private(m_utilCode, "");
 	}
 	
 	UIBlocker getBlocker()
