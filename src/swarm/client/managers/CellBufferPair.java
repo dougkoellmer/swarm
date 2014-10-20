@@ -161,4 +161,9 @@ public class CellBufferPair
 		//---		iteration of swarm, but here's some future proofing for ya.
 		m_killQueue.drain();
 	}
+	
+	@Override public String toString()
+	{
+		return m_displayBuffer.toString();
+	}
 }

@@ -221,6 +221,11 @@ public class CellBuffer extends A_BufferCellList
 				BufferCell newCell = m_cellPool.allocCell(grid, m_subCellCount, createVisualizations);
 				this.m_cellList.add(newCell);
 				
+//				if( m_subCellCount == 2 )
+//				{
+//					s_logger.severe("ERER");;
+//				}
+				
 				newCell.getCoordinate().set(m, n);
 				
 //				s_logger.severe(m_subCellCount+"");
@@ -267,5 +272,10 @@ public class CellBuffer extends A_BufferCellList
 		super.drain();
 		
 		this.setExtents(0, 0, 0, 0);
+	}
+	
+	@Override public String toString()
+	{
+		return m_coord.getM() + " " + m_coord.getN() + " " +  m_width + " " +  m_height;
 	}
 }

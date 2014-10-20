@@ -477,8 +477,13 @@ public class MouseNavigator implements I_UIElement, Mouse.I_Listener
 				//TODO: m_mouse.isMoving is busted.
 				if( m_utilVector.calcLengthSquared() > 0)
 				{
+//					s_logger.severe("moved");
 					m_args_SnapToPoint.init(m_utilPoint2, true, true);
 					m_viewContext.stateContext.perform(Action_Camera_SnapToPoint.class, m_args_SnapToPoint);
+				}
+				else
+				{
+//					s_logger.severe("not moved");
 				}
 				
 				m_utilPoint2.calcDifference(m_lastWorldPoint, m_utilVector);
@@ -584,7 +589,7 @@ public class MouseNavigator implements I_UIElement, Mouse.I_Listener
 			
 			case DID_UPDATE:
 			{
-				if ( event.getState().getParent() instanceof StateMachine_Camera )
+				if ( event.getState() instanceof StateMachine_Camera )
 				{
 					//m_scrollArrow.update(state.getLastTimeStep());
 					this.update();

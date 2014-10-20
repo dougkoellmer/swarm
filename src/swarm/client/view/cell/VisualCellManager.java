@@ -236,19 +236,11 @@ public class VisualCellManager implements I_UIElement
 	{
 		int bufferSize = cellBuffer.getCellCount();
 		
-		boolean keepTryingToFlush = true;
+		boolean keepTryingToFlush = initFlushingRoundAndKeepFlushing(cellBuffer.getSubCellCount());
 		
- 		if( cellBuffer.getSubCellCount() == 1 && tryFlushingSnappingOrFocusedCell() )
- 		{
- 			keepTryingToFlush = false;
- 		}
- 		
-		if( keepTryingToFlush && m_flushCodeTimer < FLUSH_CODE_RATE )
-		{
-			keepTryingToFlush = false;
-		}
+		int i = bufferSize%2 == 0 ? bufferSize/2-1 : bufferSize/2;
 		
-		for ( int i = 0; i < bufferSize; i++ )
+		for ( int offset = 0; i >= 0 && i < bufferSize; offset=offset<=0?-offset+1:-offset-1, i+=offset )
 		{
 			BufferCell ithBufferCell = cellBuffer.getCellAtIndex(i);
 			
@@ -258,9 +250,9 @@ public class VisualCellManager implements I_UIElement
 			
 			if( ithVisualCell == null )  continue;
 			
-			if( keepTryingToFlush )
+			if( keepTryingToFlush && ithVisualCell.flushQueuedCode() )
 			{
-				keepTryingToFlush = !ithVisualCell.flushQueuedCode();
+				keepTryingToFlush = false;
 				m_flushCodeTimer = 0.0;
 			}
 			
@@ -390,7 +382,17 @@ public class VisualCellManager implements I_UIElement
 		int windowWidth = (int) m_viewContext.scrollNavigator.getWindowWidth();
 		int windowHeight = (int) m_viewContext.scrollNavigator.getWindowHeight();
 	
-		String scaleProperty = sizeScaling < NO_SCALING || sizeScaling > 1-NO_SCALING ? U_Css.createScaleTransform(sizeScaling, use3dTransforms) : null;
+		String scaleProperty = null;
+		double cellWidthForMeta = 0.0, cellHeightForMeta = 0.0;
+		if( subCellCount_i == 1 )
+		{
+			scaleProperty = sizeScaling < NO_SCALING || sizeScaling > 1-NO_SCALING ? U_Css.createScaleTransform(sizeScaling, use3dTransforms) : null;
+		}
+		else if( subCellCount_i > 1 )
+		{
+			cellWidthForMeta = (grid.getCellWidth())*sizeScaling;
+			cellHeightForMeta = (grid.getCellHeight())*sizeScaling;
+		}
 		
 		String transformProperty = m_viewContext.appContext.platformInfo.getTransformProperty();
 		
@@ -437,16 +439,7 @@ public class VisualCellManager implements I_UIElement
 			basePoint = basePoint_highest_rounded;
 		}
 
-		boolean keepTryingToFlush = true;
-		
- 		if( cellBuffer_i.getSubCellCount() == 1 && tryFlushingSnappingOrFocusedCell() )
- 		{
- 			keepTryingToFlush = false;
- 		}
-		if( keepTryingToFlush && m_flushCodeTimer < FLUSH_CODE_RATE )
-		{
-			keepTryingToFlush = false;
-		}
+		boolean keepTryingToFlush = initFlushingRoundAndKeepFlushing(subCellCount_i);
 		
 //		s_logger.severe(subCellCount_buffer + " " + subCellCount_highest + " " +cellWidthPlusPadding + " " + cellWidth_div);
 		
@@ -455,18 +448,22 @@ public class VisualCellManager implements I_UIElement
 		//---		intelligent DOM-change batching, but we must assume that most browsers are retarded.
 		//--	NOTE: Well, not ALL manipulation is in here, there are a few odds and ends done outside this...but most should be here.
 		m_container.getElement().getStyle().setDisplay(Display.NONE);
-		{			
-			for ( int i = 0; i < bufferSize; i++ )
+		{
+			int i = bufferSize%2 == 0 ? bufferSize/2-1 : bufferSize/2;
+			
+			for ( int offset = 0; i >= 0 && i < bufferSize; offset=offset<=0?-offset+1:-offset-1, i+=offset )
 			{
+//				s_logger.severe(i+" " + offset);
+				
 				BufferCell ithBufferCell = cellBuffer_i.getCellAtIndex(i);
 				
 				if( ithBufferCell == null )  continue;
 				
 				VisualCell ithVisualCell = (VisualCell) ithBufferCell.getVisualization();
 				
-				if( keepTryingToFlush )
+				if( keepTryingToFlush && ithVisualCell.flushQueuedCode() )
 				{
-					keepTryingToFlush = !ithVisualCell.flushQueuedCode();
+					keepTryingToFlush = false;
 					m_flushCodeTimer = 0.0;
 				}
 				
@@ -577,6 +574,11 @@ public class VisualCellManager implements I_UIElement
 				String transform = scaleProperty != null ? translateProperty + " " + scaleProperty : translateProperty;
 				ithVisualCell.getElement().getStyle().setProperty(transformProperty, transform);
 				
+				if( subCellCount_i > 1 )
+				{
+					ithVisualCell.setSize(cellWidthForMeta+"px", cellHeightForMeta+"px");
+				}
+				
 //				s_logger.severe(transform+"");
 				
 				if( ithVisualCell.getParent() == null )
@@ -595,8 +597,10 @@ public class VisualCellManager implements I_UIElement
 		}
 	}
 	
-	private boolean tryFlushingSnappingOrFocusedCell()
+	private boolean initFlushingRoundAndKeepFlushing(int subCellCount)
 	{
+		if( subCellCount > 1 )  return true;
+		
 		BufferCell snappingOrFocusedCell = null;
 		
 		State_ViewingCell viewingState = m_viewContext.stateContext.get(State_ViewingCell.class);
@@ -617,20 +621,25 @@ public class VisualCellManager implements I_UIElement
 		
 		if( snappingOrFocusedCell != null )
 		{
-			VisualCell cell = (VisualCell) snappingOrFocusedCell.getVisualization();
+			VisualCell visualCell = (VisualCell) snappingOrFocusedCell.getVisualization();
 			
-			if( cell != null )
+			if( visualCell != null )
 			{
-				if( cell.flushQueuedCode() )
+				if( visualCell.flushQueuedCode() )
 				{
 					m_flushCodeTimer = 0.0;
 					
-					return true;
+					return false;
 				}
 			}
 		}
 		
-		return false;
+		if( m_flushCodeTimer < FLUSH_CODE_RATE )
+		{
+			return false;
+		}
+		
+		return true;
 	}
 	
 	public double getLastScaling()
@@ -668,7 +677,7 @@ public class VisualCellManager implements I_UIElement
 					
 //					s_logger.severe(""+m_viewContext.appContext.cameraMngr.getAtRestFrameCount());
 					
-					if( m_viewContext.appContext.cameraMngr.getAtRestFrameCount() >= 2 )
+					if( m_viewContext.appContext.cameraMngr.getAtRestFrameCount() > 2 )
 					{
 						m_cellPool.cleanPool();
 						
@@ -678,16 +687,18 @@ public class VisualCellManager implements I_UIElement
 						if( (event.getState().getPreviousState() == State_ViewingCell.class || event.getState().getPreviousState() == State_CameraSnapping.class) &&
 							event.getState().getTotalTimeInState() <= m_viewContext.config.cellSizeChangeTime_seconds )
 						{
-							this.updateCellTransforms(timestep);
-							
 //							s_logger.severe("updateCellTransforms >=2");
+							
+							this.updateCellTransforms(timestep);
 						}
 						else
 						{
+//							s_logger.severe("updateCellsWithNoTransforms >=2");
+							
 							this.updateCellsWithNoTransforms(timestep);
 						}
 					}
-					else
+					else if( m_viewContext.appContext.cameraMngr.getAtRestFrameCount() < 2 )
 					{
 //						s_logger.severe("updateCellTransforms <2");
 						

@@ -71,7 +71,7 @@ public class ClientGrid extends A_Grid
 		
 		for( int currentSubCellCount = highestSubCellCount; currentSubCellCount > subCellCount; currentSubCellCount /= 2)
 		{
-			if( modifySubCellCount(currentSubCellCount) != currentSubCellCount )  continue;
+//			if( modifySubCellCount(currentSubCellCount) != currentSubCellCount )  continue;
 			
 			int relativeSubCellCount = currentSubCellCount / subCellCount;
 			
