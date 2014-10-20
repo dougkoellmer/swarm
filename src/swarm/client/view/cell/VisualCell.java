@@ -810,7 +810,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 			m_sandboxMngr.stop(m_contentPanel.getElement());
 		}*/
 		
-		if( m_subCellDimension == 1 )
+//		if( m_subCellDimension == 1 )
 		{
 			boolean isSnappingOrFocused = m_isSnapping || m_isFocused;
 			

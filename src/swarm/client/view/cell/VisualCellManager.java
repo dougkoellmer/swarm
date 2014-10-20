@@ -298,7 +298,10 @@ public class VisualCellManager implements I_UIElement
 			{
 				initBacking(grid);
 				
-				m_container.add(m_backing.getCanvas());
+				if( m_backing != null )
+				{
+					m_container.add(m_backing.getCanvas());
+				}
 			}
 			
 			if( m_backing != null )
