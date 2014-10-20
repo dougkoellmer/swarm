@@ -133,66 +133,66 @@ public class VisualCellManager implements I_UIElement
 	
 	private void initBacking(final ClientGrid grid)
 	{
-		if( m_backing == null )
-		{
-			SpritePlateAnimation animation = new SpritePlateAnimation
-			(
-				m_viewContext.config.spinnerAnimation,
-				m_viewContext.config.spinnerAnimationFramerate,
-				m_viewContext.config.spinnerAnimationFrameCount,
-				m_viewContext.config.spinnerAnimationFramesAcross
-			);
-			
-//			String color = "rgb(255,0,0)";
-			String color = "rgb(255,255,255)";
-			
-			//--- DRK > Max dimensions could actually be a bit smaller cause of padding...eh.
-			int maxCellWidth = grid.getCellWidth()/2;
-			int maxCellHeight = grid.getCellHeight()/2;
-			
-			m_backing = new CanvasBacking(animation, color, maxCellWidth, maxCellHeight, new CanvasBacking.I_Skipper()
-			{
-				@Override public int skip(int m, int n)
-				{
-					CellBufferManager cellManager = m_viewContext.appContext.cellBufferMngr;
-					if( grid.isObscured(m, n, 1, cellManager.getSubCellCount(), m_obscured) )
-					{
-						CellBuffer cellBuffer = cellManager.getDisplayBuffer(U_Bits.calcBitPosition(m_obscured.subCellDimension));
-						BufferCell cell = cellBuffer.getCellAtAbsoluteCoord(m_obscured.m, m_obscured.n);
-						VisualCell visualCell = (VisualCell) cell.getVisualization();
-						E_MetaState state = visualCell.getMetaState();
-						
-						//function nkb(a,b,c){var d,e,f,g,i;f=a.b.t.d.e;if(xc(a.c,b,c,1,f.e,a.b.p)){e=s0(f,bCb(a.b.p.e));d=g0(e,a.b.p.b,a.b.p.c);i=d.i;g=yhb(i);if(g==(dib(),$hb)){return a.b.p.d}}else{if(zc(a.c,b,c,1)){return 2}}return 0}
-						
-//						s_logger.severe(state+"");
-						
-						if( state == VisualCell.E_MetaState.DEFINITELY_SHOULD_BE_RENDERED_BY_NOW )
-						{
-							return m_obscured.offset;
-						}
-					}
-					else
-					{
-						if( grid.isTaken(m, n, 1) )
-						{
-							return 2;
-						}
-					}
-					
-					return 0;
-				}
-			});
-			
-			m_backing.getCanvas().getElement().getStyle().setPosition(Position.ABSOLUTE);
-			m_backing.getCanvas().getElement().getStyle().setLeft(0, Unit.PX);
-			m_backing.getCanvas().getElement().getStyle().setTop(0, Unit.PX);
-			m_backing.getCanvas().getElement().getStyle().setProperty("transformOrigin", "0px 0px 0px");
-			m_backing.getCanvas().addStyleName("sm_canvas_backing");
-			E_ZIndex.CELL_BACKING.assignTo(m_backing.getCanvas());
-			resizeBacking();
-			
+//		if( m_backing == null )
+//		{
+//			SpritePlateAnimation animation = new SpritePlateAnimation
+//			(
+//				m_viewContext.config.spinnerAnimation,
+//				m_viewContext.config.spinnerAnimationFramerate,
+//				m_viewContext.config.spinnerAnimationFrameCount,
+//				m_viewContext.config.spinnerAnimationFramesAcross
+//			);
+//			
+////			String color = "rgb(255,0,0)";
+//			String color = "rgb(255,255,255)";
+//			
+//			//--- DRK > Max dimensions could actually be a bit smaller cause of padding...eh.
+//			int maxCellWidth = grid.getCellWidth()/2;
+//			int maxCellHeight = grid.getCellHeight()/2;
+//			
+//			m_backing = new CanvasBacking(animation, color, maxCellWidth, maxCellHeight, new CanvasBacking.I_Skipper()
+//			{
+//				@Override public int skip(int m, int n)
+//				{
+//					CellBufferManager cellManager = m_viewContext.appContext.cellBufferMngr;
+//					if( grid.isObscured(m, n, 1, cellManager.getSubCellCount(), m_obscured) )
+//					{
+//						CellBuffer cellBuffer = cellManager.getDisplayBuffer(U_Bits.calcBitPosition(m_obscured.subCellDimension));
+//						BufferCell cell = cellBuffer.getCellAtAbsoluteCoord(m_obscured.m, m_obscured.n);
+//						VisualCell visualCell = (VisualCell) cell.getVisualization();
+//						E_MetaState state = visualCell.getMetaState();
+//						
+//						//function nkb(a,b,c){var d,e,f,g,i;f=a.b.t.d.e;if(xc(a.c,b,c,1,f.e,a.b.p)){e=s0(f,bCb(a.b.p.e));d=g0(e,a.b.p.b,a.b.p.c);i=d.i;g=yhb(i);if(g==(dib(),$hb)){return a.b.p.d}}else{if(zc(a.c,b,c,1)){return 2}}return 0}
+//						
+////						s_logger.severe(state+"");
+//						
+//						if( state == VisualCell.E_MetaState.DEFINITELY_SHOULD_BE_RENDERED_BY_NOW )
+//						{
+//							return m_obscured.offset;
+//						}
+//					}
+//					else
+//					{
+//						if( grid.isTaken(m, n, 1) )
+//						{
+//							return 2;
+//						}
+//					}
+//					
+//					return 0;
+//				}
+//			});
+//			
+//			m_backing.getCanvas().getElement().getStyle().setPosition(Position.ABSOLUTE);
+//			m_backing.getCanvas().getElement().getStyle().setLeft(0, Unit.PX);
+//			m_backing.getCanvas().getElement().getStyle().setTop(0, Unit.PX);
+//			m_backing.getCanvas().getElement().getStyle().setProperty("transformOrigin", "0px 0px 0px");
+//			m_backing.getCanvas().addStyleName("sm_canvas_backing");
 //			E_ZIndex.CELL_BACKING.assignTo(m_backing.getCanvas());
-		}
+//			resizeBacking();
+//			
+////			E_ZIndex.CELL_BACKING.assignTo(m_backing.getCanvas());
+//		}
 	}
 	
 	private void resizeBacking()
@@ -775,8 +775,14 @@ public class VisualCellManager implements I_UIElement
 					if( args == null || args.isInstant() )
 					{
 //						s_logger.severe("SnapToPoint");;
+						double timestep = 0.0;
+						StateMachine_Camera cameraMachine = event.get(StateMachine_Camera.class);
+						if( cameraMachine != null && cameraMachine.getCurrentState().getClass() != State_ViewingCell.class )
+						{
+							timestep = cameraMachine.getLastTimeStep();
+						}
 						
-						this.updateCellTransforms(0.0);
+						this.updateCellTransforms(timestep);
 					}
 				}
 				else if( event.getAction() == Action_ViewingCell_Refresh.class )
