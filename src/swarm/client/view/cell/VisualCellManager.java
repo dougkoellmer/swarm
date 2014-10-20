@@ -574,6 +574,10 @@ public class VisualCellManager implements I_UIElement
 				String transform = scaleProperty != null ? translateProperty + " " + scaleProperty : translateProperty;
 				ithVisualCell.getElement().getStyle().setProperty(transformProperty, transform);
 				
+				//--- DRK > Not using css scaling here cause Chrome (maybe others) seems to cache the image rendered
+				//---		assuming the non-scaled element size (using css width and height) and then stretch it up, instead
+				//---		of rendering it properly taking into account scaling. *Eventually* Chrome catches up and rerenders
+				//---		the image properly, but it takes a while.
 				if( subCellCount_i > 1 )
 				{
 					ithVisualCell.setSize(cellWidthForMeta+"px", cellHeightForMeta+"px");

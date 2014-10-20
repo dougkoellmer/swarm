@@ -192,7 +192,7 @@ public class CellBuffer extends A_BufferCellList
 						{
 							I_BufferCellListener visualization = cell.getVisualization();
 							
-							if( visualization.isLoaded() )
+							if( visualization.isLoaded() || otherBuffer.getCellAtAbsoluteCoord(m, n) == null )
 							{
 								if( m_obscured.offset == 1 )
 								{
