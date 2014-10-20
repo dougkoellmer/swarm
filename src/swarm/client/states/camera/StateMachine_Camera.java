@@ -185,7 +185,7 @@ public class StateMachine_Camera extends A_StateMachine implements I_StateEventL
 		//--- DRK > Not enforcing z constraints here because UI probably hasn't told us camera view size yet.
 		
 		A_ClientUser user = m_appContext.userMngr.getUser();
-		Point start = user.getLastPosition();
+		Point start = m_appContext.config.startingPoint != null ? m_appContext.config.startingPoint : user.getLastPosition();
 //		start = new Point(start.getX(), start.getY(), start.getZ()+20000);
 		m_appContext.cameraMngr.setCameraPosition(start, false);
 		m_appContext.registerBufferMngr(m_appContext.cellBufferMngr);

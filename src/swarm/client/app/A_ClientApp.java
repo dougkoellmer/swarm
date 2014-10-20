@@ -19,6 +19,7 @@ import swarm.client.managers.CellSizeManager;
 import swarm.client.managers.ClientAccountManager;
 import swarm.client.managers.GridManager;
 import swarm.client.managers.UserManager;
+import swarm.client.navigation.BrowserNavigator;
 import swarm.client.navigation.U_CameraViewport;
 import swarm.client.states.StateContainer_Base;
 import swarm.client.states.StateMachine_Base;
@@ -275,6 +276,10 @@ public class A_ClientApp extends A_App implements I_TimeSource
 		m_viewContext.recaptchaWrapper = new RecaptchaWrapper();
 		m_viewContext.clickMngr = new ClickManager();
 		m_viewContext.toolTipMngr = new ToolTipManager(m_appContext.platformInfo.getPlatform() != E_Platform.IOS, S_UI.TOOL_TIP_DELAY);
+		
+		m_viewContext.browserNavigator = new BrowserNavigator(m_viewContext, m_viewConfig.defaultPageTitle, m_appConfig.floatingHistoryUpdateFreq_seconds);
+		m_appConfig.startingPoint = m_viewContext.browserNavigator.getStartingPoint();
+		
 		
 		//--- DRK > Set defaults for tool tips.
 		for( int i = E_ZIndex.TOOL_TIP_1.ordinal(), j = 0; i <= E_ZIndex.TOOL_TIP_5.ordinal(); i++, j++ )

@@ -4,6 +4,7 @@ import swarm.client.app.AppContext;
 import swarm.client.app.ClientAppConfig;
 import swarm.client.input.ClickManager;
 import swarm.client.navigation.BrowserNavigator;
+import swarm.client.navigation.HistoryStateManager;
 import swarm.client.navigation.MouseNavigator;
 import swarm.client.navigation.ScrollNavigator;
 import swarm.client.thirdparty.captcha.RecaptchaWrapper;

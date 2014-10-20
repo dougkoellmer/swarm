@@ -72,7 +72,6 @@ public class ViewController extends Object implements I_StateEventListener
 		m_viewContext.clickMngr = new ClickManager();
 		m_viewContext.consoleBlocker = new ConsoleBlocker();
 		m_viewContext.mouseNavigator = new MouseNavigator(m_viewContext, mouse);
-		m_viewContext.browserNavigator = new BrowserNavigator(m_viewContext, m_viewConfig.defaultPageTitle, m_appConfig.floatingHistoryUpdateFreq_seconds);
 		m_viewContext.scrollNavigator = new ScrollNavigator(m_viewContext, cellContainer.getScrollContainer(), cellContainer.getCellContainerInner(), cellContainer.getMouseEnabledLayer());
 		VisualCellFocuser focuser = new VisualCellFocuser(m_viewContext);
 		m_viewContext.cellMngr = new VisualCellManager(m_viewContext, cellContainer.getCellContainerInner());

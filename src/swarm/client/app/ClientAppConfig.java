@@ -6,6 +6,7 @@ import swarm.client.view.ViewController;
 import swarm.client.view.cell.SpritePlateAnimation;
 import swarm.shared.app.AppConfig;
 import swarm.shared.entities.A_Grid;
+import swarm.shared.structs.Point;
 
 public class ClientAppConfig extends AppConfig
 {
@@ -29,6 +30,8 @@ public class ClientAppConfig extends AppConfig
 	
 	public int codeCacheSize = 128;
 	public double codeCacheExpiration_seconds = 60 * 5;
+	
+	public Point startingPoint = null;
 	
 	public A_ClientUser user;
 	public ClientGrid grid;

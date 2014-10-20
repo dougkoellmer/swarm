@@ -192,7 +192,7 @@ public class CellBuffer extends A_BufferCellList
 						{
 							I_BufferCellListener visualization = cell.getVisualization();
 							
-							if( visualization.isLoaded() || otherBuffer.getCellAtAbsoluteCoord(m, n) == null )
+							if( visualization.isLoaded() )
 							{
 								if( m_obscured.offset == 1 )
 								{
@@ -214,9 +214,14 @@ public class CellBuffer extends A_BufferCellList
 				if( swap(m, n, otherBuffer, this) )  continue;
 				if( swap(m, n, m_killQueue, this) )  continue;
 				
-				//--- DRK > If we're obscured then we attempt to swap an existing cell
-				//---		from the other buffer or the kill queue, but we don't make new cells.
+				//--- DRK > If we're obscured then although we attempt to swap an existing cell
+				//---		from the other buffer or the kill queue above, we don't make new cells.
 				if( obscured )  continue;
+				
+				if( m_subCellCount > 1 )
+				{
+//					s_logger.severe("ERER");
+				}
 				
 				BufferCell newCell = m_cellPool.allocCell(grid, m_subCellCount, createVisualizations);
 				this.m_cellList.add(newCell);

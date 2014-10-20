@@ -423,6 +423,15 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	
 	public void onCreate(BufferCell bufferCell, int width, int height, int padding, int subCellDimension)
 	{
+		if( subCellDimension == 1 )
+		{
+			s_logger.severe("MADE cell_1");
+		}
+		else
+		{
+			s_logger.severe("MADE cell>1");
+		}
+		
 		m_bufferCell = bufferCell;
 		
 		onCreatedOrRecycled(width, height, padding, subCellDimension);

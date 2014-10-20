@@ -80,7 +80,6 @@ public class BrowserNavigator implements I_StateEventListener
 	private final double m_floatingHistoryUpdateRate;
 	
 	private final CameraManager m_cameraMngr;
-	private final StateContext m_stateContext;
 	private final ViewContext m_viewContext;
 	
 	private final Point m_utilPoint1 = new Point();
@@ -92,7 +91,6 @@ public class BrowserNavigator implements I_StateEventListener
 	public BrowserNavigator(ViewContext viewContext, String defaultPageTitle, double floatingHistoryUpdateRate_seconds)
 	{
 		m_viewContext = viewContext;
-		m_stateContext = m_viewContext.stateContext;
 		m_cameraMngr = m_viewContext.appContext.cameraMngr;
 		
 		m_floatingHistoryUpdateRate = floatingHistoryUpdateRate_seconds;
@@ -124,18 +122,18 @@ public class BrowserNavigator implements I_StateEventListener
 				{
 					m_args_SnapToCoordinate.init(state.getMapping().getCoordinate());
 					
-					if( !m_stateContext.isPerformable(Action_Camera_SnapToCoordinate.class, m_args_SnapToCoordinate) )
+					if( !m_viewContext.stateContext.isPerformable(Action_Camera_SnapToCoordinate.class, m_args_SnapToCoordinate) )
 					{
 						m_historyManager./*re*/pushState(url, state.getMapping());
 					}
 					else
 					{
-						m_stateContext.perform(Action_Camera_SnapToCoordinate.class, m_args_SnapToCoordinate);
+						m_viewContext.stateContext.perform(Action_Camera_SnapToCoordinate.class, m_args_SnapToCoordinate);
 					}
 				}
 				else if( state.getPoint() != null )
 				{
-					if( !m_stateContext.isPerformable(Action_Camera_SnapToPoint.class) )
+					if( !m_viewContext.stateContext.isPerformable(Action_Camera_SnapToPoint.class) )
 					{
 						m_historyManager./*re*/pushState(url, state.getPoint());
 					}
@@ -150,10 +148,12 @@ public class BrowserNavigator implements I_StateEventListener
 						}
 						else*/
 						{
-							A_State cameraMachine = m_stateContext.getEntered(StateMachine_Camera.class);
-							boolean instant = cameraMachine != null && cameraMachine.getUpdateCount() == 0;
-							m_args_SnapToPoint.init(state.getPoint(), instant, true);
-							m_stateContext.perform(Action_Camera_SnapToPoint.class, m_args_SnapToPoint);
+							A_State cameraMachine = m_viewContext.stateContext.getEntered(StateMachine_Camera.class);
+							if( cameraMachine != null && cameraMachine.getUpdateCount() > 0 )
+							{
+								m_args_SnapToPoint.init(state.getPoint(), /*instant=*/false, true);
+								m_viewContext.stateContext.perform(Action_Camera_SnapToPoint.class, m_args_SnapToPoint);
+							}
 							
 							//s_logger.info("SETTING TARGET POINT: " + state.getPoint());
 						}
@@ -177,6 +177,20 @@ public class BrowserNavigator implements I_StateEventListener
 	public void addStateChangeListener(I_StateChangeListener listener)
 	{
 		m_listenerManager.addListenerToBack(listener);
+	}
+	
+	public Point getStartingPoint()
+	{
+		HistoryState currentHistoryState = m_historyManager.getCurrentState();
+		
+		if( currentHistoryState != null )
+		{
+			Point point = currentHistoryState.getPoint();
+			
+			return point;
+		}
+		
+		return null;
 	}
 	
 	private void dispatchStateChange()
@@ -399,7 +413,7 @@ public class BrowserNavigator implements I_StateEventListener
 					{
 						if( m_pushHistoryStateForFloating )
 						{
-							StateMachine_Camera machine = m_stateContext.getEntered(StateMachine_Camera.class);
+							StateMachine_Camera machine = m_viewContext.stateContext.getEntered(StateMachine_Camera.class);
 							
 							if( m_stateAlreadyPushedForViewingExit || event.getState().getPreviousState() == State_CameraSnapping.class )
 							{
@@ -471,7 +485,7 @@ public class BrowserNavigator implements I_StateEventListener
 						//---		you navigate from a different page...if this check isn't here, the path goes like
 						//---		mydomain.com/mypath, mydomain.com while snapping, then mydomain.com/mypath again.
 						//---		It would be better if the statemachine didn't enter the floating state initially.
-						A_State state = m_stateContext.getEntered(StateMachine_Camera.class);
+						A_State state = m_viewContext.stateContext.getEntered(StateMachine_Camera.class);
 						if( state != null && state.getUpdateCount() > 0 ) // dunno why it would be null, just being paranoid before a deploy
 						{
 							this.setPositionForFloatingState(event.getState(), m_cameraMngr.getCamera().getPosition(), true);
@@ -581,7 +595,7 @@ public class BrowserNavigator implements I_StateEventListener
 				}
 				else if( event.getAction() == Action_Camera_SnapToPoint.class )
 				{
-					State_CameraFloating floatingState = m_stateContext.getEntered(State_CameraFloating.class);
+					State_CameraFloating floatingState = m_viewContext.stateContext.getEntered(State_CameraFloating.class);
 					
 					m_pushHistoryStateForFloating = true;
 					
