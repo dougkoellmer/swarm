@@ -89,6 +89,8 @@ public class SplitPanel extends SplitLayoutPanel implements I_UIElement
 		
 		this.addStyleName("split_panel");
 		
+		boolean shouldShowPanel = shouldShowPanel();
+		
 		int pageWidth = RootPanel.get().getOffsetWidth();
 		double panelWidth = 0;
 		
@@ -114,7 +116,12 @@ public class SplitPanel extends SplitLayoutPanel implements I_UIElement
 		//panelWidth = 1400;
 		
 		m_tabPanelWidth = panelWidth;
-		this.addWest(m_tabPanel, panelWidth);
+		
+		if( shouldShowPanel )
+		{
+			this.addWest(m_tabPanel, panelWidth);
+		}
+		
 		this.add(m_cellContainer);
 
 		//--- DRK > This makes it so that tab panel stops animating in/out if it's clicked in any way, including the splitter.
@@ -132,6 +139,9 @@ public class SplitPanel extends SplitLayoutPanel implements I_UIElement
 			}
 		};
 		m_splitter = findHSplitter();
+		
+		if( !shouldShowPanel )  return;
+		
 		m_splitter.addStyleName("sm_button sm_hdragger");
 		m_splitter.getElement().getStyle().setProperty("borderRadius", "0px"); // for some reason can't override sm_button in css
 		m_splitter.getElement().getStyle().setWidth(8, Unit.PX);
@@ -188,6 +198,20 @@ public class SplitPanel extends SplitLayoutPanel implements I_UIElement
 		updateButtonPosition(panelWidth);
 		RootPanel.get().add(m_panelButton);
 	}
+	
+	private int getSplitterWidth()
+	{
+		return (int) (!shouldShowPanel() ? 0 : SPLITTER_WIDTH);
+	}
+
+	private native boolean shouldShowPanel()
+	/*-{
+//			console.log($wnd.isMobile);
+			
+//			return false;
+			
+			return $wnd.isMobile.any == false;
+	}-*/;
 	
 	private native Element getGlassElem()
 	/*-{
@@ -388,7 +412,7 @@ public class SplitPanel extends SplitLayoutPanel implements I_UIElement
 	
 	private void updateButtonPosition()
 	{
-		double splitterX = m_splitter.getAbsoluteLeft();
+		double splitterX = getSplitterLeft();
 		
 		updateButtonPosition(splitterX);
 	}
@@ -400,19 +424,24 @@ public class SplitPanel extends SplitLayoutPanel implements I_UIElement
 		
 		if( showable )
 		{
-			if( m_splitter.getAbsoluteLeft() > 0 )
+			if( getSplitterLeft() > 0 )
 			{
 				m_viewContext.stateContext.perform(Action_Base_ShowSupplementState.class);
 			}
 		}
 		else if( hideable )
 		{
-			if( m_splitter.getAbsoluteLeft() <= 0 )
+			if( getSplitterLeft() <= 0 )
 			{
 				m_lastTabPanelSize = 0;
 				m_viewContext.stateContext.perform(Action_Base_HideSupplementState.class);
 			}
 		}
+	}
+	
+	private int getSplitterLeft()
+	{
+		return m_splitter != null ? m_splitter.getAbsoluteLeft() : 0;
 	}
 	
 	@Override
@@ -422,7 +451,7 @@ public class SplitPanel extends SplitLayoutPanel implements I_UIElement
 		
 //		s_logger.severe("ON RESIZE");
 		
-		m_tabPanelWidth = m_splitter.getAbsoluteLeft();
+		m_tabPanelWidth = getSplitterLeft();
 		
 		/*double rootPanelWidth = RootPanel.get().getOffsetWidth();
 		
