@@ -133,66 +133,66 @@ public class VisualCellManager implements I_UIElement
 	
 	private void initBacking(final ClientGrid grid)
 	{
-//		if( m_backing == null )
-//		{
-//			SpritePlateAnimation animation = new SpritePlateAnimation
-//			(
-//				m_viewContext.config.spinnerAnimation,
-//				m_viewContext.config.spinnerAnimationFramerate,
-//				m_viewContext.config.spinnerAnimationFrameCount,
-//				m_viewContext.config.spinnerAnimationFramesAcross
-//			);
-//			
-////			String color = "rgb(255,0,0)";
-//			String color = "rgb(255,255,255)";
-//			
-//			//--- DRK > Max dimensions could actually be a bit smaller cause of padding...eh.
-//			int maxCellWidth = grid.getCellWidth()/2;
-//			int maxCellHeight = grid.getCellHeight()/2;
-//			
-//			m_backing = new CanvasBacking(animation, color, maxCellWidth, maxCellHeight, new CanvasBacking.I_Skipper()
-//			{
-//				@Override public int skip(int m, int n)
-//				{
-//					CellBufferManager cellManager = m_viewContext.appContext.cellBufferMngr;
-//					if( grid.isObscured(m, n, 1, cellManager.getSubCellCount(), m_obscured) )
-//					{
-//						CellBuffer cellBuffer = cellManager.getDisplayBuffer(U_Bits.calcBitPosition(m_obscured.subCellDimension));
-//						BufferCell cell = cellBuffer.getCellAtAbsoluteCoord(m_obscured.m, m_obscured.n);
-//						VisualCell visualCell = (VisualCell) cell.getVisualization();
-//						E_MetaState state = visualCell.getMetaState();
-//						
-//						//function nkb(a,b,c){var d,e,f,g,i;f=a.b.t.d.e;if(xc(a.c,b,c,1,f.e,a.b.p)){e=s0(f,bCb(a.b.p.e));d=g0(e,a.b.p.b,a.b.p.c);i=d.i;g=yhb(i);if(g==(dib(),$hb)){return a.b.p.d}}else{if(zc(a.c,b,c,1)){return 2}}return 0}
-//						
-////						s_logger.severe(state+"");
-//						
-//						if( state == VisualCell.E_MetaState.DEFINITELY_SHOULD_BE_RENDERED_BY_NOW )
-//						{
-//							return m_obscured.offset;
-//						}
-//					}
-//					else
-//					{
-//						if( grid.isTaken(m, n, 1) )
-//						{
-//							return 2;
-//						}
-//					}
-//					
-//					return 0;
-//				}
-//			});
-//			
-//			m_backing.getCanvas().getElement().getStyle().setPosition(Position.ABSOLUTE);
-//			m_backing.getCanvas().getElement().getStyle().setLeft(0, Unit.PX);
-//			m_backing.getCanvas().getElement().getStyle().setTop(0, Unit.PX);
-//			m_backing.getCanvas().getElement().getStyle().setProperty("transformOrigin", "0px 0px 0px");
-//			m_backing.getCanvas().addStyleName("sm_canvas_backing");
+		if( m_backing == null )
+		{
+			SpritePlateAnimation animation = new SpritePlateAnimation
+			(
+				m_viewContext.config.spinnerAnimation,
+				m_viewContext.config.spinnerAnimationFramerate,
+				m_viewContext.config.spinnerAnimationFrameCount,
+				m_viewContext.config.spinnerAnimationFramesAcross
+			);
+			
+//			String color = "rgb(255,0,0)";
+			String color = "rgb(255,255,255)";
+			
+			//--- DRK > Max dimensions could actually be a bit smaller cause of padding...eh.
+			int maxCellWidth = grid.getCellWidth()/2;
+			int maxCellHeight = grid.getCellHeight()/2;
+			
+			m_backing = new CanvasBacking(animation, color, maxCellWidth, maxCellHeight, new CanvasBacking.I_Skipper()
+			{
+				@Override public int skip(int m, int n)
+				{
+					CellBufferManager cellManager = m_viewContext.appContext.cellBufferMngr;
+					if( grid.isObscured(m, n, 1, cellManager.getSubCellCount(), m_obscured) )
+					{
+						CellBuffer cellBuffer = cellManager.getDisplayBuffer(U_Bits.calcBitPosition(m_obscured.subCellDimension));
+						BufferCell cell = cellBuffer.getCellAtAbsoluteCoord(m_obscured.m, m_obscured.n);
+						VisualCell visualCell = (VisualCell) cell.getVisualization();
+						E_MetaState state = visualCell.getMetaState();
+						
+						//function nkb(a,b,c){var d,e,f,g,i;f=a.b.t.d.e;if(xc(a.c,b,c,1,f.e,a.b.p)){e=s0(f,bCb(a.b.p.e));d=g0(e,a.b.p.b,a.b.p.c);i=d.i;g=yhb(i);if(g==(dib(),$hb)){return a.b.p.d}}else{if(zc(a.c,b,c,1)){return 2}}return 0}
+						
+//						s_logger.severe(state+"");
+						
+						if( state == VisualCell.E_MetaState.DEFINITELY_SHOULD_BE_RENDERED_BY_NOW )
+						{
+							return m_obscured.offset;
+						}
+					}
+					else
+					{
+						if( grid.isTaken(m, n, 1) )
+						{
+							return 2;
+						}
+					}
+					
+					return 0;
+				}
+			});
+			
+			m_backing.getCanvas().getElement().getStyle().setPosition(Position.ABSOLUTE);
+			m_backing.getCanvas().getElement().getStyle().setLeft(0, Unit.PX);
+			m_backing.getCanvas().getElement().getStyle().setTop(0, Unit.PX);
+			m_backing.getCanvas().getElement().getStyle().setProperty("transformOrigin", "0px 0px 0px");
+			m_backing.getCanvas().addStyleName("sm_canvas_backing");
+			E_ZIndex.CELL_BACKING.assignTo(m_backing.getCanvas());
+			resizeBacking();
+			
 //			E_ZIndex.CELL_BACKING.assignTo(m_backing.getCanvas());
-//			resizeBacking();
-//			
-////			E_ZIndex.CELL_BACKING.assignTo(m_backing.getCanvas());
-//		}
+		}
 	}
 	
 	private void resizeBacking()
@@ -341,18 +341,22 @@ public class VisualCellManager implements I_UIElement
 		
 		int limit = cellManager.getBufferCount();
 		
-		for( int i = 0; i < limit; i++ )
+//		m_container.getElement().getStyle().setDisplay(Display.NONE);
 		{
-			CellBuffer cellBuffer = cellManager.getDisplayBuffer(i);
-			
-			if( cellBuffer.getSubCellCount() > 1 && cellBuffer.getCellCount() == 0 )  continue;
-			
-			updateCellTransforms
-			(
-				cellManager, cellBuffer, timeStep, isViewStateTransition,
-				basePoint_highest_rounded, basePoint_highest, cellWidthPlusPadding, cellHeightPlusPadding, positionScaling
-			);
-		}
+			for( int i = 0; i < limit; i++ )
+			{
+				CellBuffer cellBuffer = cellManager.getDisplayBuffer(i);
+				
+				if( cellBuffer.getSubCellCount() > 1 && cellBuffer.getCellCount() == 0 )  continue;
+				
+				updateCellTransforms
+				(
+					cellManager, cellBuffer, timeStep, isViewStateTransition,
+					basePoint_highest_rounded, basePoint_highest, cellWidthPlusPadding, cellHeightPlusPadding, positionScaling
+				);
+			}
+		}		
+//		m_container.getElement().getStyle().setDisplay(Display.BLOCK);
 		
 		updateCanvasBacking();
 	}
@@ -450,151 +454,148 @@ public class VisualCellManager implements I_UIElement
 		//---		This might be an extraneous optimization in some browsers if they themselves have
 		//---		intelligent DOM-change batching, but we must assume that most browsers are retarded.
 		//--	NOTE: Well, not ALL manipulation is in here, there are a few odds and ends done outside this...but most should be here.
-		m_container.getElement().getStyle().setDisplay(Display.NONE);
+		
+		int i = bufferSize%2 == 0 ? bufferSize/2-1 : bufferSize/2;
+		
+		for ( int offset = 0; i >= 0 && i < bufferSize; offset=offset<=0?-offset+1:-offset-1, i+=offset )
 		{
-			int i = bufferSize%2 == 0 ? bufferSize/2-1 : bufferSize/2;
-			
-			for ( int offset = 0; i >= 0 && i < bufferSize; offset=offset<=0?-offset+1:-offset-1, i+=offset )
-			{
 //				s_logger.severe(i+" " + offset);
+			
+			BufferCell ithBufferCell = cellBuffer_i.getCellAtIndex(i);
+			
+			if( ithBufferCell == null )  continue;
+			
+			VisualCell ithVisualCell = (VisualCell) ithBufferCell.getVisualization();
+			
+			if( keepTryingToFlush && ithVisualCell.flushQueuedCode() )
+			{
+				keepTryingToFlush = false;
+				m_flushCodeTimer = 0.0;
+			}
+			
+			if( subCellCount_i > 1 && ithVisualCell.getMetaState() != VisualCell.E_MetaState.DEFINITELY_SHOULD_BE_RENDERED_BY_NOW )
+			{
+				m_needToUpdateBacking = true;
+			}
+			
+			double offsetX, offsetY;
+			
+			if( subCellCount_i <= subCellCount_highest )
+			{
+				int offset_m = ithBufferCell.getCoordinate().getM() - coordMOfHighest;
+				int offset_n = ithBufferCell.getCoordinate().getN() - coordNOfHighest;
+				int offset_m_mod = offset_m % subCellCount_highest_div;
+				int offset_n_mod = offset_n % subCellCount_highest_div;
 				
-				BufferCell ithBufferCell = cellBuffer_i.getCellAtIndex(i);
+				offsetX = (((offset_m-offset_m_mod)/subCellCount_highest_div) * (cellWidthPlusPadding));
+				offsetY = (((offset_n-offset_n_mod)/subCellCount_highest_div) * (cellHeightPlusPadding));
+				offsetX += offset_m_mod * cellWidth_div;
+				offsetY += offset_n_mod * cellHeight_div;
 				
-				if( ithBufferCell == null )  continue;
-				
-				VisualCell ithVisualCell = (VisualCell) ithBufferCell.getVisualization();
-				
-				if( keepTryingToFlush && ithVisualCell.flushQueuedCode() )
+				if( subCellCount_i > 1 )
 				{
-					keepTryingToFlush = false;
-					m_flushCodeTimer = 0.0;
+					ithVisualCell.setDefaultZIndex();
 				}
+			}
+			else
+			{
+				int offset_m = ithBufferCell.getCoordinate().getM() - cellBuffer_i.getCoordinate().getM();
+				int offset_n = ithBufferCell.getCoordinate().getN() - cellBuffer_i.getCoordinate().getN();
 				
-				if( subCellCount_i > 1 && ithVisualCell.getMetaState() != VisualCell.E_MetaState.DEFINITELY_SHOULD_BE_RENDERED_BY_NOW )
+				offsetX = cellWidthPlusPadding * offset_m;
+				offsetY = cellHeightPlusPadding * offset_n;
+				
+				//--- DRK > Should always be true.
+				if( subCellCount_i > 1 )
 				{
-					m_needToUpdateBacking = true;
-				}
-				
-				double offsetX, offsetY;
-				
-				if( subCellCount_i <= subCellCount_highest )
-				{
-					int offset_m = ithBufferCell.getCoordinate().getM() - coordMOfHighest;
-					int offset_n = ithBufferCell.getCoordinate().getN() - coordNOfHighest;
-					int offset_m_mod = offset_m % subCellCount_highest_div;
-					int offset_n_mod = offset_n % subCellCount_highest_div;
-					
-					offsetX = (((offset_m-offset_m_mod)/subCellCount_highest_div) * (cellWidthPlusPadding));
-					offsetY = (((offset_n-offset_n_mod)/subCellCount_highest_div) * (cellHeightPlusPadding));
-					offsetX += offset_m_mod * cellWidth_div;
-					offsetY += offset_n_mod * cellHeight_div;
-					
-					if( subCellCount_i > 1 )
+					//TODO: Probably has to be different logic if we're snapping.
+					if( subCellCount_highest == 1 )
+					{
+						ithVisualCell.setZIndex(E_ZIndex.CELL_META_ON_DEATH_ROW_ABOVE_CELL_1.get());
+					}
+					else
 					{
 						ithVisualCell.setDefaultZIndex();
 					}
 				}
+			}
+			
+			ithVisualCell.update(timeStep);
+			ithVisualCell.validate();
+			
+			if( !isViewingCell || isViewingCell && ithBufferCell != viewedCell )
+			{
+				offsetX += ((double)ithVisualCell.getXOffset())*positionScaling;
+				offsetY += ((double)ithVisualCell.getYOffset())*positionScaling;
+			}
+			else
+			{
+				//--- DRK > At this point in swarm's life, we should only be hitting this block 
+				//---		on window resizes and only resizes. For some reason the scroll has to
+				//---		be included here...it's not apparent why, but resetting the translation
+				//---		removes the window's scroll. Happens in all browsers, so not a "bug",
+				//---		but requires this "workaround" kind of as if it were a bug.
+				offsetX += ((double)ithVisualCell.getStartingXOffset())*positionScaling;
+				offsetY += ((double)ithVisualCell.getStartingYOffset())*positionScaling;
+				
+				//--- DRK > Really not sure why we have to change translation to account for scroll on window resizes.
+				//---		Doesn't make sense, but every browser behaves the same.
+				offsetX += scrollX;
+				offsetY += scrollY;
+			}
+			
+			double translateX = basePoint.getX() + offsetX;
+			double translateY = basePoint.getY() + offsetY;
+			
+			if( isViewingCell )
+			{
+				if( ithBufferCell != viewedCell )
+				{
+					//--- DRK > Need to crop the cell because it has a fixed position and will
+					//---		appear under the scroll bar but still capture the mouse through
+					//---		the scrollbar...happens on all browsers, so I guess not a "bug" per se
+					//---		but still needs this sloppy workaround. IE will in fact show the cell
+					//---		over the scroll bar...so at least it's more honest than other browsers.
+					ithVisualCell.crop((int)translateX, (int)translateY, windowWidth, windowHeight);
+					
+					//--- DRK > In a way we only should need to do this once when target cell becomes focused,
+					//---		but we're doing it for all cells everytime because it's a lightweight operation
+					//---		and passive for if new cells are created on a window resize.
+					ithVisualCell.setScrollMode(E_ScrollMode.SCROLLING_NOT_FOCUSED);
+				}
 				else
 				{
-					int offset_m = ithBufferCell.getCoordinate().getM() - cellBuffer_i.getCoordinate().getM();
-					int offset_n = ithBufferCell.getCoordinate().getN() - cellBuffer_i.getCoordinate().getN();
-					
-					offsetX = cellWidthPlusPadding * offset_m;
-					offsetY = cellHeightPlusPadding * offset_n;
-					
-					//--- DRK > Should always be true.
-					if( subCellCount_i > 1 )
-					{
-						//TODO: Probably has to be different logic if we're snapping.
-						if( subCellCount_highest == 1 )
-						{
-							ithVisualCell.setZIndex(E_ZIndex.CELL_META_ON_DEATH_ROW_ABOVE_CELL_1.get());
-						}
-						else
-						{
-							ithVisualCell.setDefaultZIndex();
-						}
-					}
-				}
-				
-				ithVisualCell.update(timeStep);
-				ithVisualCell.validate();
-				
-				if( !isViewingCell || isViewingCell && ithBufferCell != viewedCell )
-				{
-					offsetX += ((double)ithVisualCell.getXOffset())*positionScaling;
-					offsetY += ((double)ithVisualCell.getYOffset())*positionScaling;
-				}
-				else
-				{
-					//--- DRK > At this point in swarm's life, we should only be hitting this block 
-					//---		on window resizes and only resizes. For some reason the scroll has to
-					//---		be included here...it's not apparent why, but resetting the translation
-					//---		removes the window's scroll. Happens in all browsers, so not a "bug",
-					//---		but requires this "workaround" kind of as if it were a bug.
-					offsetX += ((double)ithVisualCell.getStartingXOffset())*positionScaling;
-					offsetY += ((double)ithVisualCell.getStartingYOffset())*positionScaling;
-					
-					//--- DRK > Really not sure why we have to change translation to account for scroll on window resizes.
-					//---		Doesn't make sense, but every browser behaves the same.
-					offsetX += scrollX;
-					offsetY += scrollY;
-				}
-				
-				double translateX = basePoint.getX() + offsetX;
-				double translateY = basePoint.getY() + offsetY;
-				
-				if( isViewingCell )
-				{
-					if( ithBufferCell != viewedCell )
-					{
-						//--- DRK > Need to crop the cell because it has a fixed position and will
-						//---		appear under the scroll bar but still capture the mouse through
-						//---		the scrollbar...happens on all browsers, so I guess not a "bug" per se
-						//---		but still needs this sloppy workaround. IE will in fact show the cell
-						//---		over the scroll bar...so at least it's more honest than other browsers.
-						ithVisualCell.crop((int)translateX, (int)translateY, windowWidth, windowHeight);
-						
-						//--- DRK > In a way we only should need to do this once when target cell becomes focused,
-						//---		but we're doing it for all cells everytime because it's a lightweight operation
-						//---		and passive for if new cells are created on a window resize.
-						ithVisualCell.setScrollMode(E_ScrollMode.SCROLLING_NOT_FOCUSED);
-					}
-					else
-					{
-						ithVisualCell.removeCrop();
-						ithVisualCell.setScrollMode(E_ScrollMode.SCROLLING_FOCUSED);
-					}
-				}
-				else if( !isViewingCell && isViewStateTransition )
-				{
-					//--- DRK > Removing the crop when exiting the viewing cell state.
 					ithVisualCell.removeCrop();
-					ithVisualCell.setScrollMode(E_ScrollMode.NOT_SCROLLING);
-				}
-				
-				String translateProperty = U_Css.createTranslateTransform(translateX, translateY, use3dTransforms);
-				String transform = scaleProperty != null ? translateProperty + " " + scaleProperty : translateProperty;
-				ithVisualCell.getElement().getStyle().setProperty(transformProperty, transform);
-				
-				//--- DRK > Not using css scaling here cause Chrome (maybe others) seems to cache the image rendered
-				//---		assuming the non-scaled element size (using css width and height) and then stretch it up, instead
-				//---		of rendering it properly taking into account scaling. *Eventually* Chrome catches up and rerenders
-				//---		the image properly, but it takes a while.
-				if( subCellCount_i > 1 )
-				{
-					ithVisualCell.setSize(cellWidthForMeta+"px", cellHeightForMeta+"px");
-				}
-				
-//				s_logger.severe(transform+"");
-				
-				if( ithVisualCell.getParent() == null )
-				{
-					m_container.add(ithVisualCell);
+					ithVisualCell.setScrollMode(E_ScrollMode.SCROLLING_FOCUSED);
 				}
 			}
+			else if( !isViewingCell && isViewStateTransition )
+			{
+				//--- DRK > Removing the crop when exiting the viewing cell state.
+				ithVisualCell.removeCrop();
+				ithVisualCell.setScrollMode(E_ScrollMode.NOT_SCROLLING);
+			}
+			
+			String translateProperty = U_Css.createTranslateTransform(translateX, translateY, use3dTransforms);
+			String transform = scaleProperty != null ? translateProperty + " " + scaleProperty : translateProperty;
+			ithVisualCell.getElement().getStyle().setProperty(transformProperty, transform);
+			
+			//--- DRK > Not using css scaling here cause Chrome (maybe others) seems to cache the image rendered
+			//---		assuming the non-scaled element size (using css width and height) and then stretch it up, instead
+			//---		of rendering it properly taking into account scaling. *Eventually* Chrome catches up and rerenders
+			//---		the image properly, but it takes a while.
+			if( subCellCount_i > 1 )
+			{
+				ithVisualCell.setSize(cellWidthForMeta+"px", cellHeightForMeta+"px");
+			}
+			
+//				s_logger.severe(transform+"");
+			
+			if( ithVisualCell.getParent() == null )
+			{
+				m_container.add(ithVisualCell);
+			}
 		}
-		m_container.getElement().getStyle().setDisplay(Display.BLOCK);
 		
 		if( subCellCount_i == 1 )
 		{

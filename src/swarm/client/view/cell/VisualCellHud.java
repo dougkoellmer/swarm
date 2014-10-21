@@ -206,9 +206,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 		}
 	}
 
-	
-	@Override
-	public void onStateEvent(StateEvent event)
+	@Override public void onStateEvent(StateEvent event)
 	{
 		switch( event.getType() )
 		{
@@ -435,7 +433,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 		}
 		
 		double widthDelta = (m_targetWidth - m_baseWidth) * mantissa;
-		m_width = (int) (m_baseWidth + widthDelta);
+		m_width = Math.round(m_baseWidth + widthDelta);
 		
 		if( mantissa >= 1 )
 		{

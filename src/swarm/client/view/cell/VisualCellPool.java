@@ -1,6 +1,7 @@
 package swarm.client.view.cell;
 
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 import swarm.shared.statemachine.*;
 
@@ -23,6 +24,8 @@ import swarm.shared.reflection.I_Class;
 
 public class VisualCellPool implements I_CellPoolDelegate
 {
+	private static final Logger s_logger = Logger.getLogger(VisualCellPool.class.getName());
+	
 	private static final class CustomPool extends ObjectPool<VisualCell>
 	{
 		public CustomPool(I_Class<VisualCell> type)
@@ -38,7 +41,8 @@ public class VisualCellPool implements I_CellPoolDelegate
 				
 				if( cell.getParent() != null )
 				{
-					cell.removeFromParent();
+//					s_logger.severe("removing");
+//					cell.removeFromParent();
 				}
 				
 				cell.showEmptyContent();
@@ -127,7 +131,7 @@ public class VisualCellPool implements I_CellPoolDelegate
 		m_pool = new CustomPool(m_visualCellClass);
 	}
 	
-	public I_BufferCellListener createVisualization(BufferCell bufferCell, int width, int height, int padding, int subCellDim)
+	@Override public I_BufferCellListener createVisualization(BufferCell bufferCell, int width, int height, int padding, int subCellDim)
 	{
 		VisualCell newVisualCell = m_pool.allocate();
 		newVisualCell.setVisible(true);
@@ -145,7 +149,7 @@ public class VisualCellPool implements I_CellPoolDelegate
 		return newVisualCell;
 	}
 	
-	public void destroyVisualization(I_BufferCellListener visualization)
+	@Override public void destroyVisualization(I_BufferCellListener visualization)
 	{
 		VisualCell visualCell = (VisualCell) visualization;
 		
@@ -174,6 +178,8 @@ public class VisualCellPool implements I_CellPoolDelegate
 		m_pool.cleanCode();
 		
 		m_poolNeedsCleaning = false;
+		
+//		s_logger.severe(m_pool.getAllocCount() + "");
 	}
 	
 	private void destroyVisualCell(VisualCell cell)
