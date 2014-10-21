@@ -123,6 +123,18 @@ public class CellBuffer extends A_BufferCellList
 		return getCellAtAbsoluteCoord(absoluteCoord.getM(), absoluteCoord.getN());
 	}
 	
+	private void maybeSentenceToDeath(BufferCell cell)
+	{
+		if( !cell.getVisualization().isLoaded() )
+		{
+			m_cellPool.deallocCell(cell);
+		}
+		else
+		{
+			m_killQueue.sentenceToDeath(cell);
+		}
+	}
+	
 	void imposeBuffer(ClientGrid grid, CellBuffer otherBuffer, I_LocalCodeRepository localCodeSource, int highestSubCellCount, int options__extends__smF_BufferUpdateOption)
 	{
 		if( m_subCellCount == 16 )
@@ -150,7 +162,7 @@ public class CellBuffer extends A_BufferCellList
 				}
 				else
 				{
-					m_killQueue.sentenceToDeath(ithCellFromOtherBuffer);
+					maybeSentenceToDeath(ithCellFromOtherBuffer);
 				}
 			}
 			
@@ -256,7 +268,7 @@ public class CellBuffer extends A_BufferCellList
 
 			if( ithCell != null )
 			{
-				m_killQueue.sentenceToDeath(ithCell);
+				maybeSentenceToDeath(ithCell);
 			}
 		}
 

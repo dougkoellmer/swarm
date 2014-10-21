@@ -1023,9 +1023,10 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		}
 	}
 
-	@Override
-	public boolean isLoaded()
+	@Override public boolean isLoaded()
 	{
+		if( m_queuedCode != null )  return false;
+		
 		return m_metaState != null && m_metaState.ordinal() >= E_MetaState.RENDERING.ordinal();
 	}
 }
