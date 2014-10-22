@@ -249,8 +249,8 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 					A_Grid grid = m_viewContext.appContext.gridMngr.getGrid();
 					m_lastTargetCoord.calcPoint(s_utilPoint2, grid.getCellWidth(), grid.getCellHeight(), grid.getCellPadding(), 1);
 					s_utilPoint2.incY(calcYOffsetFromCellTop(grid));
-					this.setTargetPosition(s_utilPoint2);
 					this.setTargetWidth(null, grid.getCellWidth(), false);
+					this.setTargetPosition(s_utilPoint2);
 				}
 				
 				break;
@@ -327,14 +327,16 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 						Action_Camera_SetViewSize.Args args = event.getActionArgs();
 						if( args.updateBuffer() )
 						{
-							this.setPositionInstantly(viewingState.getCell().getCoordinate(), true);
 							this.setWidthInstantly(viewingState.getCell().getCoordinate());
+							this.setPositionInstantly(viewingState.getCell().getCoordinate(), true);
+							flushCropping();
+							
 						}
 					}
 					else if( snappingState != null )
 					{
-						this.setTargetPosition(snappingState.getTargetCoord());
 						this.setTargetWidth(snappingState.getTargetCoord());
+						this.setTargetPosition(snappingState.getTargetCoord());
 					}
 				}
 				else if( event.getAction() == Action_Camera_SnapToPoint.class )
@@ -346,8 +348,9 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 						Action_Camera_SnapToPoint.Args args = event.getActionArgs();
 						if( args.isInstant() )
 						{
-							this.setPositionInstantly(viewingState.getCell().getCoordinate(), true);
 							this.setWidthInstantly(viewingState.getCell().getCoordinate());
+							this.setPositionInstantly(viewingState.getCell().getCoordinate(), true);
+							flushCropping();
 						}
 					}
 				}
@@ -367,8 +370,8 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 						this.flushWidth();
 					}
 
-					this.setTargetPosition(args.getTargetCoordinate());
 					this.setTargetWidth(args.getTargetCoordinate());
+					this.setTargetPosition(args.getTargetCoordinate());
 				}
 				else if( event.isFor(Event_Camera_OnCellSizeFound.class) || event.isFor(Event_CameraSnapping_OnTargetCellAppeared.class) )
 				{
@@ -396,6 +399,8 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 						this.setTargetWidth(state.getTargetCoord());
 						this.ensureTargetWidth();
 						this.flushWidth();
+						
+						flushCropping();
 					}
 					else if( event.isEntered(State_CameraSnapping.class) )
 					{
@@ -447,6 +452,12 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 	}
 	
 	private void flushWidth()
+	{		
+//		s_logger.severe("actual: " + m_width+"");
+		m_actualHud.getElement().getStyle().setWidth(m_width, Unit.PX);
+	}
+	
+	private void flushCropping()
 	{
 		double cropperWidth = m_width;
 		
@@ -463,8 +474,6 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 			}
 		}
 		
-//		s_logger.severe("actual: " + m_width+"");
-		m_actualHud.getElement().getStyle().setWidth(m_width, Unit.PX);
 		this.getElement().getStyle().setWidth(cropperWidth, Unit.PX);
 	}
 	
