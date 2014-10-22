@@ -101,8 +101,8 @@ public class VisualCellContainer extends FlowPanel implements ResizeHandler, I_U
 	private final Action_Camera_SetViewSize.Args m_args_SetCameraViewSize = new Action_Camera_SetViewSize.Args();
 	
 	private final ViewContext m_viewContext;
-	
-	private final FpsViewer m_fpsViewer = new FpsViewer(this.getElement());
+
+//	private final FpsViewer m_fpsViewer = new FpsViewer(this.getElement());
 	
 	public VisualCellContainer(ViewContext viewContext, ViewConfig config)
 	{		
@@ -274,7 +274,7 @@ public class VisualCellContainer extends FlowPanel implements ResizeHandler, I_U
 				{
 					this.updateCroppers();
 					
-					m_fpsViewer.update(event.getState().getLastTimeStep());
+//					m_fpsViewer.update(event.getState().getLastTimeStep());
 				}
 				
 				if( event.getState() instanceof State_ViewingCell )

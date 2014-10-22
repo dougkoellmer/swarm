@@ -195,7 +195,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 			double scrollRatio = (m_scrollX / (scrollWidth-clientWidth));
 			double offset = -(Math.round(diff * scrollRatio));
 			
-//			s_logger.severe(m_width + "");
+//			s_logger.severe(offset + "");
 			
 			
 			return offset;
@@ -460,6 +460,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 			}
 		}
 		
+		s_logger.severe(m_width+"");
 		m_actualHud.getElement().getStyle().setWidth(m_width, Unit.PX);
 		this.getElement().getStyle().setWidth(cropperWidth, Unit.PX);
 	}
@@ -501,6 +502,8 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 			double viewWidth = calcViewWidth(coord_nullable, camera, grid);
 			
 			m_targetWidth = Math.min(viewWidth, hudWidth);
+			
+//			s_logger.severe(m_targetWidth+"");
 			
 			if( viewWidth < hudWidth  )
 			{

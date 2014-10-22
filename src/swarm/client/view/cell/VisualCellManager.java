@@ -229,6 +229,8 @@ public class VisualCellManager implements I_UIElement
 			updateCellsWithNoTransforms(cellBuffer, timeStep);
 		}
 		
+		m_backingConfig.timestep = timeStep;
+		
 		updateCanvasBacking();
 	}
 	
