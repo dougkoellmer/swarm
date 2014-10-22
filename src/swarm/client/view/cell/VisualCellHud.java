@@ -79,9 +79,6 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 	
 	private double m_height;
 	
-	private int m_scrollX;
-	private int m_scrollY;
-	
 	public VisualCellHud(ViewContext viewContext, ClientAppConfig appConfig)
 	{
 		m_innerContainer = new VisualCellHudInner(viewContext);
@@ -118,13 +115,11 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 				if( viewingState != null )
 				{
 					A_Grid grid = m_viewContext.appContext.gridMngr.getGrid();
-					m_scrollX = m_viewContext.scrollNavigator.getScrollX();
-					m_scrollY = m_viewContext.scrollNavigator.getScrollY();
 					
 					VisualCellHud.this.setPositionInstantly(viewingState.getTargetCoord(), true);
 					VisualCellHud.this.setWidthInstantly(viewingState.getTargetCoord());
 					
-					if( m_scrollY >= grid.getCellPadding() )
+					if( getScrollY() >= grid.getCellPadding() )
 					{
 						VisualCellHud.this.setAlpha(.75);
 					}
@@ -141,6 +136,16 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 				}
 			}
 		});
+	}
+	
+	private int getScrollX()
+	{
+		return m_viewContext.scrollNavigator.getScrollX();
+	}
+	
+	private int getScrollY()
+	{
+		return m_viewContext.scrollNavigator.getScrollY();
 	}
 	
 	private void setAlpha(double alpha)
@@ -192,7 +197,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 			{
 				diff += 1;
 			}
-			double scrollRatio = (m_scrollX / (scrollWidth-clientWidth));
+			double scrollRatio = (getScrollX() / (scrollWidth-clientWidth));
 			double offset = -(Math.round(diff * scrollRatio));
 			
 //			s_logger.severe(offset + "");
@@ -236,9 +241,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 					this.flushPosition();
 				}
 				else if( event.getState() instanceof State_CameraFloating )
-				{
-					resetScrollValues();
-					
+				{					
 					m_baseAlpha = m_alpha;
 					
 					this.flushWidth(); // get rid of cropping.
@@ -534,20 +537,15 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 		return -(grid.getCellPadding() + this.m_height);
 	}
 	
-	private void resetScrollValues()
-	{
-		m_scrollX = m_scrollY = 0;
-	}
-	
 	private void calcPosition(GridCoordinate targetCoord, Point point_out, boolean forTargetLayout)
 	{
-		if( !m_viewContext.stateContext.isEntered(State_ViewingCell.class) )
-		{
-			resetScrollValues();
-		}
-		else
-		{
-		}
+//		if( !m_viewContext.stateContext.isEntered(State_ViewingCell.class) )
+//		{
+//			resetScrollValues();
+//		}
+//		else
+//		{
+//		}
 		
 		A_Grid grid = m_viewContext.appContext.gridMngr.getGrid();
 		targetCoord.calcPoint(point_out, grid.getCellWidth(), grid.getCellHeight(), grid.getCellPadding(), 1);
