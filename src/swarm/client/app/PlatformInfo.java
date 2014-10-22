@@ -79,6 +79,13 @@ public class PlatformInfo
 		    return (has3d !== undefined && has3d.length > 0 && has3d !== "none");
 	}-*/;
 	
+	public native boolean isMobile()
+	/*-{
+//			console.log($wnd.isMobile);
+			
+			return $wnd.isMobile.any == true;
+	}-*/;
+	
 	private native boolean isIOS()
 	/*-{
 			if( navigator.userAgent.match(/(iPhone|iPod|iPad)/i) )
@@ -99,16 +106,6 @@ public class PlatformInfo
 	public E_Platform getPlatform()
 	{
 		return m_platform;
-	}
-	
-	public boolean isSupportedPlatform()
-	{
-		return m_platform == E_Platform.CHROME;
-	}
-	
-	public boolean isGPUEnabled()
-	{
-		return m_platform == E_Platform.CHROME;
 	}
 	
 	public boolean has3dTransforms()

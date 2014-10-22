@@ -74,6 +74,8 @@ public class SplitPanel extends SplitLayoutPanel implements I_UIElement
 	
 	private final ViewContext m_viewContext;
 	
+	private boolean m_resizeDirty = false;
+	
 	SplitPanel(ViewContext viewContext, ViewConfig config)
 	{
 		super((int) PARENT_SPLITTER_WIDTH);
@@ -204,14 +206,10 @@ public class SplitPanel extends SplitLayoutPanel implements I_UIElement
 		return (int) (!shouldShowPanel() ? 0 : SPLITTER_WIDTH);
 	}
 
-	private native boolean shouldShowPanel()
-	/*-{
-//			console.log($wnd.isMobile);
-			
-//			return false;
-			
-			return $wnd.isMobile.any == false;
-	}-*/;
+	private boolean shouldShowPanel()
+	{
+		return !m_viewContext.appContext.platformInfo.isMobile();
+	}
 	
 	private native Element getGlassElem()
 	/*-{
@@ -286,9 +284,14 @@ public class SplitPanel extends SplitLayoutPanel implements I_UIElement
 	public void onStateEvent(StateEvent event)
 	{
 		switch(event.getType())
-		{			
+		{
 			case DID_UPDATE:
 			{
+				if( m_resizeDirty )
+				{
+					onResize_private();
+				}
+				
 				if( event.getState() instanceof StateContainer_Base)
 				{
 					if( m_tweener.isTweening() )
@@ -444,10 +447,9 @@ public class SplitPanel extends SplitLayoutPanel implements I_UIElement
 		return m_splitter != null ? m_splitter.getAbsoluteLeft() : 0;
 	}
 	
-	@Override
-	public void onResize()
+	private void onResize_private()
 	{
-		super.onResize();
+		m_resizeDirty = false;
 		
 //		s_logger.severe("ON RESIZE");
 		
@@ -471,5 +473,13 @@ public class SplitPanel extends SplitLayoutPanel implements I_UIElement
 		updateButtonPosition();
 		
 		m_cellContainer.onResize();
+	}
+	
+	@Override
+	public void onResize()
+	{
+		super.onResize();
+		
+		m_resizeDirty = true;
 	}
 }

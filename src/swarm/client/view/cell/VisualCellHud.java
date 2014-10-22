@@ -460,7 +460,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 			}
 		}
 		
-		s_logger.severe(m_width+"");
+//		s_logger.severe("actual: " + m_width+"");
 		m_actualHud.getElement().getStyle().setWidth(m_width, Unit.PX);
 		this.getElement().getStyle().setWidth(cropperWidth, Unit.PX);
 	}
@@ -503,11 +503,16 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 			
 			m_targetWidth = Math.min(viewWidth, hudWidth);
 			
-//			s_logger.severe(m_targetWidth+"");
+//			s_logger.severe("target: " + m_targetWidth+"");
 			
 			if( viewWidth < hudWidth  )
 			{
-				m_targetWidth -= 1;
+				//--- DRK > Oh good lord what a hack, but I seriously cannot figure out why mobile browsers
+				//---		don't need this -1 and normal browsers do.
+				if( !m_viewContext.appContext.platformInfo.isMobile() )
+				{
+					m_targetWidth -= 1;
+				}
 			}
 		}
 		else
@@ -654,9 +659,9 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 		Camera camera = m_viewContext.appContext.cameraMngr.getCamera();
 		camera.calcScreenPoint(m_position, m_screenPosition);
 		//s_utilPoint1.inc(m_scrollX, m_scrollY, 0);
-		m_screenPosition.round();
+//		m_screenPosition.round();
 		
-		//s_logger.severe(m_screenPosition + "");
+//		s_logger.severe(m_screenPosition + "");
 		
 		boolean has3dTransforms = m_viewContext.appContext.platformInfo.has3dTransforms();
 		String translation = U_Css.createTranslateTransform(m_screenPosition.getX(), m_screenPosition.getY(), has3dTransforms);
