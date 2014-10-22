@@ -134,7 +134,6 @@ public class VisualCellPool implements I_CellPoolDelegate
 	@Override public I_BufferCellListener createVisualization(BufferCell bufferCell, int width, int height, int padding, int subCellDim)
 	{
 		VisualCell newVisualCell = m_pool.allocate();
-		newVisualCell.setVisible(true);
 		
 		//s_logger.severe("Creating: " + newVisualCell.getId() + " at " + smCellBufferManager.getInstance().getUpdateCount());
 		
@@ -145,6 +144,8 @@ public class VisualCellPool implements I_CellPoolDelegate
 		}
 		
 		newVisualCell.onCreate(bufferCell, width, height, padding, subCellDim);
+		
+//		newVisualCell.setVisible(true);
 		
 		return newVisualCell;
 	}

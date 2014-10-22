@@ -343,7 +343,7 @@ public class VisualCellManager implements I_UIElement
 		
 		int limit = cellManager.getBufferCount();
 		
-		m_container.getElement().getStyle().setDisplay(Display.NONE);
+//		m_container.getElement().getStyle().setDisplay(Display.NONE);
 		{
 			for( int i = 0; i < limit; i++ )
 			{
@@ -358,7 +358,7 @@ public class VisualCellManager implements I_UIElement
 				);
 			}
 		}		
-		m_container.getElement().getStyle().setDisplay(Display.BLOCK);
+//		m_container.getElement().getStyle().setDisplay(Display.BLOCK);
 		
 		updateCanvasBacking();
 	}
@@ -596,6 +596,10 @@ public class VisualCellManager implements I_UIElement
 			if( ithVisualCell.getParent() == null )
 			{
 				m_container.add(ithVisualCell);
+			}
+			else if( !ithVisualCell.isVisible() )
+			{
+				ithVisualCell.setVisible(true);
 			}
 		}
 		

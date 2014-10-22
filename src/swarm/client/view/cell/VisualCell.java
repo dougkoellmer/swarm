@@ -176,6 +176,9 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	
 	private QueuedSetCode m_queuedCode = null;
 	
+	//--- DRK > Just don't want to tempt fate with browser reflows or anything so managing this myself.
+	private boolean m_visible = true;
+	
 	public VisualCell(I_CellSpinner spinner, SandboxManager sandboxMngr, CameraManager cameraMngr, double retractionEasing, double sizeChangeTime)
 	{
 		m_retractionEasing = retractionEasing;
@@ -213,6 +216,20 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		this.add(m_glassPanel);
 		
 		clearMetaImageState();
+	}
+	
+	@Override public void setVisible(boolean value)
+	{
+		if( value == m_visible )  return;
+		
+		super.setVisible(value);
+		
+		m_visible = value;
+	}
+	
+	@Override public boolean isVisible()
+	{
+		return m_visible;
 	}
 	
 	public void setCodeListener(I_CodeListener listener)
