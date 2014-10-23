@@ -116,8 +116,9 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 				{
 					A_Grid grid = m_viewContext.appContext.gridMngr.getGrid();
 					
-					VisualCellHud.this.setPositionInstantly(viewingState.getTargetCoord(), true);
 					VisualCellHud.this.setWidthInstantly(viewingState.getTargetCoord());
+					VisualCellHud.this.setPositionInstantly(viewingState.getTargetCoord(), true);
+					flushCropping();
 					
 					if( getScrollY() >= grid.getCellPadding() )
 					{
@@ -227,7 +228,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 					else
 					{
 						this.flushWidth(); // get rid of cropping.
-						this.flushCropping();
+						clearCropping();
 					}
 				}
 				else if( event.getState() instanceof State_ViewingCell )
@@ -373,6 +374,8 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 
 					this.setTargetWidth(args.getTargetCoordinate());
 					this.setTargetPosition(args.getTargetCoordinate());
+
+					clearCropping();
 				}
 				else if( event.isFor(Event_Camera_OnCellSizeFound.class) || event.isFor(Event_CameraSnapping_OnTargetCellAppeared.class) )
 				{
@@ -456,6 +459,11 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 	{		
 //		s_logger.severe("actual: " + m_width+"");
 		m_actualHud.getElement().getStyle().setWidth(m_width, Unit.PX);
+	}
+	
+	private void clearCropping()
+	{
+		this.getElement().getStyle().clearWidth();
 	}
 	
 	private void flushCropping()
