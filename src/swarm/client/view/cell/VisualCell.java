@@ -88,8 +88,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 			m_this = thisArg;
 		}
 		
-		@Override
-		public void onCodeLoad()
+		@Override public void onCodeLoad()
 		{
 			m_this.clearStatusHtml();
 		}
@@ -822,6 +821,10 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	@Override
 	public void setCode(Code code, String cellNamespace)
 	{
+		if( code == null )
+		{
+			s_logger.severe("code is null from the beg");
+		}
 		/*if( m_sandboxMngr.isRunning() )
 		{
 			m_sandboxMngr.stop(m_contentPanel.getElement());
@@ -857,6 +860,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		if( m_codeSafetyLevel == E_CodeSafetyLevel.META_IMAGE )
 		{
 			m_sandboxMngr.stop(m_contentPanel.getElement());
+			
 			m_metaCode = code;
 			
 			boolean delayLoading = true;
@@ -873,11 +877,14 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 				boolean knownImage = false;
 				String url = getAbsoluteUrl(m_metaCode.getRawCode());
 				
-				if( canCheckMozLocalAvailability() )
-				{
-					knownImage = isLocallyAvailable(url);
-				}
-				else
+				//--- DRK > No idea what's going on here...if I use mozIsLocallyAvailable it seems 
+				//---		to block the thread or something...m_metaCode!=null before this call
+				//---		but then can somehow get nulled out by the time we get past this block.
+//				if( canCheckMozLocalAvailability() )
+//				{
+//					knownImage = isLocallyAvailable(url);
+//				}
+//				else
 				{
 					knownImage = m_localStorage == null ? false : m_localStorage.getItem(url) != null;
 				}
@@ -888,6 +895,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 			if( !delayLoading )
 			{
 				m_contentPanel.setVisible(false);
+				
 				m_sandboxMngr.start(m_contentPanel.getElement(), m_metaCode, null, m_codeLoadListener);
 			}
 			else

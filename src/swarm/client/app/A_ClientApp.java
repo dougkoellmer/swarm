@@ -1,10 +1,13 @@
 package swarm.client.app;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.logging.client.TextLogFormatter;
 import com.google.gwt.user.client.Timer;
 
@@ -108,6 +111,47 @@ public class A_ClientApp extends A_App implements I_TimeSource
 		m_viewContext.appContext = m_appContext;
 		
 		m_appContext.timeSource = this;
+		
+		GWT.setUncaughtExceptionHandler(new GWT.UncaughtExceptionHandler()
+		{
+			
+			@Override
+			public void onUncaughtException(Throwable e)
+			{
+				String message = getMessage(e);
+				s_logger.severe(message); // stack trace as a string
+			}
+		});
+	}
+	
+	private static String getMessage (Throwable throwable) {
+	    String ret="";
+	    while (throwable!=null) {
+	            if (throwable instanceof com.google.gwt.event.shared.UmbrellaException){
+	                    for (Throwable thr2 :((com.google.gwt.event.shared.UmbrellaException)throwable).getCauses()){
+	                            if (ret != "")
+	                                    ret += "\nCaused by: ";
+	                            ret += thr2.toString();
+	                            ret += "\n  at "+getMessage(thr2);
+	                    }
+	            } else if (throwable instanceof com.google.web.bindery.event.shared.UmbrellaException){
+	                    for (Throwable thr2 :((com.google.web.bindery.event.shared.UmbrellaException)throwable).getCauses()){
+	                            if (ret != "")
+	                                    ret += "\nCaused by: ";
+	                            ret += thr2.toString();
+	                            ret += "\n  at "+getMessage(thr2);
+	                    }
+	            } else {
+	                    if (ret != "")
+	                            ret += "\nCaused by: ";
+	                    ret += throwable.toString();
+	                    for (StackTraceElement sTE : throwable.getStackTrace())
+	                            ret += "\n  at "+sTE;
+	            }
+	            throwable = throwable.getCause();
+	    }
+
+	    return ret;
 	}
 	
 	protected void startUp(E_StartUpStage stage)

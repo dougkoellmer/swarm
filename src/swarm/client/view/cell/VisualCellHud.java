@@ -227,6 +227,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 					else
 					{
 						this.flushWidth(); // get rid of cropping.
+						this.flushCropping();
 					}
 				}
 				else if( event.getState() instanceof State_ViewingCell )

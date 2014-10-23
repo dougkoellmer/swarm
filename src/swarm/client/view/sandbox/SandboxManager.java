@@ -1,5 +1,7 @@
 package swarm.client.view.sandbox;
 
+import java.util.logging.Logger;
+
 import swarm.client.view.ViewContext;
 import swarm.client.view.tabs.code.I_CodeLoadListener;
 import swarm.shared.debugging.U_Debug;
@@ -11,10 +13,12 @@ import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.dom.client.Element;;
+import com.google.gwt.dom.client.Element;
 
 public class SandboxManager
 {
+	private static final Logger s_logger = Logger.getLogger(SandboxManager.class.getName());
+	
 	public interface I_StartUpCallback
 	{
 		void onStartUpComplete(boolean success);

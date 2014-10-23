@@ -75,6 +75,7 @@ public class SplitPanel extends SplitLayoutPanel implements I_UIElement
 	private final ViewContext m_viewContext;
 	
 	private boolean m_resizeDirty = false;
+	private boolean m_hasDoneInitialResize = false;
 	
 	SplitPanel(ViewContext viewContext, ViewConfig config)
 	{
@@ -480,6 +481,15 @@ public class SplitPanel extends SplitLayoutPanel implements I_UIElement
 	{
 		super.onResize();
 		
-		m_resizeDirty = true;
+		if( !m_hasDoneInitialResize )
+		{
+			m_hasDoneInitialResize = true;
+			
+			onResize_private();
+		}
+		else
+		{
+			m_resizeDirty = true;
+		}
 	}
 }
