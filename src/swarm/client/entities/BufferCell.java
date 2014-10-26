@@ -254,7 +254,7 @@ public class BufferCell extends A_Cell
 				//---		cell to the original state if you navigate away from it.  This ensures that scroll
 				//---		bars, interactive elements, tab order, etc. are all put back in their original place.
 				//---		At some point in the future it might be decided that letting cells keep their state
-				//---		as much as possible is a good thing, but for now, this code will be left commented out.
+				//---		as much as possible is a good thing sometimes, but for now, this code will be left commented out.
 				/*if( !m_hasBeenPreviewed )
 				{
 					if( getStatus(smE_CodeType.COMPILED) == smE_CodeStatus.HAS_CODE )
@@ -270,7 +270,7 @@ public class BufferCell extends A_Cell
 				
 				if( setCodeVisualization )
 				{
-					m_visualization.setCode(this.getCode(E_CodeType.SPLASH), this.getCellNamespace());
+					m_visualization.setCodeAfterFocusLost(this.getCode(E_CodeType.SPLASH), this.getCellNamespace());
 				}
 			}
 			else if( status == E_CodeStatus.WAITING_ON_CODE )

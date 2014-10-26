@@ -73,7 +73,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	//TODO: Move to config
 	private static final double META_IMAGE_LOAD_DELAY = .5;
 	private static final double META_IMAGE_RENDER_DELAY__SHOULD_BE = 2.0;
-	private static final double META_IMAGE_RENDER_DELAY__DEFINITELY_SHOULD_BE = 7.0;
+	private static final double META_IMAGE_RENDER_DELAY__DEFINITELY_SHOULD_BE = 0.0;
 	
 	//private static final String SPINNER_HTML = "<img src='/r.img/spinner.gif?v=1' />";
 	
@@ -818,13 +818,14 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		return false;
 	}
 
-	@Override
-	public void setCode(Code code, String cellNamespace)
+	
+	@Override public void setCodeAfterFocusLost(Code code, String cellNamespace)
 	{
-		if( code == null )
-		{
-			s_logger.severe("code is null from the beg");
-		}
+		setCode_private(code, cellNamespace);
+	}
+	
+	@Override public void setCode(Code code, String cellNamespace)
+	{
 		/*if( m_sandboxMngr.isRunning() )
 		{
 			m_sandboxMngr.stop(m_contentPanel.getElement());
@@ -1051,6 +1052,8 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	@Override public boolean isLoaded()
 	{
 		if( m_queuedCode != null )  return false;
+		
+		if( m_subCellDimension == 1 )  return true;
 		
 		return m_metaState != null && m_metaState.ordinal() >= E_MetaState.RENDERING.ordinal();
 	}

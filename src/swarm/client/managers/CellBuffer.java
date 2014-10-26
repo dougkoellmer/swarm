@@ -186,25 +186,26 @@ public class CellBuffer extends A_BufferCellList
 
 		int limitN = m_coord.getN() + m_height;
 		int limitM = m_coord.getM() + m_width;
+		final boolean aboveCurrentSubCellCount = highestSubCellCount > m_subCellCount;
 		for ( n = m_coord.getN(); n < limitN; n++ )
 		{
 			for ( m = m_coord.getM(); m < limitM; m++ )
 			{
 				boolean obscured = false;
 				
-				if( highestSubCellCount > m_subCellCount )
+				if( aboveCurrentSubCellCount )
 				{
 					if( grid.isObscured(m, n, m_subCellCount, highestSubCellCount, m_obscured) )
 					{
 						obscured = true;
 						CellBuffer higherBuffer = m_parent.getDisplayBuffer(U_Bits.calcBitPosition(m_obscured.subCellDimension));
-						BufferCell cell = higherBuffer.getCellAtAbsoluteCoord(m_obscured.m, m_obscured.n);
+						BufferCell obscuringCell = higherBuffer.getCellAtAbsoluteCoord(m_obscured.m, m_obscured.n);
 						
-						if( cell != null )
+						if( obscuringCell != null )
 						{
-							I_BufferCellListener visualization = cell.getVisualization();
+							I_BufferCellListener obscuringCellVisualization = obscuringCell.getVisualization();
 							
-							if( visualization.isLoaded() )
+							if( obscuringCellVisualization.isLoaded() )
 							{
 								if( m_obscured.offset == 1 )
 								{
@@ -223,8 +224,8 @@ public class CellBuffer extends A_BufferCellList
 				}
 				
 				if( !grid.isTaken(m, n, m_subCellCount) )  continue;
-				if( swap(m, n, otherBuffer, this) )  continue;
-				if( swap(m, n, m_killQueue, this) )  continue;
+				if( swap(m, n, otherBuffer, this, /*checkIsLoaded=*/aboveCurrentSubCellCount) )  continue;
+				if( swap(m, n, m_killQueue, this, /*checkIsLoaded=*/aboveCurrentSubCellCount) )  continue;
 				
 				//--- DRK > If we're obscured then although we attempt to swap an existing cell
 				//---		from the other buffer or the kill queue above, we don't make new cells.

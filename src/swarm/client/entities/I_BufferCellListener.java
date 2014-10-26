@@ -14,6 +14,8 @@ public interface I_BufferCellListener
 	
 	void setCode(Code code, String namespace);
 	
+	void setCodeAfterFocusLost(Code code, String namespace);
+	
 	void showEmptyContent();
 	
 	void showLoading();

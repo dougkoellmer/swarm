@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import swarm.client.entities.BufferCell;
 import swarm.client.structs.BufferCellPool;
+import swarm.server.handlers.normal.getCellAddress;
 
 abstract class A_BufferCellList
 {
@@ -30,30 +31,45 @@ abstract class A_BufferCellList
 		this.m_cellList.clear();
 	}
 	
-	protected static boolean swap(int m, int n, A_BufferCellList from, A_BufferCellList to)
+	protected static boolean swap(int m, int n, A_BufferCellList from, A_BufferCellList to, boolean checkIsLoaded)
 	{
-		BufferCell cell = from.removeCellAtAbsCoord(m, n);
+		int index = from.getCellAtAbsoluteCoord_protected(m, n);
+		
+		if( index < 0 )  return false;
+		
+		BufferCell cell = from.m_cellList.get(index);
 		
 		if( cell == null )  return false;
 		
+		if( checkIsLoaded && !cell.getVisualization().isLoaded() )  return false;
+		
+		from.m_cellList.set(index, null);
 		to.m_cellList.add(cell);
 		
 		return true;
 	}
 	
-	public BufferCell getCellAtAbsoluteCoord(int m, int n)
+	protected int getCellAtAbsoluteCoord_protected(int m, int n)
 	{
+		int index = -1;
 		for( int i = 0; i < m_cellList.size(); i++ )
 		{
 			BufferCell ithCell = m_cellList.get(i);
 			
 			if( ithCell != null && ithCell.getCoordinate().isEqualTo(m, n) )
 			{
-				return ithCell;
+				return i;
 			}
 		}
 		
-		return null;
+		return index;
+	}
+	
+	public BufferCell getCellAtAbsoluteCoord(int m, int n)
+	{
+		int index = getCellAtAbsoluteCoord_protected(m, n);
+		
+		return index >= 0 ? m_cellList.get(index) : null;
 	}
 	
 	BufferCell removeCellAtAbsCoord(int m, int n)
