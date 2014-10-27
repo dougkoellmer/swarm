@@ -844,8 +844,11 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		
 		if( alreadyRenderedMeta )
 		{
+			setCode_commonPreInit(code);
+			
 			m_metaState = E_MetaState.DEFINITELY_SHOULD_BE_RENDERED_BY_NOW;
 			stopMetaTimeTracker();
+			
 			setCode_meta(code, /*delayLoading=*/false);
 			
 			return;
@@ -853,18 +856,26 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		
 		setCode_private(code, cellNamespace);
 	}
-
-	private void setCode_private(Code code, String cellNamespace)
+	
+	private void setCode_commonPreInit(Code code)
 	{
 		this.clearStatusHtml();
 		
 		m_queuedCode = null;
 		
 		m_codeSafetyLevel = code.getSafetyLevel();
+		
+		if( m_codeSafetyLevel == E_CodeSafetyLevel.META_IMAGE )
+		{
+			m_contentPanel.setVisible(false);
+		}
 
 		clearMetaImageState();
-		
-		m_contentPanel.setVisible(true);
+	}
+
+	private void setCode_private(Code code, String cellNamespace)
+	{
+		setCode_commonPreInit(code);
 		
 		if( m_codeSafetyLevel == E_CodeSafetyLevel.META_IMAGE )
 		{
@@ -901,10 +912,18 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 				delayLoading = !isProbablyCachedOnDisk;
 			}
 			
+			if( !delayLoading )
+			{
+				m_metaState = E_MetaState.LOADING;
+				restartMetaTimeTracker();
+			}
+			
 			setCode_meta(code, delayLoading);
 		}
 		else
 		{
+			m_contentPanel.setVisible(true);
+			
 			m_sandboxMngr.start(m_contentPanel.getElement(), code, cellNamespace, m_codeLoadListener);
 		}
 		
@@ -945,6 +964,11 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		{
 			m_metaState = E_MetaState.RENDERING;
 			restartMetaTimeTracker();
+		}
+		
+		if( m_metaCode != null )
+		{
+			s_renderedMeta.add(m_metaCode.getRawCode());
 		}
 		
 		m_contentPanel.setVisible(true);
@@ -998,6 +1022,13 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	/*-{
 			var loc = window.location;
 			var url = "" + loc.protocol + "//" + loc.host + url;
+			
+			return url;
+	}-*/;
+	
+	private static native String getPathFromAbsolute(String url)
+	/*-{
+			var url = url.replace(/^.*\/\/[^\/]+/, '');
 			
 			return url;
 	}-*/;
