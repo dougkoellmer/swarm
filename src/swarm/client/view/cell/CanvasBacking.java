@@ -71,6 +71,7 @@ public class CanvasBacking
 	
 	private int m_width = 0;
 	private int m_height = 0;
+	private boolean m_clear = true;
 	
 	public CanvasBacking(SpritePlateAnimation animation, String cellBackgroundColor, int maxCellWidth, int maxCellHeight, I_Skipper skipper)
 	{
@@ -145,7 +146,7 @@ public class CanvasBacking
 				else if( skip > 1 )
 				{
 					m += skip;
-					m -= 1;
+					m -= 1; // will get incremented in for loop so offsetting here.
 					
 					continue;
 				}
@@ -181,6 +182,7 @@ public class CanvasBacking
 				}
 
 				context.drawImage(m_stageCanvasElement, 0, 0, cellSize, cellSize, currX, currY, cellSize, cellSize);
+				m_clear = false;
 			}
 		}
 		
@@ -190,9 +192,13 @@ public class CanvasBacking
 	
 	private void clear()
 	{
+		if( m_clear )  return;
+		
 		int width = m_canvas.getCoordinateSpaceWidth();
 		int height = m_canvas.getCoordinateSpaceHeight();
 		Context2d context = m_canvas.getContext2d();
 		context.clearRect(0, 0, width, height);
+		
+		m_clear = true;
 	}
 }

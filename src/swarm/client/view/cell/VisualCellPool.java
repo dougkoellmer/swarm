@@ -131,6 +131,11 @@ public class VisualCellPool implements I_CellPoolDelegate
 		m_pool = new CustomPool(m_visualCellClass);
 	}
 	
+	public ObjectPool getInner()
+	{
+		return m_pool;
+	}
+	
 	@Override public I_BufferCellListener createVisualization(BufferCell bufferCell, int width, int height, int padding, int subCellDim)
 	{
 		VisualCell newVisualCell = m_pool.allocate();

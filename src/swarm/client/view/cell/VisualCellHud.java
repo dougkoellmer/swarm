@@ -312,6 +312,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 				if( event.isFor(State_ViewingCell.class) )
 				{
 					m_actualHud.getElement().getStyle().clearWidth();
+					clearCropping();
 				}
 				
 				break;

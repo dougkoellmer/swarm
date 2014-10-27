@@ -1,6 +1,7 @@
 package swarm.client.view.cell;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.logging.Logger;
 
 import swarm.client.app.A_ClientApp;
@@ -70,12 +71,12 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	
 	private static final Logger s_logger = Logger.getLogger(VisualCell.class.getName());
 	
+	private static final HashSet<String> s_renderedMeta = new HashSet<String>();
+	
 	//TODO: Move to config
 	private static final double META_IMAGE_LOAD_DELAY = .5;
 	private static final double META_IMAGE_RENDER_DELAY__SHOULD_BE = 2.0;
 	private static final double META_IMAGE_RENDER_DELAY__DEFINITELY_SHOULD_BE = 0.0;
-	
-	//private static final String SPINNER_HTML = "<img src='/r.img/spinner.gif?v=1' />";
 	
 	private static int s_currentId = 0;
 	
@@ -263,7 +264,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	
 	public void update(double timeStep)
 	{
-		if( m_metaTimeTracker >= 0.0 )
+		if( isMetaTimeTrackerRunning() )
 		{
 			m_metaTimeTracker += timeStep;
 			
@@ -831,21 +832,28 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 			m_sandboxMngr.stop(m_contentPanel.getElement());
 		}*/
 		
-//		if( m_subCellDimension == 1 )
+		boolean snappingOrFocused = m_subCellDimension ==1 && (m_isSnapping || m_isFocused);
+		boolean alreadyRenderedMeta = m_subCellDimension > 1 && s_renderedMeta.contains(code.getRawCode());
+		
+		if( snappingOrFocused || !alreadyRenderedMeta )
 		{
-			boolean isSnappingOrFocused = m_isSnapping || m_isFocused;
+			m_queuedCode = new QueuedSetCode(code, cellNamespace);
 			
-			if( !isSnappingOrFocused )
-			{
-				m_queuedCode = new QueuedSetCode(code, cellNamespace);
-				
-				return;
-			}
+			return;
+		}
+		
+		if( alreadyRenderedMeta )
+		{
+			m_metaState = E_MetaState.DEFINITELY_SHOULD_BE_RENDERED_BY_NOW;
+			stopMetaTimeTracker();
+			setCode_meta(code, /*delayLoading=*/false);
+			
+			return;
 		}
 		
 		setCode_private(code, cellNamespace);
 	}
-		
+
 	private void setCode_private(Code code, String cellNamespace)
 	{
 		this.clearStatusHtml();
@@ -862,8 +870,6 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		{
 			m_sandboxMngr.stop(m_contentPanel.getElement());
 			
-			m_metaCode = code;
-			
 			boolean delayLoading = true;
 			
 			Camera camera = m_cameraMngr.getCamera();
@@ -875,35 +881,27 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 			}
 			else 
 			{
-				boolean knownImage = false;
-				String url = getAbsoluteUrl(m_metaCode.getRawCode());
+				boolean isProbablyCachedOnDisk = false;
+				String url = getAbsoluteUrl(code.getRawCode());
 				
 				//--- DRK > No idea what's going on here...if I use mozIsLocallyAvailable it seems 
 				//---		to block the thread or something...m_metaCode!=null before this call
 				//---		but then can somehow get nulled out by the time we get past this block.
+				//---		It also seemed to cause weird ghosting of things like canvas backing 
+				//---		and cell highlight.
 //				if( canCheckMozLocalAvailability() )
 //				{
-//					knownImage = isLocallyAvailable(url);
+//					isProbablyCachedOnDisk = isLocallyAvailable(url);
 //				}
 //				else
 				{
-					knownImage = m_localStorage == null ? false : m_localStorage.getItem(url) != null;
+					isProbablyCachedOnDisk = m_localStorage == null ? false : m_localStorage.getItem(url) != null;
 				}
 				
-				delayLoading = !knownImage;
+				delayLoading = !isProbablyCachedOnDisk;
 			}
 			
-			if( !delayLoading )
-			{
-				m_contentPanel.setVisible(false);
-				
-				m_sandboxMngr.start(m_contentPanel.getElement(), m_metaCode, null, m_codeLoadListener);
-			}
-			else
-			{
-				m_metaState = E_MetaState.DELAYING;
-				restartMetaTimeTracker();
-			}
+			setCode_meta(code, delayLoading);
 		}
 		else
 		{
@@ -913,9 +911,26 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		if( m_codeListener != null )  m_codeListener.onCodeLoaded(this);
 	}
 	
+	private void setCode_meta(Code code, boolean delayLoading)
+	{
+		m_metaCode = code;
+		
+		if( !delayLoading )
+		{
+			m_contentPanel.setVisible(false);
+			
+			m_sandboxMngr.start(m_contentPanel.getElement(), m_metaCode, null, m_codeLoadListener);
+		}
+		else
+		{
+			m_metaState = E_MetaState.DELAYING;
+			restartMetaTimeTracker();
+		}
+	}
+	
 	private void onMetaImageLoadFailed()
 	{
-		//--- DRK > Should be invisible from upstream code...just making sure.
+		//--- DRK > Should already be invisible from upstream code...just making sure.
 		m_contentPanel.setVisible(false);
 	}
 	
@@ -926,8 +941,12 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 			m_localStorage.setItem(url, "");
 		}
 		
-		m_metaState = E_MetaState.RENDERING;
-		restartMetaTimeTracker();
+		if( isMetaTimeTrackerRunning() )
+		{
+			m_metaState = E_MetaState.RENDERING;
+			restartMetaTimeTracker();
+		}
+		
 		m_contentPanel.setVisible(true);
 		m_codeListener.onMetaImageLoaded();
 	}
@@ -944,6 +963,11 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		m_metaTimeTracker = -1.0;
 	}
 	
+	private boolean isMetaTimeTrackerRunning()
+	{
+		return m_metaTimeTracker >= 0.0;
+	}
+	
 	private void restartMetaTimeTracker()
 	{
 		m_metaTimeTracker = 0.0;
@@ -956,7 +980,6 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 			imgLoad.on('done', function()
 			{
 				cell.@swarm.client.view.cell.VisualCell::onMetaImageLoaded(Ljava/lang/String;)(element.src);
-//				console.log("meta loaded!");
 			});
 			
 			imgLoad.on('fail', function()
@@ -967,6 +990,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	
 	private static native boolean canCheckMozLocalAvailability()
 	/*-{
+			return false; // for now mozIsLocallyAvailable seems a little borked and/or slow.
 			return typeof $wnd.navigator.mozIsLocallyAvailable !== 'undefined';
 	}-*/;
 	

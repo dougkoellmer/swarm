@@ -155,7 +155,7 @@ public class VisualCellManager implements I_UIElement
 			m_backing = new CanvasBacking(animation, color, maxCellWidth, maxCellHeight, new CanvasBacking.I_Skipper()
 			{
 				@Override public int skip(int m, int n)
-				{
+				{					
 					CellBufferManager cellManager = m_viewContext.appContext.cellBufferMngr;
 					if( grid.isObscured(m, n, 1, cellManager.getSubCellCount(), m_obscured) )
 					{
@@ -174,8 +174,8 @@ public class VisualCellManager implements I_UIElement
 					else
 					{
 						if( grid.isTaken(m, n, 1) )
-						{
-							return 2;
+						{							
+							return 1;
 						}
 					}
 					
@@ -697,6 +697,7 @@ public class VisualCellManager implements I_UIElement
 					//boolean flushDestroyQueueIfMoving = (event.getState().getUpdateCount() % 8) == 0;
 					
 //					s_logger.severe(""+m_viewContext.appContext.cameraMngr.getAtRestFrameCount());
+//					s_logger.severe(m_cellPool.getInner().getCheckOutCount() + "/" + m_cellPool.getInner().getAllocCount());
 					
 					if( m_viewContext.appContext.cameraMngr.getAtRestFrameCount() > 2 )
 					{
