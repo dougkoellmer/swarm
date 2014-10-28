@@ -90,8 +90,10 @@ public class VisualCellPool implements I_CellPoolDelegate
 					{
 						return;
 					}
-					
-					m_viewContext.scrollNavigator.onResize();
+					else if( state instanceof State_CameraSnapping )
+					{
+						m_viewContext.stateContext.perform(State_CameraSnapping.OnCellWithNaturalDimensionsLoaded.class);
+					}
 				}
 			}
 		}

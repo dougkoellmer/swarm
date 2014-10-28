@@ -375,10 +375,10 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 
 					this.setTargetWidth(args.getTargetCoordinate());
 					this.setTargetPosition(args.getTargetCoordinate());
-
+					
 					clearCropping();
 				}
-				else if( event.isFor(Event_Camera_OnCellSizeFound.class) || event.isFor(Event_CameraSnapping_OnTargetCellAppeared.class) )
+				else if( event.isFor(State_CameraSnapping.OnCellWithNaturalDimensionsLoaded.class) || event.isFor(Event_Camera_OnCellSizeFound.class) || event.isFor(Event_CameraSnapping_OnTargetCellAppeared.class) )
 				{
 					if( event.isFor(Event_CameraSnapping_OnTargetCellAppeared.class) )
 					{
@@ -393,7 +393,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 						}
 					}
 					
-					if( event.getContext().isEntered(State_ViewingCell.class) )
+					if( event.isEntered(State_ViewingCell.class) )
 					{
 						State_ViewingCell state = event.get(State_ViewingCell.class);
 						
@@ -440,7 +440,6 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 		else
 		{
 			double snapProgress = m_viewContext.appContext.cameraMngr.getWeightedSnapProgress();
-			//s_logger.severe("hud: " + " " + m_baseWidthProgress + " " + snapProgress + " ");
 			mantissa = m_baseWidthProgress == 1 ? 1 : (snapProgress - m_baseWidthProgress) / (1-m_baseWidthProgress);
 			mantissa = U_Math.clampMantissa(mantissa);
 		}
@@ -601,6 +600,8 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 		
 		m_basePosition.copy(m_position);
 		m_targetPosition.copy(worldPoint);
+		
+//		s_logger.severe(m_basePosition + " " + m_targetPosition);
 	}
 	
 	private void setPositionInstantly(GridCoordinate targetCoord, boolean forTargetLayout)
@@ -644,6 +645,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 		double mantissa = 0;
 		
 		State_CameraFloating floatingState = m_viewContext.stateContext.getEntered(State_CameraFloating.class);
+		double snapProgress = 0.0;
 		if( floatingState != null )
 		{
 			m_basePositionProgress += floatingState.getLastTimeStep();
@@ -653,7 +655,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 		}
 		else
 		{
-			double snapProgress = m_viewContext.appContext.cameraMngr.getWeightedSnapProgress();
+			snapProgress = m_viewContext.appContext.cameraMngr.getWeightedSnapProgress();
 			mantissa = m_basePositionProgress == 1 ? 1 : (snapProgress - m_basePositionProgress) / (1-m_basePositionProgress);
 			mantissa = U_Math.clampMantissa(mantissa);
 		}
@@ -662,6 +664,8 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 		s_utilVector.scaleByNumber(mantissa);
 		m_position.copy(m_basePosition);
 		m_position.add(s_utilVector);
+		
+//		s_logger.severe(m_position+" "+snapProgress + " " + mantissa);
 		
 		if( mantissa >= 1 )
 		{

@@ -29,6 +29,7 @@ import swarm.shared.debugging.U_Debug;
 import swarm.shared.entities.A_Grid;
 import swarm.shared.entities.E_CodeType;
 import swarm.shared.statemachine.A_Action;
+import swarm.shared.statemachine.A_EventAction;
 import swarm.shared.statemachine.A_State;
 import swarm.shared.statemachine.I_StateEventListener;
 import swarm.shared.statemachine.StateArgs;
@@ -40,6 +41,8 @@ import swarm.shared.structs.Point;
 
 public class State_CameraSnapping extends A_State implements I_StateEventListener, I_State_SnappingOrViewing
 {
+	public static final class OnCellWithNaturalDimensionsLoaded extends A_EventAction{};
+	
 	private static final GridCoordinate INVALID = new GridCoordinate(-1, -1);
 	
 	private static final Logger s_logger = Logger.getLogger(State_CameraSnapping.class.getName());
@@ -104,6 +107,7 @@ public class State_CameraSnapping extends A_State implements I_StateEventListene
 		m_internalCodeRepo.addSource(m_appContext.codeCache);
 		
 		register(new Event_CameraSnapping_OnTargetCellAppeared());
+		register(new OnCellWithNaturalDimensionsLoaded());
 	}
 
 	void updateGridCoordinate(GridCoordinate targetCoordinate, CellAddress targetAddress_nullable, Point targetPoint)
