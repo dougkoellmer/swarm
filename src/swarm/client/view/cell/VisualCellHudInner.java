@@ -229,7 +229,7 @@ public class VisualCellHudInner extends HorizontalPanel implements I_StateEventL
 		State_ViewingCell viewingState = m_viewContext.stateContext.getEntered(State_ViewingCell.class);
 		State_CameraSnapping snappingState = m_viewContext.stateContext.getEntered(State_CameraSnapping.class);
 		
-		if( viewingState != null || snappingState != null && snappingState.getPreviousState() == State_ViewingCell.class )
+		if( viewingState != null || snappingState != null )
 		{
 			CellAddress address = null;
 			
@@ -270,7 +270,7 @@ public class VisualCellHudInner extends HorizontalPanel implements I_StateEventL
 		}
 		else
 		{
-			m_up.setEnabled(false);
+//			m_up.setEnabled(false);
 			m_parentAddress = null;
 			
 			m_back.setEnabled(false);
@@ -343,14 +343,16 @@ public class VisualCellHudInner extends HorizontalPanel implements I_StateEventL
 			{
 				if((	event.getAction() == Action_ViewingCell_Refresh.class		||
 						event.getAction() == Action_EditingCode_Save.class			||
-						event.getAction() == Action_EditingCode_Preview.class		||
-			
-						//--- DRK > These two cover the case of if we snap to a cell that we're already visiting.
-						//---		This effectively refreshes the cell in this case.
-						event.getAction() == Action_Camera_SnapToAddress.class		||
-						event.getAction() == Action_Camera_SnapToCoordinate.class	))
+						event.getAction() == Action_EditingCode_Preview.class		))
+						
 				{
 					updateRefreshButton();
+				}
+				else if((	event.getAction() == Action_Camera_SnapToAddress.class		||
+							event.getAction() == Action_Camera_SnapToCoordinate.class	))
+				{
+					this.updateHistoryButtons();
+					this.updateRefreshButton();
 				}
 					
 				break;

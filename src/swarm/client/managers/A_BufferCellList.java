@@ -31,22 +31,22 @@ abstract class A_BufferCellList
 		this.m_cellList.clear();
 	}
 	
-	protected static boolean swap(int m, int n, A_BufferCellList from, A_BufferCellList to, boolean checkIsLoaded)
+	protected static BufferCell swap(int m, int n, A_BufferCellList from, A_BufferCellList to, boolean checkIsLoaded)
 	{
 		int index = from.getCellAtAbsoluteCoord_protected(m, n);
 		
-		if( index < 0 )  return false;
+		if( index < 0 )  return null;
 		
 		BufferCell cell = from.m_cellList.get(index);
 		
-		if( cell == null )  return false;
+		if( cell == null )  return null;
 		
-		if( checkIsLoaded && !cell.getVisualization().isLoaded() )  return false;
+		if( checkIsLoaded && !cell.getVisualization().isLoaded() )  return null;
 		
 		from.m_cellList.set(index, null);
 		to.m_cellList.add(cell);
 		
-		return true;
+		return cell;
 	}
 	
 	protected int getCellAtAbsoluteCoord_protected(int m, int n)

@@ -48,7 +48,8 @@ public class VisualCellManager implements I_UIElement
 	private static final double NO_SCALING = .99999;
 	private static final Logger s_logger = Logger.getLogger(VisualCellManager.class.getName());
 	
-	private static final double FLUSH_CODE_RATE = .05;
+//	private static final double FLUSH_CODE_RATE = .05;
+	private static final double FLUSH_CODE_RATE = 0.0;
 //	private static final double FLUSH_CODE_RATE = .1;
 //	private static final double FLUSH_CODE_RATE = 5.0;
 	
@@ -166,7 +167,7 @@ public class VisualCellManager implements I_UIElement
 						
 //						s_logger.severe(state+"");
 						
-						if( state == VisualCell.E_MetaState.DEFINITELY_SHOULD_BE_RENDERED_BY_NOW )
+						if( visualCell.isMetaImageProbablyInMemory() || state == VisualCell.E_MetaState.DEFINITELY_SHOULD_BE_RENDERED_BY_NOW )
 						{
 							return m_obscured.offset;
 						}
@@ -221,12 +222,13 @@ public class VisualCellManager implements I_UIElement
 		m_needToUpdateBacking = false;
 		
 		CellBufferManager cellManager = m_viewContext.appContext.cellBufferMngr;
+		int subCellCount_highest = cellManager.getBufferCount();
 		
 		for( int i = 0; i < cellManager.getBufferCount(); i++ )
 		{
 			CellBuffer cellBuffer = cellManager.getDisplayBuffer(i);
 			
-			updateCellsWithNoTransforms(cellBuffer, timeStep);
+			updateCellsWithNoTransforms(cellBuffer, timeStep, subCellCount_highest);
 		}
 		
 		m_backingConfig.timestep = timeStep;
@@ -234,7 +236,7 @@ public class VisualCellManager implements I_UIElement
 		updateCanvasBacking();
 	}
 	
-	private void updateCellsWithNoTransforms(CellBuffer cellBuffer, double timeStep)
+	private void updateCellsWithNoTransforms(CellBuffer cellBuffer, double timeStep, int subCellCount_highest)
 	{
 		int bufferSize = cellBuffer.getCellCount();
 		
@@ -263,7 +265,7 @@ public class VisualCellManager implements I_UIElement
 				m_needToUpdateBacking = true;
 			}
 			
-			ithVisualCell.update(timeStep);
+			ithVisualCell.update(timeStep, subCellCount_highest);
 		}
 	}
 	
@@ -345,7 +347,7 @@ public class VisualCellManager implements I_UIElement
 		
 //		m_container.getElement().getStyle().setDisplay(Display.NONE);
 		{
-			for( int i = 0; i < limit; i++ )
+			for( int i = limit-1; i >= 0; i-- )
 			{
 				CellBuffer cellBuffer = cellManager.getDisplayBuffer(i);
 				
@@ -449,6 +451,7 @@ public class VisualCellManager implements I_UIElement
 		}
 
 		boolean keepTryingToFlush = initFlushingRoundAndKeepFlushing(subCellCount_i);
+//		s_logger.severe("keepTryingToFlush="+keepTryingToFlush+" and m_flushCodeTimer="+m_flushCodeTimer);
 		
 //		s_logger.severe(subCellCount_buffer + " " + subCellCount_highest + " " +cellWidthPlusPadding + " " + cellWidth_div);
 		
@@ -522,7 +525,7 @@ public class VisualCellManager implements I_UIElement
 				}
 			}
 			
-			ithVisualCell.update(timeStep);
+			ithVisualCell.update(timeStep, subCellCount_highest);
 			ithVisualCell.validate();
 			
 			if( !isViewingCell || isViewingCell && ithBufferCell != viewedCell )

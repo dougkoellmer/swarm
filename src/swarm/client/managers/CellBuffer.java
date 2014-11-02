@@ -141,6 +141,7 @@ public class CellBuffer extends A_BufferCellList
 		{
 //			s_logger.severe("");
 		}
+
 		boolean createVisualizations = (options__extends__smF_BufferUpdateOption & F_BufferUpdateOption.CREATE_VISUALIZATIONS) != 0;
 		boolean communicateWithServer = (options__extends__smF_BufferUpdateOption & F_BufferUpdateOption.COMMUNICATE_WITH_SERVER) != 0;
 		boolean flushPopulator = (options__extends__smF_BufferUpdateOption & F_BufferUpdateOption.FLUSH_CELL_POPULATOR) != 0;
@@ -191,6 +192,7 @@ public class CellBuffer extends A_BufferCellList
 		{
 			for ( m = m_coord.getM(); m < limitM; m++ )
 			{
+//				boolean isDebugCell = m_subCellCount == 2 && m == 5 && n == 6;
 				boolean obscured = false;
 				
 				if( aboveCurrentSubCellCount )
@@ -224,8 +226,25 @@ public class CellBuffer extends A_BufferCellList
 				}
 				
 				if( !grid.isTaken(m, n, m_subCellCount) )  continue;
-				if( swap(m, n, otherBuffer, this, /*checkIsLoaded=*/aboveCurrentSubCellCount) )  continue;
-				if( swap(m, n, m_killQueue, this, /*checkIsLoaded=*/aboveCurrentSubCellCount) )  continue;
+				
+				//--- DRK > For a brief time the swap method's success was determined by us being aboveCurrentSubCellCount
+				//---		but I believe I meant aboveCurrentSubCellCount && obscured. This still might be faulty.
+				//---		Maybe we want to be greedy and never check if cell is loaded.
+				boolean checkIsLoaded = aboveCurrentSubCellCount && obscured;
+//				boolean checkIsLoaded = false;
+				
+				if( swap(m, n, otherBuffer, this, checkIsLoaded) != null )
+				{
+					continue;
+				}
+				
+				final BufferCell cellFromKillQueue = swap(m, n, m_killQueue, this, checkIsLoaded);
+				if( cellFromKillQueue != null )
+				{
+					cellFromKillQueue.getVisualization().onSavedFromDeathSentence();
+					
+					continue;
+				}
 				
 				//--- DRK > If we're obscured then although we attempt to swap an existing cell
 				//---		from the other buffer or the kill queue above, we don't make new cells.

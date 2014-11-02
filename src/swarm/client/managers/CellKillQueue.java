@@ -7,7 +7,7 @@ import swarm.client.structs.BufferCellPool;
 
 class CellKillQueue extends A_BufferCellList
 {
-	private static final double DEATH_COUNTDOWN = .5;
+	private static final double DEATH_COUNTDOWN = .65;
 	
 	CellKillQueue(BufferCellPool pool)
 	{

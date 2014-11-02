@@ -71,12 +71,14 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	
 	private static final Logger s_logger = Logger.getLogger(VisualCell.class.getName());
 	
-	private static final HashSet<String> s_renderedMeta = new HashSet<String>();
+	private static final HashSet<String> s_alreadyRenderedMeta = new HashSet<String>();
 	
 	//TODO: Move to config
 	private static final double META_IMAGE_LOAD_DELAY = .5;
 	private static final double META_IMAGE_RENDER_DELAY__SHOULD_BE = 2.0;
 	private static final double META_IMAGE_RENDER_DELAY__DEFINITELY_SHOULD_BE = 0.0;
+	private static final double FADE_IN_TIME = .25;
+//	private static final double FADE_IN_TIME = 2.0;
 	
 	private static int s_currentId = 0;
 	
@@ -164,9 +166,13 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	private final double m_sizeChangeTime;
 	private final double m_retractionEasing;
 	
+	private double m_totalTimeSinceCreation = 0.0;
+	
 	private double m_metaTimeTracker;
 	private Code m_metaCode = null;
 	private E_MetaState m_metaState = null;
+	private boolean m_isMetaProbablyCachedInMemory = false;
+	private boolean m_fadeIn = false;
 	
 	private final Storage m_localStorage = Storage.getLocalStorageIfSupported();
 	
@@ -262,8 +268,34 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		return m_height;
 	}
 	
-	public void update(double timeStep)
+	private void fadeIn(double time)
 	{
+		if( !m_fadeIn )  return;
+		
+		double alpha = time / FADE_IN_TIME;
+//		alpha = Math.sqrt(alpha);
+		m_contentPanel.getElement().getStyle().setOpacity(alpha);
+		
+		if( alpha >= 1.0 )
+		{
+			m_fadeIn = false;
+		}
+	}
+	
+	private void ensureFadedOut()
+	{
+		m_contentPanel.getElement().getStyle().setOpacity(0.0);
+	}
+	
+	private void ensureFadedIn()
+	{
+		m_contentPanel.getElement().getStyle().setOpacity(1.0);
+	}
+	
+	public void update(double timeStep, int subCellCount_highest)
+	{
+		m_totalTimeSinceCreation += timeStep;
+		
 		if( isMetaTimeTrackerRunning() )
 		{
 			m_metaTimeTracker += timeStep;
@@ -274,11 +306,19 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 				m_contentPanel.setVisible(false);
 				m_sandboxMngr.start(m_contentPanel.getElement(), m_metaCode, null, m_codeLoadListener);
 			}
-			else if( m_metaState == E_MetaState.RENDERING && m_metaTimeTracker >= META_IMAGE_RENDER_DELAY__SHOULD_BE )
+			else if( m_metaState == E_MetaState.RENDERING )
 			{
-				m_metaState = E_MetaState.SHOULD_BE_RENDERED_BY_NOW;
-				m_codeListener.onMetaImageRendered();
-				restartMetaTimeTracker();
+				if( m_metaTimeTracker >= META_IMAGE_RENDER_DELAY__SHOULD_BE )
+				{
+					m_metaState = E_MetaState.SHOULD_BE_RENDERED_BY_NOW;
+					m_codeListener.onMetaImageRendered();
+					restartMetaTimeTracker();
+					ensureFadedIn();
+				}
+				else
+				{
+					fadeIn(m_metaTimeTracker);
+				}
 			}
 			else if( m_metaState == E_MetaState.SHOULD_BE_RENDERED_BY_NOW && m_metaTimeTracker >= META_IMAGE_RENDER_DELAY__DEFINITELY_SHOULD_BE )
 			{
@@ -286,6 +326,24 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 				stopMetaTimeTracker();
 			}
 		}
+		else if( m_subCellDimension == 1 )
+		{
+			fadeIn(m_totalTimeSinceCreation);
+		}
+		
+//		double timeToDeath = m_bufferCell.getTimeToDeath();
+//		if( timeToDeath >= 0 )
+//		{
+//			if( m_subCellDimension > subCellCount_highest )
+//			{
+//				double alpha = timeToDeath / m_bufferCell.getTotalDeathTime();
+//				this.getElement().getStyle().setOpacity(alpha);
+//			}
+//			else
+//			{
+//				this.getElement().getStyle().setOpacity(1.0);
+//			}
+//		}
 		
 		if( m_spinner.asWidget().getParent() != null )
 		{
@@ -440,15 +498,16 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	
 	public void onCreate(BufferCell bufferCell, int width, int height, int padding, int subCellDimension)
 	{
-//		if( subCellDimension == 1 )
+//		if( subCellDimension == 2 && bufferCell.getCoordinate().isEqualTo(5, 6) )
 //		{
-//			s_logger.severe("MADE cell_1");
+//			s_logger.severe("MADE THE CELL");
 //		}
 //		else
 //		{
 //			s_logger.severe("MADE cell>1");
 //		}
 		
+		m_totalTimeSinceCreation = 0.0;
 		m_bufferCell = bufferCell;
 		
 		onCreatedOrRecycled(width, height, padding, subCellDimension);
@@ -462,6 +521,19 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		setDefaultZIndex();
 		
 		this.showEmptyContent();
+		
+		Camera camera = m_cameraMngr.getCamera();
+		double deltaZ = camera.getPosition().getZ() - camera.getPrevPosition().getZ();
+
+		if( deltaZ >= 0 )
+		{
+			m_fadeIn = true;
+			ensureFadedOut();
+		}
+		else
+		{
+			ensureFadedIn();
+		}
 		
 //		if( subCellDimension > 1 )
 //		{
@@ -494,6 +566,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		m_isFocused = false;
 		m_isValidated = false;
 		m_subCellDimension = subCellDimension;
+		m_isMetaProbablyCachedInMemory = false;
 		
 		m_targetWidth = m_defaultWidth = m_baseWidth = m_width = width;
 		m_targetHeight = m_defaultHeight = m_baseHeight = m_height = height;
@@ -810,8 +883,11 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	{
 		if( m_queuedCode != null )
 		{
-			setCode_private(m_queuedCode.m_code, m_queuedCode.m_namespace);
-			m_queuedCode = null;
+			if( !m_bufferCell.isOnDeathRow() )
+			{
+				setCode_private(m_queuedCode.m_code, m_queuedCode.m_namespace);
+				m_queuedCode = null;
+			}
 			
 			return true;
 		}
@@ -832,27 +908,28 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 			m_sandboxMngr.stop(m_contentPanel.getElement());
 		}*/
 		
-		boolean snappingOrFocused = m_subCellDimension ==1 && (m_isSnapping || m_isFocused);
-		boolean alreadyRenderedMeta = m_subCellDimension > 1 && s_renderedMeta.contains(code.getRawCode());
+		boolean snappingOrFocused = m_subCellDimension == 1 && (m_isSnapping || m_isFocused);
+		m_isMetaProbablyCachedInMemory = m_subCellDimension > 1 && s_alreadyRenderedMeta.contains(code.getRawCode());
+//		boolean alreadyRenderedMeta = m_subCellDimension > 1 && s_renderedMeta.contains(code.getRawCode());
 		
-		if( snappingOrFocused || !alreadyRenderedMeta )
+		if( !snappingOrFocused )//|| !alreadyRenderedMeta )
 		{
 			m_queuedCode = new QueuedSetCode(code, cellNamespace);
 			
 			return;
 		}
 		
-		if( alreadyRenderedMeta )
-		{
-			setCode_commonPreInit(code);
-			
-			m_metaState = E_MetaState.DEFINITELY_SHOULD_BE_RENDERED_BY_NOW;
-			stopMetaTimeTracker();
-			
-			setCode_meta(code, /*delayLoading=*/false);
-			
-			return;
-		}
+//		if( alreadyRenderedMeta )
+//		{
+//			setCode_commonPreInit(code);
+//			
+//			m_metaState = E_MetaState.DEFINITELY_SHOULD_BE_RENDERED_BY_NOW;
+//			stopMetaTimeTracker();
+//			
+//			setCode_meta(code, /*delayLoading=*/false);
+//			
+//			return;
+//		}
 		
 		setCode_private(code, cellNamespace);
 	}
@@ -872,6 +949,11 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 
 		clearMetaImageState();
 	}
+	
+	public boolean isMetaImageProbablyInMemory()
+	{
+		return m_isMetaProbablyCachedInMemory;
+	}
 
 	private void setCode_private(Code code, String cellNamespace)
 	{
@@ -890,26 +972,29 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 			{
 				delayLoading = false;
 			}
-			else 
+			else
 			{
-				boolean isProbablyCachedOnDisk = false;
-				String url = getAbsoluteUrl(code.getRawCode());
-				
-				//--- DRK > No idea what's going on here...if I use mozIsLocallyAvailable it seems 
-				//---		to block the thread or something...m_metaCode!=null before this call
-				//---		but then can somehow get nulled out by the time we get past this block.
-				//---		It also seemed to cause weird ghosting of things like canvas backing 
-				//---		and cell highlight.
-//				if( canCheckMozLocalAvailability() )
+//				boolean isProbablyCachedOnDisk = false;
+//				
+//				//--- DRK > No idea what's going on here...if I use mozIsLocallyAvailable it seems 
+//				//---		to block the thread or something...m_metaCode!=null before this call
+//				//---		but then can somehow get nulled out by the time we get past this block.
+//				//---		It also seemed to cause weird ghosting of things like canvas backing 
+//				//---		and cell highlight.
+////				if( canCheckMozLocalAvailability() )
+////				{
+////					isProbablyCachedOnDisk = isLocallyAvailable(url);
+////				}
+//				
+//				if( !m_isMetaProbablyCachedInMemory )
 //				{
-//					isProbablyCachedOnDisk = isLocallyAvailable(url);
+//					String url = getAbsoluteUrl(code.getRawCode());
+//					isProbablyCachedOnDisk = m_localStorage == null ? false : m_localStorage.getItem(url) != null;
 //				}
-//				else
-				{
-					isProbablyCachedOnDisk = m_localStorage == null ? false : m_localStorage.getItem(url) != null;
-				}
+//				
+//				delayLoading = !m_isMetaProbablyCachedInMemory && !isProbablyCachedOnDisk;
 				
-				delayLoading = !isProbablyCachedOnDisk;
+				delayLoading = false;
 			}
 			
 			if( !delayLoading )
@@ -968,7 +1053,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		
 		if( m_metaCode != null )
 		{
-			s_renderedMeta.add(m_metaCode.getRawCode());
+			s_alreadyRenderedMeta.add(m_metaCode.getRawCode());
 		}
 		
 		m_contentPanel.setVisible(true);
@@ -1003,12 +1088,18 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 			
 			imgLoad.on('done', function()
 			{
-				cell.@swarm.client.view.cell.VisualCell::onMetaImageLoaded(Ljava/lang/String;)(element.src);
+				if( element.parentNode )
+				{
+					cell.@swarm.client.view.cell.VisualCell::onMetaImageLoaded(Ljava/lang/String;)(element.src);
+				}
 			});
 			
 			imgLoad.on('fail', function()
 			{
-				cell.@swarm.client.view.cell.VisualCell::onMetaImageLoadFailed()();
+				if( element.parentNode )
+				{
+					cell.@swarm.client.view.cell.VisualCell::onMetaImageLoadFailed()();
+				}
 			});
 	}-*/;
 	
@@ -1111,5 +1202,11 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		if( m_subCellDimension == 1 )  return true;
 		
 		return m_metaState != null && m_metaState.ordinal() >= E_MetaState.RENDERING.ordinal();
+	}
+	
+	@Override public void onSavedFromDeathSentence()
+	{
+		//--- DRK > Currently not fading out so don't need this.
+//		m_contentPanel.getElement().getStyle().setOpacity(1.0);
 	}
 }

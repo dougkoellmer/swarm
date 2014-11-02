@@ -36,6 +36,7 @@ public class BufferCell extends A_Cell
 	private A_Grid m_grid = null;
 	
 	private double m_deathCountdown = -1;
+	private double m_totalDeathTime = -1;
 	
 	public BufferCell() 
 	{
@@ -415,6 +416,7 @@ public class BufferCell extends A_Cell
 		m_hasBeenPreviewed = false;
 		
 		m_deathCountdown = -1;
+		m_totalDeathTime = -1;
 	}
 	
 	public void onCellDestroyed()
@@ -425,14 +427,25 @@ public class BufferCell extends A_Cell
 		this.m_grid = null;
 	}
 	
-	public boolean isItDeadQuestionMark()
+	public double getTotalDeathTime()
 	{
-		return m_deathCountdown == 0;
+		return m_totalDeathTime;
+	}
+	
+	public double getTimeToDeath()
+	{
+		return m_deathCountdown;
 	}
 	
 	public void sentenceToDeath(double countdown)
 	{
 		m_deathCountdown = countdown;
+		m_totalDeathTime = countdown;
+	}
+	
+	public boolean isOnDeathRow()
+	{
+		return m_deathCountdown >= 0.0;
 	}
 	
 	public boolean killSlowly_isItDeadQuestionMark(double timestep)
@@ -441,7 +454,8 @@ public class BufferCell extends A_Cell
 		
 		if( m_deathCountdown <= 0 )
 		{
-			m_deathCountdown = 0;
+			m_deathCountdown = -1;
+			m_totalDeathTime = -1;
 			
 			return true;
 		}
