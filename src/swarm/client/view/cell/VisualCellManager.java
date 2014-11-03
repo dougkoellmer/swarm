@@ -552,11 +552,14 @@ public class VisualCellManager implements I_UIElement
 			double translateX = basePoint.getX() + offsetX;
 			double translateY = basePoint.getY() + offsetY;
 			
+			boolean setVisible = true;
+			
 			if( isViewingCell )
 			{
 				if( subCellCount_i > 1 )
 				{
 					ithVisualCell.setVisible(false);
+					setVisible = false;
 				}
 				else
 				{
@@ -617,7 +620,7 @@ public class VisualCellManager implements I_UIElement
 			{
 				m_container.add(ithVisualCell);
 			}
-			else if( !ithVisualCell.isVisible() )
+			else if( setVisible )
 			{
 				ithVisualCell.setVisible(true);
 			}
