@@ -307,6 +307,8 @@ public class StateMachine_Camera extends A_StateMachine implements I_StateEventL
 			
 			int options = F_BufferUpdateOption.CREATE_VISUALIZATIONS;
 			
+//			s_logger.severe(snappingState.getTargetCoord()+"");
+			
 			bufferMngr.update_cameraMoving(timestep, m_appContext.gridMngr.getGrid(), m_appContext.cameraMngr.getCamera(), snappingState.getTargetCoord(), compiledStaticHtmlSource, options);
 			
 			//--- DRK > As soon as target cell comes into sight, we start trying to populate

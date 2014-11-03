@@ -31,7 +31,7 @@ abstract class A_BufferCellList
 		this.m_cellList.clear();
 	}
 	
-	protected static BufferCell swap(int m, int n, A_BufferCellList from, A_BufferCellList to, boolean checkIsLoaded)
+	protected static BufferCell swap(int m, int n, A_BufferCellList from, A_BufferCellList to, boolean onlySwapIfLoaded)
 	{
 		int index = from.getCellAtAbsoluteCoord_protected(m, n);
 		
@@ -41,7 +41,7 @@ abstract class A_BufferCellList
 		
 		if( cell == null )  return null;
 		
-		if( checkIsLoaded && !cell.getVisualization().isLoaded() )  return null;
+		if( onlySwapIfLoaded && !cell.getVisualization().isLoaded() )  return null;
 		
 		from.m_cellList.set(index, null);
 		to.m_cellList.add(cell);

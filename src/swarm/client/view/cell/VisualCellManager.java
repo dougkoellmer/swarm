@@ -530,8 +530,8 @@ public class VisualCellManager implements I_UIElement
 			
 			if( !isViewingCell || isViewingCell && ithBufferCell != viewedCell )
 			{
-				offsetX += ((double)ithVisualCell.getXOffset())*positionScaling;
-				offsetY += ((double)ithVisualCell.getYOffset())*positionScaling;
+				offsetX += ((double)ithVisualCell.getXOffset())*sizeScaling;
+				offsetY += ((double)ithVisualCell.getYOffset())*sizeScaling;
 			}
 			else
 			{
@@ -600,6 +600,16 @@ public class VisualCellManager implements I_UIElement
 			{
 				ithVisualCell.setSize(cellWidthForMeta+"px", cellHeightForMeta+"px");
 			}
+//			else
+//			{
+//				if( m_viewContext.stateContext.isEntered(State_CameraSnapping.class) )
+//				{
+//					if( subCellCount_i == 1 && ithBufferCell.getCoordinate().isEqualTo(10, 16) )
+//					{
+//						s_logger.severe("ERERER " + subCellCount_highest);;
+//					}
+//				}
+//			}
 			
 //				s_logger.severe(transform+"");
 			

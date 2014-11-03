@@ -414,9 +414,8 @@ public class BufferCell extends A_Cell
 		m_isFocused = false;
 		m_address = null;
 		m_hasBeenPreviewed = false;
-		
-		m_deathCountdown = -1;
-		m_totalDeathTime = -1;
+
+		clearDeathTimer();
 	}
 	
 	public void onCellDestroyed()
@@ -443,6 +442,19 @@ public class BufferCell extends A_Cell
 		m_totalDeathTime = countdown;
 	}
 	
+	public void saveFromDeathSentence()
+	{
+		clearDeathTimer();
+		
+		getVisualization().onSavedFromDeathSentence();
+	}
+	
+	private void clearDeathTimer()
+	{
+		m_deathCountdown = -1;
+		m_totalDeathTime = -1;
+	}
+	
 	public boolean isOnDeathRow()
 	{
 		return m_deathCountdown >= 0.0;
@@ -454,8 +466,7 @@ public class BufferCell extends A_Cell
 		
 		if( m_deathCountdown <= 0 )
 		{
-			m_deathCountdown = -1;
-			m_totalDeathTime = -1;
+			clearDeathTimer();
 			
 			return true;
 		}

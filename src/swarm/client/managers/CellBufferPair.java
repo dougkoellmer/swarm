@@ -41,7 +41,7 @@ public class CellBufferPair
 		m_killQueue.update(timestep);
 	}
 	
-	void update_cameraMoving(double timestep, ClientGrid grid, Camera camera, I_LocalCodeRepository alternativeCodeSource, int options__extends__smF_BufferUpdateOption, int subCellCount)
+	void update_cameraMoving(double timestep, ClientGrid grid, Camera camera, GridCoordinate snappingCoordinate_nullable, I_LocalCodeRepository alternativeCodeSource, int options__extends__smF_BufferUpdateOption, int subCellCount)
 	{
 		m_killQueue.update(timestep);
 		
@@ -88,7 +88,7 @@ public class CellBufferPair
 //		s_logger.severe("");
 		
 		m_backBuffer.setExtents(m_utilCoord1.getM(), m_utilCoord1.getN(), newBufferWidth, newBufferHeight);
-		m_backBuffer.imposeBuffer(grid, m_displayBuffer, alternativeCodeSource, subCellCount, options__extends__smF_BufferUpdateOption);
+		m_backBuffer.imposeBuffer(grid, m_displayBuffer, snappingCoordinate_nullable, alternativeCodeSource, subCellCount, options__extends__smF_BufferUpdateOption);
 		
 		//s_logger.info(smCellPool.getInstance().getAllocCount() + "");
 		

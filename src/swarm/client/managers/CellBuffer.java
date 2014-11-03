@@ -135,7 +135,7 @@ public class CellBuffer extends A_BufferCellList
 		}
 	}
 	
-	void imposeBuffer(ClientGrid grid, CellBuffer otherBuffer, I_LocalCodeRepository localCodeSource, int highestSubCellCount, int options__extends__smF_BufferUpdateOption)
+	void imposeBuffer(ClientGrid grid, CellBuffer otherBuffer, GridCoordinate snapCoord_nullable, I_LocalCodeRepository localCodeSource, int highestSubCellCount, int options__extends__smF_BufferUpdateOption)
 	{
 		if( m_subCellCount == 16 )
 		{
@@ -151,7 +151,7 @@ public class CellBuffer extends A_BufferCellList
 		
 		int otherBufferCellCount = otherBuffer.m_cellList.size();
 
-		if( highestSubCellCount < m_subCellCount )
+		if( m_subCellCount > highestSubCellCount )
 		{
 			for( i = otherBufferCellCount-1; i >= 0 ; i-- )
 			{
@@ -192,7 +192,9 @@ public class CellBuffer extends A_BufferCellList
 		{
 			for ( m = m_coord.getM(); m < limitM; m++ )
 			{
-//				boolean isDebugCell = m_subCellCount == 2 && m == 5 && n == 6;
+//				boolean isDebugCell = m_subCellCount == 1 && m == 10 && n == 16;
+				boolean isBeingSnappedTo = snapCoord_nullable != null && m_subCellCount == 1 && m == snapCoord_nullable.getM() && n == snapCoord_nullable.getN();
+	
 				boolean obscured = false;
 				
 				if( aboveCurrentSubCellCount )
@@ -200,25 +202,29 @@ public class CellBuffer extends A_BufferCellList
 					if( grid.isObscured(m, n, m_subCellCount, highestSubCellCount, m_obscured) )
 					{
 						obscured = true;
-						CellBuffer higherBuffer = m_parent.getDisplayBuffer(U_Bits.calcBitPosition(m_obscured.subCellDimension));
-						BufferCell obscuringCell = higherBuffer.getCellAtAbsoluteCoord(m_obscured.m, m_obscured.n);
 						
-						if( obscuringCell != null )
+						if( !isBeingSnappedTo )
 						{
-							I_BufferCellListener obscuringCellVisualization = obscuringCell.getVisualization();
+							CellBuffer higherBuffer = m_parent.getDisplayBuffer(U_Bits.calcBitPosition(m_obscured.subCellDimension));
+							BufferCell obscuringCell = higherBuffer.getCellAtAbsoluteCoord(m_obscured.m, m_obscured.n);
 							
-							if( obscuringCellVisualization.isLoaded() )
+							if( obscuringCell != null )
 							{
-								if( m_obscured.offset == 1 )
+								I_BufferCellListener obscuringCellVisualization = obscuringCell.getVisualization();
+								
+								if( obscuringCellVisualization.isLoaded() )
 								{
-									continue;
-								}
-								else if( m_obscured.offset > 1 )
-								{
-									m += m_obscured.offset;
-									m -= 1; // cancel out next increment in for loop
-									
-									continue;
+									if( m_obscured.offset == 1 )
+									{
+										continue;
+									}
+									else if( m_obscured.offset > 1 )
+									{
+										m += m_obscured.offset;
+										m -= 1; // cancel out next increment in for loop
+										
+										continue;
+									}
 								}
 							}
 						}
@@ -229,26 +235,34 @@ public class CellBuffer extends A_BufferCellList
 				
 				//--- DRK > For a brief time the swap method's success was determined by us being aboveCurrentSubCellCount
 				//---		but I believe I meant aboveCurrentSubCellCount && obscured. This still might be faulty.
-				//---		Maybe we want to be greedy and never check if cell is loaded.
-				boolean checkIsLoaded = aboveCurrentSubCellCount && obscured;
+				//---		Maybe we want to be greedy and never check if cell is loaded. !isBeingSnappedTo added now later in the day too.
+				boolean onlySwapIfLoaded = !isBeingSnappedTo && aboveCurrentSubCellCount && obscured;
 //				boolean checkIsLoaded = false;
 				
-				if( swap(m, n, otherBuffer, this, checkIsLoaded) != null )
+				if( swap(m, n, otherBuffer, this, onlySwapIfLoaded) != null )
 				{
 					continue;
 				}
 				
-				final BufferCell cellFromKillQueue = swap(m, n, m_killQueue, this, checkIsLoaded);
-				if( cellFromKillQueue != null )
+				if( !obscured || isBeingSnappedTo )
 				{
-					cellFromKillQueue.getVisualization().onSavedFromDeathSentence();
-					
-					continue;
+					final BufferCell cellFromKillQueue = swap(m, n, m_killQueue, this, /*onlySwapIfLoaded=*/false);
+					if( cellFromKillQueue != null )
+					{
+//						if( isDebugCell )
+//						{
+//							s_logger.severe("saved " + highestSubCellCount + " " + onlySwapIfLoaded + " " + cellFromKillQueue.getVisualization().isLoaded());
+//						}
+						
+						cellFromKillQueue.saveFromDeathSentence();
+						
+						continue;
+					}
 				}
 				
 				//--- DRK > If we're obscured then although we attempt to swap an existing cell
 				//---		from the other buffer or the kill queue above, we don't make new cells.
-				if( obscured )  continue;
+				if ( obscured )  continue;
 				
 				if( m_subCellCount > 1 )
 				{
@@ -280,6 +294,22 @@ public class CellBuffer extends A_BufferCellList
 		if( flushPopulator )
 		{
 			m_codeMngr.flush();
+		}
+		
+		//--- DRK > Try to save the cell if from the kill queue if it's being snapped to.
+		//---		This is done outside the loop above because the offset returned from 
+		//---		the isObscured check can make us skip over the cell coordinate of the
+		//---		target cell.
+		if( m_subCellCount == 1 && snapCoord_nullable != null )
+		{
+			if( swap(snapCoord_nullable.getM(), snapCoord_nullable.getN(), otherBuffer, this, /*onlySwapIfLoaded=*/false) == null )
+			{
+				BufferCell cellSavedFromDeathSentence = swap(snapCoord_nullable.getM(), snapCoord_nullable.getN(), m_killQueue, this, /*onlySwapIfLoaded=*/false);
+				if( cellSavedFromDeathSentence != null )
+				{
+					cellSavedFromDeathSentence.saveFromDeathSentence();
+				}
+			}
 		}
 		
 		for( i = 0; i < otherBufferCellCount; i++ )

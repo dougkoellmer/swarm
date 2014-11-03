@@ -160,3 +160,61 @@ public class SandboxManager
 		removeAllChildren(host);
 	}
 }
+
+/*
+ * Uncaught TypeError: Cannot read property 'e' of null 39A6DEC9717AB51F7E6AB3A63A4F7A0C.cache.html:1565
+com.google.gwt.core.client.JavaScriptException: (TypeError) : Cannot read property 'g' of null
+  at com.google.gwt.core.client.JavaScriptException: (TypeError) : Cannot read property 'g' of null
+  at Unknown.E3(http://127.0.0.1:8888/r.app/39A6DEC9717AB51F7E6AB3A63A4F7A0C.cache.html@29)
+  at Unknown.K3(http://127.0.0.1:8888/r.app/39A6DEC9717AB51F7E6AB3A63A4F7A0C.cache.html@68)
+  at Unknown.dr(http://127.0.0.1:8888/r.app/39A6DEC9717AB51F7E6AB3A63A4F7A0C.cache.html@1589)
+  at Unknown.Ur(http://127.0.0.1:8888/r.app/39A6DEC9717AB51F7E6AB3A63A4F7A0C.cache.html@187)
+  at Unknown.Mr(http://127.0.0.1:8888/r.app/39A6DEC9717AB51F7E6AB3A63A4F7A0C.cache.html@77)
+  at Unknown.vh(http://127.0.0.1:8888/r.app/39A6DEC9717AB51F7E6AB3A63A4F7A0C.cache.html@30)
+  at Unknown.jp(http://127.0.0.1:8888/r.app/39A6DEC9717AB51F7E6AB3A63A4F7A0C.cache.html@115)
+  at Unknown.xh(http://127.0.0.1:8888/r.app/39A6DEC9717AB51F7E6AB3A63A4F7A0C.cache.html@120)
+  at Unknown.Gh(http://127.0.0.1:8888/r.app/39A6DEC9717AB51F7E6AB3A63A4F7A0C.cache.html@13652)
+  at Unknown.tL(http://127.0.0.1:8888/r.app/39A6DEC9717AB51F7E6AB3A63A4F7A0C.cache.html@80)
+Caused by: com.google.gwt.core.client.JavaScriptException: (TypeError) : Cannot read property 'g' of null
+  at Unknown.E3(http://127.0.0.1:8888/r.app/39A6DEC9717AB51F7E6AB3A63A4F7A0C.cache.html@29)
+  at Unknown.K3(http://127.0.0.1:8888/r.app/39A6DEC9717AB51F7E6AB3A63A4F7A0C.cache.html@68)
+  at Unknown.dr(http://127.0.0.1:8888/r.app/39A6DEC9717AB51F7E6AB3A63A4F7A0C.cache.html@1589)
+  at Unknown.Ur(http://127.0.0.1:8888/r.app/39A6DEC9717AB51F7E6AB3A63A4F7A0C.cache.html@187)
+  at Unknown.Mr(http://127.0.0.1:8888/r.app/39A6DEC9717AB51F7E6AB3A63A4F7A0C.cache.html@77)
+  at Unknown.vh(http://127.0.0.1:8888/r.app/39A6DEC9717AB51F7E6AB3A63A4F7A0C.cache.html@30)
+  at Unknown.jp(http://127.0.0.1:8888/r.app/39A6DEC9717AB51F7E6AB3A63A4F7A0C.cache.html@115)
+  at Unknown.xh(http://127.0.0.1:8888/r.app/39A6DEC9717AB51F7E6AB3A63A4F7A0C.cache.html@120)
+  at Unknown.Gh(http://127.0.0.1:8888/r.app/39A6DEC9717AB51F7E6AB3A63A4F7A0C.cache.html@13652)
+  at Unknown.tL(http://127.0.0.1:8888/r.app/39A6DEC9717AB51F7E6AB3A63A4F7A0C.cache.html@80) 39A6DEC9717AB51F7E6AB3A63A4F7A0C.cache.html:2207
+20com.google.gwt.core.client.JavaScriptException: (TypeError) : Cannot read property 'g' of null
+  at com.google.gwt.core.client.JavaScriptException: (TypeError) : Cannot read property 'g' of null
+  at Unknown.E3(http://127.0.0.1:8888/r.app/39A6DEC9717AB51F7E6AB3A63A4F7A0C.cache.html@29)
+  at Unknown.K3(http://127.0.0.1:8888/r.app/39A6DEC9717AB51F7E6AB3A63A4F7A0C.cache.html@68)
+  at Unknown.dr(http://127.0.0.1:8888/r.app/39A6DEC9717AB51F7E6AB3A63A4F7A0C.cache.html@1589)
+  at Unknown.Ur(http://127.0.0.1:8888/r.app/39A6DEC9717AB51F7E6AB3A63A4F7A0C.cache.html@187)
+  at Unknown.Mr(http://127.0.0.1:8888/r.app/39A6DEC9717AB51F7E6AB3A63A4F7A0C.cache.html@77)
+  at Unknown.vh(http://127.0.0.1:8888/r.app/39A6DEC9717AB51F7E6AB3A63A4F7A0C.cache.html@30)
+  at Unknown.jp(http://127.0.0.1:8888/r.app/39A6DEC9717AB51F7E6AB3A63A4F7A0C.cache.html@115)
+  at Unknown.xh(http://127.0.0.1:8888/r.app/39A6DEC9717AB51F7E6AB3A63A4F7A0C.cache.html@120)
+  at Unknown.Gh(http://127.0.0.1:8888/r.app/39A6DEC9717AB51F7E6AB3A63A4F7A0C.cache.html@13652)
+  at Unknown.tL(http://127.0.0.1:8888/r.app/39A6DEC9717AB51F7E6AB3A63A4F7A0C.cache.html@80)
+  at Unknown.<anonymous>(http://127.0.0.1:8888/r.app/39A6DEC9717AB51F7E6AB3A63A4F7A0C.cache.html@160)
+  at Unknown.Ji(http://127.0.0.1:8888/r.app/39A6DEC9717AB51F7E6AB3A63A4F7A0C.cache.html@29)
+  at Unknown.Mi(http://127.0.0.1:8888/r.app/39A6DEC9717AB51F7E6AB3A63A4F7A0C.cache.html@57)
+  at Unknown.<anonymous>(http://127.0.0.1:8888/r.app/39A6DEC9717AB51F7E6AB3A63A4F7A0C.cache.html@45)
+Caused by: com.google.gwt.core.client.JavaScriptException: (TypeError) : Cannot read property 'g' of null
+  at Unknown.E3(http://127.0.0.1:8888/r.app/39A6DEC9717AB51F7E6AB3A63A4F7A0C.cache.html@29)
+  at Unknown.K3(http://127.0.0.1:8888/r.app/39A6DEC9717AB51F7E6AB3A63A4F7A0C.cache.html@68)
+  at Unknown.dr(http://127.0.0.1:8888/r.app/39A6DEC9717AB51F7E6AB3A63A4F7A0C.cache.html@1589)
+  at Unknown.Ur(http://127.0.0.1:8888/r.app/39A6DEC9717AB51F7E6AB3A63A4F7A0C.cache.html@187)
+  at Unknown.Mr(http://127.0.0.1:8888/r.app/39A6DEC9717AB51F7E6AB3A63A4F7A0C.cache.html@77)
+  at Unknown.vh(http://127.0.0.1:8888/r.app/39A6DEC9717AB51F7E6AB3A63A4F7A0C.cache.html@30)
+  at Unknown.jp(http://127.0.0.1:8888/r.app/39A6DEC9717AB51F7E6AB3A63A4F7A0C.cache.html@115)
+  at Unknown.xh(http://127.0.0.1:8888/r.app/39A6DEC9717AB51F7E6AB3A63A4F7A0C.cache.html@120)
+  at Unknown.Gh(http://127.0.0.1:8888/r.app/39A6DEC9717AB51F7E6AB3A63A4F7A0C.cache.html@13652)
+  at Unknown.tL(http://127.0.0.1:8888/r.app/39A6DEC9717AB51F7E6AB3A63A4F7A0C.cache.html@80)
+  at Unknown.<anonymous>(http://127.0.0.1:8888/r.app/39A6DEC9717AB51F7E6AB3A63A4F7A0C.cache.html@160)
+  at Unknown.Ji(http://127.0.0.1:8888/r.app/39A6DEC9717AB51F7E6AB3A63A4F7A0C.cache.html@29)
+  at Unknown.Mi(http://127.0.0.1:8888/r.app/39A6DEC9717AB51F7E6AB3A63A4F7A0C.cache.html@57)
+  at Unknown.<anonymous>(http://127.0.0.1:8888/r.app/39A6DEC9717AB51F7E6AB3A63A4F7A0C.cache.html@45) 
+  */

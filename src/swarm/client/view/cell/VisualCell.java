@@ -532,6 +532,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		}
 		else
 		{
+			m_fadeIn = false;
 			ensureFadedIn();
 		}
 		

@@ -185,7 +185,7 @@ public class CellBufferManager implements I_LocalCodeRepository
 		
 		for( int i = m_bufferPairs.length-1; i >= 0; i-- )
 		{
-			m_bufferPairs[i].update_cameraMoving(timestep, grid, camera, alternativeCodeSource, options__extends__smF_BufferUpdateOption, m_currentSubCellCount);
+			m_bufferPairs[i].update_cameraMoving(timestep, grid, camera, snappingCoordinate_nullable, alternativeCodeSource, options__extends__smF_BufferUpdateOption, m_currentSubCellCount);
 		}
 		
 //		s_logger.severe(m_cellPool.getCheckOutCount()+"/" + m_cellPool.getAllocCount());
