@@ -127,10 +127,12 @@ public class CellBuffer extends A_BufferCellList
 	{
 		if( !cell.getVisualization().isLoaded() )
 		{
+//			if( m_subCellCount == 1 )  s_logger.severe("DESTROYED");
 			m_cellPool.deallocCell(cell);
 		}
 		else
 		{
+//			if( m_subCellCount == 1 )  s_logger.severe("SENTENCED");
 			m_killQueue.sentenceToDeath(cell);
 		}
 	}
@@ -179,6 +181,8 @@ public class CellBuffer extends A_BufferCellList
 				
 				if( !this.isInBoundsAbsolute(ithCellFromOtherBuffer.getCoordinate()) )
 				{
+//					if( m_subCellCount == 1 )  s_logger.severe("DESTROYED");
+					
 					m_cellPool.deallocCell(ithCellFromOtherBuffer);
 					otherBuffer.m_cellList.set(i, null);
 				}
@@ -241,6 +245,7 @@ public class CellBuffer extends A_BufferCellList
 				
 				if( swap(m, n, otherBuffer, this, onlySwapIfLoaded) != null )
 				{
+//					if( m_subCellCount == 1 )  s_logger.severe("SWAPPED");
 					continue;
 				}
 				
@@ -249,10 +254,7 @@ public class CellBuffer extends A_BufferCellList
 					final BufferCell cellFromKillQueue = swap(m, n, m_killQueue, this, /*onlySwapIfLoaded=*/false);
 					if( cellFromKillQueue != null )
 					{
-//						if( isDebugCell )
-//						{
-//							s_logger.severe("saved " + highestSubCellCount + " " + onlySwapIfLoaded + " " + cellFromKillQueue.getVisualization().isLoaded());
-//						}
+//						if( m_subCellCount == 1 )  s_logger.severe("SAVED");
 						
 						cellFromKillQueue.saveFromDeathSentence();
 						
@@ -264,13 +266,10 @@ public class CellBuffer extends A_BufferCellList
 				//---		from the other buffer or the kill queue above, we don't make new cells.
 				if ( obscured )  continue;
 				
-				if( m_subCellCount > 1 )
-				{
-//					s_logger.severe("ERER");
-				}
-				
 				BufferCell newCell = m_cellPool.allocCell(grid, m_subCellCount, createVisualizations);
 				this.m_cellList.add(newCell);
+				
+//				if( m_subCellCount == 1 )  s_logger.severe("CREATED");
 				
 //				if( m_subCellCount == 2 )
 //				{

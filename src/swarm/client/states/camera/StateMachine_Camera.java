@@ -37,6 +37,7 @@ import swarm.shared.entities.A_Grid;
 import swarm.shared.entities.E_CodeType;
 import swarm.shared.json.I_JsonObject;
 import swarm.shared.statemachine.A_Action;
+import swarm.shared.statemachine.A_EventAction;
 import swarm.shared.statemachine.A_State;
 import swarm.shared.statemachine.A_StateMachine;
 import swarm.shared.statemachine.I_StateEventListener;
@@ -57,6 +58,8 @@ import swarm.shared.utils.U_Math;
  */
 public class StateMachine_Camera extends A_StateMachine implements I_StateEventListener
 {
+	public static final class OnCellWithNaturalDimensionsLoaded extends A_EventAction{}
+	
 	public static final double IGNORED_COMPONENT = Double.NaN;
 	
 	static final class PendingSnap
@@ -110,6 +113,7 @@ public class StateMachine_Camera extends A_StateMachine implements I_StateEventL
 		register(new Action_Camera_SnapToPoint(m_appContext.cameraMngr));
 		register(new Action_Camera_SetInitialPosition(m_appContext.cameraMngr));
 		register(new SignalBufferDirty());
+		register(new OnCellWithNaturalDimensionsLoaded());
 	}
 	
 	void snapToCellAddress(CellAddress address)

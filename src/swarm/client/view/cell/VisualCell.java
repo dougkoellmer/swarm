@@ -509,6 +509,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		
 		m_totalTimeSinceCreation = 0.0;
 		m_bufferCell = bufferCell;
+		m_statusPanel.removeConstraints(width, height);
 		
 		onCreatedOrRecycled(width, height, padding, subCellDimension);
 		
@@ -683,7 +684,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		}
 		else
 		{
-			m_statusPanel.removeConstraints();
+			m_statusPanel.removeConstraints(m_defaultWidth, m_defaultHeight);
 		}
 	}
 	
@@ -755,7 +756,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	{
 		m_isSnapping = false; // just in case.
 		m_isFocused = false;
-		m_statusPanel.removeConstraints();
+		m_statusPanel.removeConstraints(m_defaultWidth, m_defaultHeight);
 		
 		this.m_glassPanel.setVisible(true);
 		this.removeStyleName("visual_cell_focused");
@@ -881,7 +882,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	}
 	
 	public boolean flushQueuedCode()
-	{
+	{		
 		if( m_queuedCode != null )
 		{
 			if( !m_bufferCell.isOnDeathRow() )
@@ -957,7 +958,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	}
 
 	private void setCode_private(Code code, String cellNamespace)
-	{
+	{		
 		setCode_commonPreInit(code);
 		
 		if( m_codeSafetyLevel == E_CodeSafetyLevel.META_IMAGE )

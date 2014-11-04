@@ -68,15 +68,17 @@ public class CanvasBacking
 	private CssColor m_fillStyle;
 	private final I_Skipper m_skipper;
 	private final SpritePlateAnimation m_animation;
+	private final double m_pinch;
 	
 	private int m_width = 0;
 	private int m_height = 0;
 	private boolean m_clear = true;
 	
-	public CanvasBacking(SpritePlateAnimation animation, String cellBackgroundColor, int maxCellWidth, int maxCellHeight, I_Skipper skipper)
+	public CanvasBacking(SpritePlateAnimation animation, String cellBackgroundColor, int maxCellWidth, int maxCellHeight, double pinch, I_Skipper skipper)
 	{
 		m_skipper = skipper;
 		m_animation = animation;
+		m_pinch = pinch;
 		
 		m_stageCanvasElement = m_stageCanvas.getCanvasElement();
 		
@@ -120,11 +122,10 @@ public class CanvasBacking
 	{
  		clear();
 		
- 		final double pinch = .75;
 		Context2d context = m_canvas.getContext2d();
 		Context2d stageContext = m_stageCanvas.getContext2d();
 		double cellSize = config.cellSize;
-		cellSize -= pinch*2;
+		cellSize -= m_pinch*2;
 		
 		double cellSize_div2 = cellSize/2;
 		
@@ -166,8 +167,8 @@ public class CanvasBacking
 				
 				double currX = config.startX_meta + offsetM * config.metaCellSize + offsetM_mod * config.cellSizePlusPadding;
 				double currY = config.startY_meta + offsetN * config.metaCellSize + offsetN_mod * config.cellSizePlusPadding;
-				currX += pinch;
-				currY += pinch;
+				currX += m_pinch;
+				currY += m_pinch;
 				
 				if( !foundFirstCell )
 				{

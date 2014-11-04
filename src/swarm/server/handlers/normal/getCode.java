@@ -8,8 +8,8 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 
-import swarm.shared.app.BaseAppContext;
 
+import swarm.shared.app.BaseAppContext;
 import swarm.server.data.blob.BlobException;
 import swarm.server.data.blob.BlobManagerFactory;
 import swarm.server.data.blob.E_BlobCacheLevel;
@@ -59,7 +59,7 @@ public class getCode extends A_DefaultRequestHandler implements I_DeferredReques
 	
 	@Override
 	public void handleRequest(TransactionContext context, TransactionRequest request, TransactionResponse response)
-	{		
+	{
 		ServerCellAddressMapping mapping = new ServerCellAddressMapping(E_GridType.ACTIVE);
 		mapping.readJson(request.getJsonArgs(), m_serverContext.jsonFactory);
 		

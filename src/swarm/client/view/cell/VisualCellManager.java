@@ -152,8 +152,9 @@ public class VisualCellManager implements I_UIElement
 			//--- DRK > Max dimensions could actually be a bit smaller cause of padding...eh.
 			int maxCellWidth = grid.getCellWidth()/2;
 			int maxCellHeight = grid.getCellHeight()/2;
+			double pinch = m_viewContext.config.canvasBackingPinch;
 			
-			m_backing = new CanvasBacking(animation, color, maxCellWidth, maxCellHeight, new CanvasBacking.I_Skipper()
+			m_backing = new CanvasBacking(animation, color, maxCellWidth, maxCellHeight, pinch, new CanvasBacking.I_Skipper()
 			{
 				@Override public int skip(int m, int n)
 				{					

@@ -378,7 +378,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 					
 					clearCropping();
 				}
-				else if( event.isFor(State_CameraSnapping.OnCellWithNaturalDimensionsLoaded.class) || event.isFor(Event_Camera_OnCellSizeFound.class) || event.isFor(Event_CameraSnapping_OnTargetCellAppeared.class) )
+				else if( event.isFor(StateMachine_Camera.OnCellWithNaturalDimensionsLoaded.class) || event.isFor(Event_Camera_OnCellSizeFound.class) || event.isFor(Event_CameraSnapping_OnTargetCellAppeared.class) )
 				{
 					if( event.isFor(Event_CameraSnapping_OnTargetCellAppeared.class) )
 					{

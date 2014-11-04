@@ -19,6 +19,7 @@ public class ViewConfig
 	public double extraScrollArea = 50;
 	public double cellSizeChangeTime_seconds = 1;
 	public double cellRetractionEasing = 4;
+	public double canvasBackingPinch = .75;
 	
 	public int spinnerAnimationFrameCount;
 	public int spinnerAnimationFramesAcross;

@@ -687,7 +687,7 @@ public class ScrollNavigator implements I_StateEventListener
 				{
 					this.onResize();
 				}
-				else if (event.isFor(State_CameraSnapping.OnCellWithNaturalDimensionsLoaded.class) )
+				else if (event.isFor(StateMachine_Camera.OnCellWithNaturalDimensionsLoaded.class) )
 				{
 					this.onResize();
 				}

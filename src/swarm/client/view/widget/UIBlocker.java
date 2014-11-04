@@ -112,13 +112,17 @@ public class UIBlocker extends FlowPanel
 		m_innerContainer.getElement().getStyle().setLeft(leftOffset, Unit.PX);
 		m_innerContainer.getElement().getStyle().setProperty("maxWidth", maxWidth+"px");
 		m_innerContainer.getElement().getStyle().setProperty("maxHeight", maxHeight+"px");
+		m_innerContainer.getElement().getStyle().clearProperty("minWidth");
+		m_innerContainer.getElement().getStyle().clearProperty("minHeight");
 	}
 	
-	public void removeConstraints()
+	public void removeConstraints(int minWidth, int minHeight)
 	{
 		m_innerContainer.getElement().getStyle().clearTop();
 		m_innerContainer.getElement().getStyle().clearLeft();
 		m_innerContainer.getElement().getStyle().clearProperty("maxWidth");
 		m_innerContainer.getElement().getStyle().clearProperty("maxHeight");
+		m_innerContainer.getElement().getStyle().setProperty("minWidth", minWidth+"px");
+		m_innerContainer.getElement().getStyle().setProperty("minHeight", minHeight+"px");
 	}
 }
