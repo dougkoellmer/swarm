@@ -74,12 +74,12 @@ public class StateMachine_Account extends A_StateMachine
 	}
 	
 	@Override
-	protected void didEnter(StateArgs constructor)
+	protected void didEnter()
 	{
 	}
 	
 	@Override
-	protected void didForeground(Class<? extends A_State> revealingState, Object[] args)
+	protected void didForeground(Class<? extends A_State> revealingState, StateArgs args)
 	{
 		ClientAccountManager accountManager = m_accountMngr;
 		

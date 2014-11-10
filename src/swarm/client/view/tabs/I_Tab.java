@@ -1,6 +1,6 @@
 package swarm.client.view.tabs;
 
-import swarm.shared.statemachine.StateEvent;
+import swarm.shared.statemachine.A_BaseStateEvent;
 
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
@@ -12,5 +12,5 @@ public interface I_Tab
 	I_TabContent getContent();
 	
 	void onAttached(IsWidget tabButton);
-	void onStateEvent(StateEvent event);
+	void onStateEvent(A_BaseStateEvent event);
 }

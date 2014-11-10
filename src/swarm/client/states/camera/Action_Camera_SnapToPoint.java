@@ -14,8 +14,10 @@ public class Action_Camera_SnapToPoint extends smA_CameraAction
 		private boolean m_instant;
 		private boolean m_breakViewingState;
 		
-		public Args()
+		public Args(Object value)
 		{
+			super(value);
+			
 			m_point = null;
 			m_instant = false;
 			m_breakViewingState = true;
@@ -50,6 +52,13 @@ public class Action_Camera_SnapToPoint extends smA_CameraAction
 	public void perform(StateArgs args)
 	{
 		StateMachine_Camera machine = this.getState();
+		
+		//--- DRK > Sloppy artifact of updating to new state machine library
+		//---		which never passes null args.
+		if( !(args instanceof Args) )
+		{
+			args = null;
+		}
 		
 		boolean breakViewingState = args != null ? ((Args)args).m_breakViewingState : true;
 		

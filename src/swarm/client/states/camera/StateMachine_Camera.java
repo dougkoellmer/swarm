@@ -37,12 +37,12 @@ import swarm.shared.entities.A_Grid;
 import swarm.shared.entities.E_CodeType;
 import swarm.shared.json.I_JsonObject;
 import swarm.shared.statemachine.A_Action;
-import swarm.shared.statemachine.A_EventAction;
+import swarm.shared.statemachine.A_Action_Event;
 import swarm.shared.statemachine.A_State;
 import swarm.shared.statemachine.A_StateMachine;
 import swarm.shared.statemachine.I_StateEventListener;
 import swarm.shared.statemachine.StateArgs;
-import swarm.shared.statemachine.StateEvent;
+import swarm.shared.statemachine.A_BaseStateEvent;
 import swarm.shared.structs.CellAddress;
 import swarm.shared.structs.CellAddressMapping;
 import swarm.shared.structs.CellSize;
@@ -58,7 +58,7 @@ import swarm.shared.utils.U_Math;
  */
 public class StateMachine_Camera extends A_StateMachine implements I_StateEventListener
 {
-	public static final class OnCellWithNaturalDimensionsLoaded extends A_EventAction{}
+	public static final class OnCellWithNaturalDimensionsLoaded extends A_Action_Event{}
 	
 	public static final double IGNORED_COMPONENT = Double.NaN;
 	
@@ -90,7 +90,7 @@ public class StateMachine_Camera extends A_StateMachine implements I_StateEventL
 	private final LocalCodeRepositoryWrapper m_codeRepo = new LocalCodeRepositoryWrapper();
 	
 	private final CellAddressManagerListener m_addressManagerListener = new CellAddressManagerListener(this);
-	private final Action_Camera_SnapToCoordinate.Args m_snapToCoordArgs = new Action_Camera_SnapToCoordinate.Args();
+	private final Action_Camera_SnapToCoordinate.Args m_snapToCoordArgs = new Action_Camera_SnapToCoordinate.Args(null);
 	private final Event_Camera_OnCellSizeFound.Args m_onCellSizeFoundArgs = new Event_Camera_OnCellSizeFound.Args();
 	
 	private final AppContext m_appContext;
@@ -184,7 +184,7 @@ public class StateMachine_Camera extends A_StateMachine implements I_StateEventL
 	}
 	
 	@Override
-	protected void didEnter(StateArgs constructor)
+	protected void didEnter()
 	{
 		//--- DRK > Not enforcing z constraints here because UI probably hasn't told us camera view size yet.
 		
@@ -258,7 +258,7 @@ public class StateMachine_Camera extends A_StateMachine implements I_StateEventL
 	}
 	
 	@Override
-	protected void didForeground(Class<? extends A_State> revealingState, Object[] argsFromRevealingState)
+	protected void didForeground(Class<? extends A_State> revealingState, StateArgs argsFromRevealingState)
 	{
 		if( getCurrentState() == null )
 		{
@@ -353,7 +353,7 @@ public class StateMachine_Camera extends A_StateMachine implements I_StateEventL
 	}
 
 	@Override
-	public void onStateEvent(StateEvent event)
+	public void onStateEvent(A_BaseStateEvent event)
 	{
 		switch(event.getType())
 		{
@@ -374,7 +374,7 @@ public class StateMachine_Camera extends A_StateMachine implements I_StateEventL
 			
 			case DID_PERFORM_ACTION:
 			{
-				if( event.getAction() == StateMachine_Base.OnGridUpdate.class )
+				if( event.getTargetClass() == StateMachine_Base.OnGridUpdate.class )
 				{
 					m_appContext.cameraMngr.getCamera().onGridSizeChanged();
 					

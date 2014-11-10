@@ -25,8 +25,9 @@ import swarm.client.view.U_View;
 import swarm.client.view.ViewContext;
 import swarm.shared.entities.A_Grid;
 import swarm.shared.lang.Boolean;
+import swarm.shared.statemachine.ActionEvent;
 import swarm.shared.statemachine.E_Event;
-import swarm.shared.statemachine.StateEvent;
+import swarm.shared.statemachine.A_BaseStateEvent;
 import swarm.shared.structs.CellAddressMapping;
 import swarm.shared.structs.CellSize;
 import swarm.shared.structs.GridCoordinate;
@@ -212,7 +213,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 		}
 	}
 
-	@Override public void onStateEvent(StateEvent event)
+	@Override public void onStateEvent(A_BaseStateEvent event)
 	{
 		switch( event.getType() )
 		{
@@ -320,14 +321,16 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 			
 			case DID_PERFORM_ACTION:
 			{
-				if( event.getAction() == Action_Camera_SetViewSize.class )
+				ActionEvent event_cast = event.cast();
+				
+				if( event.getTargetClass() == Action_Camera_SetViewSize.class )
 				{
 					State_ViewingCell viewingState = event.getContext().getEntered(State_ViewingCell.class);
 					State_CameraSnapping snappingState = event.getContext().getEntered(State_CameraSnapping.class);
 					
 					if( viewingState != null )
 					{						
-						Action_Camera_SetViewSize.Args args = event.getActionArgs();
+						Action_Camera_SetViewSize.Args args = event_cast.getArgsIn();
 						if( args.updateBuffer() )
 						{
 							this.setWidthInstantly(viewingState.getCell().getCoordinate());
@@ -342,13 +345,13 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 						this.setTargetPosition(snappingState.getTargetCoord());
 					}
 				}
-				else if( event.getAction() == Action_Camera_SnapToPoint.class )
+				else if( event.getTargetClass() == Action_Camera_SnapToPoint.class )
 				{
 					State_ViewingCell viewingState = event.getContext().getEntered(State_ViewingCell.class);
 					
 					if( viewingState != null )
 					{
-						Action_Camera_SnapToPoint.Args args = event.getActionArgs();
+						Action_Camera_SnapToPoint.Args args = event_cast.getArgsIn();
 						if( args.isInstant() )
 						{
 							this.setWidthInstantly(viewingState.getCell().getCoordinate());
@@ -357,9 +360,9 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 						}
 					}
 				}
-				else if( event.getAction() == Action_Camera_SnapToCoordinate.class )
+				else if( event.getTargetClass() == Action_Camera_SnapToCoordinate.class )
 				{
-					Action_Camera_SnapToCoordinate.Args args = event.getActionArgs();
+					Action_Camera_SnapToCoordinate.Args args = event_cast.getArgsIn();
 					m_lastTargetCoord.copy(args.getTargetCoordinate());
 					
 					if( m_alpha <= 0 )

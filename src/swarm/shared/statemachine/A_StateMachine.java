@@ -2,9 +2,10 @@ package swarm.shared.statemachine;
 
 
 
+
 /**
- * ...
- * @author 
+ * 
+ * @author dougkoellmer
  */
 public abstract class A_StateMachine extends A_State
 {
@@ -19,6 +20,11 @@ public abstract class A_StateMachine extends A_State
 	public <T extends A_State> T getCurrentState()
 	{
 		return (T) m_currentState;
+	}
+	
+	public int getHistoryIndex()
+	{
+		return m_stackEntryV.getHistoryIndex();
 	}
 	
 	public <T extends A_State> T getBottomState()
@@ -59,13 +65,13 @@ public abstract class A_StateMachine extends A_State
 			newEntryV.m_entryBeneath = m_stackEntryV;
 			m_stackEntryV = newEntryV;
 
-			this.enterChildState(newState, m_currentState, true, args);
+			this.enterChildState(newState, m_currentState, true, args, E_TransitionCause.PUSH_V);
 			
 			return true;
 		}
 	}
 	
-	boolean popV_internal(Object[] args)
+	boolean popV_internal(StateArgs args)
 	{		
 		A_State stateToPop = this.getCurrentState();
 		A_State stateBeneath = stateToPop.getStateBeneath();
@@ -83,7 +89,7 @@ public abstract class A_StateMachine extends A_State
 			m_stackEntryV = entryBeneath;
 			
 			boolean stateToPopIsTransparent = stateToPop.isTransparent();
-			this.exitChildState(stateToPop);
+			this.exitChildState(stateToPop, E_TransitionCause.POP_V);
 			
 			m_currentState = stateBeneath;
 			
@@ -96,14 +102,14 @@ public abstract class A_StateMachine extends A_State
 		}
 	}
 	
-	void remove_internal(FilterMatch match, Class<? extends Object> stateClass, Object ... argValues)
+	boolean remove_internal(boolean justChecking, StateFilter.Match match, Class<? extends Object> stateClass, Object ... argValues)
 	{
-		m_stackEntryV.remove(match.getTarget(), match, stateClass, null, argValues);
+		return m_stackEntryV.remove(justChecking, match.getTarget(), match, stateClass, null, argValues);
 	}
 	
-	void remove_internal(FilterTarget target, Class<? extends Object> stateClass, StateArgs args)
+	boolean remove_internal(boolean justChecking, StateFilter.Target target, Class<? extends Object> stateClass, StateArgs args)
 	{
-		m_stackEntryV.remove(target, null, stateClass, args);
+		return m_stackEntryV.remove(justChecking, target, null, stateClass, args);
 	}
 	
 	boolean queue_internal(Class<? extends A_State> stateClass, StateArgs args)
@@ -113,13 +119,18 @@ public abstract class A_StateMachine extends A_State
 		return true;
 	}
 	
+	@Override public Class<? extends A_State> get(StateFilter.Target target, int offset)
+	{
+		return m_stackEntryV.get(target, offset);
+	}
+	
 	boolean dequeue_internal()
 	{
 		P_StackEntryH entry = m_stackEntryV.dequeue();
 		
 		if( entry != null )
 		{
-			boolean result = this.set_private(entry.m_stateClass, entry.m_args);
+			boolean result = this.set_private(entry.m_stateClass, entry.m_args, E_TransitionCause.DEQUEUE);
 			m_context.checkInStackEntryH(entry);
 			
 			return result;
@@ -130,13 +141,15 @@ public abstract class A_StateMachine extends A_State
 		}
 	}
 	
-	boolean pop_internal()
+	boolean pop_internal(StateArgs args)
 	{
 		P_StackEntryH entry = m_stackEntryV.pop();
 		
 		if( entry != null )
 		{
-			return set_private(entry.m_stateClass, entry.m_args);
+			entry.m_args = defaultArgs(entry.m_args).impose(args);
+			
+			return set_private(entry.m_stateClass, entry.m_args, E_TransitionCause.POP);
 		}
 		else
 		{
@@ -144,20 +157,15 @@ public abstract class A_StateMachine extends A_State
 		}
 	}
 	
-	boolean clearHistory_internal()
-	{
-		m_stackEntryV.clearHistory();
-		
-		return true;
-	}
-	
-	boolean go_internal(int offset)
+	boolean go_internal(int offset, StateArgs args)
 	{
 		P_StackEntryH entry = m_stackEntryV.go(offset);
 		
 		if( entry != null )
 		{
-			return set_private(entry.m_stateClass, entry.m_args);
+			entry.m_args = defaultArgs(entry.m_args).impose(args);
+			
+			return set_private(entry.m_stateClass, entry.m_args, E_TransitionCause.GO);
 		}
 		else
 		{
@@ -170,14 +178,14 @@ public abstract class A_StateMachine extends A_State
 		P_StackEntryH entry = m_context.checkOutStackEntryH(stateClass, args);
 		m_stackEntryV.push(entry);
 		
-		return set_private(stateClass, args);
+		return set_private(stateClass, args, E_TransitionCause.PUSH);
 	}
 	
 	boolean set_internal(Class<? extends A_State> stateClass, StateArgs args)
 	{
 		m_stackEntryV.set(stateClass, args);
 		
-		return set_private(stateClass, args);
+		return set_private(stateClass, args, E_TransitionCause.SET);
 	}
 	
 	protected boolean isEnterable(Class<? extends A_State> stateClass, StateArgs args)
@@ -185,8 +193,10 @@ public abstract class A_StateMachine extends A_State
 		return true;
 	}
 	
-	private boolean set_private(Class<? extends A_State> stateClass, StateArgs args)
+	private boolean set_private(Class<? extends A_State> stateClass, StateArgs args, E_TransitionCause cause)
 	{
+		args = defaultArgs(args);
+		
 		if( !isEnterable(stateClass, args) )  return false;
 		
 		A_State currentState = this.getCurrentState();
@@ -201,26 +211,25 @@ public abstract class A_StateMachine extends A_State
 		if( currentState != null )
 		{
 			stateBeneath = currentState.getStateBeneath();
-			this.exitChildState(currentState);
+			this.exitChildState(currentState, cause);
 		}
 		
 		A_State newState = m_context.getStateInstance(stateClass);
 		
-		this.enterChildState(newState, stateBeneath, false, args);
+		this.enterChildState(newState, stateBeneath, false, args, cause);
 
 		return true;
 	}
 	
-	@Override
-	void didEnter_internal(StateArgs constructor)
+	@Override void didEnter_internal(StateArgs constructor, E_TransitionCause cause)
 	{
 		m_stackEntryV = m_context.checkOutStackEntryV();
 		
-		super.didEnter_internal(constructor);
+		super.didEnter_internal(constructor, cause);
 	}
 	
 	@Override
-	void didForeground_internal(Class<? extends A_State> revealingState, Object[] args)
+	void didForeground_internal(Class<? extends A_State> revealingState, StateArgs args)
 	{
 		A_State oldCurrentState = m_currentState;
 		
@@ -254,8 +263,7 @@ public abstract class A_StateMachine extends A_State
 		}
 	}
 	
-	@Override
-	void willBackground_internal(Class<? extends A_State> blockingState)
+	@Override void willBackground_internal(Class<? extends A_State> blockingState)
 	{
 		super.willBackground_internal(blockingState);
 
@@ -281,10 +289,9 @@ public abstract class A_StateMachine extends A_State
 		}
 	}
 	
-	@Override
-	void willExit_internal()
+	@Override void willExit_internal(E_TransitionCause cause)
 	{
-		super.willExit_internal();
+		super.willExit_internal(cause);
 		
 		A_State currentState = m_currentState;
 		P_StackEntryV currentStackEntryV = m_stackEntryV;
@@ -295,7 +302,7 @@ public abstract class A_StateMachine extends A_State
 			P_StackEntryV entryBeneath = currentStackEntryV.m_entryBeneath;
 			
 			m_context.checkInStackEntryV(currentStackEntryV);
-			this.exitChildState(currentState);
+			this.exitChildState(currentState, cause);
 			
 			currentState = stateBeneath;
 			currentStackEntryV = entryBeneath;
@@ -305,7 +312,7 @@ public abstract class A_StateMachine extends A_State
 		m_currentState = null;
 	}
 	
-	private void enterChildState(A_State stateToEnter, A_State stateBeneath, boolean isPush, StateArgs args)
+	private void enterChildState(A_State stateToEnter, A_State stateBeneath, boolean isPush, StateArgs args, E_TransitionCause cause)
 	{
 		stateToEnter.m_stateBeneath = stateBeneath;
 		stateToEnter.m_previousState = isPush ? null : (this.m_currentState != null ? this.m_currentState.getClass() : null);
@@ -313,7 +320,9 @@ public abstract class A_StateMachine extends A_State
 		
 		A_State currentState = this.m_currentState = stateToEnter;
 
-		currentState.didEnter_internal(args);
+		args = defaultArgs(args);
+		
+		currentState.didEnter_internal(args, cause);
 		
 		boolean shouldForeground = true;
 		A_State stateV = m_currentState;
@@ -333,17 +342,13 @@ public abstract class A_StateMachine extends A_State
 		}
 	}
 
-	private void exitChildState(A_State stateToExit)
+	private void exitChildState(A_State stateToExit, E_TransitionCause cause)
 	{
 		if( stateToExit.isForegrounded() )
 		{
 			stateToExit.willBackground_internal(null);
 		}
 		
-		stateToExit.willExit_internal();
-		
-		stateToExit.m_parent = null;
-		stateToExit.m_stateBeneath = null;
-		stateToExit.m_previousState = null;
+		stateToExit.willExit_internal(cause);
 	}
 }

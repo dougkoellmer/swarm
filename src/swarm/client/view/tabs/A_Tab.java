@@ -1,6 +1,6 @@
 package swarm.client.view.tabs;
 
-import swarm.shared.statemachine.StateEvent;
+import swarm.shared.statemachine.A_BaseStateEvent;
 
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
@@ -45,7 +45,7 @@ public class A_Tab implements I_Tab
 	}
 
 	@Override
-	public void onStateEvent(StateEvent event)
+	public void onStateEvent(A_BaseStateEvent event)
 	{
 		m_content.onStateEvent(event);
 	}

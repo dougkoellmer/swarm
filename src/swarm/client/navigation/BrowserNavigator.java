@@ -30,9 +30,10 @@ import swarm.shared.json.A_JsonFactory;
 import swarm.shared.json.I_JsonObject;
 import swarm.shared.statemachine.A_Action;
 import swarm.shared.statemachine.A_State;
+import swarm.shared.statemachine.ActionEvent;
 import swarm.shared.statemachine.I_StateEventListener;
 import swarm.shared.statemachine.StateContext;
-import swarm.shared.statemachine.StateEvent;
+import swarm.shared.statemachine.A_BaseStateEvent;
 import swarm.shared.structs.CellAddress;
 import swarm.shared.structs.CellAddressMapping;
 import swarm.shared.structs.E_CellAddressParseError;
@@ -64,9 +65,9 @@ public class BrowserNavigator implements I_StateEventListener
 
 	private Event_Camera_OnAddressResponse.Args 		m_args_OnAddressResponse	= null;
 	private Event_GettingMapping_OnResponse.Args	 	m_args_OnMappingResponse	= null;
-	private final Action_Camera_SnapToPoint.Args		m_args_SnapToPoint			= new Action_Camera_SnapToPoint.Args();
+	private final Action_Camera_SnapToPoint.Args		m_args_SnapToPoint			= new Action_Camera_SnapToPoint.Args(this.getClass());
 	private final Action_Camera_SnapToAddress.Args 		m_args_SnapToAddress		= new Action_Camera_SnapToAddress.Args();
-	private final Action_Camera_SnapToCoordinate.Args 	m_args_SnapToCoordinate		= new Action_Camera_SnapToCoordinate.Args();
+	private final Action_Camera_SnapToCoordinate.Args 	m_args_SnapToCoordinate		= new Action_Camera_SnapToCoordinate.Args(this.getClass());
 
 	private Class<? extends A_Action> m_lastSnapAction = null;
 	private boolean m_pushHistoryStateForFloating = true;
@@ -94,9 +95,6 @@ public class BrowserNavigator implements I_StateEventListener
 		m_cameraMngr = m_viewContext.appContext.cameraMngr;
 		
 		m_floatingHistoryUpdateRate = floatingHistoryUpdateRate_seconds;
-		
-		m_args_SnapToCoordinate.set(this.getClass());
-		m_args_SnapToPoint.set(this.getClass());
 		
 		m_historyStateListener = new HistoryStateManager.I_Listener()
 		{
@@ -236,7 +234,7 @@ public class BrowserNavigator implements I_StateEventListener
 	}
 	
 	@Override
-	public void onStateEvent(StateEvent event)
+	public void onStateEvent(A_BaseStateEvent event)
 	{
 		switch(event.getType())
 		{
@@ -500,9 +498,11 @@ public class BrowserNavigator implements I_StateEventListener
 
 			case DID_PERFORM_ACTION:
 			{
-				if( event.getAction() == Event_Camera_OnAddressResponse.class )
+				ActionEvent event_cast = event.cast();
+				
+				if( event.getTargetClass() == Event_Camera_OnAddressResponse.class )
 				{
-					Event_Camera_OnAddressResponse.Args args = event.getActionArgs();
+					Event_Camera_OnAddressResponse.Args args = event_cast.getArgsIn();
 					
 					if( event.getContext().isEntered(State_CameraSnapping.class) )
 					{
@@ -525,9 +525,9 @@ public class BrowserNavigator implements I_StateEventListener
 						U_Debug.ASSERT(false, "sm_nav_1");
 					}
 				}
-				else if( event.getAction() == Event_GettingMapping_OnResponse.class )
+				else if( event.getTargetClass() == Event_GettingMapping_OnResponse.class )
 				{
-					Event_GettingMapping_OnResponse.Args args = event.getActionArgs();
+					Event_GettingMapping_OnResponse.Args args = event_cast.getArgsIn();
 
 					m_args_OnMappingResponse = args;
 					
@@ -538,16 +538,16 @@ public class BrowserNavigator implements I_StateEventListener
 						m_historyManager.setState(FLOATING_STATE_PATH, m_cameraMngr.getCamera().getPosition());
 					}
 				}
-				else if( event.getAction() == Action_Camera_SnapToAddress.class ||
-						 event.getAction() == Action_Camera_SnapToCoordinate.class )
+				else if( event.getTargetClass() == Action_Camera_SnapToAddress.class ||
+						 event.getTargetClass() == Action_Camera_SnapToCoordinate.class )
 				{
 					m_args_OnAddressResponse = null;
 					
-					if( event.getAction() == Action_Camera_SnapToCoordinate.class )
+					if( event.getTargetClass() == Action_Camera_SnapToCoordinate.class )
 					{
-						Action_Camera_SnapToCoordinate.Args args = event.getActionArgs();
+						Action_Camera_SnapToCoordinate.Args args = event_cast.getArgsIn();
 						
-						Object userData = event.getActionArgs().get();
+						Object userData = event_cast.getArgsIn().get();
 						if( userData == this.getClass() ) // signifies that snap was because of browser navigation event.
 						{
 							m_lastSnapAction = null;
@@ -571,15 +571,15 @@ public class BrowserNavigator implements I_StateEventListener
 						}
 						else
 						{
-							m_lastSnapAction = event.getAction();
+							m_lastSnapAction = (Class<? extends A_Action>) event.getTargetClass();
 							m_args_OnMappingResponse = null;
 						}
 					}
-					else if( event.getAction() == Action_Camera_SnapToAddress.class )
+					else if( event.getTargetClass() == Action_Camera_SnapToAddress.class )
 					{
 						m_args_OnMappingResponse = null;
 						
-						Action_Camera_SnapToAddress.Args args = event.getActionArgs();
+						Action_Camera_SnapToAddress.Args args = event_cast.getArgsIn();
 						
 						if( args.onlyCausedRefresh() )
 						{
@@ -588,12 +588,12 @@ public class BrowserNavigator implements I_StateEventListener
 							return;
 						}
 						
-						m_lastSnapAction = event.getAction();
+						m_lastSnapAction = (Class<? extends A_Action>) event.getTargetClass();
 					}
 					
 					
 				}
-				else if( event.getAction() == Action_Camera_SnapToPoint.class )
+				else if( event.getTargetClass() == Action_Camera_SnapToPoint.class )
 				{
 					State_CameraFloating floatingState = m_viewContext.stateContext.getEntered(State_CameraFloating.class);
 					
@@ -601,7 +601,7 @@ public class BrowserNavigator implements I_StateEventListener
 					
 					if( floatingState != null )
 					{
-						Action_Camera_SnapToPoint.Args args = event.getActionArgs();
+						Action_Camera_SnapToPoint.Args args = event_cast.getArgsIn();
 						
 						if( args != null )
 						{

@@ -21,13 +21,9 @@ import com.google.gwt.user.client.Window;
 
 public class State_InvalidBrowser extends A_State
 {
-	@Override
-	protected void didEnter(StateArgs constructor)
-	{
-	}
 	
 	@Override
-	protected void didForeground(Class<? extends A_State> revealingState, Object[] argsFromRevealingState)
+	protected void didForeground(Class<? extends A_State> revealingState, StateArgs argsFromRevealingState)
 	{
 	}
 	

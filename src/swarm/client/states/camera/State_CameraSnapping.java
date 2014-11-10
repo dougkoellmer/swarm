@@ -29,11 +29,12 @@ import swarm.shared.debugging.U_Debug;
 import swarm.shared.entities.A_Grid;
 import swarm.shared.entities.E_CodeType;
 import swarm.shared.statemachine.A_Action;
-import swarm.shared.statemachine.A_EventAction;
+import swarm.shared.statemachine.A_Action_Event;
 import swarm.shared.statemachine.A_State;
+import swarm.shared.statemachine.ActionEvent;
 import swarm.shared.statemachine.I_StateEventListener;
 import swarm.shared.statemachine.StateArgs;
-import swarm.shared.statemachine.StateEvent;
+import swarm.shared.statemachine.A_BaseStateEvent;
 import swarm.shared.structs.CellAddress;
 import swarm.shared.structs.CellAddressMapping;
 import swarm.shared.structs.GridCoordinate;
@@ -274,11 +275,11 @@ public class State_CameraSnapping extends A_State implements I_StateEventListene
 	}
 	
 	@Override
-	protected void didEnter(StateArgs constructor)
+	protected void didEnter()
 	{
 		StateMachine_Camera machine = getParent();
 		
-		Constructor constructor_cast = (Constructor) constructor;
+		Constructor constructor_cast = (Constructor) getArgs();
 		
 		m_appContext.registerBufferMngr(m_snapBufferManager);
 		
@@ -301,7 +302,7 @@ public class State_CameraSnapping extends A_State implements I_StateEventListene
 	}
 	
 	@Override
-	protected void didForeground(Class<? extends A_State> revealingState, Object[] argsFromRevealingState)
+	protected void didForeground(Class<? extends A_State> revealingState, StateArgs argsFromRevealingState)
 	{
 		
 	}
@@ -363,7 +364,7 @@ public class State_CameraSnapping extends A_State implements I_StateEventListene
 	}
 
 	@Override
-	public void onStateEvent(StateEvent event)
+	public void onStateEvent(A_BaseStateEvent event)
 	{
 		switch(event.getType())
 		{
@@ -379,7 +380,9 @@ public class State_CameraSnapping extends A_State implements I_StateEventListene
 			
 			case DID_PERFORM_ACTION:
 			{
-				if( event.getAction() == Action_Camera_SetViewSize.class )
+				ActionEvent event_cast = event.cast();
+				
+				if( event.getTargetClass() == Action_Camera_SetViewSize.class )
 				{
 					Camera camera = m_appContext.cameraMngr.getCamera();
 					m_snapCamera.setViewRect(camera.getViewWidth(), camera.getViewHeight());
@@ -392,13 +395,13 @@ public class State_CameraSnapping extends A_State implements I_StateEventListene
 					
 					this.updateSnapBufferManager(true);
 				}
-				else if( event.getAction() == StateMachine_Base.OnGridUpdate.class )
+				else if( event.getTargetClass() == StateMachine_Base.OnGridUpdate.class )
 				{
 					this.updateSnapBufferManager(true);
 				}
-				else if( event.getAction() == Event_Camera_OnAddressResponse.class )
+				else if( event.getTargetClass() == Event_Camera_OnAddressResponse.class )
 				{
-					Event_Camera_OnAddressResponse.Args args = event.getActionArgs();
+					Event_Camera_OnAddressResponse.Args args = event_cast.getArgsIn();
 					
 					if( args.getType() == Event_Camera_OnAddressResponse.E_Type.ON_FOUND )
 					{

@@ -12,7 +12,7 @@ import swarm.shared.statemachine.StateArgs;
 public class State_AccountStatusPending extends A_State
 {
 	@Override
-	protected void didEnter(StateArgs constructor)
+	protected void didEnter()
 	{
 	}
 }

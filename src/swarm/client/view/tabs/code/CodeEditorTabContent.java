@@ -35,9 +35,11 @@ import swarm.shared.entities.E_CharacterQuota;
 import swarm.shared.entities.E_CodeType;
 import swarm.shared.statemachine.A_Action;
 import swarm.shared.statemachine.A_State;
-import swarm.shared.statemachine.StateEvent;
+import swarm.shared.statemachine.A_BaseStateEvent;
+import swarm.shared.statemachine.ForegroundEvent;
 import swarm.shared.structs.CodePrivileges;
 import swarm.shared.structs.GridCoordinate;
+
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -187,7 +189,7 @@ public class CodeEditorTabContent extends AbsolutePanel implements I_TabContent,
 	}
 	
 	@Override
-	public void onStateEvent(StateEvent event)
+	public void onStateEvent(A_BaseStateEvent event)
 	{
 		m_editor.onStateEvent(event);
 		
@@ -225,7 +227,8 @@ public class CodeEditorTabContent extends AbsolutePanel implements I_TabContent,
 					}
 					else
 					{
-						if( event.getRevealingState() == null || event.getRevealingState() == State_EditingCodeBlocker.class )
+						ForegroundEvent event_cast = event.cast();
+						if( event_cast.getRevealingState() == null || event_cast.getRevealingState() == State_EditingCodeBlocker.class )
 						{
 							State_EditingCode editingHtmlState = (State_EditingCode) event.getState();
 							
@@ -247,7 +250,8 @@ public class CodeEditorTabContent extends AbsolutePanel implements I_TabContent,
 				}
 				else if( event.getState() instanceof StateMachine_Tabs )
 				{
-					if( event.getRevealingState() == null )
+					ForegroundEvent event_cast = event.cast();
+					if( event_cast.getRevealingState() == null )
 					{
 						//--- DRK > This goes along with the sleight of hand we pull below for not detaching the blocker while animating out.
 						//---		This just makes sure that the console blocker gets detached...it might be the case that it gets immediately
@@ -293,20 +297,20 @@ public class CodeEditorTabContent extends AbsolutePanel implements I_TabContent,
 			
 			case DID_PERFORM_ACTION:
 			{
-				if( event.getAction() == Action_EditingCode_Save.class || event.getAction() == Action_EditingCode_Preview.class )
+				if( event.getTargetClass() == Action_EditingCode_Save.class || event.getTargetClass() == Action_EditingCode_Preview.class )
 				{
 					refreshButtons();
 				}
-				else if( event.getAction() == Action_EditingCode_Edit.class )
+				else if( event.getTargetClass() == Action_EditingCode_Edit.class )
 				{
 					refreshButtons();
 				}
-				else if( event.getAction() == State_EditingCodeBlocker.OnReasonChange.class )
+				else if( event.getTargetClass() == State_EditingCodeBlocker.OnReasonChange.class )
 				{
 					updateConsoleBlocker();
 				}
-				else if( event.getAction() == StateMachine_Base.OnUserPopulated.class || 
-						 event.getAction() == StateMachine_Base.OnUserCleared.class  )
+				else if( event.getTargetClass() == StateMachine_Base.OnUserPopulated.class || 
+						 event.getTargetClass() == StateMachine_Base.OnUserCleared.class  )
 				{
 					State_ViewingCell viewingState = event.getContext().getEntered(State_ViewingCell.class);
 					State_EditingCode editingState = event.getContext().getEntered(State_EditingCode.class);

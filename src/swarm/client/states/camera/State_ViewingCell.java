@@ -20,7 +20,7 @@ import swarm.shared.statemachine.A_Action;
 import swarm.shared.statemachine.A_State;
 import swarm.shared.statemachine.I_StateEventListener;
 import swarm.shared.statemachine.StateArgs;
-import swarm.shared.statemachine.StateEvent;
+import swarm.shared.statemachine.A_BaseStateEvent;
 import swarm.shared.structs.CellAddress;
 import swarm.shared.structs.CellAddressMapping;
 import swarm.shared.structs.GridCoordinate;
@@ -103,9 +103,9 @@ public class State_ViewingCell extends A_State implements I_StateEventListener, 
 	}
 	
 	@Override
-	protected void didEnter(StateArgs constructor)
+	protected void didEnter()
 	{
-		Constructor thisConstructor = (Constructor)constructor;
+		Constructor thisConstructor = getArgs();
 		
 		m_cell = thisConstructor.m_cell;
 		
@@ -148,7 +148,7 @@ public class State_ViewingCell extends A_State implements I_StateEventListener, 
 	}
 	
 	@Override
-	public void onStateEvent(StateEvent event)
+	public void onStateEvent(A_BaseStateEvent event)
 	{
 		switch(event.getType())
 		{
@@ -169,7 +169,7 @@ public class State_ViewingCell extends A_State implements I_StateEventListener, 
 			
 			case DID_PERFORM_ACTION:
 			{
-				if( event.getAction() == Action_Camera_SetViewSize.class )
+				if( event.getTargetClass() == Action_Camera_SetViewSize.class )
 				{
 					
 				}

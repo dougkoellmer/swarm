@@ -19,8 +19,7 @@ public enum E_ZIndex
 	TAB_SELECTED, 
 	CODE_MIRROR_RELATED,
 	
-	//-- DRK > These are assigned manually to elements' styles.
-	CELL_HIGHLIGHT,
+	//-- DRK > These are assigned manually to elements' styles.,
 	CELL_BACKING,
 	CELL_128,
 	CELL_64,
@@ -32,6 +31,7 @@ public enum E_ZIndex
 	CELL_1,
 	CELL_META_ON_DEATH_ROW_ABOVE_CELL_1,
 	CELL_FADING_META_FOR_SNAP,
+	CELL_HIGHLIGHT,
 	CELL_CONTENT,
 	CELL_STATUS,
 	CELL_GLASS,

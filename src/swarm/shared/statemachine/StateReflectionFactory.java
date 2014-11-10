@@ -1,5 +1,9 @@
 package swarm.shared.statemachine;
 
+/**
+ * 
+ * @author dougkoellmer
+ */
 public class StateReflectionFactory implements I_StateFactory
 {
 	@Override
@@ -38,9 +42,9 @@ public class StateReflectionFactory implements I_StateFactory
 	}
 
 	@Override
-	public A_Action newAction(Class<? extends A_Action> actionClass)
+	public A_Action_Base newAction(Class<? extends A_Action_Base> actionClass)
 	{
-		A_Action action = null;
+		A_Action_Base action = null;
 		
 		try
 		{
@@ -78,7 +82,7 @@ public class StateReflectionFactory implements I_StateFactory
 		}
 		catch( IllegalAccessException e )
 		{
-//			e.printStackTrace();
+			e.printStackTrace();
 		}
 		
 		return action;

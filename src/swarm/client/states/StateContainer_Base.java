@@ -28,17 +28,12 @@ public class StateContainer_Base extends A_StateContainer
 	}
 	
 	@Override
-	protected void didEnter(StateArgs constructor)
-	{
-	}
-	
-	@Override
 	protected void willExit()
 	{
 	}
 	
 	@Override
-	protected void didForeground(Class<? extends A_State> revealingState, Object[] argsFromRevealingState)
+	protected void didForeground(Class<? extends A_State> revealingState, StateArgs argsFromRevealingState)
 	{
 		if ( revealingState == null )
 		{

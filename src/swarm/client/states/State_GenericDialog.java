@@ -54,9 +54,9 @@ public class State_GenericDialog extends A_State
 	}
 	
 	@Override
-	protected void didEnter(StateArgs constructor)
+	protected void didEnter()
 	{
-		Constructor cons = (Constructor) constructor;
+		Constructor cons = getArgs();
 		
 		m_title = cons.m_title;
 		m_body = cons.m_body;

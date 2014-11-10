@@ -28,7 +28,7 @@ public class StateMachine_Tabs extends A_StateMachine
 	}
 	
 	@Override
-	protected void didEnter(StateArgs constructor)
+	protected void didEnter()
 	{
 		
 	}
@@ -66,7 +66,7 @@ public class StateMachine_Tabs extends A_StateMachine
 	}
 	
 	@Override
-	protected void didForeground(Class<? extends A_State> revealingState, Object[] argsFromRevealingState)
+	protected void didForeground(Class<? extends A_State> revealingState, StateArgs argsFromRevealingState)
 	{
 		if( this.m_tabIndex == -1 )
 		{

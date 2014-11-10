@@ -21,7 +21,7 @@ import swarm.shared.statemachine.A_State;
 import swarm.shared.statemachine.A_StateMachine;
 import swarm.shared.statemachine.I_StateEventListener;
 import swarm.shared.statemachine.StateArgs;
-import swarm.shared.statemachine.StateEvent;
+import swarm.shared.statemachine.A_BaseStateEvent;
 import swarm.shared.structs.Code;
 import swarm.shared.structs.GridCoordinate;
 
@@ -43,7 +43,7 @@ public class StateMachine_EditingCode extends A_StateMachine implements I_StateE
 	}
 	
 	@Override
-	protected void didEnter(StateArgs constructor)
+	protected void didEnter()
 	{
 		m_waitingOnHtmlForViewedCell = false;
 		m_code = null;
@@ -55,7 +55,7 @@ public class StateMachine_EditingCode extends A_StateMachine implements I_StateE
 	}
 	
 	@Override
-	protected void didForeground(Class<? extends A_State> revealingState, Object[] argsFromRevealingState)
+	protected void didForeground(Class<? extends A_State> revealingState, StateArgs argsFromRevealingState)
 	{
 		//--- DRK > Camera controller can be null during start up...should be the only time.
 		A_StateMachine cameraController = getContext().getEntered(StateMachine_Camera.class);
@@ -205,7 +205,7 @@ public class StateMachine_EditingCode extends A_StateMachine implements I_StateE
 	}
 	
 	@Override
-	public void onStateEvent(StateEvent event)
+	public void onStateEvent(A_BaseStateEvent event)
 	{
 		if( !this.isForegrounded() )  return;
 		
@@ -297,14 +297,14 @@ public class StateMachine_EditingCode extends A_StateMachine implements I_StateE
 			
 			case DID_PERFORM_ACTION:
 			{
-				if( event.getAction() == Action_ViewingCell_Refresh.class )
+				if( event.getTargetClass() == Action_ViewingCell_Refresh.class )
 				{
 					State_ViewingCell viewingState = getContext().getEntered(State_ViewingCell.class);
 					pushOrPopBlocker(viewingState);
 				}
-				else if( event.getAction() == StateMachine_Base.OnUserCleared.class )
+				else if( event.getTargetClass() == StateMachine_Base.OnUserCleared.class )
 				{
-					if( event.getAction() == StateMachine_Base.OnUserCleared.class  )
+					if( event.getTargetClass() == StateMachine_Base.OnUserCleared.class  )
 					{
 						State_ViewingCell viewingState = getContext().getEntered(State_ViewingCell.class);
 						State_EditingCode editingState = getContext().getEntered(State_EditingCode.class);
@@ -315,8 +315,8 @@ public class StateMachine_EditingCode extends A_StateMachine implements I_StateE
 						}
 					}
 				}
-				else if( event.getAction() == StateMachine_Base.OnUserPopulated.class || 
-						 event.getAction() == StateMachine_Base.OnUserCleared.class  )
+				else if( event.getTargetClass() == StateMachine_Base.OnUserPopulated.class || 
+						 event.getTargetClass() == StateMachine_Base.OnUserCleared.class  )
 				{
 					State_ViewingCell viewingState = getContext().getEntered(State_ViewingCell.class);
 					State_EditingCode editingState = getContext().getEntered(State_EditingCode.class);

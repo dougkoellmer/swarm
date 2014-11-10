@@ -25,7 +25,7 @@ import swarm.shared.entities.E_CodeType;
 import swarm.shared.statemachine.A_Action;
 
 import swarm.shared.statemachine.StateArgs;
-import swarm.shared.statemachine.A_EventAction;
+import swarm.shared.statemachine.A_Action_Event;
 import swarm.shared.statemachine.A_State;
 import swarm.shared.statemachine.A_StateMachine;
 import swarm.shared.statemachine.StateContext;
@@ -52,7 +52,7 @@ public class StateMachine_Base extends A_StateMachine implements I_TransactionRe
 		}
 	}*/
 	
-	public static class OnAccountManagerResponse extends A_EventAction
+	public static class OnAccountManagerResponse extends A_Action_Event
 	{
 		public static class Args extends StateArgs
 		{
@@ -70,15 +70,15 @@ public class StateMachine_Base extends A_StateMachine implements I_TransactionRe
 		}
 	}
 	
-	public static class OnUserPopulated extends A_EventAction
+	public static class OnUserPopulated extends A_Action_Event
 	{
 	}
 	
-	public static class OnUserCleared extends A_EventAction
+	public static class OnUserCleared extends A_Action_Event
 	{
 	}
 	
-	public static class OnGridUpdate extends A_EventAction
+	public static class OnGridUpdate extends A_Action_Event
 	{
 	}
 	
@@ -255,7 +255,7 @@ public class StateMachine_Base extends A_StateMachine implements I_TransactionRe
 	}
 	
 	@Override
-	protected void didEnter(StateArgs constructor)
+	protected void didEnter()
 	{
 		final ClientAccountManager accountManager = m_appContext.accountMngr;
 		final UserManager userManager = m_appContext.userMngr;
@@ -326,7 +326,7 @@ public class StateMachine_Base extends A_StateMachine implements I_TransactionRe
 	}
 	
 	@Override
-	protected void didForeground(Class<? extends A_State> revealingState, Object[] argsFromRevealingState)
+	protected void didForeground(Class<? extends A_State> revealingState, StateArgs argsFromRevealingState)
 	{
 		if( this.getCurrentState() == null )
 		{

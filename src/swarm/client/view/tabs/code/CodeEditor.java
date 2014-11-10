@@ -17,7 +17,7 @@ import swarm.shared.statemachine.A_Action;
 import swarm.shared.statemachine.A_State;
 import swarm.shared.statemachine.A_StateMachine;
 import swarm.shared.statemachine.I_StateEventListener;
-import swarm.shared.statemachine.StateEvent;
+import swarm.shared.statemachine.A_BaseStateEvent;
 import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
@@ -103,7 +103,7 @@ public class CodeEditor extends FlowPanel implements I_StateEventListener
 	}
 
 	@Override
-	public void onStateEvent(StateEvent event)
+	public void onStateEvent(A_BaseStateEvent event)
 	{
 		switch(event.getType())
 		{
@@ -155,8 +155,8 @@ public class CodeEditor extends FlowPanel implements I_StateEventListener
 			
 			case DID_PERFORM_ACTION:
 			{
-				if( event.getAction() == StateMachine_Base.OnUserPopulated.class || 
-					event.getAction() == StateMachine_Base.OnUserCleared.class  )
+				if( event.getTargetClass() == StateMachine_Base.OnUserPopulated.class || 
+					event.getTargetClass() == StateMachine_Base.OnUserCleared.class  )
 				{
 					State_ViewingCell viewingState = event.getContext().getEntered(State_ViewingCell.class);
 					State_EditingCode editingState = event.getContext().getEntered(State_EditingCode.class);
@@ -166,7 +166,7 @@ public class CodeEditor extends FlowPanel implements I_StateEventListener
 						toggleActiveCodeMirrorInstance(viewingState);
 					}
 				}
-				else if( event.getAction() == Action_ManageAccount_SignOut.class )
+				else if( event.getTargetClass() == Action_ManageAccount_SignOut.class )
 				{
 					setActiveCodeMirrorInstance(m_codeMirror_readOnly);
 				}

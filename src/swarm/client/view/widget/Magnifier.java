@@ -24,9 +24,11 @@ import swarm.shared.app.S_CommonApp;
 import swarm.shared.utils.U_Math;
 import swarm.shared.statemachine.A_Action;
 import swarm.shared.statemachine.A_State;
+import swarm.shared.statemachine.ActionEvent;
 import swarm.shared.statemachine.I_StateEventListener;
-import swarm.shared.statemachine.StateEvent;
+import swarm.shared.statemachine.A_BaseStateEvent;
 import swarm.shared.structs.Point;
+
 import com.google.gwt.dom.client.Touch;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -88,7 +90,7 @@ public class Magnifier extends FlowPanel implements I_StateEventListener
 	
 	private final Point m_utilPoint = new Point();
 	
-	private final Action_Camera_SnapToPoint.Args m_args_SetCameraTarget = new Action_Camera_SnapToPoint.Args();
+	private final Action_Camera_SnapToPoint.Args m_args_SetCameraTarget = new Action_Camera_SnapToPoint.Args(this.getClass());
 	
 	private final double m_tickRatio;
 	private final double m_fadeInTime_seconds;
@@ -136,8 +138,6 @@ public class Magnifier extends FlowPanel implements I_StateEventListener
 		toolTipper.addTip(m_zoomIn, new ToolTipConfig(E_ToolTipType.MOUSE_OVER, "Zoom In"));
 		toolTipper.addTip(m_zoomOut, new ToolTipConfig(E_ToolTipType.MOUSE_OVER, "Zoom Out"));
 		toolTipper.addTip(m_dragger, new ToolTipConfig(E_ToolTipType.MOUSE_OVER, "Drag'n'Zoom"));
-		
-		m_args_SetCameraTarget.set(Magnifier.class);
 		
 		this.add(innerContainer);
 		
@@ -421,7 +421,7 @@ public class Magnifier extends FlowPanel implements I_StateEventListener
 	}
 
 	@Override
-	public void onStateEvent(StateEvent event)
+	public void onStateEvent(A_BaseStateEvent event)
 	{
 		switch(event.getType())
 		{
@@ -511,15 +511,17 @@ public class Magnifier extends FlowPanel implements I_StateEventListener
 			
 			case DID_PERFORM_ACTION:
 			{
-				if( event.getAction() == Action_Camera_SnapToPoint.class )
+				ActionEvent event_cast = event.cast();
+				
+				if( event.getTargetClass() == Action_Camera_SnapToPoint.class )
 				{
-					if( event.getActionArgs() != null )
+					if( event_cast.getArgsIn() != null )
 					{
-						if( event.getActionArgs().get() != Magnifier.class )
+						if( event_cast.getArgsIn().get() != Magnifier.class )
 						{
 							m_underThisControl = false;
 							
-							if( ((Action_Camera_SnapToPoint.Args)event.getActionArgs()).isInstant() )
+							if( ((Action_Camera_SnapToPoint.Args)event_cast.getArgsIn()).isInstant() )
 							{
 								setDraggerPositionFromCamera();
 							}
@@ -534,15 +536,15 @@ public class Magnifier extends FlowPanel implements I_StateEventListener
 						m_underThisControl = false;
 					}
 				}
-				else if( event.getAction()  == Action_Camera_SetViewSize.class )
+				else if( event.getTargetClass()  == Action_Camera_SetViewSize.class )
 				{
 					this.setDraggerPositionFromCamera();
 				}
-				else if( event.getAction()  == StateMachine_Base.OnGridUpdate.class )
+				else if( event.getTargetClass()  == StateMachine_Base.OnGridUpdate.class )
 				{
 					this.setDraggerPositionFromCamera();
 				}
-				else if( event.getAction() == Action_Camera_SetInitialPosition.class )
+				else if( event.getTargetClass() == Action_Camera_SetInitialPosition.class )
 				{
 					this.setDraggerPositionFromCamera();
 				}

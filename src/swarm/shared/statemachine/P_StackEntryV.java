@@ -2,10 +2,11 @@ package swarm.shared.statemachine;
 
 import java.util.ArrayList;
 
-import swarm.shared.statemachine.A_BaseStateObject.FilterMatch;
-import swarm.shared.statemachine.A_BaseStateObject.FilterScope;
-import swarm.shared.statemachine.A_BaseStateObject.FilterTarget;
 
+/**
+ * 
+ * @author dougkoellmer
+ */
 class P_StackEntryV
 {
 	private static final Object[] DUMMY_ARGS = {};
@@ -24,6 +25,11 @@ class P_StackEntryV
 	{
 		m_context = context;
 		m_beingUsed = true;
+	}
+	
+	public int getHistoryIndex()
+	{
+		return m_historyIndex;
 	}
 	
 	void destruct()
@@ -61,6 +67,30 @@ class P_StackEntryV
 		m_queue.clear();
 	}
 	
+	Class<? extends A_State> get(StateFilter.Target target, int offset)
+	{
+		if( target == target.getScope().HISTORY )
+		{
+			int index = m_historyIndex + offset;
+			
+			if( index >= 0 && index < m_history.size() )
+			{
+				return m_history.get(index).m_stateClass;
+			}
+		}
+		else
+		{
+			int index = offset > 0 ? offset : m_queue.size()-1-offset;
+			
+			if( index >= 0 && index < m_queue.size() )
+			{
+				return m_queue.get(index).m_stateClass;
+			}
+		}
+		
+		return null;
+	}
+	
 	P_StackEntryH go(int offset)
 	{
 		if( offset == 0 )  return null;
@@ -87,17 +117,24 @@ class P_StackEntryV
 		m_historyIndex--;
 		P_StackEntryH toReturn = m_history.get(m_historyIndex);
 		
+		cropHistory();
+		
+		return toReturn;
+	}
+	
+	private void cropHistory()
+	{
 		while( m_history.size()-1 > m_historyIndex )
 		{
 			m_context.checkInStackEntryH(m_history.get(m_history.size()-1));
 			m_history.remove(m_history.size()-1);
 		}
-		
-		return toReturn;
 	}
 	
 	void push(P_StackEntryH entry)
 	{
+		cropHistory();
+		
 		m_history.add(entry);
 		m_historyIndex++;
 	}
@@ -118,25 +155,40 @@ class P_StackEntryV
 		m_history.set(m_historyIndex, existingEntry);
 	}
 	
-	void remove(FilterTarget target, FilterMatch match_nullable, Class<? extends Object> stateClass_nullable, StateArgs args_nullable, Object ... argValues)
+	boolean remove(boolean justChecking, StateFilter.Target target, StateFilter.Match match_nullable, Class<? extends Object> stateClass_nullable, StateArgs args_nullable, Object ... argValues)
 	{
-		//--- DRK > Early out for the "remove all queue" case.
+		if( target == null )  return false;
+		
+		//--- DRK > Early out for the "remove all" case.
 		if( match_nullable == null && stateClass_nullable == null && args_nullable == null )
 		{
 			if( target == target.getScope().QUEUE )
 			{
-				clearQueue();
+				boolean hasQueue = m_queue.size() > 0;
 				
-				return;
+				if( !justChecking )
+				{
+					clearQueue();
+				}
+				
+				return hasQueue;
+			}
+			else if( target == target.getScope().HISTORY  )
+			{
+				if( justChecking && m_history.size() > 1 )
+				{
+					return true;
+				}
 			}
 		}
 		
 		argValues = argValues == null ? DUMMY_ARGS : argValues;
-		FilterScope scope = target.getScope();
+		StateFilter.Scope scope = target.getScope();
 		ArrayList<P_StackEntryH> list = target == scope.HISTORY ? m_history : m_queue;
 		boolean isHistory = list == m_history;
 		boolean isLimitOfOne = scope != A_BaseStateObject.ALL;
 		int start, limit, inc, removalOffset;
+		boolean removedSomething = false;
 		
 		if( scope == A_BaseStateObject.FIRST )
 		{
@@ -174,6 +226,13 @@ class P_StackEntryV
 					remove = true;
 				}
 			}
+			else
+			{
+				if( argValues.length == 0 && args_nullable == null )
+				{
+					remove = true;
+				}
+			}
 			
 			if( !remove )
 			{
@@ -200,17 +259,28 @@ class P_StackEntryV
 			
 			if( remove )
 			{
-				list.remove(i);
-				
-				if( isLimitOfOne )  return;
-				
-				i += removalOffset;
-				if( isHistory && i < m_historyIndex )
+				if( !justChecking )
 				{
-					m_historyIndex--;
+					removedSomething = true;
+					
+					list.remove(i);
+					
+					if( isLimitOfOne )  return true;
+					
+					i += removalOffset;
+					if( isHistory && i < m_historyIndex )
+					{
+						m_historyIndex--;
+					}
+				}
+				else
+				{
+					return true;
 				}
 			}
 		}
+		
+		return removedSomething;
 	}
 	
 	void queue(P_StackEntryH entry)

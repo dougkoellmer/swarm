@@ -2,6 +2,10 @@ package swarm.shared.statemachine;
 
 import java.util.ArrayList;
 
+/**
+ * 
+ * @author dougkoellmer
+ */
 class P_StateObjectPool<T>
 {
 	public static interface I_Factory<T>

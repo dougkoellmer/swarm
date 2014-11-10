@@ -7,7 +7,7 @@ import swarm.client.view.E_ZIndex;
 import swarm.client.view.I_UIElement;
 import swarm.shared.statemachine.A_Action;
 import swarm.shared.statemachine.StateContext;
-import swarm.shared.statemachine.StateEvent;
+import swarm.shared.statemachine.A_BaseStateEvent;
 import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.KeyUpEvent;
@@ -100,7 +100,7 @@ public class DialogManager implements I_UIElement
 	}
 	
 	@Override
-	public void onStateEvent(StateEvent event)
+	public void onStateEvent(A_BaseStateEvent event)
 	{
 		switch(event.getType())
 		{

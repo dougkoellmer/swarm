@@ -1,8 +1,8 @@
 package swarm.shared.statemachine;
 	
 /**
- * ...
- * @author Doug Koellmer
+ * 
+ * @author dougkoellmer
  */
 public enum E_Event
 {

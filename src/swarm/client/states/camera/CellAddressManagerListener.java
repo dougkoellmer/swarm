@@ -11,7 +11,7 @@ class CellAddressManagerListener implements CellAddressManager.I_Listener
 	private final StateMachine_Camera m_machine;
 	
 	private final Event_Camera_OnAddressResponse.Args m_onAddressResponseArgs = new Event_Camera_OnAddressResponse.Args();
-	private final Action_Camera_SnapToCoordinate.Args m_snapToCoordArgs = new Action_Camera_SnapToCoordinate.Args();
+	private final Action_Camera_SnapToCoordinate.Args m_snapToCoordArgs = new Action_Camera_SnapToCoordinate.Args(this.getClass());
 	
 	CellAddressManagerListener(StateMachine_Camera machine)
 	{

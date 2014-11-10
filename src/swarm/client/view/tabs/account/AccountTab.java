@@ -24,7 +24,8 @@ import swarm.client.view.tooltip.E_ToolTipType;
 import swarm.client.view.tooltip.ToolTipConfig;
 import swarm.client.view.tooltip.ToolTipManager;
 import swarm.shared.statemachine.A_State;
-import swarm.shared.statemachine.StateEvent;
+import swarm.shared.statemachine.A_BaseStateEvent;
+import swarm.shared.statemachine.ActionEvent;
 
 public class AccountTab extends A_Tab
 {
@@ -60,7 +61,7 @@ public class AccountTab extends A_Tab
 	}
 
 	@Override
-	public void onStateEvent(StateEvent event)
+	public void onStateEvent(A_BaseStateEvent event)
 	{
 		super.onStateEvent(event);
 		
@@ -78,7 +79,7 @@ public class AccountTab extends A_Tab
 			
 			case DID_PERFORM_ACTION:
 			{
-				if( event.getAction() == StateMachine_Base.OnAccountManagerResponse.class )
+				if( event.getTargetClass() == StateMachine_Base.OnAccountManagerResponse.class )
 				{
 					updateToolTip();
 					
@@ -86,7 +87,8 @@ public class AccountTab extends A_Tab
 					{
 						if( !event.getContext().isForegrounded(StateMachine_Account.class) )
 						{
-							StateMachine_Base.OnAccountManagerResponse.Args args = event.getActionArgs();
+							ActionEvent event_cast = event.cast();
+							StateMachine_Base.OnAccountManagerResponse.Args args = event_cast.getArgsIn();
 							ClientAccountManager.E_ResponseType responseType = args.getType();
 							String text = U_ToString.get(responseType);
 							

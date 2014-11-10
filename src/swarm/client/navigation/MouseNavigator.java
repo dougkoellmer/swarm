@@ -30,7 +30,7 @@ import swarm.shared.entities.A_Grid;
 import swarm.shared.statemachine.A_Action;
 import swarm.shared.statemachine.A_State;
 import swarm.shared.statemachine.StateContext;
-import swarm.shared.statemachine.StateEvent;
+import swarm.shared.statemachine.A_BaseStateEvent;
 import swarm.shared.structs.CellAddress;
 import swarm.shared.structs.E_GetCellAddressMappingError;
 import swarm.shared.structs.GetCellAddressMappingResult;
@@ -69,8 +69,8 @@ public class MouseNavigator implements I_UIElement, Mouse.I_Listener
 	private final Point m_lastWorldPoint = new Point();
 	private final VelocitySmoother m_flickSmoother = new VelocitySmoother(S_UI.FLICK_SMOOTHING_SAMPLE_COUNT);
 
-	private final Action_Camera_SnapToPoint.Args m_args_SnapToPoint = new Action_Camera_SnapToPoint.Args();
-	private final Action_Camera_SnapToCoordinate.Args m_args_SnapToCoord = new Action_Camera_SnapToCoordinate.Args();
+	private final Action_Camera_SnapToPoint.Args m_args_SnapToPoint = new Action_Camera_SnapToPoint.Args(this.getClass());
+	private final Action_Camera_SnapToCoordinate.Args m_args_SnapToCoord = new Action_Camera_SnapToCoordinate.Args(this.getClass());
 	
 	private final GridCoordinate m_mouseGridCoord = new GridCoordinate();
 	private boolean m_isMouseTouchingSnappableCell = false;
@@ -527,7 +527,8 @@ public class MouseNavigator implements I_UIElement, Mouse.I_Listener
 				{
 					if( !m_mouseWentDownOnViewedCell )
 					{
-						m_cameraMachine.getContext().perform(Action_Camera_SnapToPoint.class);
+						m_args_SnapToPoint.init(camera.getPosition(), true, true);
+						m_cameraMachine.getContext().perform(Action_Camera_SnapToPoint.class, m_args_SnapToPoint);
 					}
 				}
 			}
@@ -542,7 +543,7 @@ public class MouseNavigator implements I_UIElement, Mouse.I_Listener
 		}
 	}
 	
-	public void onStateEvent(StateEvent event)
+	public void onStateEvent(A_BaseStateEvent event)
 	{
 		switch(event.getType())
 		{

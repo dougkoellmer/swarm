@@ -39,7 +39,7 @@ import swarm.shared.entities.A_Grid;
 import swarm.shared.lang.Boolean;
 import swarm.shared.statemachine.A_StateContextForwarder;
 import swarm.shared.statemachine.I_StateEventListener;
-import swarm.shared.statemachine.StateEvent;
+import swarm.shared.statemachine.A_BaseStateEvent;
 import swarm.shared.structs.CellAddressMapping;
 import swarm.shared.structs.CellSize;
 import swarm.shared.structs.GridCoordinate;
@@ -57,8 +57,8 @@ public class ScrollNavigator implements I_StateEventListener
 	
 	private static final Logger s_logger = Logger.getLogger(ScrollNavigator.class.getName());
 	
-	private final Action_Camera_SnapToPoint.Args m_args_SnapToPoint = new Action_Camera_SnapToPoint.Args();
-	private final Action_Camera_SnapToCoordinate.Args m_args_SnapToCoord = new Action_Camera_SnapToCoordinate.Args();
+	private final Action_Camera_SnapToPoint.Args m_args_SnapToPoint = new Action_Camera_SnapToPoint.Args(null);
+	private final Action_Camera_SnapToCoordinate.Args m_args_SnapToCoord = new Action_Camera_SnapToCoordinate.Args(this.getClass());
 	private final Action_Camera_SetViewSize.Args m_args_SetCameraViewSize = new Action_Camera_SetViewSize.Args();
 	
 	private final ViewContext m_viewContext;
@@ -89,7 +89,6 @@ public class ScrollNavigator implements I_StateEventListener
 		
 		m_scrollContainer.getElement().getStyle().setZIndex(1);
 		
-		m_args_SnapToCoord.set(this.getClass());
 		m_args_SnapToCoord.historyShouldIgnore = true;
 		
 		m_scrollContainer.addDomHandler(new ScrollHandler()
@@ -578,7 +577,7 @@ public class ScrollNavigator implements I_StateEventListener
 	}
 	
 	@Override
-	public void onStateEvent(StateEvent event)
+	public void onStateEvent(A_BaseStateEvent event)
 	{
 		switch(event.getType())
 		{

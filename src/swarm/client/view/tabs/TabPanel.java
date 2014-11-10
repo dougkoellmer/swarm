@@ -31,7 +31,7 @@ import swarm.client.view.widget.ButtonWithText;
 import swarm.shared.debugging.U_Debug;
 import swarm.shared.statemachine.A_Action;
 import swarm.shared.statemachine.A_State;
-import swarm.shared.statemachine.StateEvent;
+import swarm.shared.statemachine.A_BaseStateEvent;
 import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.dom.client.Style.Visibility;
@@ -177,7 +177,7 @@ public class TabPanel extends AbsolutePanel implements I_UIElement
 	}
 	
 	@Override
-	public void onStateEvent(StateEvent event)
+	public void onStateEvent(A_BaseStateEvent event)
 	{
 		switch( event.getType() )
 		{

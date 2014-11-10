@@ -5,8 +5,8 @@ import java.util.HashMap;
 
 
 /**
- * ...
- * @author 
+ * 
+ * @author dougkoellmer
  */
 public abstract class A_StateContainer extends A_State
 {
@@ -66,7 +66,7 @@ public abstract class A_StateContainer extends A_State
 		m_children.put(T, newState);
 		
 		newState.m_parent = this;
-		newState.didEnter_internal(constructor);
+		newState.didEnter_internal(constructor, E_TransitionCause.SET);
 		
 		m_childrenForegrounded.put(T, false);
 	}
@@ -123,7 +123,7 @@ public abstract class A_StateContainer extends A_State
 			state.willBackground_internal(null);
 		}
 		
-		state.willExit_internal();
+		state.willExit_internal(E_TransitionCause.SET);
 		
 		state.m_parent = null;
 		
@@ -131,17 +131,15 @@ public abstract class A_StateContainer extends A_State
 		m_childrenForegrounded.remove(T);
 	}
 	
-	@Override
-	void didEnter_internal(StateArgs constructor)
+	@Override void didEnter_internal(StateArgs constructor, E_TransitionCause cause)
 	{		
-		super.didEnter_internal(constructor);
+		super.didEnter_internal(constructor, cause);
 		
 		m_children = new HashMap<Class<? extends A_State>, A_State>();
 		m_childrenForegrounded = new HashMap<Class<? extends A_State>, Boolean>();
 	}
 	
-	@Override
-	void didForeground_internal(Class<? extends A_State> revealingState, Object[] args)
+	@Override void didForeground_internal(Class<? extends A_State> revealingState, StateArgs args)
 	{
 		final ArrayList<A_State> existingStates = new ArrayList<A_State>();
 
@@ -197,10 +195,9 @@ public abstract class A_StateContainer extends A_State
 		}
 	}
 	
-	@Override
-	void willExit_internal()
+	@Override void willExit_internal(E_TransitionCause cause)
 	{
-		super.willExit_internal();
+		super.willExit_internal(cause);
 		
 		HashMap<Class<? extends A_State>, A_State> children = m_children;
 	
@@ -210,7 +207,7 @@ public abstract class A_StateContainer extends A_State
 		for ( Class<? extends A_State> T : children.keySet() )
 		{
 			A_State state = children.get(T);
-			state.willExit_internal();
+			state.willExit_internal(cause);
 		}
 	}
 }

@@ -24,7 +24,7 @@ import swarm.shared.statemachine.A_Action;
 import swarm.shared.statemachine.E_Event;
 import swarm.shared.statemachine.I_StateEventListener;
 import swarm.shared.statemachine.StateContext;
-import swarm.shared.statemachine.StateEvent;
+import swarm.shared.statemachine.A_BaseStateEvent;
 
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
@@ -96,7 +96,7 @@ public class ViewController extends Object implements I_StateEventListener
 		m_listeners.add(listener);
 	}
 	
-	public void onStateEvent(StateEvent event)
+	public void onStateEvent(A_BaseStateEvent event)
 	{
 		if ( event.getType() == E_Event.DID_ENTER )
 		{

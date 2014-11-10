@@ -31,8 +31,10 @@ import swarm.shared.account.SignInValidationResult;
 import swarm.shared.account.SignUpCredentials;
 import swarm.shared.account.SignUpValidationResult;
 import swarm.shared.statemachine.A_Action;
+import swarm.shared.statemachine.ActionEvent;
 import swarm.shared.statemachine.I_StateEventListener;
-import swarm.shared.statemachine.StateEvent;
+import swarm.shared.statemachine.A_BaseStateEvent;
+
 import com.google.gwt.dom.client.Style.Cursor;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.BlurEvent;
@@ -330,7 +332,7 @@ public class SignInPanel extends VerticalPanel implements I_StateEventListener
 	}
 
 	@Override
-	public void onStateEvent(StateEvent event)
+	public void onStateEvent(A_BaseStateEvent event)
 	{
 		switch( event.getType() )
 		{
@@ -364,9 +366,11 @@ public class SignInPanel extends VerticalPanel implements I_StateEventListener
 			
 			case DID_PERFORM_ACTION:
 			{
-				if( event.getAction() == StateMachine_Base.OnAccountManagerResponse.class )
+				ActionEvent event_cast = event.cast();
+				
+				if( event.getTargetClass() == StateMachine_Base.OnAccountManagerResponse.class )
 				{
-					StateMachine_Base.OnAccountManagerResponse.Args args = event.getActionArgs();
+					StateMachine_Base.OnAccountManagerResponse.Args args = event_cast.getArgsIn();
 					ClientAccountManager.E_ResponseType responseType = args.getType();
 					
 					switch(responseType)

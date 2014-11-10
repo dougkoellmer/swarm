@@ -31,9 +31,9 @@ import com.google.gwt.core.client.JsArray;
 
 public class CellApi
 {
-	private static final Action_Camera_SnapToCoordinate.Args m_snapCoordArgs = new Action_Camera_SnapToCoordinate.Args();
+	private static final Action_Camera_SnapToCoordinate.Args m_snapCoordArgs = new Action_Camera_SnapToCoordinate.Args(CellApi.class);
 	private static final Action_Camera_SnapToAddress.Args m_snapAddressArgs = new Action_Camera_SnapToAddress.Args();
-	private static final Action_Camera_SnapToPoint.Args m_snapPointArgs = new Action_Camera_SnapToPoint.Args();
+	private static final Action_Camera_SnapToPoint.Args m_snapPointArgs = new Action_Camera_SnapToPoint.Args(CellApi.class);
 	
 	private final ViewContext m_viewContext;
 	

@@ -28,7 +28,7 @@ import swarm.shared.entities.A_Grid;
 import swarm.shared.entities.U_Grid;
 import swarm.shared.utils.U_Math;
 import swarm.shared.statemachine.A_Action;
-import swarm.shared.statemachine.StateEvent;
+import swarm.shared.statemachine.A_BaseStateEvent;
 import swarm.shared.structs.GridCoordinate;
 import swarm.shared.structs.Point;
 
@@ -55,7 +55,7 @@ public class VisualCellHighlight extends FlowPanel implements I_UIElement
 		
 		E_ZIndex.CELL_HIGHLIGHT.assignTo(this);
 		
-		this.getElement().getStyle().setBackgroundColor(m_viewContext.config.cellHighlightColor);
+//		this.getElement().getStyle().setBackgroundColor(m_viewContext.config.cellHighlightColor);
 		
 		this.setVisible(false);
 	}
@@ -162,11 +162,18 @@ public class VisualCellHighlight extends FlowPanel implements I_UIElement
 			y += scrollElement.getScrollTop();
 		}
 		
+		double pinch = m_viewContext.config.canvasBackingPinch;
+		double visualCellWidth = visualCell != null ? visualCell.getWidth() : defaultCellWidth;
+		double visualCellHeight = visualCell != null ? visualCell.getHeight() : defaultCellHeight;
 		
-		int visualCellWidth = visualCell != null ? visualCell.getWidth() : defaultCellWidth;
-		int visualCellHeight = visualCell != null ? visualCell.getHeight() : defaultCellHeight;
-		String width = (visualCellWidth * distanceRatio) + "px";
-		String height = (visualCellHeight * distanceRatio) + "px";
+		visualCellWidth *= distanceRatio;
+		visualCellHeight *= distanceRatio;
+		visualCellWidth -= pinch*2;
+		visualCellHeight -= pinch*2;
+		basePoint.incX(pinch);
+		y += pinch;
+		String width = (visualCellWidth) + "px";
+		String height = (visualCellHeight) + "px";
 		this.setSize(width, height);
 		this.getElement().getStyle().setProperty("top", y + "px");
 		this.getElement().getStyle().setProperty("left", basePoint.getX() + "px");
@@ -190,7 +197,7 @@ public class VisualCellHighlight extends FlowPanel implements I_UIElement
 		this.setVisible(true);
 	}
 
-	public void onStateEvent(StateEvent event)
+	public void onStateEvent(A_BaseStateEvent event)
 	{
 		switch(event.getType())
 		{
@@ -206,8 +213,8 @@ public class VisualCellHighlight extends FlowPanel implements I_UIElement
 			
 			case DID_PERFORM_ACTION:
 			{
-				if( event.getAction() == Action_Camera_SetViewSize.class ||
-					event.getAction() == Action_Camera_SnapToPoint.class )
+				if( event.getTargetClass() == Action_Camera_SetViewSize.class ||
+					event.getTargetClass() == Action_Camera_SnapToPoint.class )
 				{
 					State_ViewingCell state = event.getContext().getEntered(State_ViewingCell.class);
 					

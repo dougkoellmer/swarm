@@ -25,7 +25,8 @@ import swarm.client.view.dialog.Dialog;
 import swarm.shared.debugging.U_Debug;
 import swarm.shared.entities.A_Grid;
 import swarm.shared.entities.U_Grid;
-import swarm.shared.statemachine.StateEvent;
+import swarm.shared.statemachine.A_BaseStateEvent;
+import swarm.shared.statemachine.ActionEvent;
 import swarm.shared.structs.BitArray;
 import swarm.shared.structs.CellAddress;
 import swarm.shared.structs.GridCoordinate;
@@ -49,7 +50,7 @@ public class VisualCellManager implements I_UIElement
 	private static final Logger s_logger = Logger.getLogger(VisualCellManager.class.getName());
 	
 //	private static final double FLUSH_CODE_RATE = .05;
-	private static final double FLUSH_CODE_RATE = 0.0;
+	private static final int FLUSH_CODE_RATE = 2;
 //	private static final double FLUSH_CODE_RATE = .1;
 //	private static final double FLUSH_CODE_RATE = 5.0;
 	
@@ -79,7 +80,7 @@ public class VisualCellManager implements I_UIElement
 	private final CanvasBacking.UpdateConfig m_backingConfig = new CanvasBacking.UpdateConfig();
 	private boolean m_needToUpdateBacking = false;
 	
-	private double m_flushCodeTimer = FLUSH_CODE_RATE;
+	private int m_flushCodeTracker = FLUSH_CODE_RATE;
 	
 	public VisualCellManager(ViewContext viewContext, Panel container) 
 	{
@@ -258,7 +259,7 @@ public class VisualCellManager implements I_UIElement
 			if( keepTryingToFlush && ithVisualCell.flushQueuedCode() )
 			{
 				keepTryingToFlush = false;
-				m_flushCodeTimer = 0.0;
+				m_flushCodeTracker = 0;
 			}
 			
 			if( cellBuffer.getSubCellCount() > 1 && ithVisualCell.getMetaState() != VisualCell.E_MetaState.DEFINITELY_SHOULD_BE_RENDERED_BY_NOW )
@@ -476,7 +477,7 @@ public class VisualCellManager implements I_UIElement
 			if( keepTryingToFlush && ithVisualCell.flushQueuedCode() )
 			{
 				keepTryingToFlush = false;
-				m_flushCodeTimer = 0.0;
+				m_flushCodeTracker = 0;
 			}
 			
 			if( subCellCount_i > 1 && ithVisualCell.getMetaState() != VisualCell.E_MetaState.DEFINITELY_SHOULD_BE_RENDERED_BY_NOW )
@@ -665,14 +666,14 @@ public class VisualCellManager implements I_UIElement
 			{
 				if( visualCell.flushQueuedCode() )
 				{
-					m_flushCodeTimer = 0.0;
+					m_flushCodeTracker = 0;
 					
 					return false;
 				}
 			}
 		}
 		
-		if( m_flushCodeTimer < FLUSH_CODE_RATE )
+		if( m_flushCodeTracker < FLUSH_CODE_RATE )
 		{
 			return false;
 		}
@@ -700,7 +701,7 @@ public class VisualCellManager implements I_UIElement
 		return m_lastBasePoint;
 	}
 	
-	@Override public void onStateEvent(StateEvent event)
+	@Override public void onStateEvent(A_BaseStateEvent event)
 	{
 		switch( event.getType() )
 		{
@@ -709,7 +710,7 @@ public class VisualCellManager implements I_UIElement
 				if( event.getState().getParent() instanceof StateMachine_Camera )
 				{
 					double timestep = event.getState().getLastTimeStep();
-					m_flushCodeTimer += timestep;
+					m_flushCodeTracker++;
 					
 					//boolean flushDestroyQueueIfMoving = (event.getState().getUpdateCount() % 8) == 0;
 					
@@ -770,9 +771,11 @@ public class VisualCellManager implements I_UIElement
 			
 			case DID_PERFORM_ACTION:
 			{
-				if( event.getAction() == Action_Camera_SetViewSize.class )
+				ActionEvent event_cast = event.cast();
+				
+				if( event.getTargetClass() == Action_Camera_SetViewSize.class )
 				{
-					Action_Camera_SetViewSize.Args args = event.getActionArgs();
+					Action_Camera_SetViewSize.Args args = event_cast.getArgsIn();
 					
 					if( args.updateBuffer() )
 					{
@@ -790,7 +793,7 @@ public class VisualCellManager implements I_UIElement
 //						s_logger.severe("onResize updateBuffer()==false");
 //					}
 				}
-				else if( event.getAction() == StateMachine_Base.OnGridUpdate.class )
+				else if( event.getTargetClass() == StateMachine_Base.OnGridUpdate.class )
 				{					
 					//--- DRK > In some sense this is a waste of an update since in just a few milliseconds
 					//---		we'll be doing another one anyway. If we don't do it here though, there's some 
@@ -801,9 +804,9 @@ public class VisualCellManager implements I_UIElement
 					initBacking(grid);
 					this.updateCellTransforms(0.0);
 				}
-				else if( event.getAction() == Action_Camera_SnapToPoint.class )
+				else if( event.getTargetClass() == Action_Camera_SnapToPoint.class )
 				{
-					Action_Camera_SnapToPoint.Args args = event.getActionArgs();
+					Action_Camera_SnapToPoint.Args args = event_cast.getArgsIn();
 					
 					//--- DRK(TODO): Don't really like this null check here...necessary because of legacy
 					//---			 code using null snap args to simply change to floating state.
@@ -820,7 +823,7 @@ public class VisualCellManager implements I_UIElement
 						this.updateCellTransforms(timestep);
 					}
 				}
-				else if( event.getAction() == Action_ViewingCell_Refresh.class )
+				else if( event.getTargetClass() == Action_ViewingCell_Refresh.class )
 				{
 					//--- DRK > Used to clear alerts here, but moved it to the actual refresh button handler.
 					//--- 		Probably safe here, but refresh might instantly update the cell's code, before

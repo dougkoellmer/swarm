@@ -2,7 +2,7 @@ package swarm.client.view.tabs;
 
 import swarm.client.view.I_UIElement;
 import swarm.shared.statemachine.A_Action;
-import swarm.shared.statemachine.StateEvent;
+import swarm.shared.statemachine.A_BaseStateEvent;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 
 public class BookmarkTab extends AbsolutePanel implements I_TabContent
@@ -15,7 +15,7 @@ public class BookmarkTab extends AbsolutePanel implements I_TabContent
 	}
 	
 	@Override
-	public void onStateEvent(StateEvent event)
+	public void onStateEvent(A_BaseStateEvent event)
 	{
 	}
 

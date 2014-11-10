@@ -10,8 +10,4 @@ import swarm.shared.statemachine.StateArgs;
  */
 public class State_ViewingBookmarks extends A_State
 {
-	@Override
-	protected void didEnter(StateArgs constructor)
-	{
-	}
 }

@@ -882,19 +882,21 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	}
 	
 	public boolean flushQueuedCode()
-	{		
-		if( m_queuedCode != null )
-		{
-			if( !m_bufferCell.isOnDeathRow() )
-			{
-				setCode_private(m_queuedCode.m_code, m_queuedCode.m_namespace);
-				m_queuedCode = null;
-			}
-			
-			return true;
-		}
-		
+	{
 		return false;
+//		
+//		if( m_queuedCode != null )
+//		{
+//			if( !m_bufferCell.isOnDeathRow() )
+//			{
+//				setCode_private(m_queuedCode.m_code, m_queuedCode.m_namespace);
+//				m_queuedCode = null;
+//			}
+//			
+//			return true;
+//		}
+//		
+//		return false;
 	}
 
 	

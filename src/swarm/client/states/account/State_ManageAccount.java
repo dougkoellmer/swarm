@@ -24,7 +24,7 @@ public class State_ManageAccount extends A_State
 	}
 	
 	@Override
-	protected void didEnter(StateArgs constructor)
+	protected void didEnter()
 	{
 	}
 }

@@ -4,7 +4,7 @@ import swarm.client.states.State_GenericDialog;
 import swarm.client.states.State_Initializing;
 import swarm.shared.statemachine.A_Action;
 import swarm.shared.statemachine.I_StateEventListener;
-import swarm.shared.statemachine.StateEvent;
+import swarm.shared.statemachine.A_BaseStateEvent;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.AbsolutePanel;
@@ -28,7 +28,7 @@ public class InitialSyncScreen implements I_UIElement
 	}
 
 	@Override
-	public void onStateEvent(StateEvent event)
+	public void onStateEvent(A_BaseStateEvent event)
 	{
 		switch(event.getType())
 		{

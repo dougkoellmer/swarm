@@ -1,60 +1,74 @@
 package swarm.shared.statemachine;
 
+/**
+ * 
+ * @author dougkoellmer
+ */
 public abstract class A_StateContextForwarder
 {
-	abstract StateContext getContext_internal();
+	protected static final StateFilter.Scope ALL			= StateFilter.ALL;
+	protected static final StateFilter.Scope FIRST			= StateFilter.FIRST;
+	protected static final StateFilter.Scope LAST			= StateFilter.LAST;	
+	protected static final StateFilter.Target QUEUE			= ALL.QUEUE;
+	protected static final StateFilter.Target HISTORY		= ALL.HISTORY;
 	
+	abstract StateContext getContext_internal();	
 	
-	static StateArgs createArgs(Object ... userData)
+	static StateArgs defaultArgs(Object ... userData)
 	{
-		return userData != null ? new StateArgs(userData) : null;
+		return userData != null && userData.length > 0 ? new StateArgs(userData) : StateArgs.DEFAULT;
 	}
 	
-	static StateArgs createArgs(Object userData)
+	static StateArgs defaultArgs(Object userData)
 	{
-		return userData != null ? new StateArgs(userData) : null;
+		return userData != null ? new StateArgs(userData) : StateArgs.DEFAULT;
+	}
+	
+	static StateArgs defaultArgs(StateArgs args_nullable)
+	{
+		return args_nullable != null ? args_nullable : StateArgs.DEFAULT;
 	}
 	
 	
 	
-	public boolean isPerformable(Class<? extends A_Action> T)
+	public boolean isPerformable(Class<? extends A_Action_Base> T)
 	{
-		return this.isPerformable(T, createArgs((Object)null));
+		return this.isPerformable(T, defaultArgs((Object)null));
 	}
 	
-	public boolean isPerformable(Class<? extends A_Action> T, Object userData)
+	public boolean isPerformable(Class<? extends A_Action_Base> T, Object userData)
 	{
-		return this.isPerformable(T, createArgs(userData));
+		return this.isPerformable(T, defaultArgs(userData));
 	}
 	
-	public boolean isPerformable(Class<? extends A_Action> T, Object ... userData)
+	public boolean isPerformable(Class<? extends A_Action_Base> T, Object ... userData)
 	{
-		return this.isPerformable(T, createArgs(userData));
+		return this.isPerformable(T, defaultArgs(userData));
 	}
 	
-	public boolean isPerformable(Class<? extends A_Action> T, StateArgs args)
+	public boolean isPerformable(Class<? extends A_Action_Base> T, StateArgs args)
 	{
 		return getContext_internal().isPerformable(T, args);
 	}
 
 	
 	
-	public boolean perform(Class<? extends A_Action> T)
+	public boolean perform(Class<? extends A_Action_Base> T)
 	{
 		return this.perform(T, (StateArgs)null);
 	}
 	
-	public boolean perform(Class<? extends A_Action> T, Object userData)
+	public boolean perform(Class<? extends A_Action_Base> T, Object userData)
 	{
-		return this.perform(T, createArgs(userData));
+		return this.perform(T, defaultArgs(userData));
 	}
 	
-	public boolean perform(Class<? extends A_Action> T, Object ... userData)
+	public boolean perform(Class<? extends A_Action_Base> T, Object ... userData)
 	{
-		return this.perform(T, createArgs(userData));
+		return this.perform(T, defaultArgs(userData));
 	}
 	
-	public boolean perform(Class<? extends A_Action> T, StateArgs args)
+	public boolean perform(Class<? extends A_Action_Base> T, StateArgs args)
 	{
 		return getContext_internal().perform(T, args);
 	}
@@ -110,6 +124,19 @@ public abstract class A_StateContextForwarder
 	}
 	
 	
+	public <T extends A_State> Class<? extends A_State> prev(Class<? extends A_StateMachine> machineClass)
+	{
+		A_StateMachine machine = get(machineClass);
+		
+		return machine.getPreviousState();
+	}
+	
+	public <T extends A_State> T curr(Class<? extends A_StateMachine> machineClass)
+	{
+		A_StateMachine machine = get(machineClass);
+		
+		return machine.getCurrentState();
+	}
 	
 
 	public <T extends A_State> T get(Class<? extends A_State> T)
@@ -164,5 +191,16 @@ public abstract class A_StateContextForwarder
 		}
 		
 		return true;
+	}
+	
+	public Class<? extends A_State> get(Class<? extends A_StateMachine> machineClass, StateFilter.Target target, int offset)
+	{
+		return get((A_StateMachine)get(machineClass), target, offset);
+	}
+	public Class<? extends A_State> get(A_StateMachine machine, StateFilter.Target target, int offset)
+	{
+		if( machine == null )  return null;
+		
+		return machine.get(target, offset);
 	}
 }

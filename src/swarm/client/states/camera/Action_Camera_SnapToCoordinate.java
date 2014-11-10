@@ -35,8 +35,10 @@ public class Action_Camera_SnapToCoordinate extends smA_CameraAction
 		
 		public boolean historyShouldIgnore = false; // kinda hacky...signal to browser history manager.
 		
-		public Args()
+		public Args(Object value)
 		{
+			super(value);
+			
 			init(null);
 		}
 		
@@ -114,9 +116,9 @@ public class Action_Camera_SnapToCoordinate extends smA_CameraAction
 	}
 	
 	@Override
-	public void prePerform(StateArgs args)
+	public StateArgs prePerform(StateArgs args)
 	{
-		super.prePerform(args);
+		args = super.prePerform(args);
 		
 		if( m_filter != null )
 		{
@@ -131,6 +133,8 @@ public class Action_Camera_SnapToCoordinate extends smA_CameraAction
 				m_filter.setTargetPoint(args_cast);
 			}
 		}
+		
+		return args;
 	}
 	
 	@Override

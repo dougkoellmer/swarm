@@ -21,7 +21,7 @@ import swarm.shared.debugging.U_Debug;
 import swarm.shared.statemachine.A_Action;
 import swarm.shared.statemachine.A_State;
 import swarm.shared.statemachine.StateContext;
-import swarm.shared.statemachine.StateEvent;
+import swarm.shared.statemachine.A_BaseStateEvent;
 import swarm.shared.structs.GridCoordinate;
 import swarm.shared.structs.Point;
 
@@ -345,7 +345,7 @@ public class VisualCellFocuser extends FlowPanel implements I_UIElement
 		}
 	}
 
-	public void onStateEvent(StateEvent event)
+	public void onStateEvent(A_BaseStateEvent event)
 	{
 		switch( event.getType() )
 		{
@@ -395,7 +395,7 @@ public class VisualCellFocuser extends FlowPanel implements I_UIElement
 			
 			case DID_PERFORM_ACTION:
 			{
-				if( event.getAction() == Action_Camera_SnapToCoordinate.class )
+				if( event.getTargetClass() == Action_Camera_SnapToCoordinate.class )
 				{
 					State_CameraSnapping state = event.getContext().getEntered(State_CameraSnapping.class);
 					

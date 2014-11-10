@@ -6,7 +6,7 @@ import swarm.client.view.ViewContext;
 import swarm.client.view.tabs.A_Tab;
 import swarm.client.view.tabs.I_Tab;
 import swarm.client.view.tabs.I_TabContent;
-import swarm.shared.statemachine.StateEvent;
+import swarm.shared.statemachine.A_BaseStateEvent;
 
 public class CodeEditorTab extends A_Tab
 {

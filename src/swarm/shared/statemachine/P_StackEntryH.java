@@ -8,12 +8,12 @@ class P_StackEntryH
 	void init(Class<? extends A_State> stateClass, StateArgs args)
 	{
 		m_stateClass = stateClass;
-		m_args = args;
+		m_args = A_StateContextForwarder.defaultArgs(args);
 	}
 	
 	void clean()
 	{
 		m_stateClass = null;
-		m_args = null;
+		m_args = StateArgs.DEFAULT;
 	}
 }

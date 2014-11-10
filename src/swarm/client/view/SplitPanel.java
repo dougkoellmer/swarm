@@ -26,8 +26,9 @@ import swarm.client.view.tooltip.ToolTipManager;
 import swarm.client.view.widget.SpriteButton;
 import swarm.shared.statemachine.A_Action;
 import swarm.shared.statemachine.A_State;
+import swarm.shared.statemachine.ActionEvent;
 import swarm.shared.statemachine.E_Event;
-import swarm.shared.statemachine.StateEvent;
+import swarm.shared.statemachine.A_BaseStateEvent;
 
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
@@ -282,7 +283,7 @@ public class SplitPanel extends SplitLayoutPanel implements I_UIElement
 	}
 	
 	@Override
-	public void onStateEvent(StateEvent event)
+	public void onStateEvent(A_BaseStateEvent event)
 	{
 		switch(event.getType())
 		{
@@ -334,11 +335,13 @@ public class SplitPanel extends SplitLayoutPanel implements I_UIElement
 			
 			case DID_PERFORM_ACTION:
 			{
+				ActionEvent event_cast = event.cast();
+				
 				//TODO(DRK): Pretty sure this can be moved to smAccountTab...think it is here because
 				//			 at some point the tab UI didn't get state events if the tab content's state wasn't foregrounded.
-				if( event.getAction() == StateMachine_Base.OnAccountManagerResponse.class )
+				if( event.getTargetClass() == StateMachine_Base.OnAccountManagerResponse.class )
 				{
-					StateMachine_Base.OnAccountManagerResponse.Args args = event.getActionArgs();
+					StateMachine_Base.OnAccountManagerResponse.Args args = event_cast.getArgsIn();
 					ClientAccountManager.E_ResponseType responseType = args.getType();
 					String text = U_ToString.get(responseType);
 					

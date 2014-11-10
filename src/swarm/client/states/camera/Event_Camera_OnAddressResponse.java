@@ -1,12 +1,12 @@
 package swarm.client.states.camera;
 
 import swarm.shared.statemachine.StateArgs;
-import swarm.shared.statemachine.A_EventAction;
+import swarm.shared.statemachine.A_Action_Event;
 import swarm.shared.statemachine.A_State;
 import swarm.shared.structs.CellAddress;
 import swarm.shared.structs.CellAddressMapping;
 
-public class Event_Camera_OnAddressResponse extends A_EventAction
+public class Event_Camera_OnAddressResponse extends A_Action_Event
 {
 	public static enum E_Type
 	{

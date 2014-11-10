@@ -2,7 +2,7 @@ package swarm.client.states.code;
 
 
 import swarm.shared.statemachine.A_Action;
-import swarm.shared.statemachine.A_EventAction;
+import swarm.shared.statemachine.A_Action_Event;
 import swarm.shared.statemachine.A_State;
 import swarm.shared.statemachine.StateArgs;
 import swarm.shared.structs.CellAddress;
@@ -30,7 +30,7 @@ public class State_EditingCodeBlocker extends A_State
 		}
 	}
 	
-	public static class OnReasonChange extends A_EventAction
+	public static class OnReasonChange extends A_Action_Event
 	{
 		@Override
 		public Class<? extends A_State> getStateAssociation()
@@ -60,9 +60,9 @@ public class State_EditingCodeBlocker extends A_State
 	}
 	
 	@Override
-	protected void didEnter(StateArgs constructor)
+	protected void didEnter()
 	{
-		Constructor thisCons = (Constructor) constructor;
+		Constructor thisCons = getArgs();
 		
 		m_reason = thisCons.m_reason;
 	}

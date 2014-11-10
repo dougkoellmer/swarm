@@ -4,7 +4,7 @@ import swarm.client.entities.BufferCell;
 import swarm.shared.statemachine.A_Action;
 import swarm.shared.statemachine.A_State;
 import swarm.shared.statemachine.StateArgs;
-import swarm.shared.statemachine.StateEvent;
+import swarm.shared.statemachine.A_BaseStateEvent;
 import swarm.shared.structs.CellAddress;
 import swarm.shared.structs.Point;
 
@@ -44,15 +44,10 @@ public class State_GettingMapping extends A_State
 	}
 	
 	@Override
-	protected void didEnter(StateArgs constructor)
+	protected void didEnter()
 	{
-		Constructor thisConstructor = (Constructor) constructor;
+		Constructor thisConstructor = getArgs();
 		updateAddress(thisConstructor.m_address);
-	}
-	
-	@Override
-	protected void didForeground(Class<? extends A_State> revealingState, Object[] argsFromRevealingState)
-	{
 	}
 	
 	@Override

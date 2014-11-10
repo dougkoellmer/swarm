@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 
 
 
+
 import swarm.client.view.*;
 import swarm.client.view.alignment.AlignmentDefinition;
 import swarm.client.view.alignment.AlignmentRect;
@@ -51,8 +52,9 @@ import swarm.shared.entities.A_Grid;
 import swarm.shared.lang.Boolean;
 import swarm.shared.statemachine.A_Action;
 import swarm.shared.statemachine.A_State;
+import swarm.shared.statemachine.ActionEvent;
 import swarm.shared.statemachine.StateContext;
-import swarm.shared.statemachine.StateEvent;
+import swarm.shared.statemachine.A_BaseStateEvent;
 import swarm.shared.structs.Point;
 import swarm.shared.utils.U_Math;
 
@@ -241,7 +243,7 @@ public class VisualCellContainer extends FlowPanel implements ResizeHandler, I_U
 	}
 
 	@Override
-	public void onStateEvent(StateEvent event)
+	public void onStateEvent(A_BaseStateEvent event)
 	{
 		switch(event.getType() )
 		{
@@ -334,9 +336,11 @@ public class VisualCellContainer extends FlowPanel implements ResizeHandler, I_U
 			
 			case DID_PERFORM_ACTION:
 			{
-				if( event.getAction() == Event_GettingMapping_OnResponse.class )
+				ActionEvent event_cast = event.cast();
+				
+				if( event.getTargetClass() == Event_GettingMapping_OnResponse.class )
 				{
-					Event_GettingMapping_OnResponse.Args args = event.getActionArgs();
+					Event_GettingMapping_OnResponse.Args args = event_cast.getArgsIn();
 					
 					if( args.getType() != Event_GettingMapping_OnResponse.E_Type.ON_FOUND )
 					{

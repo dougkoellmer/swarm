@@ -67,7 +67,7 @@ public class State_Initializing extends A_State implements I_TransactionResponse
 	}
 	
 	@Override
-	protected void didEnter(StateArgs constructor)
+	protected void didEnter()
 	{
 		final ClientAccountManager accountManager = m_appContext.accountMngr;
 		final UserManager userManager = m_appContext.userMngr;
@@ -109,7 +109,7 @@ public class State_Initializing extends A_State implements I_TransactionResponse
 	}
 	
 	@Override
-	protected void didForeground(Class<? extends A_State> revealingState, Object[] argsFromRevealingState)
+	protected void didForeground(Class<? extends A_State> revealingState, StateArgs argsFromRevealingState)
 	{
 		if( revealingState != null )
 		{

@@ -18,7 +18,7 @@ import swarm.client.view.widget.DefaultButton;
 import swarm.shared.code.U_Code;
 import swarm.shared.statemachine.A_Action;
 import swarm.shared.statemachine.I_StateEventListener;
-import swarm.shared.statemachine.StateEvent;
+import swarm.shared.statemachine.A_BaseStateEvent;
 import com.google.gwt.dom.client.Style.Overflow;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -107,7 +107,7 @@ public class ManageAccountPanel extends FlowPanel implements I_StateEventListene
 	}
 
 	@Override
-	public void onStateEvent(StateEvent event)
+	public void onStateEvent(A_BaseStateEvent event)
 	{
 		switch(event.getType())
 		{

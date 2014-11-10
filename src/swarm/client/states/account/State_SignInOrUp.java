@@ -65,12 +65,6 @@ public class State_SignInOrUp extends A_State
 		return everythingOk;
 	}
 	
-	@Override
-	protected void didEnter(StateArgs constructor)
-	{
-		
-	}
-	
 	@Override 
 	protected void willExit()
 	{

@@ -130,17 +130,17 @@ public class State_EditingCode extends A_State
 	}
 	
 	@Override
-	protected void didEnter(StateArgs constructor)
+	protected void didEnter()
 	{
 		m_mostRecentBlockerReason = null;
 	}
 	
 	@Override
-	protected void didForeground(Class<? extends A_State> revealingState, Object[] argsFromRevealingState)
+	protected void didForeground(Class<? extends A_State> revealingState, StateArgs argsFromRevealingState)
 	{
 		if( revealingState == State_EditingCodeBlocker.class )
 		{
-			Object arg1 = argsFromRevealingState[0];
+			Object arg1 = argsFromRevealingState.get(0);
 			
 			m_mostRecentBlockerReason = arg1 != null ? (Reason) arg1 : null;
 		}

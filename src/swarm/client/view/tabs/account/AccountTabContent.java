@@ -26,8 +26,10 @@ import swarm.shared.debugging.U_Debug;
 import swarm.shared.entities.E_CodeType;
 import swarm.shared.statemachine.A_Action;
 import swarm.shared.statemachine.A_State;
-import swarm.shared.statemachine.StateEvent;
+import swarm.shared.statemachine.A_BaseStateEvent;
+import swarm.shared.statemachine.ForegroundEvent;
 import swarm.shared.structs.GridCoordinate;
+
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.AbsolutePanel;
@@ -55,7 +57,7 @@ public class AccountTabContent extends AbsolutePanel implements I_TabContent
 	}
 	
 	@Override
-	public void onStateEvent(StateEvent event)
+	public void onStateEvent(A_BaseStateEvent event)
 	{
 		switch(event.getType())
 		{
@@ -86,7 +88,9 @@ public class AccountTabContent extends AbsolutePanel implements I_TabContent
 				}
 				else if( event.getState() instanceof StateMachine_Tabs )
 				{
-					if( event.getRevealingState() == null )
+					ForegroundEvent event_cast = event.cast();
+					
+					if( event_cast.getRevealingState() == null )
 					{
 						//--- DRK > This goes along with the sleight of hand we pull below for not detaching the blocker while animating out.
 						//---		This just makes sure that the console blocker gets detached...it might be the case that it gets immediately

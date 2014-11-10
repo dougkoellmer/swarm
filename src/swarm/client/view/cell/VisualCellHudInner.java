@@ -21,7 +21,7 @@ import swarm.client.view.tooltip.ToolTipManager;
 import swarm.client.view.widget.SpriteButton;
 import swarm.shared.entities.A_Grid;
 import swarm.shared.statemachine.I_StateEventListener;
-import swarm.shared.statemachine.StateEvent;
+import swarm.shared.statemachine.A_BaseStateEvent;
 import swarm.shared.structs.CellAddress;
 import swarm.shared.structs.CellAddressMapping;
 import swarm.shared.structs.Point;
@@ -45,7 +45,7 @@ public class VisualCellHudInner extends HorizontalPanel implements I_StateEventL
 	
 	private static final Point s_utilPoint1 = new Point();
 	
-	private final Action_Camera_SnapToPoint.Args m_args_SetCameraTarget = new Action_Camera_SnapToPoint.Args();
+	private final Action_Camera_SnapToPoint.Args m_args_SetCameraTarget = new Action_Camera_SnapToPoint.Args(null);
 	private final Action_Camera_SnapToAddress.Args m_args_SnapToAddress = new Action_Camera_SnapToAddress.Args();
 	
 	private final HorizontalPanel m_leftDock = new HorizontalPanel();
@@ -279,7 +279,7 @@ public class VisualCellHudInner extends HorizontalPanel implements I_StateEventL
 	}
 
 	@Override
-	public void onStateEvent(StateEvent event)
+	public void onStateEvent(A_BaseStateEvent event)
 	{
 		switch( event.getType() )
 		{
@@ -341,15 +341,15 @@ public class VisualCellHudInner extends HorizontalPanel implements I_StateEventL
 			
 			case DID_PERFORM_ACTION:
 			{
-				if((	event.getAction() == Action_ViewingCell_Refresh.class		||
-						event.getAction() == Action_EditingCode_Save.class			||
-						event.getAction() == Action_EditingCode_Preview.class		))
+				if((	event.getTargetClass() == Action_ViewingCell_Refresh.class		||
+						event.getTargetClass() == Action_EditingCode_Save.class			||
+						event.getTargetClass() == Action_EditingCode_Preview.class		))
 						
 				{
 					updateRefreshButton();
 				}
-				else if((	event.getAction() == Action_Camera_SnapToAddress.class		||
-							event.getAction() == Action_Camera_SnapToCoordinate.class	))
+				else if((	event.getTargetClass() == Action_Camera_SnapToAddress.class		||
+							event.getTargetClass() == Action_Camera_SnapToCoordinate.class	))
 				{
 					this.updateHistoryButtons();
 					this.updateRefreshButton();
