@@ -92,7 +92,7 @@ public class State_CameraSnapping extends A_State implements I_StateEventListene
 	{
 		m_appContext = appContext;
 		
-		m_snapBufferManager = new CellBufferManager(m_appContext.codeMngr, m_appContext.cellSizeMngr, 1);
+		m_snapBufferManager = new CellBufferManager(m_appContext.gridMngr.getGrid(), m_appContext.codeMngr, m_appContext.cellSizeMngr, 1);
 		
 		UserManager userManager = m_appContext.userMngr;
 		A_ClientUser user = userManager.getUser();

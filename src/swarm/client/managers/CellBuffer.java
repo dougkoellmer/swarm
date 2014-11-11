@@ -262,31 +262,14 @@ public class CellBuffer extends A_BufferCellList
 					}
 				}
 				
-				//--- DRK > If we're obscured then although we attempt to swap an existing cell
-				//---		from the other buffer or the kill queue above, we don't make new cells.
-				if ( obscured )  continue;
-				
-				BufferCell newCell = m_cellPool.allocCell(grid, m_subCellCount, createVisualizations);
-				this.m_cellList.add(newCell);
-				
-//				if( m_subCellCount == 1 )  s_logger.severe("CREATED");
-				
-//				if( m_subCellCount == 2 )
-//				{
-//					s_logger.severe("ERER");;
-//				}
-				
-				newCell.getCoordinate().set(m, n);
-				
-//				s_logger.severe(m_subCellCount+"");
-				m_codeMngr.populateCell(newCell, localCodeSource, m_subCellCount, communicateWithServer, E_CodeType.SPLASH);
-				
-				s_utilMapping.getCoordinate().copy(newCell.getCoordinate());
-				
-				if( m_subCellCount == 1 )
+				if( !isBeingSnappedTo )
 				{
-					m_cellSizeMngr.populateCellSize(s_utilMapping, this.m_parent, newCell);
+					//--- DRK > If we're obscured then although we attempt to swap an existing cell
+					//---		from the other buffer or the kill queue above, we don't make new cells.
+					if ( obscured )  continue;
 				}
+				
+				makeNewCell(m, n, grid, localCodeSource, createVisualizations, communicateWithServer);
 			}
 		}
 		
@@ -295,10 +278,8 @@ public class CellBuffer extends A_BufferCellList
 			m_codeMngr.flush();
 		}
 		
-		//--- DRK > Try to save the cell if from the kill queue if it's being snapped to.
-		//---		This is done outside the loop above because the offset returned from 
-		//---		the isObscured check can make us skip over the cell coordinate of the
-		//---		target cell.
+		//--- DRK > If this is the snap target then we try to preserve the cell from the other buffer or from the kill queue.
+		//---		If we can't do that then we make it from scratch.
 		if( m_subCellCount == 1 && snapCoord_nullable != null )
 		{
 			if( swap(snapCoord_nullable.getM(), snapCoord_nullable.getN(), otherBuffer, this, /*onlySwapIfLoaded=*/false) == null )
@@ -307,6 +288,11 @@ public class CellBuffer extends A_BufferCellList
 				if( cellSavedFromDeathSentence != null )
 				{
 					cellSavedFromDeathSentence.saveFromDeathSentence();
+				}
+				
+				else if( this.isInBoundsAbsolute(snapCoord_nullable) )
+				{
+					makeNewCell(snapCoord_nullable.getM(), snapCoord_nullable.getN(), grid, localCodeSource, createVisualizations, communicateWithServer);
 				}
 			}
 		}
@@ -322,6 +308,31 @@ public class CellBuffer extends A_BufferCellList
 		}
 
 		otherBuffer.m_cellList.clear();
+	}
+	
+	private void makeNewCell(int m, int n, ClientGrid grid, I_LocalCodeRepository localCodeSource, boolean createVisualizations, boolean communicateWithServer)
+	{
+		BufferCell newCell = m_cellPool.allocCell(grid, m_subCellCount, createVisualizations);
+		this.m_cellList.add(newCell);
+		
+//		if( m_subCellCount == 1 )  s_logger.severe("CREATED");
+		
+//		if( m_subCellCount == 2 )
+//		{
+//			s_logger.severe("ERER");;
+//		}
+		
+		newCell.getCoordinate().set(m, n);
+		
+//		s_logger.severe(m_subCellCount+"");
+		m_codeMngr.populateCell(newCell, localCodeSource, m_subCellCount, communicateWithServer, E_CodeType.SPLASH);
+		
+		s_utilMapping.getCoordinate().copy(newCell.getCoordinate());
+		
+		if( m_subCellCount == 1 )
+		{
+			m_cellSizeMngr.populateCellSize(s_utilMapping, this.m_parent, newCell);
+		}
 	}
 	
 	@Override public BufferCell getCellAtAbsoluteCoord(int m, int n)

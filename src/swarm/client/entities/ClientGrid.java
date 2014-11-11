@@ -20,6 +20,8 @@ public class ClientGrid extends A_Grid
 		public int subCellDimension;
 	}
 	
+	private static final BitArray EMPTY_BIT_ARRAY = new BitArray();
+	
 	
 	private BitArray[] m_metaOwnership = new BitArray[0];
 	
@@ -192,6 +194,16 @@ public class ClientGrid extends A_Grid
 		
 		for( int i = 0; i < arraySize; i++ )
 		{
+			if( this.modifySubCellCount(subCellCount) != subCellCount )
+			{
+				m_metaOwnership[i] = EMPTY_BIT_ARRAY;
+				
+				subCellCount *= 2;
+				currentMetaGridSize /= 2;
+				
+				continue;
+			}
+			
 			m_metaOwnership[i] = new BitArray(currentMetaGridSize*currentMetaGridSize);
 			
 			for( int rawRow = 0; rawRow < gridSize; rawRow+=subCellCount )

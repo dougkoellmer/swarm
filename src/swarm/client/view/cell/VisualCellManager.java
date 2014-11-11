@@ -163,15 +163,18 @@ public class VisualCellManager implements I_UIElement
 					if( grid.isObscured(m, n, 1, cellManager.getSubCellCount(), m_obscured) )
 					{
 						CellBuffer cellBuffer = cellManager.getDisplayBuffer(U_Bits.calcBitPosition(m_obscured.subCellDimension));
-						BufferCell cell = cellBuffer.getCellAtAbsoluteCoord(m_obscured.m, m_obscured.n);
-						VisualCell visualCell = (VisualCell) cell.getVisualization();
-						E_MetaState state = visualCell.getMetaState();
-						
-//						s_logger.severe(state+"");
-						
-						if( visualCell.isMetaImageProbablyInMemory() || state == VisualCell.E_MetaState.DEFINITELY_SHOULD_BE_RENDERED_BY_NOW )
+						if( cellBuffer != null )
 						{
-							return m_obscured.offset;
+							BufferCell cell = cellBuffer.getCellAtAbsoluteCoord(m_obscured.m, m_obscured.n);
+							VisualCell visualCell = (VisualCell) cell.getVisualization();
+							E_MetaState state = visualCell.getMetaState();
+							
+	//						s_logger.severe(state+"");
+							
+							if( visualCell.isMetaImageProbablyInMemory() || state == VisualCell.E_MetaState.DEFINITELY_SHOULD_BE_RENDERED_BY_NOW )
+							{
+								return m_obscured.offset;
+							}
 						}
 					}
 					else
@@ -229,6 +232,8 @@ public class VisualCellManager implements I_UIElement
 		for( int i = 0; i < cellManager.getBufferCount(); i++ )
 		{
 			CellBuffer cellBuffer = cellManager.getDisplayBuffer(i);
+			
+			if( cellBuffer == null )  continue;
 			
 			updateCellsWithNoTransforms(cellBuffer, timeStep, subCellCount_highest);
 		}
@@ -352,6 +357,8 @@ public class VisualCellManager implements I_UIElement
 			for( int i = limit-1; i >= 0; i-- )
 			{
 				CellBuffer cellBuffer = cellManager.getDisplayBuffer(i);
+				
+				if( cellBuffer == null )  continue;
 				
 				if( cellBuffer.getSubCellCount() > 1 && cellBuffer.getCellCount() == 0 )  continue;
 				

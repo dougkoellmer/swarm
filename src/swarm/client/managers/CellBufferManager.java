@@ -75,14 +75,14 @@ public class CellBufferManager implements I_LocalCodeRepository
 	private boolean m_dirty = false;
 	
 	
-	public CellBufferManager(CellCodeManager codeMngr, CellSizeManager cellSizeMngr, int metaLevelCount) 
+	public CellBufferManager(ClientGrid grid, CellCodeManager codeMngr, CellSizeManager cellSizeMngr, int metaLevelCount) 
 	{
 		m_cellPool = new BufferCellPool();
 		m_codeMngr = codeMngr;
 		m_sizeMngr = cellSizeMngr;
 		m_levelCount = metaLevelCount + 1;
 		
-		createBufferPairs();
+		createBufferPairs(grid);
 	}
 	
 	public void overrideSubCellCount()
@@ -95,7 +95,7 @@ public class CellBufferManager implements I_LocalCodeRepository
 		m_overrideSubCellCount = null;
 	}
 	
-	private void createBufferPairs()
+	private void createBufferPairs(ClientGrid grid)
 	{
 		CellBufferPair[] oldPairs = m_bufferPairs;
 		
@@ -104,6 +104,9 @@ public class CellBufferManager implements I_LocalCodeRepository
 		for( int i = 0; i < m_bufferPairs.length; i++ )
 		{
 			int subCellCount = 0x1 << i;
+			
+			if( subCellCount != grid.modifySubCellCount(subCellCount) )  continue;
+			
 			if( oldPairs != null && i < oldPairs.length )
 			{
 				m_bufferPairs[i] = oldPairs[i];
@@ -140,6 +143,9 @@ public class CellBufferManager implements I_LocalCodeRepository
 		for( int i = 0; i < m_bufferPairs.length; i++ )
 		{
 			CellBufferPair ithPair = m_bufferPairs[i];
+			
+			if( ithPair == null )  continue;
+			
 			ithPair.drain();
 		}
 	}
@@ -151,6 +157,9 @@ public class CellBufferManager implements I_LocalCodeRepository
 		for( int i = 0; i < m_bufferPairs.length; i++ )
 		{
 			CellBufferPair ithPair = m_bufferPairs[i];
+			
+			if( ithPair == null )  continue;
+			
 			ithPair.update_cameraStill(timestep);
 		}
 	}
@@ -185,6 +194,8 @@ public class CellBufferManager implements I_LocalCodeRepository
 		
 		for( int i = m_bufferPairs.length-1; i >= 0; i-- )
 		{
+			if( m_bufferPairs[i] == null )  continue;
+			
 			m_bufferPairs[i].update_cameraMoving(timestep, grid, camera, snappingCoordinate_nullable, alternativeCodeSource, options__extends__smF_BufferUpdateOption, m_currentSubCellCount);
 		}
 		
@@ -193,7 +204,7 @@ public class CellBufferManager implements I_LocalCodeRepository
 	
 	public CellBuffer getDisplayBuffer(int index)
 	{
-		return m_bufferPairs[index].getDisplayBuffer();
+		return m_bufferPairs[index] != null ? m_bufferPairs[index].getDisplayBuffer() : null;
 	}
 	
 	public int getBufferCount()
