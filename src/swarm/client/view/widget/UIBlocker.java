@@ -21,6 +21,8 @@ public class UIBlocker extends FlowPanel
 	private final Label				m_label = new Label();
 	private Widget m_widgetContent = null;
 	
+	private int m_zIndex = 0;
+	
 	public UIBlocker()
 	{
 		this.addStyleName("sm_ui_blocker");
@@ -124,5 +126,17 @@ public class UIBlocker extends FlowPanel
 		m_innerContainer.getElement().getStyle().clearProperty("maxHeight");
 		m_innerContainer.getElement().getStyle().setProperty("minWidth", minWidth+"px");
 		m_innerContainer.getElement().getStyle().setProperty("minHeight", minHeight+"px");
+	}
+	
+	public void setZIndex(int index)
+	{
+		m_zIndex = index;
+		
+		getElement().getStyle().setZIndex(index);
+	}
+	
+	public int getZIndex()
+	{
+		return m_zIndex;
 	}
 }

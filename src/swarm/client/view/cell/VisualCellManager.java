@@ -49,12 +49,10 @@ public class VisualCellManager implements I_UIElement
 	private static final double NO_SCALING = .99999;
 	private static final Logger s_logger = Logger.getLogger(VisualCellManager.class.getName());
 	
-//	private static final double FLUSH_CODE_RATE = .05;
-	private static final int FLUSH_CODE_RATE = 2;
-//	private static final double FLUSH_CODE_RATE = .1;
-//	private static final double FLUSH_CODE_RATE = 5.0;
+	private static final int FLUSH_CODE_FRAME_RATE = 2;
+//	private static final int FLUSH_CODE_FRAME_RATE = 120;
 	
-	private Panel m_container = null;
+	private final Panel m_container;
 	
 	private final Point m_utilPoint1 = new Point();
 	private final Point m_utilPoint2 = new Point();
@@ -80,9 +78,9 @@ public class VisualCellManager implements I_UIElement
 	private final CanvasBacking.UpdateConfig m_backingConfig = new CanvasBacking.UpdateConfig();
 	private boolean m_needToUpdateBacking = false;
 	
-	private int m_flushCodeTracker = FLUSH_CODE_RATE;
+	private int m_flushCodeTracker = FLUSH_CODE_FRAME_RATE;
 	
-	public VisualCellManager(ViewContext viewContext, Panel container) 
+	public VisualCellManager(ViewContext viewContext, Panel container)
 	{
 		m_container = container;
 		m_viewContext = viewContext;
@@ -227,7 +225,7 @@ public class VisualCellManager implements I_UIElement
 		m_needToUpdateBacking = false;
 		
 		CellBufferManager cellManager = m_viewContext.appContext.cellBufferMngr;
-		int subCellCount_highest = cellManager.getBufferCount();
+		int subCellCount_highest = cellManager.getSubCellCount();
 		
 		for( int i = 0; i < cellManager.getBufferCount(); i++ )
 		{
@@ -520,18 +518,18 @@ public class VisualCellManager implements I_UIElement
 				offsetY = cellHeightPlusPadding * offset_n;
 				
 				//--- DRK > Should always be true.
-				if( subCellCount_i > 1 )
-				{
-					//TODO: Probably has to be different logic if we're snapping.
-					if( subCellCount_highest == 1 )
-					{
-						ithVisualCell.setZIndex(E_ZIndex.CELL_META_ON_DEATH_ROW_ABOVE_CELL_1.get());
-					}
-					else
-					{
-						ithVisualCell.setDefaultZIndex();
-					}
-				}
+//				if( subCellCount_i > 1 )
+//				{
+//					//TODO: Probably has to be different logic if we're snapping.
+//					if( subCellCount_highest == 1 )
+//					{
+//						ithVisualCell.setZIndex(E_ZIndex.CELL_META_ON_DEATH_ROW_ABOVE_CELL_1.get());
+//					}
+//					else
+//					{
+//						ithVisualCell.setDefaultZIndex();
+//					}
+//				}
 			}
 			
 			ithVisualCell.update(timeStep, subCellCount_highest);
@@ -563,34 +561,38 @@ public class VisualCellManager implements I_UIElement
 			
 			boolean setVisible = true;
 			
+			//--- DRK > Not using css scaling here cause Chrome (maybe others) seems to cache the image rendered
+			//---		assuming the non-scaled element size (using css width and height) and then stretch it up, instead
+			//---		of rendering it properly taking into account scaling. *Eventually* Chrome catches up and rerenders
+			//---		the image properly, but it takes a while.
+			if( subCellCount_i > 1 )
+			{
+				ithVisualCell.setMetaSize(cellWidthForMeta, cellHeightForMeta);
+			}
+			
 			if( isViewingCell )
 			{
-				if( subCellCount_i > 1 )
+				if( ithBufferCell != viewedCell )
 				{
-					ithVisualCell.setVisible(false);
-					setVisible = false;
+					//--- DRK > Need to crop the cell because it has a fixed position and will
+					//---		appear under the scroll bar but still capture the mouse through
+					//---		the scrollbar...happens on all browsers, so I guess not a "bug" per se
+					//---		but still needs this sloppy workaround. IE will in fact show the cell
+					//---		over the scroll bar...so at least it's more honest than other browsers.
+//					if( subCellCount_i == 1 )
+					{
+						ithVisualCell.crop((int)translateX, (int)translateY, windowWidth, windowHeight);
+					}
+					
+					//--- DRK > In a way we only should need to do this once when target cell becomes focused,
+					//---		but we're doing it for all cells everytime because it's a lightweight operation
+					//---		and passive for if new cells are created on a window resize.
+					ithVisualCell.setScrollMode(E_ScrollMode.SCROLLING_NOT_FOCUSED);
 				}
 				else
 				{
-					if( ithBufferCell != viewedCell )
-					{
-						//--- DRK > Need to crop the cell because it has a fixed position and will
-						//---		appear under the scroll bar but still capture the mouse through
-						//---		the scrollbar...happens on all browsers, so I guess not a "bug" per se
-						//---		but still needs this sloppy workaround. IE will in fact show the cell
-						//---		over the scroll bar...so at least it's more honest than other browsers.
-						ithVisualCell.crop((int)translateX, (int)translateY, windowWidth, windowHeight);
-						
-						//--- DRK > In a way we only should need to do this once when target cell becomes focused,
-						//---		but we're doing it for all cells everytime because it's a lightweight operation
-						//---		and passive for if new cells are created on a window resize.
-						ithVisualCell.setScrollMode(E_ScrollMode.SCROLLING_NOT_FOCUSED);
-					}
-					else
-					{
-						ithVisualCell.removeCrop();
-						ithVisualCell.setScrollMode(E_ScrollMode.SCROLLING_FOCUSED);
-					}
+					ithVisualCell.removeCrop();
+					ithVisualCell.setScrollMode(E_ScrollMode.SCROLLING_FOCUSED);
 				}
 			}
 			else if( !isViewingCell && isViewStateTransition )
@@ -603,27 +605,6 @@ public class VisualCellManager implements I_UIElement
 			String translateProperty = U_Css.createTranslateTransform(translateX, translateY, use3dTransforms);
 			String transform = scaleProperty != null ? translateProperty + " " + scaleProperty : translateProperty;
 			ithVisualCell.getElement().getStyle().setProperty(transformProperty, transform);
-			
-			//--- DRK > Not using css scaling here cause Chrome (maybe others) seems to cache the image rendered
-			//---		assuming the non-scaled element size (using css width and height) and then stretch it up, instead
-			//---		of rendering it properly taking into account scaling. *Eventually* Chrome catches up and rerenders
-			//---		the image properly, but it takes a while.
-			if( subCellCount_i > 1 )
-			{
-				ithVisualCell.setSize(cellWidthForMeta+"px", cellHeightForMeta+"px");
-			}
-//			else
-//			{
-//				if( m_viewContext.stateContext.isEntered(State_CameraSnapping.class) )
-//				{
-//					if( subCellCount_i == 1 && ithBufferCell.getCoordinate().isEqualTo(10, 16) )
-//					{
-//						s_logger.severe("ERERER " + subCellCount_highest);;
-//					}
-//				}
-//			}
-			
-//				s_logger.severe(transform+"");
 			
 			if( ithVisualCell.getParent() == null )
 			{
@@ -680,7 +661,7 @@ public class VisualCellManager implements I_UIElement
 			}
 		}
 		
-		if( m_flushCodeTracker < FLUSH_CODE_RATE )
+		if( m_flushCodeTracker < FLUSH_CODE_FRAME_RATE )
 		{
 			return false;
 		}
@@ -724,15 +705,26 @@ public class VisualCellManager implements I_UIElement
 //					s_logger.severe(""+m_viewContext.appContext.cameraMngr.getAtRestFrameCount());
 //					s_logger.severe(m_cellPool.getInner().getCheckOutCount() + "/" + m_cellPool.getInner().getAllocCount());
 					
+					
 					if( m_viewContext.appContext.cameraMngr.getAtRestFrameCount() > 2 )
 					{
+						boolean didJustUpdateBuffers = m_viewContext.appContext.cellBufferMngr.didJustUpdateBuffers();
+						
+//						if( didJustUpdateBuffers )
+//						{
+//							if( event.isEntered(State_CameraSnapping.class) || event.isEntered(State_ViewingCell.class) )
+//							{
+//								didJustUpdateBuffers = false;
+//							}
+//						}
+						
 						m_cellPool.cleanPool();
 						
 						//--- DRK > This first condition ensures that we're still updating cell positions as they're potentially shrinking
 						//---		after exiting viewing or snapping state. There's probably a more efficient way to determine if they're actually shrinking.
 						//---		This is just a catch-all for now.
 						if( (event.getState().getPreviousState() == State_ViewingCell.class || event.getState().getPreviousState() == State_CameraSnapping.class) &&
-							event.getState().getTotalTimeInState() <= m_viewContext.config.cellSizeChangeTime_seconds )
+							event.getState().getTotalTimeInState() <= m_viewContext.config.cellSizeChangeTime_seconds || didJustUpdateBuffers)
 						{
 //							s_logger.severe("updateCellTransforms >=2");
 							

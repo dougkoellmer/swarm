@@ -21,6 +21,7 @@ public enum E_ZIndex
 	
 	//-- DRK > These are assigned manually to elements' styles.,
 	CELL_BACKING,
+	CELL_1_LOADING,
 	CELL_128,
 	CELL_64,
 	CELL_32,
@@ -30,8 +31,9 @@ public enum E_ZIndex
 	CELL_2,
 	CELL_1,
 	CELL_META_ON_DEATH_ROW_ABOVE_CELL_1,
-	CELL_FADING_META_FOR_SNAP,
+	CELL_PUSHED_BACK_DOWN,
 	CELL_HIGHLIGHT,
+	CELL_STATUS_BEHIND,
 	CELL_CONTENT,
 	CELL_STATUS,
 	CELL_GLASS,

@@ -37,6 +37,11 @@ abstract class A_BufferCellList
 		
 		if( index < 0 )  return null;
 		
+		return swap(index, from, to, onlySwapIfLoaded);
+	}
+	
+	protected static BufferCell swap(int index, A_BufferCellList from, A_BufferCellList to, boolean onlySwapIfLoaded)
+	{
 		BufferCell cell = from.m_cellList.get(index);
 		
 		if( cell == null )  return null;

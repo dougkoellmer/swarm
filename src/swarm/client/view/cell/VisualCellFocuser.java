@@ -72,6 +72,8 @@ public class VisualCellFocuser extends FlowPanel implements I_UIElement
 		
 		this.setVisible(false);
 		
+//		this.getElement().getStyle().setOpacity(.01);
+		
 		E_ZIndex.CELL_FOCUSER.assignTo(this);
 	}
 	

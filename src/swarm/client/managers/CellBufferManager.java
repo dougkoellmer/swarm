@@ -65,7 +65,9 @@ public class CellBufferManager implements I_LocalCodeRepository
 	
 	private final BufferCellPool m_cellPool;
 	private int m_currentSubCellCount = 1;
+	private int m_currentSubCellCount_nonOverridden = m_currentSubCellCount;
 	private Integer m_overrideSubCellCount = null;
+	private boolean m_hasOverrideSubCellCount = false;
 	
 	private CellBufferPair[] m_bufferPairs = null;
 	private final CellCodeManager m_codeMngr;
@@ -73,6 +75,7 @@ public class CellBufferManager implements I_LocalCodeRepository
 	private final int m_levelCount;
 	
 	private boolean m_dirty = false;
+	private boolean m_didJustUpdateBuffers = false;
 	
 	
 	public CellBufferManager(ClientGrid grid, CellCodeManager codeMngr, CellSizeManager cellSizeMngr, int metaLevelCount) 
@@ -88,11 +91,22 @@ public class CellBufferManager implements I_LocalCodeRepository
 	public void overrideSubCellCount()
 	{
 		m_overrideSubCellCount = m_currentSubCellCount;
+		m_hasOverrideSubCellCount = true;
 	}
 	
 	public void removeOverrideSubCellCount()
 	{
 		m_overrideSubCellCount = null;
+	}
+	
+	public boolean isOverridingSubCellCount()
+	{
+		return m_overrideSubCellCount != null;
+	}
+	
+	public int getOverrideSubCellCount()
+	{
+		return m_overrideSubCellCount != null ? m_overrideSubCellCount : m_currentSubCellCount;
 	}
 	
 	private void createBufferPairs(ClientGrid grid)
@@ -105,7 +119,7 @@ public class CellBufferManager implements I_LocalCodeRepository
 		{
 			int subCellCount = 0x1 << i;
 			
-			if( subCellCount != grid.modifySubCellCount(subCellCount) )  continue;
+//			if( subCellCount != grid.modifySubCellCount(subCellCount) )  continue;
 			
 			if( oldPairs != null && i < oldPairs.length )
 			{
@@ -150,8 +164,15 @@ public class CellBufferManager implements I_LocalCodeRepository
 		}
 	}
 	
+	public boolean didJustUpdateBuffers()
+	{
+		return m_didJustUpdateBuffers;
+	}
+	
 	public void update_cameraStill(double timestep)
 	{
+		m_didJustUpdateBuffers = false;
+		
 		if( m_bufferPairs == null )  return;
 		
 		for( int i = 0; i < m_bufferPairs.length; i++ )
@@ -168,6 +189,18 @@ public class CellBufferManager implements I_LocalCodeRepository
 	{
 		m_updateCount++;
 		
+		m_didJustUpdateBuffers = true;
+		
+		if( !isOverridingSubCellCount() )
+		{
+			if( m_hasOverrideSubCellCount )
+			{
+				options__extends__smF_BufferUpdateOption |= F_BufferUpdateOption.JUST_REMOVED_OVERRIDE;
+			}
+			
+			m_hasOverrideSubCellCount = false;
+		}
+		
 		if( m_bufferPairs == null )  return;
 		
 		//--- DRK > Figure out how big each cell is relative to a fully zoomed in cell.
@@ -181,22 +214,22 @@ public class CellBufferManager implements I_LocalCodeRepository
 		n = n < 1 ? 1 : n;
 		subCellCount = (int) Math.floor(n);
 		subCellCount = U_Bits.calcLowerPowerOfTwo(subCellCount);
-//		cellSize = cellSize <= 4 ? 1 : cellSize; // COMMENT OUT TO get correct cell sizes.
 		subCellCount = subCellCount > gridSizeUpperOf2 ? gridSizeUpperOf2 : subCellCount;
 		
 		subCellCount = grid.modifySubCellCount(subCellCount);
 		
-		m_currentSubCellCount = subCellCount == 1 || m_overrideSubCellCount == null ? subCellCount : m_overrideSubCellCount;
+		m_currentSubCellCount_nonOverridden = subCellCount;
+		m_currentSubCellCount = m_overrideSubCellCount == null ? subCellCount : m_overrideSubCellCount;
 		
-		int index = U_Bits.calcBitPosition(m_currentSubCellCount);
-		index = index >= m_bufferPairs.length ? m_bufferPairs.length-1 : index;
-		m_currentSubCellCount = 0x1 << index;
+		int maxSubCellCount = 0x1 << (m_bufferPairs.length-1);
+		m_currentSubCellCount = m_currentSubCellCount > maxSubCellCount ? maxSubCellCount : m_currentSubCellCount;
+		m_currentSubCellCount_nonOverridden = m_currentSubCellCount_nonOverridden > maxSubCellCount ? maxSubCellCount : m_currentSubCellCount_nonOverridden;
 		
 		for( int i = m_bufferPairs.length-1; i >= 0; i-- )
 		{
 			if( m_bufferPairs[i] == null )  continue;
 			
-			m_bufferPairs[i].update_cameraMoving(timestep, grid, camera, snappingCoordinate_nullable, alternativeCodeSource, options__extends__smF_BufferUpdateOption, m_currentSubCellCount);
+			m_bufferPairs[i].update_cameraMoving(timestep, grid, camera, snappingCoordinate_nullable, alternativeCodeSource, options__extends__smF_BufferUpdateOption, m_currentSubCellCount, m_currentSubCellCount_nonOverridden);
 		}
 		
 //		s_logger.severe(m_cellPool.getCheckOutCount()+"/" + m_cellPool.getAllocCount());
@@ -217,9 +250,21 @@ public class CellBufferManager implements I_LocalCodeRepository
 		return m_currentSubCellCount;
 	}
 	
+	public int getNonOverriddenSubCellCount()
+	{
+		return m_currentSubCellCount_nonOverridden;
+	}
+	
 	public CellBuffer getHighestDisplayBuffer()
 	{
 		int index = U_Bits.calcBitPosition(m_currentSubCellCount);
+		index = index >= m_bufferPairs.length ? m_bufferPairs.length-1 : index;
+		return m_bufferPairs != null ? m_bufferPairs[index].getDisplayBuffer() : null;
+	}
+	
+	public CellBuffer getHighestNonOverriddenDisplayBuffer()
+	{
+		int index = U_Bits.calcBitPosition(m_currentSubCellCount_nonOverridden);
 		index = index >= m_bufferPairs.length ? m_bufferPairs.length-1 : index;
 		return m_bufferPairs != null ? m_bufferPairs[index].getDisplayBuffer() : null;
 	}

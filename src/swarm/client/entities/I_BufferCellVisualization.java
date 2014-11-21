@@ -8,7 +8,7 @@ import swarm.shared.structs.Code;
  * ...
  * @author 
  */
-public interface I_BufferCellListener
+public interface I_BufferCellVisualization
 {
 //	void onCellRecycled(int width, int height, int padding, int subCellDimension);
 	

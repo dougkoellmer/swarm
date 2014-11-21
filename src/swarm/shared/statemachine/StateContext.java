@@ -91,7 +91,7 @@ public class StateContext extends A_StateContextForwarder
 	
 	public void onDidEnter()
 	{
-		m_rootState.didEnter_internal(null, E_TransitionCause.APP);
+		m_rootState.didEnter_internal(null, E_TransitionCause.EXTERNAL);
 	}
 	
 	public void onDidForeground()
@@ -106,7 +106,7 @@ public class StateContext extends A_StateContextForwarder
 	
 	public void onWillExit()
 	{
-		m_rootState.willExit_internal(E_TransitionCause.APP);
+		m_rootState.willExit_internal(E_TransitionCause.EXTERNAL);
 	}
 	
 	void register(A_Action_Base action)

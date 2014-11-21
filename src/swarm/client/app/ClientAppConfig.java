@@ -18,6 +18,8 @@ public class ClientAppConfig extends AppConfig
 	public int framerate_milliseconds = 33;
 	public double backOffDistance;
 	
+	public double timeThatMetaCellSticksAroundAfterCameraStopsZooming = .18;
+//	public double timeThatMetaCellSticksAroundAfterCameraStopsZooming = 2.0;
 	public boolean makeGridRequest = true;
 	
 	public boolean useVirtualSandbox = true;

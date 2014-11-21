@@ -41,7 +41,7 @@ public class CellBufferPair
 		m_killQueue.update(timestep);
 	}
 	
-	void update_cameraMoving(double timestep, ClientGrid grid, Camera camera, GridCoordinate snappingCoordinate_nullable, I_LocalCodeRepository alternativeCodeSource, int options__extends__smF_BufferUpdateOption, int subCellCount)
+	void update_cameraMoving(double timestep, ClientGrid grid, Camera camera, GridCoordinate snappingCoordinate_nullable, I_LocalCodeRepository alternativeCodeSource, int options__extends__smF_BufferUpdateOption, int subCellCount, int subCellCount_notOverridden)
 	{
 		m_killQueue.update(timestep);
 		
@@ -53,7 +53,7 @@ public class CellBufferPair
 //		s_logger.severe("Raw: " + m_subCellCount + " " + m_utilCoord1.toString() + " " + newBufferWidth + " " + newBufferHeight);		
 		
 		//--- DRK > Constrain both the position and size of the buffer if necessary so it maps onto the grid in a minimal fashion.
-		//---		The following is capable of creating a buffer of zero size, which is perfectly acceptable.
+		//---		The following is capable of creating a buffer of zero size, which is fine.
 		int gridWidthRemainder = m_subCellCount > 0 ? grid.getWidth() % m_subCellCount : 0;
 		int relativeGridWidth = grid.getWidth() == 0 ? 0 : (grid.getWidth() - gridWidthRemainder) / m_subCellCount;
 		relativeGridWidth += gridWidthRemainder > 0 ? 1 : 0;
@@ -88,7 +88,7 @@ public class CellBufferPair
 //		s_logger.severe("");
 		
 		m_backBuffer.setExtents(m_utilCoord1.getM(), m_utilCoord1.getN(), newBufferWidth, newBufferHeight);
-		m_backBuffer.imposeBuffer(grid, m_displayBuffer, snappingCoordinate_nullable, alternativeCodeSource, subCellCount, options__extends__smF_BufferUpdateOption);
+		m_backBuffer.imposeBuffer(grid, camera, m_displayBuffer, snappingCoordinate_nullable, alternativeCodeSource, subCellCount, subCellCount_notOverridden, options__extends__smF_BufferUpdateOption);
 		
 		//s_logger.info(smCellPool.getInstance().getAllocCount() + "");
 		

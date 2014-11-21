@@ -193,6 +193,11 @@ public abstract class A_StateMachine extends A_State
 		return true;
 	}
 	
+	protected void willEnter(Class<? extends A_State> stateClass, StateArgs args)
+	{
+		
+	}
+	
 	private boolean set_private(Class<? extends A_State> stateClass, StateArgs args, E_TransitionCause cause)
 	{
 		args = defaultArgs(args);
@@ -215,6 +220,8 @@ public abstract class A_StateMachine extends A_State
 		}
 		
 		A_State newState = m_context.getStateInstance(stateClass);
+		
+		willEnter(stateClass, args);
 		
 		this.enterChildState(newState, stateBeneath, false, args, cause);
 

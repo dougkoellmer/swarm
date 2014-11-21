@@ -8,7 +8,7 @@ import swarm.client.app.A_ClientApp;
 import swarm.client.app.AppContext;
 import swarm.client.entities.BufferCell;
 import swarm.client.entities.Camera;
-import swarm.client.entities.I_BufferCellListener;
+import swarm.client.entities.I_BufferCellVisualization;
 import swarm.client.managers.CameraManager;
 import swarm.client.states.camera.StateMachine_Camera;
 import swarm.client.view.E_ZIndex;
@@ -45,8 +45,18 @@ import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
 
-public class VisualCell extends AbsolutePanel implements I_BufferCellListener
+public class VisualCell extends AbsolutePanel implements I_BufferCellVisualization
 {
+	private static final double DISABLE_TIMER = -1.0;
+	private static final double ENABLE_TIMER = 0.0;
+	
+	//TODO: Move to config
+	private static final double META_IMAGE_LOAD_DELAY = .5;
+	private static final double META_IMAGE_RENDER_DELAY__SHOULD_BE = 2.0;
+	private static final double META_IMAGE_RENDER_DELAY__DEFINITELY_SHOULD_BE = 0.0;
+	private static final double FADE_IN_TIME = .25;
+//	private static final double FADE_IN_TIME = 2.0;
+	
 	public static interface I_CodeListener
 	{
 		void onCodeLoaded(VisualCell cell);
@@ -72,13 +82,6 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	private static final Logger s_logger = Logger.getLogger(VisualCell.class.getName());
 	
 	private static final HashSet<String> s_alreadyRenderedMeta = new HashSet<String>();
-	
-	//TODO: Move to config
-	private static final double META_IMAGE_LOAD_DELAY = .5;
-	private static final double META_IMAGE_RENDER_DELAY__SHOULD_BE = 2.0;
-	private static final double META_IMAGE_RENDER_DELAY__DEFINITELY_SHOULD_BE = 0.0;
-	private static final double FADE_IN_TIME = .25;
-//	private static final double FADE_IN_TIME = 2.0;
 	
 	private static int s_currentId = 0;
 	
@@ -185,6 +188,11 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	//--- DRK > Just don't want to tempt fate with browser reflows or anything so managing this myself.
 	private boolean m_visible = true;
 	
+	private boolean m_hasSetCodeYet = false;
+	
+	private double m_clearLoadingTimer = 0.0;
+	private double m_timeSinceFirstCodeSet = 0.0;
+	
 	public VisualCell(I_CellSpinner spinner, SandboxManager sandboxMngr, CameraManager cameraMngr, double retractionEasing, double sizeChangeTime)
 	{
 		m_retractionEasing = retractionEasing;
@@ -205,7 +213,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		m_statusPanel.getElement().getStyle().setTop(-100, Unit.PCT);
 		m_glassPanel.getElement().getStyle().setPosition(Position.ABSOLUTE);
 		
-		E_ZIndex.CELL_STATUS.assignTo(m_statusPanel);
+		m_statusPanel.setZIndex(E_ZIndex.CELL_STATUS.get());
 		E_ZIndex.CELL_GLASS.assignTo(m_glassPanel);
 		E_ZIndex.CELL_CONTENT.assignTo(m_contentPanel);
 		
@@ -270,7 +278,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	
 	private void fadeIn(double time)
 	{
-		if( !m_fadeIn )  return;
+		if( !m_fadeIn || !m_hasSetCodeYet )  return;
 		
 		double alpha = time / FADE_IN_TIME;
 //		alpha = Math.sqrt(alpha);
@@ -295,6 +303,11 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	public void update(double timeStep, int subCellCount_highest)
 	{
 		m_totalTimeSinceCreation += timeStep;
+		
+		if( m_hasSetCodeYet )
+		{
+			m_timeSinceFirstCodeSet += timeStep;
+		}
 		
 		if( isMetaTimeTrackerRunning() )
 		{
@@ -328,7 +341,17 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		}
 		else if( m_subCellDimension == 1 )
 		{
-			fadeIn(m_totalTimeSinceCreation);
+			fadeIn(m_timeSinceFirstCodeSet);
+			
+			if( m_hasSetCodeYet && m_clearLoadingTimer >= ENABLE_TIMER )
+			{
+				m_clearLoadingTimer += timeStep;
+				
+				if( m_clearLoadingTimer >= FADE_IN_TIME )
+				{
+					clearLoading_private();
+				}
+			}
 		}
 		
 //		double timeToDeath = m_bufferCell.getTimeToDeath();
@@ -454,6 +477,14 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		m_isValidated = true;
 	}
 	
+	void setMetaSize(double width, double height)
+	{
+		m_width = m_defaultWidth = (int) width;
+		m_height = m_defaultHeight = (int) height;
+		
+		setSize(width+"px", height+"px");
+	}
+	
 	void crop(int thisX, int thisY, int windowWidth, int windowHeight)
 	{
 //		int totalWidth = m_width+m_padding;
@@ -496,9 +527,9 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		this.setSize(m_width + "px", m_height + "px");
 	}
 	
-	public void onCreate(BufferCell bufferCell, int width, int height, int padding, int subCellDimension)
+	public void onCreate(BufferCell bufferCell, int width, int height, int padding, int subCellDimension, boolean justRemovedMetaCountOverride)
 	{
-//		if( subCellDimension == 2 && bufferCell.getCoordinate().isEqualTo(5, 6) )
+//		if( subCellDimension == 1 && bufferCell.getCoordinate().isEqualTo(16, 14) )
 //		{
 //			s_logger.severe("MADE THE CELL");
 //		}
@@ -507,34 +538,45 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 //			s_logger.severe("MADE cell>1");
 //		}
 		
-		m_totalTimeSinceCreation = 0.0;
+//		if( subCellDimension == 1 )
+//		{
+//			s_logger.severe("MADE THE CELL");
+//		}
+		
+		
 		m_bufferCell = bufferCell;
+		clearStatusHtmlForSure();
 		m_statusPanel.removeConstraints(width, height);
+		
+		Camera camera = m_cameraMngr.getCamera();
+		double deltaZ = camera.getPosition().getZ() - camera.getPrevPosition().getZ();
+		boolean notDoingFadeIn = deltaZ < 0.0 || justRemovedMetaCountOverride;
 		
 		onCreatedOrRecycled(width, height, padding, subCellDimension);
 		
 		int bitPosition = U_Bits.calcBitPosition(m_subCellDimension);
-		E_ZIndex zIndex = E_ZIndex.values()[E_ZIndex.CELL_1.ordinal() - bitPosition];
+		m_zIndex_default = E_ZIndex.values()[E_ZIndex.CELL_1.ordinal() - bitPosition].get();
 		
-		m_zIndex = -1;
-		m_zIndex_default = zIndex.get();
-		
-		setDefaultZIndex();
-		
-		this.showEmptyContent();
-		
-		Camera camera = m_cameraMngr.getCamera();
-		double deltaZ = camera.getPosition().getZ() - camera.getPrevPosition().getZ();
-
-		if( deltaZ >= 0 )
+		if( subCellDimension == 1  )
 		{
-			m_fadeIn = true;
-			ensureFadedOut();
+			setZIndex(E_ZIndex.CELL_1_LOADING.get());
 		}
 		else
 		{
+			setZIndex(m_zIndex_default);
+		}
+		
+		this.showEmptyContent();
+
+		if( notDoingFadeIn )
+		{
 			m_fadeIn = false;
 			ensureFadedIn();
+		}
+		else
+		{
+			m_fadeIn = true;
+			ensureFadedOut();
 		}
 		
 //		if( subCellDimension > 1 )
@@ -547,7 +589,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 //		}
 	}
 	
-	public void setZIndex(int value)
+	private void setZIndex(int value)
 	{
 		if( value == m_zIndex )  return;
 		
@@ -563,6 +605,10 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	
 	private void onCreatedOrRecycled(int width, int height, int padding, int subCellDimension)
 	{
+		m_timeSinceFirstCodeSet = 0.0;
+		m_totalTimeSinceCreation = 0.0;
+		m_clearLoadingTimer = DISABLE_TIMER;
+		m_hasSetCodeYet = false;
 		m_queuedCode = null;
 		m_layoutState = LayoutState.NOT_CHANGING;
 		m_isFocused = false;
@@ -578,6 +624,15 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 
 		this.setScrollMode(E_ScrollMode.NOT_SCROLLING);
 		this.removeCrop();
+		
+		if( m_subCellDimension == 1 )
+		{
+			this.getElement().getStyle().setBackgroundColor("#ffffff");
+		}
+		else
+		{
+			this.getElement().getStyle().clearBackgroundColor();
+		}
 	}
 	
 	public int calcNaturalHeight()
@@ -704,6 +759,11 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	
 	public void onDestroy()
 	{
+//		if( m_subCellDimension == 1 && m_bufferCell.getCoordinate().isEqualTo(16, 14) )
+//		{
+//			s_logger.severe("DESTROYED THE CELL");
+//		}
+		
 		clearMetaImageState();
 		m_bufferCell = null;
 		m_isFocused = false;
@@ -737,7 +797,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		m_isSnapping = false;
 		m_isFocused = true;
 		
-		E_ZIndex.CELL_FOCUSED.assignTo(this);
+		setZIndex(E_ZIndex.CELL_FOCUSED.get());
 		this.ensureTargetLayout();
 		
 		m_startingXOffset = m_xOffset;
@@ -762,7 +822,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		this.removeStyleName("visual_cell_focused");
 		U_Css.allowUserSelect(m_contentPanel.getElement(), false);
 		m_sandboxMngr.allowScrolling(m_contentPanel.getElement(), false);
-		E_ZIndex.CELL_POPPED.assignTo(this);
+		setZIndex(E_ZIndex.CELL_POPPED.get());
 		
 		/*if( m_sandboxMngr.isRunning() )
 		{
@@ -833,7 +893,10 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		//---		so comes later if the snap is instant.
 		if( !m_isFocused )
 		{
-			E_ZIndex.CELL_POPPED.assignTo(this);
+			ensureFadedIn();
+			m_fadeIn = false;
+			
+			setZIndex(E_ZIndex.CELL_POPPED.get());
 			m_isSnapping = true;
 		}
 	}
@@ -853,7 +916,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	
 	public void pushDown()
 	{
-		E_ZIndex.CELL_1.assignTo(this);
+		setZIndex(E_ZIndex.CELL_PUSHED_BACK_DOWN.get());
 	}
 	
 	@Override
@@ -942,6 +1005,16 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		
 		m_queuedCode = null;
 		
+		if( !m_hasSetCodeYet )
+		{
+			if( m_subCellDimension == 1 && !m_isSnapping && !m_isFocused )
+			{
+				setDefaultZIndex();
+			}
+		}
+		
+		m_hasSetCodeYet = true;
+		
 		m_codeSafetyLevel = code.getSafetyLevel();
 		
 		if( m_codeSafetyLevel == E_CodeSafetyLevel.META_IMAGE )
@@ -958,7 +1031,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	}
 
 	private void setCode_private(Code code, String cellNamespace)
-	{		
+	{
 		setCode_commonPreInit(code);
 		
 		if( m_codeSafetyLevel == E_CodeSafetyLevel.META_IMAGE )
@@ -1009,12 +1082,17 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		}
 		else
 		{
-			m_contentPanel.setVisible(true);
-			
-			m_sandboxMngr.start(m_contentPanel.getElement(), code, cellNamespace, m_codeLoadListener);
+			setCode_nonMeta(code, cellNamespace);
 		}
 		
 		if( m_codeListener != null )  m_codeListener.onCodeLoaded(this);
+	}
+	
+	private void setCode_nonMeta(Code code, String cellNamespace)
+	{
+		m_contentPanel.setVisible(true);
+		
+		m_sandboxMngr.start(m_contentPanel.getElement(), code, cellNamespace, m_codeLoadListener);
 	}
 	
 	private void setCode_meta(Code code, boolean delayLoading)
@@ -1071,7 +1149,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	
 	private void stopMetaTimeTracker()
 	{
-		m_metaTimeTracker = -1.0;
+		m_metaTimeTracker = DISABLE_TIMER;
 	}
 	
 	private boolean isMetaTimeTrackerRunning()
@@ -1083,7 +1161,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	{
 		m_metaTimeTracker = 0.0;
 	}
-	
+
 	private native void addImagesLoadedListener(VisualCell cell, Element element)
 	/*-{
 			var imgLoad = new $wnd.imagesLoaded( element );
@@ -1093,6 +1171,9 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 				if( element.parentNode )
 				{
 					cell.@swarm.client.view.cell.VisualCell::onMetaImageLoaded(Ljava/lang/String;)(element.src);
+				}
+				else
+				{
 				}
 			});
 			
@@ -1151,12 +1232,17 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 		m_utilCode.setRawCode(html);
 		m_utilCode.setSafetyLevel(E_CodeSafetyLevel.NO_SANDBOX_STATIC);
 		
-		this.setCode_private(m_utilCode, "");
+		this.setCode_nonMeta(m_utilCode, "");
 	}
 	
 	UIBlocker getBlocker()
 	{
 		return m_statusPanel;
+	}
+	
+	private boolean isSpinnerBehind()
+	{
+		return m_subCellDimension == 1 && m_spinner.asWidget().getParent() != null && m_statusPanel.getZIndex() == E_ZIndex.CELL_STATUS_BEHIND.get();
 	}
 
 	@Override
@@ -1167,6 +1253,15 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 			m_spinner.reset();
 			
 			this.m_statusPanel.setContent(m_spinner.asWidget());
+			
+			if( m_subCellDimension == 1 && !m_hasSetCodeYet )
+			{
+				m_statusPanel.setZIndex(E_ZIndex.CELL_STATUS_BEHIND.get());
+			}
+			else
+			{
+				m_statusPanel.setZIndex(E_ZIndex.CELL_STATUS.get());
+			}
 		}
 		
 //		showEmptyContent();
@@ -1180,10 +1275,23 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	
 	private void setStatusHtml(String text, boolean forLoading)
 	{
+		m_statusPanel.setZIndex(E_ZIndex.CELL_STATUS.get());
 		m_statusPanel.setHtml(text);
 	}
 	
 	private void clearStatusHtml()
+	{
+		if( m_spinner.asWidget().getParent() == null )
+		{
+			clearStatusHtmlForSure();
+		}
+		else
+		{
+			clearLoading();
+		}
+	}
+	
+	private void clearStatusHtmlForSure()
 	{
 		this.setStatusHtml(null, false);
 	}
@@ -1191,6 +1299,20 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellListener
 	@Override
 	public void clearLoading()
 	{
+		if( isSpinnerBehind() )
+		{
+			m_clearLoadingTimer = ENABLE_TIMER;
+		}
+		else
+		{
+			clearLoading_private();
+		}
+	}
+	
+	private void clearLoading_private()
+	{
+		m_clearLoadingTimer = DISABLE_TIMER;
+		
 		if( m_spinner.asWidget().getParent() != null )
 		{
 			this.m_statusPanel.setContent(null);

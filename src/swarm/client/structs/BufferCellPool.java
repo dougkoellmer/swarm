@@ -49,15 +49,16 @@ public class BufferCellPool
 		return m_pool.getCheckOutCount();
 	}
 	
-	public BufferCell allocCell(A_Grid grid, int subCellDimension, boolean createVisualization)
+	public BufferCell allocCell(A_Grid grid, int subCellDimension, boolean createVisualization, int m, int n, boolean justRemovedMetaCountOverride)
 	{
 		BufferCell cell = m_pool.allocate();
+		cell.getCoordinate().set(m, n);
 		
 		if( createVisualization )
 		{
 			cell.setVisualization
 			(
-				m_delegate.createVisualization(cell, grid.getCellWidth(), grid.getCellHeight(), grid.getCellPadding(), subCellDimension)
+				m_delegate.createVisualization(cell, grid.getCellWidth(), grid.getCellHeight(), grid.getCellPadding(), subCellDimension, justRemovedMetaCountOverride)
 			);
 		}
 		else

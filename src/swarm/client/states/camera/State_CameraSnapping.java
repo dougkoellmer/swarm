@@ -283,8 +283,6 @@ public class State_CameraSnapping extends A_State implements I_StateEventListene
 		
 		m_appContext.registerBufferMngr(m_snapBufferManager);
 		
-		m_appContext.cellBufferMngr.overrideSubCellCount();
-		
 		m_targetGridCoordinate.copy(INVALID);
 		
 		Camera camera = m_appContext.cameraMngr.getCamera();
@@ -347,9 +345,7 @@ public class State_CameraSnapping extends A_State implements I_StateEventListene
 	
 	@Override
 	protected void willExit()
-	{
-		m_appContext.cellBufferMngr.removeOverrideSubCellCount();
-		
+	{		
 		m_targetAddress = null;
 		m_targetCell = null;
 		m_targetGridCoordinate.copy(INVALID);

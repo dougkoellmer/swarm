@@ -194,15 +194,15 @@ public class ClientGrid extends A_Grid
 		
 		for( int i = 0; i < arraySize; i++ )
 		{
-			if( this.modifySubCellCount(subCellCount) != subCellCount )
-			{
-				m_metaOwnership[i] = EMPTY_BIT_ARRAY;
-				
-				subCellCount *= 2;
-				currentMetaGridSize /= 2;
-				
-				continue;
-			}
+//			if( this.modifySubCellCount(subCellCount) != subCellCount )
+//			{
+//				m_metaOwnership[i] = EMPTY_BIT_ARRAY;
+//				
+//				subCellCount *= 2;
+//				currentMetaGridSize /= 2;
+//				
+//				continue;
+//			}
 			
 			m_metaOwnership[i] = new BitArray(currentMetaGridSize*currentMetaGridSize);
 			

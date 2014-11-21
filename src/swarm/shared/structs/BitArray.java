@@ -258,10 +258,13 @@ public class BitArray extends A_JsonEncodable
 	
 	public boolean isSet(int bitIndex)
 	{
-		if( bitIndex < 0 )  return false;
+		if( bitIndex < 0 || m_blocks == null )  return false;
 		
 		int bitIndexIntoBlock = calcBitIndexModBlock(bitIndex);
 		int blockIndex = calcBlockIndex(bitIndex, bitIndexIntoBlock);
+		
+		if( blockIndex >= m_blocks.length )  return false;
+		
 		int block = m_blocks[blockIndex];
 		int blockBit = U_Bits.calcOrdinalBit(bitIndexIntoBlock);
 		

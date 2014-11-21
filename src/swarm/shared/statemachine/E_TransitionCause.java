@@ -13,5 +13,5 @@ public enum E_TransitionCause
 	PUSH_V,
 	POP_V,
 	SET,
-	APP;
+	EXTERNAL;
 }

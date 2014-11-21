@@ -9,9 +9,11 @@ import java.util.logging.Logger;
 
 
 
+
 import swarm.client.entities.BufferCell;
+import swarm.client.entities.Camera;
 import swarm.client.entities.ClientGrid;
-import swarm.client.entities.I_BufferCellListener;
+import swarm.client.entities.I_BufferCellVisualization;
 import swarm.client.structs.BufferCellPool;
 import swarm.client.structs.I_LocalCodeRepository;
 import swarm.shared.utils.U_Bits;
@@ -137,7 +139,7 @@ public class CellBuffer extends A_BufferCellList
 		}
 	}
 	
-	void imposeBuffer(ClientGrid grid, CellBuffer otherBuffer, GridCoordinate snapCoord_nullable, I_LocalCodeRepository localCodeSource, int highestSubCellCount, int options__extends__smF_BufferUpdateOption)
+	void imposeBuffer(ClientGrid grid, Camera camera, CellBuffer otherBuffer, GridCoordinate snapCoord_nullable, I_LocalCodeRepository localCodeSource, int highestSubCellCount, int highestSubCellCount_notOverridden, int options__extends__smF_BufferUpdateOption)
 	{
 		if( m_subCellCount == 16 )
 		{
@@ -147,6 +149,8 @@ public class CellBuffer extends A_BufferCellList
 		boolean createVisualizations = (options__extends__smF_BufferUpdateOption & F_BufferUpdateOption.CREATE_VISUALIZATIONS) != 0;
 		boolean communicateWithServer = (options__extends__smF_BufferUpdateOption & F_BufferUpdateOption.COMMUNICATE_WITH_SERVER) != 0;
 		boolean flushPopulator = (options__extends__smF_BufferUpdateOption & F_BufferUpdateOption.FLUSH_CELL_POPULATOR) != 0;
+		boolean justRemovedOverride = (options__extends__smF_BufferUpdateOption & F_BufferUpdateOption.JUST_REMOVED_OVERRIDE) != 0;
+		boolean madeOrSwappedSnapTargetCell = false;
 
 		int i;
 		int m, n;
@@ -214,7 +218,7 @@ public class CellBuffer extends A_BufferCellList
 							
 							if( obscuringCell != null )
 							{
-								I_BufferCellListener obscuringCellVisualization = obscuringCell.getVisualization();
+								I_BufferCellVisualization obscuringCellVisualization = obscuringCell.getVisualization();
 								
 								if( obscuringCellVisualization.isLoaded() )
 								{
@@ -246,6 +250,9 @@ public class CellBuffer extends A_BufferCellList
 				if( swap(m, n, otherBuffer, this, onlySwapIfLoaded) != null )
 				{
 //					if( m_subCellCount == 1 )  s_logger.severe("SWAPPED");
+
+					madeOrSwappedSnapTargetCell = isBeingSnappedTo ? true : madeOrSwappedSnapTargetCell;
+					
 					continue;
 				}
 				
@@ -256,6 +263,7 @@ public class CellBuffer extends A_BufferCellList
 					{
 //						if( m_subCellCount == 1 )  s_logger.severe("SAVED");
 						
+						madeOrSwappedSnapTargetCell = isBeingSnappedTo ? true : madeOrSwappedSnapTargetCell;
 						cellFromKillQueue.saveFromDeathSentence();
 						
 						continue;
@@ -268,19 +276,19 @@ public class CellBuffer extends A_BufferCellList
 					//---		from the other buffer or the kill queue above, we don't make new cells.
 					if ( obscured )  continue;
 				}
+				else
+				{
+					madeOrSwappedSnapTargetCell = true;
+				}
 				
-				makeNewCell(m, n, grid, localCodeSource, createVisualizations, communicateWithServer);
+				makeNewCell(m, n, grid, localCodeSource, createVisualizations, communicateWithServer, justRemovedOverride);
 			}
 		}
 		
-		if( flushPopulator )
-		{
-			m_codeMngr.flush();
-		}
-		
 		//--- DRK > If this is the snap target then we try to preserve the cell from the other buffer or from the kill queue.
-		//---		If we can't do that then we make it from scratch.
-		if( m_subCellCount == 1 && snapCoord_nullable != null )
+		//---		If we can't do that then we make it from scratch. We do this here cause it may have been skipped over in
+		//---		the metacell skip over logic at the top of the loop above.
+		if( !madeOrSwappedSnapTargetCell && m_subCellCount == 1 && snapCoord_nullable != null )
 		{
 			if( swap(snapCoord_nullable.getM(), snapCoord_nullable.getN(), otherBuffer, this, /*onlySwapIfLoaded=*/false) == null )
 			{
@@ -292,9 +300,23 @@ public class CellBuffer extends A_BufferCellList
 				
 				else if( this.isInBoundsAbsolute(snapCoord_nullable) )
 				{
-					makeNewCell(snapCoord_nullable.getM(), snapCoord_nullable.getN(), grid, localCodeSource, createVisualizations, communicateWithServer);
+					makeNewCell(snapCoord_nullable.getM(), snapCoord_nullable.getN(), grid, localCodeSource, createVisualizations, communicateWithServer, justRemovedOverride);
 				}
 			}
+		}
+		
+		//--- DRK > For cases where we start at cell_1, zoom out to a higher meta level, then come back faster than the kill queue
+		//---		time, this block preserves cell_1s that are still on the cell_1 kill queue or the other buffer while meta count
+		//---		is overridden...we're not making fresh cells at this point, until meta count override is removed.
+		if( highestSubCellCount_notOverridden < highestSubCellCount && highestSubCellCount_notOverridden == m_subCellCount )
+		{
+			preserveCellsForOverrideCase(highestSubCellCount, highestSubCellCount_notOverridden, otherBuffer);
+			preserveCellsForOverrideCase(highestSubCellCount, highestSubCellCount_notOverridden, m_killQueue);
+		}
+		
+		if( flushPopulator )
+		{
+			m_codeMngr.flush();
 		}
 		
 		for( i = 0; i < otherBufferCellCount; i++ )
@@ -310,9 +332,30 @@ public class CellBuffer extends A_BufferCellList
 		otherBuffer.m_cellList.clear();
 	}
 	
-	private void makeNewCell(int m, int n, ClientGrid grid, I_LocalCodeRepository localCodeSource, boolean createVisualizations, boolean communicateWithServer)
+	private void preserveCellsForOverrideCase(int highestSubCellCount, int highestSubCellCount_notOverridden, A_BufferCellList cellList)
 	{
-		BufferCell newCell = m_cellPool.allocCell(grid, m_subCellCount, createVisualizations);
+		for( int i = 0; i < cellList.m_cellList.size(); i++ )
+		{
+			BufferCell ithCell = cellList.m_cellList.get(i);
+
+			if( ithCell != null && this.isInBoundsAbsolute(ithCell.getCoordinate()) )
+			{
+				BufferCell preservedCell = swap(i, cellList, this, /*onlySwapIfLoaded=*/false);
+				
+				if( preservedCell != null )
+				{
+					if( cellList == m_killQueue )
+					{
+						preservedCell.saveFromDeathSentence();
+					}
+				}
+			}
+		}
+	}
+	
+	private void makeNewCell(int m, int n, ClientGrid grid, I_LocalCodeRepository localCodeSource, boolean createVisualizations, boolean communicateWithServer, boolean justRemovedOverride)
+	{
+		BufferCell newCell = m_cellPool.allocCell(grid, m_subCellCount, createVisualizations, m, n, justRemovedOverride);
 		this.m_cellList.add(newCell);
 		
 //		if( m_subCellCount == 1 )  s_logger.severe("CREATED");
@@ -321,8 +364,6 @@ public class CellBuffer extends A_BufferCellList
 //		{
 //			s_logger.severe("ERER");;
 //		}
-		
-		newCell.getCoordinate().set(m, n);
 		
 //		s_logger.severe(m_subCellCount+"");
 		m_codeMngr.populateCell(newCell, localCodeSource, m_subCellCount, communicateWithServer, E_CodeType.SPLASH);

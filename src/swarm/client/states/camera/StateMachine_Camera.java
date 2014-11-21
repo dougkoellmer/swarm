@@ -58,6 +58,9 @@ import swarm.shared.utils.U_Math;
  */
 public class StateMachine_Camera extends A_StateMachine implements I_StateEventListener
 {
+	private static final double DISABLE_TIMER = -1.0;
+	private static final double START_TIMER = 0.0;
+	
 	public static final class OnCellWithNaturalDimensionsLoaded extends A_Action_Event{}
 	
 	public static final double IGNORED_COMPONENT = Double.NaN;
@@ -96,6 +99,8 @@ public class StateMachine_Camera extends A_StateMachine implements I_StateEventL
 	private final AppContext m_appContext;
 	
 	private boolean m_bufferDirty = false;
+	
+	private double m_metaStickAroundTimer = DISABLE_TIMER;
 	
 	public StateMachine_Camera(AppContext appContext, Action_Camera_SnapToCoordinate.I_Filter snapFilter)
 	{
@@ -283,12 +288,93 @@ public class StateMachine_Camera extends A_StateMachine implements I_StateEventL
 		}
 	}
 	
+	private void updateMetaCountOverride()
+	{
+		CellBufferManager bufferMngr = m_appContext.cellBufferMngr;
+		Camera camera = m_appContext.cameraMngr.getCamera();
+		double deltaZ = camera.getPosition().getZ() - camera.getPrevPosition().getZ();
+		boolean cameraMovingInZ = deltaZ != 0.0;
+		
+		int currentNonOverriddenMetaCount = bufferMngr.getNonOverriddenSubCellCount();
+		
+		if( !bufferMngr.isOverridingSubCellCount() )
+		{
+			m_metaStickAroundTimer = DISABLE_TIMER;
+			
+			if( currentNonOverriddenMetaCount > 1 )
+			{
+				bufferMngr.overrideSubCellCount();
+			}
+		}
+		else
+		{
+			int overrideMetaCount = bufferMngr.getOverrideSubCellCount();
+			
+			if( currentNonOverriddenMetaCount > overrideMetaCount )
+			{
+				//--- DRK > Instantly reomve the override and start displaying higher meta cells.
+				m_metaStickAroundTimer = DISABLE_TIMER;
+				bufferMngr.removeOverrideSubCellCount();
+			}
+			else if( overrideMetaCount > currentNonOverriddenMetaCount )
+			{
+				if( cameraMovingInZ )
+				{
+					//--- DRK > Ensure that timer is set or reset back to disabled.
+					m_metaStickAroundTimer = DISABLE_TIMER;
+				}
+				else
+				{
+					//--- DRK > Start the timer if it hasn't been started yet.
+					if( m_metaStickAroundTimer == DISABLE_TIMER )
+					{
+						m_metaStickAroundTimer = START_TIMER;
+					}
+				}
+			}
+		}
+	}
+	
+	private boolean updateMetaStickAroundTimer_didTimerJustFinish(double timestep)
+	{
+		CellBufferManager bufferMngr = m_appContext.cellBufferMngr;
+		
+		if( m_metaStickAroundTimer >= START_TIMER )
+		{
+			m_metaStickAroundTimer += timestep;
+			
+			if( m_metaStickAroundTimer > m_appContext.config.timeThatMetaCellSticksAroundAfterCameraStopsZooming )
+			{
+				m_metaStickAroundTimer = DISABLE_TIMER;
+				bufferMngr.removeOverrideSubCellCount();
+				
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	@Override protected void willEnter(Class<? extends A_State> stateClass, StateArgs args)
+	{
+		if( stateClass == State_ViewingCell.class )
+		{
+			CellBufferManager bufferMngr = m_appContext.cellBufferMngr;
+			m_metaStickAroundTimer = DISABLE_TIMER;
+			bufferMngr.removeOverrideSubCellCount();
+		}
+	}
+	
 	@Override
 	protected void update(double timeStep)
 	{
+		boolean didTimerJustFinish = updateMetaStickAroundTimer_didTimerJustFinish(timeStep);
+		
 		m_appContext.cameraMngr.update(timeStep);
 		
-		if( !m_appContext.cameraMngr.isCameraAtRest() || m_bufferDirty )
+		boolean cameraAtRest = m_appContext.cameraMngr.isCameraAtRest();
+		
+		if( !cameraAtRest || m_bufferDirty || didTimerJustFinish)
 		{
 			m_bufferDirty = false;
 			updateBufferManager(timeStep);
@@ -298,6 +384,8 @@ public class StateMachine_Camera extends A_StateMachine implements I_StateEventL
 			CellBufferManager bufferMngr = m_appContext.cellBufferMngr;
 			bufferMngr.update_cameraStill(timeStep);
 		}
+		
+		updateMetaCountOverride();
 	}
 	
 	void updateBufferManager(double timestep)
@@ -338,8 +426,14 @@ public class StateMachine_Camera extends A_StateMachine implements I_StateEventL
 		}
 		else
 		{
-			int options = F_BufferUpdateOption.ALL;
-			bufferMngr.update_cameraMoving(timestep, m_appContext.gridMngr.getGrid(), m_appContext.cameraMngr.getCamera(), null, m_codeRepo, options);
+			GridCoordinate targetCoord = null;
+			if( this.getCurrentState() instanceof State_ViewingCell )
+			{
+				targetCoord = ((State_ViewingCell)this.getCurrentState()).getTargetCoord();
+			}
+			
+			int options = F_BufferUpdateOption.ALL_DEFAULTS;
+			bufferMngr.update_cameraMoving(timestep, m_appContext.gridMngr.getGrid(), m_appContext.cameraMngr.getCamera(), targetCoord, m_codeRepo, options);
 		}
 	}
 	
@@ -359,13 +453,23 @@ public class StateMachine_Camera extends A_StateMachine implements I_StateEventL
 		{
 			case DID_ENTER:
 			{
-				if( event.getState() instanceof State_CameraSnapping )
+				//--- DRK > Used to be relevant but now doing this below for when we enter viewing state, so that should cover it.
+				//---		Keeping for reference in case I'm missing something.
+//				if( event.getState() instanceof State_CameraSnapping )
+//				{
+//					//--- DRK > In most cases I think this is a somewhat wasteful update of the buffer,
+//					//---		but it's needed for fringe cases of the snapping state going immediately
+//					//---		into the viewing state without an update in between.
+//					//---		Arguably, a better strategy might be to force at least one or more updates between states.
+//					//---		Either way, kinda hacky, but oh well.
+//					this.updateBufferManager(0.0);
+//				}
+				
+				//--- DRK > This is needed for cases where we snap from a higher meta level down to cell_1. In these cases
+				//---		the meta level override is active which means that cell_1s aren't created. Have to stoke the buffers
+				//---		here to force creation of cell_1s surrounding the target cell
+				if( event.getState() instanceof State_ViewingCell )
 				{
-					//--- DRK > In most cases I think this is a somewhat wasteful update of the buffer,
-					//---		but it's needed for fringe cases of the snapping state going immediately
-					//---		into the viewing state without an update in between.
-					//---		Arguably, a better strategy might be to force at least one or more updates between states.
-					//---		Either way, kinda hacky, but oh well.
 					this.updateBufferManager(0.0);
 				}
 				
