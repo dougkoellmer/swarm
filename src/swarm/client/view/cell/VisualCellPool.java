@@ -123,7 +123,7 @@ public class VisualCellPool implements I_CellPoolDelegate
 			@Override
 			public VisualCell newInstance()
 			{
-				VisualCell cell = new VisualCell(spinnerFactory.newSpinner(), sandboxMngr, viewContext.appContext.cameraMngr, viewContext.config.cellRetractionEasing, viewContext.config.cellSizeChangeTime_seconds);
+				VisualCell cell = new VisualCell(viewContext.appContext, spinnerFactory.newSpinner(), sandboxMngr, viewContext.appContext.cameraMngr, viewContext.config.cellRetractionEasing, viewContext.config.cellSizeChangeTime_seconds);
 				cell.setCodeListener(m_codeListener);
 				
 				return cell;
@@ -138,7 +138,7 @@ public class VisualCellPool implements I_CellPoolDelegate
 		return m_pool;
 	}
 	
-	@Override public I_BufferCellVisualization createVisualization(BufferCell bufferCell, int width, int height, int padding, int subCellDim, boolean justRemovedMetaCountOverride)
+	@Override public I_BufferCellVisualization createVisualization(BufferCell bufferCell, int width, int height, int padding, int subCellDim, int highestPossibleSubCellCount, boolean justRemovedMetaCountOverride)
 	{
 		VisualCell newVisualCell = m_pool.allocate();
 		
@@ -150,7 +150,7 @@ public class VisualCellPool implements I_CellPoolDelegate
 			//smU_Debug.ASSERT(false, "createVisualization1");
 		}
 		
-		newVisualCell.onCreate(bufferCell, width, height, padding, subCellDim, justRemovedMetaCountOverride);
+		newVisualCell.onCreate(bufferCell, width, height, padding, subCellDim, highestPossibleSubCellCount, justRemovedMetaCountOverride);
 		
 //		newVisualCell.setVisible(true);
 		

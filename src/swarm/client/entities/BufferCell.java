@@ -460,10 +460,13 @@ public class BufferCell extends A_Cell
 		return m_deathCountdown >= 0.0;
 	}
 	
-	public boolean killSlowly_isItDeadQuestionMark(double timestep)
+	public void updateDeathRowTimer(double timestep)
 	{
 		m_deathCountdown -= timestep;
-		
+	}
+	
+	public boolean kill()
+	{
 		if( m_deathCountdown <= 0 )
 		{
 			clearDeathTimer();

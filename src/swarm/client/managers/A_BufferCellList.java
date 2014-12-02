@@ -8,12 +8,16 @@ import swarm.server.handlers.normal.getCellAddress;
 
 abstract class A_BufferCellList
 {
+	protected final int m_subCellCount;
 	protected final BufferCellPool m_cellPool;
 	protected final ArrayList<BufferCell> m_cellList = new ArrayList<BufferCell>();
+	protected final CellBufferManager m_parent;
 	
-	A_BufferCellList(BufferCellPool pool)
+	A_BufferCellList(CellBufferManager parent, int subCellCount, BufferCellPool pool)
 	{
 		m_cellPool = pool;
+		m_subCellCount = subCellCount;
+		m_parent = parent;
 	}
 	
 	void drain()

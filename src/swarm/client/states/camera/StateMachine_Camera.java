@@ -382,7 +382,7 @@ public class StateMachine_Camera extends A_StateMachine implements I_StateEventL
 		else
 		{
 			CellBufferManager bufferMngr = m_appContext.cellBufferMngr;
-			bufferMngr.update_cameraStill(timeStep);
+			bufferMngr.update_cameraStill(m_appContext.gridMngr.getGrid(), timeStep);
 		}
 		
 		updateMetaCountOverride();

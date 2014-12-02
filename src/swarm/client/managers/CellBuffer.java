@@ -39,8 +39,6 @@ public class CellBuffer extends A_BufferCellList
 	private int m_width = 0;
 	private int m_height = 0;
 	
-	private final int m_subCellCount;
-	
 	private final CellBufferManager m_parent;
 	private final CellCodeManager m_codeMngr;
 	private final CellSizeManager m_cellSizeMngr;
@@ -51,12 +49,11 @@ public class CellBuffer extends A_BufferCellList
 	
 	CellBuffer(CellBufferManager parent, CellCodeManager codeMngr, BufferCellPool cellPool, CellSizeManager cellSizeMngr, int subCellCount, CellKillQueue killQueue)
 	{
-		super(cellPool);
+		super(parent, subCellCount, cellPool);
 		
 		m_codeMngr = codeMngr;
 		m_cellSizeMngr = cellSizeMngr;
 		m_parent = parent;
-		m_subCellCount = subCellCount;
 		m_killQueue = killQueue;
 	}
 	
@@ -213,7 +210,7 @@ public class CellBuffer extends A_BufferCellList
 						
 						if( !isBeingSnappedTo )
 						{
-							CellBuffer higherBuffer = m_parent.getDisplayBuffer(U_Bits.calcBitPosition(m_obscured.subCellDimension));
+							CellBuffer higherBuffer = m_parent.getDisplayBuffer(U_Bits.calcBitPosition(m_obscured.subCellCount));
 							BufferCell obscuringCell = higherBuffer.getCellAtAbsoluteCoord(m_obscured.m, m_obscured.n);
 							
 							if( obscuringCell != null )
@@ -355,7 +352,8 @@ public class CellBuffer extends A_BufferCellList
 	
 	private void makeNewCell(int m, int n, ClientGrid grid, I_LocalCodeRepository localCodeSource, boolean createVisualizations, boolean communicateWithServer, boolean justRemovedOverride)
 	{
-		BufferCell newCell = m_cellPool.allocCell(grid, m_subCellCount, createVisualizations, m, n, justRemovedOverride);
+		int highestPossibleSubCellCount = 0x1 << m_parent.getBufferCount();
+		BufferCell newCell = m_cellPool.allocCell(grid, m_subCellCount, highestPossibleSubCellCount, createVisualizations, m, n, justRemovedOverride);
 		this.m_cellList.add(newCell);
 		
 //		if( m_subCellCount == 1 )  s_logger.severe("CREATED");

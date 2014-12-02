@@ -49,7 +49,8 @@ public class VisualCellManager implements I_UIElement
 	private static final double NO_SCALING = .99999;
 	private static final Logger s_logger = Logger.getLogger(VisualCellManager.class.getName());
 	
-	private static final int FLUSH_CODE_FRAME_RATE = 2;
+//	private static final int FLUSH_CODE_FRAME_RATE = 2;
+	private static final int FLUSH_CODE_FRAME_RATE = 60;
 //	private static final int FLUSH_CODE_FRAME_RATE = 120;
 	
 	private final Panel m_container;
@@ -160,7 +161,7 @@ public class VisualCellManager implements I_UIElement
 					CellBufferManager cellManager = m_viewContext.appContext.cellBufferMngr;
 					if( grid.isObscured(m, n, 1, cellManager.getSubCellCount(), m_obscured) )
 					{
-						CellBuffer cellBuffer = cellManager.getDisplayBuffer(U_Bits.calcBitPosition(m_obscured.subCellDimension));
+						CellBuffer cellBuffer = cellManager.getDisplayBuffer(U_Bits.calcBitPosition(m_obscured.subCellCount));
 						if( cellBuffer != null )
 						{
 							BufferCell cell = cellBuffer.getCellAtAbsoluteCoord(m_obscured.m, m_obscured.n);
@@ -612,7 +613,7 @@ public class VisualCellManager implements I_UIElement
 			}
 			else if( setVisible )
 			{
-				ithVisualCell.setVisible(true);
+//				ithVisualCell.setVisible(true);
 			}
 		}
 		

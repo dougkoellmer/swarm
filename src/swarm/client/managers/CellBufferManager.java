@@ -169,7 +169,7 @@ public class CellBufferManager implements I_LocalCodeRepository
 		return m_didJustUpdateBuffers;
 	}
 	
-	public void update_cameraStill(double timestep)
+	public void update_cameraStill(ClientGrid grid, double timestep)
 	{
 		m_didJustUpdateBuffers = false;
 		
@@ -182,6 +182,7 @@ public class CellBufferManager implements I_LocalCodeRepository
 			if( ithPair == null )  continue;
 			
 			ithPair.update_cameraStill(timestep);
+			ithPair.clearTheDead(grid);
 		}
 	}
 
@@ -230,6 +231,15 @@ public class CellBufferManager implements I_LocalCodeRepository
 			if( m_bufferPairs[i] == null )  continue;
 			
 			m_bufferPairs[i].update_cameraMoving(timestep, grid, camera, snappingCoordinate_nullable, alternativeCodeSource, options__extends__smF_BufferUpdateOption, m_currentSubCellCount, m_currentSubCellCount_nonOverridden);
+		}
+		
+		for( int i = 0; i < m_bufferPairs.length; i++ )
+		{
+			CellBufferPair ithPair = m_bufferPairs[i];
+			
+			if( ithPair == null )  continue;
+			
+			ithPair.clearTheDead(grid);
 		}
 		
 //		s_logger.severe(m_cellPool.getCheckOutCount()+"/" + m_cellPool.getAllocCount());

@@ -8,8 +8,11 @@ import swarm.client.app.A_ClientApp;
 import swarm.client.app.AppContext;
 import swarm.client.entities.BufferCell;
 import swarm.client.entities.Camera;
+import swarm.client.entities.ClientGrid;
 import swarm.client.entities.I_BufferCellVisualization;
 import swarm.client.managers.CameraManager;
+import swarm.client.managers.CellBuffer;
+import swarm.client.managers.CellBufferManager;
 import swarm.client.states.camera.StateMachine_Camera;
 import swarm.client.view.E_ZIndex;
 import swarm.client.view.S_UI;
@@ -27,10 +30,12 @@ import swarm.shared.entities.A_Grid;
 import swarm.shared.entities.E_CodeSafetyLevel;
 import swarm.shared.entities.E_CodeType;
 import swarm.shared.structs.Code;
+import swarm.shared.structs.GridCoordinate;
 import swarm.shared.structs.MutableCode;
 import swarm.shared.structs.Point;
 import swarm.shared.structs.Rect;
 
+import com.dougkoellmer.client.app.ClientApp;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
@@ -193,8 +198,47 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 	private double m_clearLoadingTimer = 0.0;
 	private double m_timeSinceFirstCodeSet = 0.0;
 	
-	public VisualCell(I_CellSpinner spinner, SandboxManager sandboxMngr, CameraManager cameraMngr, double retractionEasing, double sizeChangeTime)
+	private static final class CustomObscured extends ClientGrid.Obscured
 	{
+		private int m_obscuredCount = 0;
+		private final VisualCell m_cell;
+		
+		CustomObscured(VisualCell thisCell)
+		{
+			m_cell = thisCell;
+		}
+		
+		public void reset()
+		{
+			m_obscuredCount = 0;
+		}
+		
+		@Override public boolean isVisualizationLoaded()
+		{
+			CellBufferManager bufferMngr = m_cell.m_appContext.cellBufferMngr;
+			int index = U_Bits.calcBitPosition(this.subCellCount);
+			CellBuffer buffer = bufferMngr.getDisplayBuffer(index);
+			BufferCell cell = buffer.getCellAtAbsoluteCoord(this.m, this.n);
+			
+			if( cell == null ) return false;
+			
+			VisualCell visualCell = (VisualCell) cell.getVisualization();
+			
+			if( visualCell.isLoaded() )
+			{
+				m_obscuredCount++;
+			}
+			
+			return false;
+		}
+	}
+	
+	private final CustomObscured m_obscured = new CustomObscured(this);
+	private final AppContext m_appContext;
+	
+	public VisualCell(AppContext appContext, I_CellSpinner spinner, SandboxManager sandboxMngr, CameraManager cameraMngr, double retractionEasing, double sizeChangeTime)
+	{
+		m_appContext = appContext;
 		m_retractionEasing = retractionEasing;
 		m_spinner = spinner;
 		m_cameraMngr = cameraMngr;
@@ -527,7 +571,17 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 		this.setSize(m_width + "px", m_height + "px");
 	}
 	
-	public void onCreate(BufferCell bufferCell, int width, int height, int padding, int subCellDimension, boolean justRemovedMetaCountOverride)
+	@Override public void onRevealed()
+	{
+		m_obscured.m_obscuredCount--;
+		
+		if( m_obscured.m_obscuredCount <= 0 )
+		{
+			this.setVisible(true);
+		}
+	}
+	
+	public void onCreate(BufferCell bufferCell, int width, int height, int padding, int subCellDimension, int highestPossibleSubCellCount, boolean justRemovedMetaCountOverride)
 	{
 //		if( subCellDimension == 1 && bufferCell.getCoordinate().isEqualTo(16, 14) )
 //		{
@@ -550,7 +604,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 		
 		Camera camera = m_cameraMngr.getCamera();
 		double deltaZ = camera.getPosition().getZ() - camera.getPrevPosition().getZ();
-		boolean notDoingFadeIn = deltaZ < 0.0 || justRemovedMetaCountOverride;
+		boolean couldBeZoomingInFromMeta = deltaZ < 0.0 || justRemovedMetaCountOverride;
 		
 		onCreatedOrRecycled(width, height, padding, subCellDimension);
 		
@@ -568,8 +622,13 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 		
 		this.showEmptyContent();
 
-		if( notDoingFadeIn )
+		if( couldBeZoomingInFromMeta )
 		{
+			if( subCellDimension == 16 )
+			{
+				s_logger.severe("ERER");
+			}
+			
 			m_fadeIn = false;
 			ensureFadedIn();
 		}
@@ -578,6 +637,27 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 			m_fadeIn = true;
 			ensureFadedOut();
 		}
+		
+		//--- DRK > Originally was just doing this for the zoom in case, but technically
+		//---		we could zoom in then pan real fast and create a cell_1 that is still covered
+		//---		by a meta on death row.
+		boolean obscuredAsCell1 = false;
+		if( subCellDimension == 1  )
+		{
+			ClientGrid grid = (ClientGrid) bufferCell.getGrid();
+			GridCoordinate coord = bufferCell.getCoordinate();
+			m_obscured.reset();
+			grid.isObscured(coord.getM(), coord.getN(), 1, highestPossibleSubCellCount, m_obscured);
+			
+			if( m_obscured.m_obscuredCount > 0 )
+			{
+				m_fadeIn = false;
+				ensureFadedIn();
+				obscuredAsCell1 = true;
+			}
+		}
+		
+		setVisible(!obscuredAsCell1);
 		
 //		if( subCellDimension > 1 )
 //		{
@@ -794,6 +874,8 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 	@Override
 	public void onFocusGained()
 	{
+		this.setVisible(true);
+		
 		m_isSnapping = false;
 		m_isFocused = true;
 		
@@ -1001,6 +1083,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 	
 	private void setCode_commonPreInit(Code code)
 	{
+		this.setVisible(true); // just in case, not needed in all cases.
 		this.clearStatusHtml();
 		
 		m_queuedCode = null;
@@ -1164,6 +1247,24 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 
 	private native void addImagesLoadedListener(VisualCell cell, Element element)
 	/*-{
+		
+		$wnd.$(element).bind({
+		    load: function()
+		    {
+				if( element.parentNode )
+				{
+					console.log("has parent");
+				}
+				else
+				{
+					console.log("doesn't have parent");
+				}
+		    },
+		    error: function() {
+		        alert('Error thrown, image didn\'t load, probably a 404.');
+		    }
+		});
+
 			var imgLoad = new $wnd.imagesLoaded( element );
 			
 			imgLoad.on('done', function()

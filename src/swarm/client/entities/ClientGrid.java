@@ -17,7 +17,12 @@ public class ClientGrid extends A_Grid
 		public int m;
 		public int n;
 		public int offset;
-		public int subCellDimension;
+		public int subCellCount;
+		
+		public boolean isVisualizationLoaded()
+		{
+			return true;
+		}
 	}
 	
 	private static final BitArray EMPTY_BIT_ARRAY = new BitArray();
@@ -91,10 +96,13 @@ public class ClientGrid extends A_Grid
 				
 				out.m = m_sub;
 				out.n = n_sub;
-				out.subCellDimension = currentSubCellCount;
+				out.subCellCount = currentSubCellCount;
 				out.offset = modOffset;
 				
-				return true;
+				if( out.isVisualizationLoaded() )
+				{
+					return true;
+				}
 			}
 		}
 		

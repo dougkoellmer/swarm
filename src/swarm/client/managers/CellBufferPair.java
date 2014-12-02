@@ -29,11 +29,16 @@ public class CellBufferPair
 	
 	CellBufferPair(CellBufferManager parent, CellCodeManager codeMngr, CellSizeManager cellSizeMngr, BufferCellPool pool, int subCellCount)
 	{
-		m_killQueue = new CellKillQueue(pool);
+		m_killQueue = new CellKillQueue(parent, subCellCount, pool);
 		m_displayBuffer = new CellBuffer(parent, codeMngr, pool, cellSizeMngr, subCellCount, m_killQueue);
 		m_backBuffer = new CellBuffer(parent, codeMngr, pool, cellSizeMngr, subCellCount, m_killQueue);
 		
 		m_subCellCount = subCellCount;
+	}
+	
+	void clearTheDead(ClientGrid grid)
+	{
+		m_killQueue.clearTheDead(grid);
 	}
 	
 	void update_cameraStill(double timestep)

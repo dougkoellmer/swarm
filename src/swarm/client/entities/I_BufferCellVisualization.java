@@ -31,4 +31,6 @@ public interface I_BufferCellVisualization
 	boolean isLoaded();
 	
 	void onSavedFromDeathSentence();
+	
+	void onRevealed();
 }
