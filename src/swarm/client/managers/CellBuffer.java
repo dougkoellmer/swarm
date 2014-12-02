@@ -148,6 +148,11 @@ public class CellBuffer extends A_BufferCellList
 		boolean flushPopulator = (options__extends__smF_BufferUpdateOption & F_BufferUpdateOption.FLUSH_CELL_POPULATOR) != 0;
 		boolean justRemovedOverride = (options__extends__smF_BufferUpdateOption & F_BufferUpdateOption.JUST_REMOVED_OVERRIDE) != 0;
 		boolean madeOrSwappedSnapTargetCell = false;
+		
+		if( justRemovedOverride )
+		{
+			s_logger.severe("just removed override");
+		}
 
 		int i;
 		int m, n;

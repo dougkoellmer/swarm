@@ -624,13 +624,12 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 
 		if( couldBeZoomingInFromMeta )
 		{
-			if( subCellDimension == 16 )
+			//--- DRK > Hmm with reveal logic now I'm not sure this is needed.
+			if( subCellDimension == 1 )
 			{
-				s_logger.severe("ERER");
+				m_fadeIn = false;
+				ensureFadedIn();
 			}
-			
-			m_fadeIn = false;
-			ensureFadedIn();
 		}
 		else
 		{
@@ -967,6 +966,9 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 	
 	public void popUp()
 	{
+		ensureFadedIn();
+		m_fadeIn = false;
+		
 		//--- DRK > Added this conditional because for fringe case of instant snap,
 		//--- 		onFocusGained can be called before popUp. I thought this case wasn't
 		//---		a problem before, but may not have tested it, or something might have changed.
@@ -974,10 +976,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 		//---		in state machine, and popUp is invoked from a UI handler of the state event,
 		//---		so comes later if the snap is instant.
 		if( !m_isFocused )
-		{
-			ensureFadedIn();
-			m_fadeIn = false;
-			
+		{			
 			setZIndex(E_ZIndex.CELL_POPPED.get());
 			m_isSnapping = true;
 		}
