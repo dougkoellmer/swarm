@@ -531,7 +531,8 @@ public class MouseNavigator implements I_UIElement, Mouse.I_Listener
 			{
 				if ( m_cameraState instanceof State_CameraSnapping )
 				{
-					m_cameraMachine.getContext().perform(Action_Camera_SnapToPoint.class);
+					m_args_SnapToPoint.init(camera.getPosition(), true, true);
+					m_cameraMachine.getContext().perform(Action_Camera_SnapToPoint.class, m_args_SnapToPoint);
 				}
 				else if ( m_cameraState instanceof State_ViewingCell )
 				{

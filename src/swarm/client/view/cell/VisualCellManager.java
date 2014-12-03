@@ -419,7 +419,7 @@ public class VisualCellManager implements I_UIElement
 			cellHeightForMeta = (grid.getCellHeight())*sizeScaling;
 		}
 		
-		String transformProperty = m_viewContext.appContext.platformInfo.getTransformProperty();
+		final String transformProperty = m_viewContext.appContext.platformInfo.getTransformProperty();
 		
 		int subCellCount_highest_div = subCellCount_highest / subCellCount_i;
 		double cellWidth_div = cellWidthPlusPadding / ((double)subCellCount_highest_div);
@@ -610,9 +610,22 @@ public class VisualCellManager implements I_UIElement
 				ithVisualCell.setScrollMode(E_ScrollMode.NOT_SCROLLING);
 			}
 			
-			String translateProperty = U_Css.createTranslateTransform(translateX, translateY, use3dTransforms);
-			String transform = scaleProperty != null ? translateProperty + " " + scaleProperty : translateProperty;
-			ithVisualCell.getElement().getStyle().setProperty(transformProperty, transform);
+			if( subCellCount_i == 1 )
+			{
+				String translateProperty = U_Css.createTranslateTransform(translateX, translateY, use3dTransforms);
+				String transform = scaleProperty != null ? translateProperty + " " + scaleProperty : translateProperty;
+				ithVisualCell.getElement().getStyle().setProperty(transformProperty, transform);
+			}
+			else
+			{
+				ithVisualCell.getElement().getStyle().setLeft(translateX, Unit.PX);
+				ithVisualCell.getElement().getStyle().setTop(translateY, Unit.PX);
+			}
+			
+//			if( subCellCount_i == 16 )// && ithBufferCell.getCoordinate().isEqualTo(0, 0) )
+//			{
+//				s_logger.severe(ithVisualCell.getZIndex()+"");
+//			}
 			
 			if( ithVisualCell.getParent() == null )
 			{
@@ -813,7 +826,7 @@ public class VisualCellManager implements I_UIElement
 				}
 				else if( event.getTargetClass() == Action_Camera_SnapToPoint.class )
 				{
-					Action_Camera_SnapToPoint.Args args = event_cast.getArgsIn();
+					Action_Camera_SnapToPoint.Args args = event_cast.getArgsIn() instanceof Action_Camera_SnapToPoint.Args ? (Action_Camera_SnapToPoint.Args)event_cast.getArgsIn() : null;
 					
 					//--- DRK(TODO): Don't really like this null check here...necessary because of legacy
 					//---			 code using null snap args to simply change to floating state.

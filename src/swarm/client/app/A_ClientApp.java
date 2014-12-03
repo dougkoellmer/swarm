@@ -151,7 +151,7 @@ public class A_ClientApp extends A_App implements I_TimeSource
 	            throwable = throwable.getCause();
 	    }
 
-	    return ret;
+	    return ret + (throwable != null ? " and message: " + throwable.getMessage() : "null");
 	}
 	
 	protected void startUp(E_StartUpStage stage)

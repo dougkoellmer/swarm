@@ -280,6 +280,18 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 	{
 		if( value == m_visible )  return;
 		
+//		if( m_subCellDimension > 1 )
+//		{
+//			if( !value  )
+//			{
+//				s_logger.severe("visible false " + m_bufferCell.getCoordinate());
+//			}
+//			else
+//			{
+//				s_logger.severe("visible true " + m_bufferCell.getCoordinate());
+//			}
+//		}
+		
 		super.setVisible(value);
 		
 		m_visible = value;
@@ -419,6 +431,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 
 		if( this.m_layoutState == LayoutState.CHANGING_FROM_SNAP )
 		{
+//			s_logger.severe("update: changing from snap");
 			double snapProgress = m_cameraMngr.getWeightedSnapProgress();
 			//s_logger.severe("cell: " + " " + m_baseChangeValue + " " + snapProgress + " ");
 			double mantissa = m_baseChangeValue == 1 ? 1 : (snapProgress - m_baseChangeValue) / (1-m_baseChangeValue);
@@ -428,6 +441,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 		}
 		else if( this.m_layoutState == LayoutState.CHANGING_FROM_TIME )
 		{
+//			s_logger.severe("update: changing from time");
 			m_baseChangeValue += timeStep;
 			double mantissa = m_baseChangeValue / m_sizeChangeTime;
 			mantissa = U_Math.clampMantissa(mantissa);
@@ -451,6 +465,11 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 			
 			this.updateLayout(mantissaX, mantissaY);
 		}
+		
+//		if( m_subCellDimension == 16 && m_bufferCell.getCoordinate().isEqualTo(1, 1) )
+//		{
+//			s_logger.severe(m_contentPanel.isVisible()+"");
+//		}
 	}
 	
 	private void updateLayout(double progressMantissaX, double progressMantissaY)
@@ -597,6 +616,17 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 //			s_logger.severe("MADE THE CELL");
 //		}
 		
+		if( subCellDimension == 1 )
+		{
+			this.getElement().getStyle().clearLeft();
+			this.getElement().getStyle().clearTop();
+		}
+		else
+		{
+			final String transformProperty = m_viewContext.appContext.platformInfo.getTransformProperty();
+			this.getElement().getStyle().clearProperty(transformProperty);
+		}
+		
 		
 		m_bufferCell = bufferCell;
 		clearStatusHtmlForSure();
@@ -666,6 +696,11 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 //		{
 //			this.getElement().getStyle().setOpacity(1.0);
 //		}
+	}
+	
+	public int getZIndex()
+	{
+		return m_zIndex;
 	}
 	
 	private void setZIndex(int value)
@@ -824,6 +859,8 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 	
 	private void ensureTargetLayout()
 	{
+//		s_logger.severe("ensuring target layout");;
+		
 		//--- If we get the focused cell size while viewing cell,
 		//--- we don't make user wait, and just instantly expand it.
 		//--- Maybe a little jarring, but should be fringe case.
@@ -959,6 +996,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 	
 	private void setToTargetSizeDefault()
 	{
+//		s_logger.severe("setting to default size");
 		m_layoutState = LayoutState.CHANGING_FROM_TIME;
 		m_baseChangeValue = 0;
 		this.setTargetLayout(m_defaultWidth, m_defaultHeight, 0, 0, 0, 0, 0, 0);
@@ -987,7 +1025,11 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 		boolean wasSnapping = m_isSnapping;
 		m_isSnapping = false;
 		
-		if( m_layoutState == LayoutState.CHANGING_FROM_SNAP )
+		//--- DRK > The || wasSnapping was previously not here. Added because the snap animation, I guess due to
+		//---		some rounding error (and it was only reliably reproducible in debug mode where the time steps are
+		//---		pretty large), could complete before actually getting to the viewing cell state,
+		//---		thus changing layout state to NOT_CHANGING and preventing us from animating back to the default cell size.
+		if( m_layoutState == LayoutState.CHANGING_FROM_SNAP || wasSnapping)
 		{
 			this.setToTargetSizeDefault();
 			

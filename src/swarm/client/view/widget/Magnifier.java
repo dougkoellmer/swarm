@@ -521,9 +521,12 @@ public class Magnifier extends FlowPanel implements I_StateEventListener
 						{
 							m_underThisControl = false;
 							
-							if( ((Action_Camera_SnapToPoint.Args)event_cast.getArgsIn()).isInstant() )
+							if( event_cast.getArgsIn() instanceof Action_Camera_SnapToPoint.Args )
 							{
-								setDraggerPositionFromCamera();
+								if( ((Action_Camera_SnapToPoint.Args)event_cast.getArgsIn()).isInstant() )
+								{
+									setDraggerPositionFromCamera();
+								}
 							}
 						}
 						else

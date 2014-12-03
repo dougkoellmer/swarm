@@ -601,19 +601,22 @@ public class BrowserNavigator implements I_StateEventListener
 					
 					if( floatingState != null )
 					{
-						Action_Camera_SnapToPoint.Args args = event_cast.getArgsIn();
-						
-						if( args != null )
+						if( event_cast.getArgsIn() instanceof Action_Camera_SnapToPoint.Args )
 						{
-							m_pushHistoryStateForFloating = args.get() != this.getClass();
+							Action_Camera_SnapToPoint.Args args = event_cast.getArgsIn();
 							
-							if( m_receivedFloatingStateEntered )
+							if( args != null )
 							{
-								Point point = args.getPoint();
+								m_pushHistoryStateForFloating = args.get() != this.getClass();
 								
-								if( point != null )
+								if( m_receivedFloatingStateEntered )
 								{
-									//setPositionForFloatingState(floatingState, point, false);
+									Point point = args.getPoint();
+									
+									if( point != null )
+									{
+										//setPositionForFloatingState(floatingState, point, false);
+									}
 								}
 							}
 						}
