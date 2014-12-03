@@ -398,13 +398,23 @@ public class MouseNavigator implements I_UIElement, Mouse.I_Listener
 	{
 		boolean viewing = m_viewContext.stateContext.isEntered(State_ViewingCell.class);
 		
+		if( !viewing )
+		{
+			State_CameraSnapping snappingState = m_viewContext.stateContext.get(State_CameraSnapping.class);
+			
+			if( snappingState != null )
+			{
+				viewing = snappingState.getPreviousState() == State_ViewingCell.class;
+			}
+		}
+		
 		updateMouseGridCoord();
 		
 		if( viewing )
 		{
 			backOff();
 			return;
-		}		
+		}
 		
 		if( !m_isMouseTouchingSnappableCell )
 		{

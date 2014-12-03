@@ -310,7 +310,7 @@ public class StateMachine_Camera extends A_StateMachine implements I_StateEventL
 		{
 			int overrideMetaCount = bufferMngr.getOverrideSubCellCount();
 			
-			if( currentNonOverriddenMetaCount >= overrideMetaCount )
+			if( currentNonOverriddenMetaCount > overrideMetaCount )
 			{
 				//--- DRK > Instantly remove the override and start displaying higher meta cells.
 				m_metaStickAroundTimer = DISABLE_TIMER;

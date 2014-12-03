@@ -12,7 +12,8 @@ public class ClientAppConfig extends AppConfig
 {
 	public double killQueueTime = .75;
 
-	public double timeThatMetaCellSticksAroundAfterCameraStopsZooming = .18;
+//	public double timeThatMetaCellSticksAroundAfterCameraStopsZooming = .18;
+	public double timeThatMetaCellSticksAroundAfterCameraStopsZooming = 10.0;
 	
 	
 	

@@ -1252,15 +1252,15 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 		    {
 				if( element.parentNode )
 				{
-					console.log("has parent");
+//					console.log("has parent");
 				}
 				else
 				{
-					console.log("doesn't have parent");
+//					console.log("doesn't have parent");
 				}
 		    },
 		    error: function() {
-		        alert('Error thrown, image didn\'t load, probably a 404.');
+//		        alert('Error thrown, image didn\'t load, probably a 404.');
 		    }
 		});
 

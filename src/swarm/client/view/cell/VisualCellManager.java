@@ -146,9 +146,10 @@ public class VisualCellManager implements I_UIElement
 //			String color = "rgb(255,0,0)";
 			String color = "rgb(255,255,255)";
 			
-			//--- DRK > Max dimensions could actually be a bit smaller cause of padding...eh.
-			int maxCellWidth = grid.getCellWidth()/2;
-			int maxCellHeight = grid.getCellHeight()/2;
+			//--- DRK > These values were previously divided by two but we have to bump them up to the normal
+			//---		max cell width/height because of new meta count override when zooming in.
+			int maxCellWidth = grid.getCellWidth();
+			int maxCellHeight = grid.getCellHeight();
 			double pinch = m_viewContext.config.canvasBackingPinch;
 			
 			m_backing = new CanvasBacking(animation, color, maxCellWidth, maxCellHeight, pinch, new CanvasBacking.I_Skipper()
@@ -438,6 +439,7 @@ public class VisualCellManager implements I_UIElement
 //			double scaledCellWidth = ((double)grid.getCellWidth())*sizeScaling;
 //			double scaledCellWidthPlusPadding = ((double)grid.getCellWidth()+grid.getCellPadding())*sizeScaling;
 			
+//			s_logger.severe(scaledCellWidth + " " + cellWidthPlusPadding);
 			m_backingConfig.set
 			(
 				startX_meta, startY_meta, coord.getM(), coord.getN(), cellBuffer_i.getWidth(), cellBuffer_i.getHeight(),

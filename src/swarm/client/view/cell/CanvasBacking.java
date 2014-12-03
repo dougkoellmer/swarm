@@ -1,5 +1,7 @@
 package swarm.client.view.cell;
 
+import java.util.logging.Logger;
+
 import swarm.shared.structs.BitArray;
 
 import com.google.gwt.canvas.client.Canvas;
@@ -14,6 +16,8 @@ import com.google.gwt.user.client.ui.RootPanel;
 
 public class CanvasBacking
 {
+	private static final Logger s_logger = Logger.getLogger(CanvasBacking.class.getName());
+	
 	public static interface I_Skipper
 	{
 		int skip(int m, int n);
@@ -62,8 +66,8 @@ public class CanvasBacking
 	
 	private final Canvas m_canvas = Canvas.createIfSupported();
 	
-	private final Canvas m_stageCanvas = Canvas.createIfSupported();
-	private final CanvasElement m_stageCanvasElement;
+	private final Canvas m_stagingCanvas = Canvas.createIfSupported();
+	private final CanvasElement m_stagingCanvasElement;
 	
 	private CssColor m_fillStyle;
 	private final I_Skipper m_skipper;
@@ -80,9 +84,13 @@ public class CanvasBacking
 		m_animation = animation;
 		m_pinch = pinch;
 		
-		m_stageCanvasElement = m_stageCanvas.getCanvasElement();
+		m_stagingCanvasElement = m_stagingCanvas.getCanvasElement();
 		
-		setCanvasSize(m_stageCanvas, maxCellWidth, maxCellHeight);
+//		m_stagingCanvasElement.getStyle().setPosition(Position.ABSOLUTE);
+//		m_stagingCanvasElement.getStyle().setZIndex(10000);
+//		RootPanel.get().add(m_stagingCanvas);
+		
+		setCanvasSize(m_stagingCanvas, maxCellWidth, maxCellHeight);
 		
 		setColor(cellBackgroundColor);
 	}
@@ -91,7 +99,7 @@ public class CanvasBacking
 	{
 		m_fillStyle = CssColor.make(color);
 		
-		Context2d stageContext = m_stageCanvas.getContext2d();
+		Context2d stageContext = m_stagingCanvas.getContext2d();
 		stageContext.setFillStyle(m_fillStyle);
 	}
 	
@@ -123,7 +131,7 @@ public class CanvasBacking
  		clear();
 		
 		Context2d context = m_canvas.getContext2d();
-		Context2d stageContext = m_stageCanvas.getContext2d();
+		Context2d stageContext = m_stagingCanvas.getContext2d();
 		double cellSize = config.cellSize;
 		cellSize -= m_pinch*2;
 		
@@ -182,7 +190,7 @@ public class CanvasBacking
 					foundFirstCell = true;
 				}
 
-				context.drawImage(m_stageCanvasElement, 0, 0, cellSize, cellSize, currX, currY, cellSize, cellSize);
+				context.drawImage(m_stagingCanvasElement, 0, 0, cellSize, cellSize, currX, currY, cellSize, cellSize);
 				m_clear = false;
 			}
 		}
