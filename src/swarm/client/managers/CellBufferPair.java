@@ -27,9 +27,9 @@ public class CellBufferPair
 	
 	private final int m_subCellCount;
 	
-	CellBufferPair(CellBufferManager parent, CellCodeManager codeMngr, CellSizeManager cellSizeMngr, BufferCellPool pool, int subCellCount)
+	CellBufferPair(CellBufferManager parent, CellCodeManager codeMngr, CellSizeManager cellSizeMngr, BufferCellPool pool, int subCellCount, double deathCountdown)
 	{
-		m_killQueue = new CellKillQueue(parent, subCellCount, pool);
+		m_killQueue = new CellKillQueue(parent, subCellCount, pool, deathCountdown);
 		m_displayBuffer = new CellBuffer(parent, codeMngr, pool, cellSizeMngr, subCellCount, m_killQueue);
 		m_backBuffer = new CellBuffer(parent, codeMngr, pool, cellSizeMngr, subCellCount, m_killQueue);
 		

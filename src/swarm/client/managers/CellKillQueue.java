@@ -11,20 +11,19 @@ import swarm.shared.utils.U_Bits;
 class CellKillQueue extends A_BufferCellList
 {
 	private final ClientGrid.Obscured m_obscured = new ClientGrid.Obscured();
+	private final double m_deathCountdown;
 	
-	CellKillQueue(CellBufferManager parent, int subCellCount, BufferCellPool pool)
+	CellKillQueue(CellBufferManager parent, int subCellCount, BufferCellPool pool, double deathCountdown)
 	{
 		super(parent, subCellCount, pool);
+		
+		m_deathCountdown = deathCountdown;
 	}
-
-//	private static final double DEATH_COUNTDOWN = .75;
-	private static final double DEATH_COUNTDOWN = 5.0;
-//	private static final double DEATH_COUNTDOWN = 120.0;
 	
 	void sentenceToDeath(BufferCell cell)
 	{
 		m_cellList.add(cell);
-		cell.sentenceToDeath(DEATH_COUNTDOWN);
+		cell.sentenceToDeath(m_deathCountdown);
 	}
 	
 	void update(double timestep)

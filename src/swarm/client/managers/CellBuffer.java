@@ -138,24 +138,13 @@ public class CellBuffer extends A_BufferCellList
 	
 	void imposeBuffer(ClientGrid grid, Camera camera, CellBuffer otherBuffer, GridCoordinate snapCoord_nullable, I_LocalCodeRepository localCodeSource, int highestSubCellCount, int highestSubCellCount_notOverridden, int options__extends__smF_BufferUpdateOption)
 	{
-		if( m_subCellCount == 16 )
-		{
-//			s_logger.severe("");
-		}
-
 		boolean createVisualizations = (options__extends__smF_BufferUpdateOption & F_BufferUpdateOption.CREATE_VISUALIZATIONS) != 0;
 		boolean communicateWithServer = (options__extends__smF_BufferUpdateOption & F_BufferUpdateOption.COMMUNICATE_WITH_SERVER) != 0;
 		boolean flushPopulator = (options__extends__smF_BufferUpdateOption & F_BufferUpdateOption.FLUSH_CELL_POPULATOR) != 0;
 		boolean justRemovedOverride = (options__extends__smF_BufferUpdateOption & F_BufferUpdateOption.JUST_REMOVED_OVERRIDE) != 0;
 		boolean madeOrSwappedSnapTargetCell = false;
-		
-		if( justRemovedOverride )
-		{
-			s_logger.severe("just removed override");
-		}
 
-		int i;
-		int m, n;
+		int i, m, n;
 		
 		int otherBufferCellCount = otherBuffer.m_cellList.size();
 

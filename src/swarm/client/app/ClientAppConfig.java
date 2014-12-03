@@ -10,6 +10,12 @@ import swarm.shared.structs.Point;
 
 public class ClientAppConfig extends AppConfig
 {
+	public double killQueueTime = .75;
+
+	public double timeThatMetaCellSticksAroundAfterCameraStopsZooming = .18;
+	
+	
+	
 	public double floatingHistoryUpdateFreq_seconds = .75;
 	public double cellHudHeight;
 	public int metaLevelCount = 1;
@@ -18,8 +24,7 @@ public class ClientAppConfig extends AppConfig
 	public int framerate_milliseconds = 33;
 	public double backOffDistance;
 	
-	public double timeThatMetaCellSticksAroundAfterCameraStopsZooming = .18;
-//	public double timeThatMetaCellSticksAroundAfterCameraStopsZooming = 2.0;
+	
 	public boolean makeGridRequest = true;
 	
 	public boolean useVirtualSandbox = true;

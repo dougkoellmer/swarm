@@ -123,7 +123,7 @@ public class VisualCellPool implements I_CellPoolDelegate
 			@Override
 			public VisualCell newInstance()
 			{
-				VisualCell cell = new VisualCell(viewContext.appContext, spinnerFactory.newSpinner(), sandboxMngr, viewContext.appContext.cameraMngr, viewContext.config.cellRetractionEasing, viewContext.config.cellSizeChangeTime_seconds);
+				VisualCell cell = new VisualCell(viewContext, spinnerFactory.newSpinner(), sandboxMngr, viewContext.appContext.cameraMngr);
 				cell.setCodeListener(m_codeListener);
 				
 				return cell;

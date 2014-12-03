@@ -76,14 +76,16 @@ public class CellBufferManager implements I_LocalCodeRepository
 	
 	private boolean m_dirty = false;
 	private boolean m_didJustUpdateBuffers = false;
+	private final double m_deathCountdown;
 	
 	
-	public CellBufferManager(ClientGrid grid, CellCodeManager codeMngr, CellSizeManager cellSizeMngr, int metaLevelCount) 
+	public CellBufferManager(ClientGrid grid, CellCodeManager codeMngr, CellSizeManager cellSizeMngr, int metaLevelCount, double deathCountdown) 
 	{
 		m_cellPool = new BufferCellPool();
 		m_codeMngr = codeMngr;
 		m_sizeMngr = cellSizeMngr;
 		m_levelCount = metaLevelCount + 1;
+		m_deathCountdown = deathCountdown;
 		
 		createBufferPairs(grid);
 	}
@@ -127,7 +129,7 @@ public class CellBufferManager implements I_LocalCodeRepository
 			}
 			else
 			{
-				m_bufferPairs[i] = new CellBufferPair(this, m_codeMngr, m_sizeMngr, m_cellPool, subCellCount);
+				m_bufferPairs[i] = new CellBufferPair(this, m_codeMngr, m_sizeMngr, m_cellPool, subCellCount, m_deathCountdown);
 			}
 		}
 	}

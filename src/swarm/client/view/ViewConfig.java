@@ -6,6 +6,9 @@ import swarm.shared.statemachine.I_StateEventListener;
 
 public class ViewConfig
 {
+	public double cellFadeInTime = .25;
+	public int flushCodeFrameRate = 2;
+	
 	public double magFadeInTime_seconds = .5;
 	public double hudFadeOutTime_seconds = magFadeInTime_seconds;
 	public double focuserFadeOutTime_seconds = .25;

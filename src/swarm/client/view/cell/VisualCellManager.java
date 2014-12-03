@@ -49,10 +49,6 @@ public class VisualCellManager implements I_UIElement
 	private static final double NO_SCALING = .99999;
 	private static final Logger s_logger = Logger.getLogger(VisualCellManager.class.getName());
 	
-//	private static final int FLUSH_CODE_FRAME_RATE = 2;
-	private static final int FLUSH_CODE_FRAME_RATE = 60;
-//	private static final int FLUSH_CODE_FRAME_RATE = 120;
-	
 	private final Panel m_container;
 	
 	private final Point m_utilPoint1 = new Point();
@@ -79,13 +75,14 @@ public class VisualCellManager implements I_UIElement
 	private final CanvasBacking.UpdateConfig m_backingConfig = new CanvasBacking.UpdateConfig();
 	private boolean m_needToUpdateBacking = false;
 	
-	private int m_flushCodeTracker = FLUSH_CODE_FRAME_RATE;
+	private int m_flushCodeTracker;
 	
 	public VisualCellManager(ViewContext viewContext, Panel container)
 	{
 		m_container = container;
 		m_viewContext = viewContext;
 		m_cellPool = new VisualCellPool(viewContext.appContext.cellSandbox, m_container, m_viewContext.spinnerFactory, viewContext);
+		m_flushCodeTracker = viewContext.config.flushCodeFrameRate;
 		
 		m_viewContext.appContext.cellBufferMngr.getCellPool().setDelegate(m_cellPool);
 
@@ -157,8 +154,9 @@ public class VisualCellManager implements I_UIElement
 			m_backing = new CanvasBacking(animation, color, maxCellWidth, maxCellHeight, pinch, new CanvasBacking.I_Skipper()
 			{
 				@Override public int skip(int m, int n)
-				{					
+				{
 					CellBufferManager cellManager = m_viewContext.appContext.cellBufferMngr;
+					
 					if( grid.isObscured(m, n, 1, cellManager.getSubCellCount(), m_obscured) )
 					{
 						CellBuffer cellBuffer = cellManager.getDisplayBuffer(U_Bits.calcBitPosition(m_obscured.subCellCount));
@@ -182,6 +180,13 @@ public class VisualCellManager implements I_UIElement
 						{							
 							return 1;
 						}
+					}
+					
+					CellBuffer cellBuffer_1 = cellManager.getDisplayBuffer(0);
+					BufferCell cell = cellBuffer_1.getCellAtAbsoluteCoord(m, n);
+					if( cell != null && cell.getVisualization().isLoaded() )
+					{
+						return 1;
 					}
 					
 					return 0;
@@ -662,7 +667,7 @@ public class VisualCellManager implements I_UIElement
 			}
 		}
 		
-		if( m_flushCodeTracker < FLUSH_CODE_FRAME_RATE )
+		if( m_flushCodeTracker < m_viewContext.config.flushCodeFrameRate )
 		{
 			return false;
 		}

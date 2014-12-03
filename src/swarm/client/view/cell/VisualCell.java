@@ -59,8 +59,6 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 	private static final double META_IMAGE_LOAD_DELAY = .5;
 	private static final double META_IMAGE_RENDER_DELAY__SHOULD_BE = 2.0;
 	private static final double META_IMAGE_RENDER_DELAY__DEFINITELY_SHOULD_BE = 0.0;
-	private static final double FADE_IN_TIME = .25;
-//	private static final double FADE_IN_TIME = 2.0;
 	
 	public static interface I_CodeListener
 	{
@@ -235,15 +233,17 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 	
 	private final CustomObscured m_obscured = new CustomObscured(this);
 	private final AppContext m_appContext;
+	private final ViewContext m_viewContext;
 	
-	public VisualCell(AppContext appContext, I_CellSpinner spinner, SandboxManager sandboxMngr, CameraManager cameraMngr, double retractionEasing, double sizeChangeTime)
+	public VisualCell(ViewContext viewContext, I_CellSpinner spinner, SandboxManager sandboxMngr, CameraManager cameraMngr)
 	{
-		m_appContext = appContext;
-		m_retractionEasing = retractionEasing;
+		m_viewContext = viewContext;
+		m_appContext = viewContext.appContext;
+		m_retractionEasing = viewContext.config.cellRetractionEasing;
 		m_spinner = spinner;
 		m_cameraMngr = cameraMngr;
 		m_sandboxMngr = sandboxMngr;
-		m_sizeChangeTime = sizeChangeTime;
+		m_sizeChangeTime = viewContext.config.cellSizeChangeTime_seconds;
 		m_id = s_currentId;
 		s_currentId++;
 		
@@ -324,7 +324,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 	{
 		if( !m_fadeIn || !m_hasSetCodeYet )  return;
 		
-		double alpha = time / FADE_IN_TIME;
+		double alpha = time / m_viewContext.config.cellFadeInTime;
 //		alpha = Math.sqrt(alpha);
 		m_contentPanel.getElement().getStyle().setOpacity(alpha);
 		
@@ -391,7 +391,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 			{
 				m_clearLoadingTimer += timeStep;
 				
-				if( m_clearLoadingTimer >= FADE_IN_TIME )
+				if( m_clearLoadingTimer >= m_viewContext.config.cellFadeInTime )
 				{
 					clearLoading_private();
 				}
