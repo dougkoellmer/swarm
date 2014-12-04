@@ -75,6 +75,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 	
 	static enum E_MetaState
 	{
+		NOT_SET,
 		DELAYING,
 		LOADING,
 		RENDERING,
@@ -719,6 +720,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 	
 	private void onCreatedOrRecycled(int width, int height, int padding, int subCellDimension)
 	{
+		clearMetaImageState();
 		m_timeSinceFirstCodeSet = 0.0;
 		m_totalTimeSinceCreation = 0.0;
 		m_clearLoadingTimer = DISABLE_TIMER;
@@ -1267,7 +1269,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 	private void clearMetaImageState()
 	{
 		stopMetaTimeTracker();
-		m_metaState = null;
+		m_metaState = E_MetaState.NOT_SET;
 		m_metaCode = null;
 	}
 	
@@ -1359,7 +1361,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 	
 	public E_MetaState getMetaState()
 	{
-		if( m_codeSafetyLevel != E_CodeSafetyLevel.META_IMAGE )  return null;
+		if( m_codeSafetyLevel != E_CodeSafetyLevel.META_IMAGE )  return E_MetaState.NOT_SET;
 
 		return m_metaState;
 	}
