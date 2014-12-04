@@ -652,6 +652,7 @@ public class VisualCellManager implements I_UIElement
 		BufferCell snappingOrFocusedCell = null;
 		
 		State_ViewingCell viewingState = m_viewContext.stateContext.get(State_ViewingCell.class);
+		State_CameraSnapping snappingState = null;
 		
 		if( viewingState != null )
 		{
@@ -659,7 +660,7 @@ public class VisualCellManager implements I_UIElement
 		}
 		else
 		{
-			State_CameraSnapping snappingState = m_viewContext.stateContext.get(State_CameraSnapping.class);
+			snappingState = m_viewContext.stateContext.get(State_CameraSnapping.class);
 			
 			if( snappingState != null )
 			{
@@ -680,6 +681,13 @@ public class VisualCellManager implements I_UIElement
 					return false;
 				}
 			}
+		}
+		
+		//--- DRK > Make it so we don't dequeue any code and insert potentially hiccup-inducing
+		//---		DOM changes while we're snapping to a cell.
+		if( snappingState != null )
+		{
+			return false;
 		}
 		
 		if( m_flushCodeTracker < m_viewContext.config.flushCodeFrameRate )
