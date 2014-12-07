@@ -1007,6 +1007,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 	public void popUp()
 	{
 		ensureFadedIn();
+		this.setVisible(true);
 		m_fadeIn = false;
 		
 		//--- DRK > Added this conditional because for fringe case of instant snap,
@@ -1290,24 +1291,6 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 
 	private native void addImagesLoadedListener(VisualCell cell, Element element)
 	/*-{
-		
-		$wnd.$(element).bind({
-		    load: function()
-		    {
-				if( element.parentNode )
-				{
-//					console.log("has parent");
-				}
-				else
-				{
-//					console.log("doesn't have parent");
-				}
-		    },
-		    error: function() {
-//		        alert('Error thrown, image didn\'t load, probably a 404.');
-		    }
-		});
-
 			var imgLoad = new $wnd.imagesLoaded( element );
 			
 			imgLoad.on('done', function()

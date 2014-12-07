@@ -220,6 +220,8 @@ public class VisualCellManager implements I_UIElement
 		{
 			m_backing.getCanvas().setVisible(true);
 			m_backing.update(m_backingConfig);
+			
+			m_needToUpdateBacking = false;
 		}
 		else
 		{
@@ -466,6 +468,8 @@ public class VisualCellManager implements I_UIElement
 		}
 
 		boolean keepTryingToFlush = initFlushingRoundAndKeepFlushing(subCellCount_i);
+		
+		double focusMetaOffsetX = -1.0;
 //		s_logger.severe("keepTryingToFlush="+keepTryingToFlush+" and m_flushCodeTimer="+m_flushCodeTimer);
 		
 //		s_logger.severe(subCellCount_buffer + " " + subCellCount_highest + " " +cellWidthPlusPadding + " " + cellWidth_div);
@@ -578,6 +582,8 @@ public class VisualCellManager implements I_UIElement
 				ithVisualCell.setMetaSize(cellWidthForMeta, cellHeightForMeta);
 			}
 			
+			E_ScrollMode scrollMode = E_ScrollMode.NOT_SCROLLING;
+			
 			if( isViewingCell )
 			{
 				if( ithBufferCell != viewedCell )
@@ -595,20 +601,22 @@ public class VisualCellManager implements I_UIElement
 					//--- DRK > In a way we only should need to do this once when target cell becomes focused,
 					//---		but we're doing it for all cells everytime because it's a lightweight operation
 					//---		and passive for if new cells are created on a window resize.
-					ithVisualCell.setScrollMode(E_ScrollMode.SCROLLING_NOT_FOCUSED);
+					scrollMode = E_ScrollMode.SCROLLING_NOT_FOCUSED;
 				}
 				else
 				{
 					ithVisualCell.removeCrop();
-					ithVisualCell.setScrollMode(E_ScrollMode.SCROLLING_FOCUSED);
+					scrollMode = E_ScrollMode.SCROLLING_FOCUSED;
 				}
 			}
 			else if( !isViewingCell && isViewStateTransition )
 			{
 				//--- DRK > Removing the crop when exiting the viewing cell state.
 				ithVisualCell.removeCrop();
-				ithVisualCell.setScrollMode(E_ScrollMode.NOT_SCROLLING);
+				scrollMode = E_ScrollMode.NOT_SCROLLING;
 			}
+			
+			ithVisualCell.setScrollMode(scrollMode);
 			
 			if( subCellCount_i == 1 )
 			{
@@ -618,6 +626,17 @@ public class VisualCellManager implements I_UIElement
 			}
 			else
 			{
+				if( scrollMode == E_ScrollMode.SCROLLING_NOT_FOCUSED )
+				{
+					//--- DRK > This offset crap is a hack...need to properly calculate both top and left
+					//---		offset for FIXED position meta cells now that they don't use transform3d.
+					if( focusMetaOffsetX < 0.0 )
+					{
+						focusMetaOffsetX = m_container.getAbsoluteLeft();
+					}
+					
+					translateX += focusMetaOffsetX;
+				}
 				ithVisualCell.getElement().getStyle().setLeft(translateX, Unit.PX);
 				ithVisualCell.getElement().getStyle().setTop(translateY, Unit.PX);
 			}
