@@ -97,6 +97,12 @@ public class VisualCellHighlight extends FlowPanel implements I_UIElement
 		
 		MouseNavigator navManager = m_viewContext.mouseNavigator;
 		
+		if( !navManager.isMouseTouchingSnappableCell() )
+		{
+			this.setVisible(false);
+			return;
+		}
+		
 		//--- DRK > TODO: Really minor so might never fix, but this is kinda sloppy.
 		//---				There should probably be a "panning" state or something that the highlight listens for instead.
 		Mouse mouse = navManager.getMouse();

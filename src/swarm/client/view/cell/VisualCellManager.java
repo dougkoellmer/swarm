@@ -200,6 +200,8 @@ public class VisualCellManager implements I_UIElement
 			m_backing.getCanvas().getElement().getStyle().setProperty("transformOrigin", "0px 0px 0px");
 			m_backing.getCanvas().addStyleName("sm_canvas_backing");
 			E_ZIndex.CELL_BACKING.assignTo(m_backing.getCanvas());
+//			E_ZIndex.CELL_HIGHLIGHT.assignTo(m_backing.getCanvas());
+			
 			resizeBacking();
 			
 //			E_ZIndex.CELL_BACKING.assignTo(m_backing.getCanvas());
@@ -776,7 +778,10 @@ public class VisualCellManager implements I_UIElement
 						{
 //							s_logger.severe("updateCellTransforms >=2");
 							
-							this.updateCellTransforms(timestep);
+							if( event.getState().getClass() != State_ViewingCell.class )
+							{
+								this.updateCellTransforms(timestep);
+							}
 						}
 						else
 						{
@@ -867,6 +872,7 @@ public class VisualCellManager implements I_UIElement
 							timestep = cameraMachine.getLastTimeStep();
 						}
 						
+//						s_logger.severe("UPDATING FROM INSTANT SNAP");
 						this.updateCellTransforms(timestep);
 					}
 				}

@@ -744,6 +744,8 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 		if( m_subCellDimension == 1 )
 		{
 			this.getElement().getStyle().setBackgroundColor("#ffffff");
+//			this.getElement().getStyle().setBackgroundColor("#ff0000");
+//			m_contentPanel.getElement().getStyle().setBackgroundColor("#00ff00");
 		}
 		else
 		{
