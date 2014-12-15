@@ -89,6 +89,8 @@ public class BrowserNavigator implements I_StateEventListener
 	
 	private boolean m_doInitialBump = false;
 	
+	private boolean m_lastSnapToCoordinateWasFromHistoryEvent = false;
+	
 	public BrowserNavigator(ViewContext viewContext, String defaultPageTitle, double floatingHistoryUpdateRate_seconds)
 	{
 		m_viewContext = viewContext;
@@ -126,7 +128,11 @@ public class BrowserNavigator implements I_StateEventListener
 					}
 					else
 					{
+						m_lastSnapToCoordinateWasFromHistoryEvent = false;
+						
 						m_viewContext.stateContext.perform(Action_Camera_SnapToCoordinate.class, m_args_SnapToCoordinate);
+						
+						m_lastSnapToCoordinateWasFromHistoryEvent = true;
 					}
 				}
 				else if( state.getPoint() != null )
@@ -413,7 +419,7 @@ public class BrowserNavigator implements I_StateEventListener
 						{
 							StateMachine_Camera machine = m_viewContext.stateContext.getEntered(StateMachine_Camera.class);
 							
-							if( m_stateAlreadyPushedForViewingExit || event.getState().getPreviousState() == State_CameraSnapping.class )
+							if( !m_lastSnapToCoordinateWasFromHistoryEvent && (m_stateAlreadyPushedForViewingExit || event.getState().getPreviousState() == State_CameraSnapping.class) )
 							{
 								m_historyManager.setState(FLOATING_STATE_PATH, m_cameraMngr.getTargetPosition());
 							}
@@ -537,10 +543,29 @@ public class BrowserNavigator implements I_StateEventListener
 						//---		through the url bar, but the address can't be resolved, so we just wipe the url bar completely.
 						m_historyManager.setState(FLOATING_STATE_PATH, m_cameraMngr.getCamera().getPosition());
 					}
+					else
+					{
+						State_CameraSnapping snappingState = event.get(State_CameraSnapping.class);
+						if( snappingState != null ) 
+						{
+							if( snappingState.getPreviousState() == State_ViewingCell.class )
+							{
+								m_historyManager.pushState(args.getAddress(), args.getMapping());
+								
+								m_args_OnMappingResponse = null;
+								m_lastSnapAction = null;
+							}
+							else if( snappingState.getPreviousState() == State_CameraFloating.class )
+							{
+								m_historyManager.setState(args.getAddress(), args.getMapping());
+							}
+						}
+					}
 				}
 				else if( event.getTargetClass() == Action_Camera_SnapToAddress.class ||
 						 event.getTargetClass() == Action_Camera_SnapToCoordinate.class )
 				{
+					m_lastSnapToCoordinateWasFromHistoryEvent = false;
 					m_args_OnAddressResponse = null;
 					
 					if( event.getTargetClass() == Action_Camera_SnapToCoordinate.class )
@@ -590,8 +615,6 @@ public class BrowserNavigator implements I_StateEventListener
 						
 						m_lastSnapAction = (Class<? extends A_Action>) event.getTargetClass();
 					}
-					
-					
 				}
 				else if( event.getTargetClass() == Action_Camera_SnapToPoint.class )
 				{

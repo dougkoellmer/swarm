@@ -1,7 +1,10 @@
 package swarm.client.input;
 
+import java.util.logging.Logger;
+
 import swarm.client.thirdparty.history.HistoryJsWrapper;
 import swarm.client.thirdparty.json.GwtJsonObject;
+import swarm.shared.debugging.U_Debug;
 import swarm.shared.json.A_JsonFactory;
 import swarm.shared.json.I_ReadsJson;
 import swarm.shared.json.I_JsonObject;
@@ -11,6 +14,8 @@ import com.google.gwt.core.client.JavaScriptObject;
 
 public class BrowserHistoryManager
 {
+	private static final Logger s_logger = Logger.getLogger(BrowserHistoryManager.class.getName());
+	
 	public static interface I_Listener
 	{
 		void onStateChange(String path, I_JsonObject state);
@@ -56,6 +61,8 @@ public class BrowserHistoryManager
 	
 	public void setState(String path, String title, I_WritesJson state)
 	{
+//		s_logger.severe(path + " " + state);
+//		U_Debug.printStackTrace(8);
 		m_performingOperation = true;
 		{
 			m_historyJs.replaceState(path, title, createJsObject(state));
@@ -65,6 +72,8 @@ public class BrowserHistoryManager
 	
 	public void pushState(String path, String title, I_WritesJson state)
 	{
+//		s_logger.severe(path + " " + state);
+//		U_Debug.printStackTrace(8);
 		m_performingOperation = true;
 		{
 			m_historyJs.pushState(path, title, createJsObject(state));

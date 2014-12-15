@@ -150,4 +150,18 @@ class HistoryState extends A_JsonEncodable
 	{
 		return m_mapping;
 	}
+	
+	@Override public String toString()
+	{
+		if( m_point != null )
+		{
+			return m_point.toString();
+		}
+		else if( m_mapping != null )
+		{
+			return m_mapping.toString();
+		}
+		
+		return super.toString();
+	}
 }

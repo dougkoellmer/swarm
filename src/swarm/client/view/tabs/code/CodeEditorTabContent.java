@@ -161,6 +161,7 @@ public class CodeEditorTabContent extends AbsolutePanel implements I_TabContent,
 	{
 		double tabButtonContainerHeight = m_viewContext.splitPanel.getTabPanel().getTabButtonContainerHeight();
 		double editorHeight = RootPanel.get().getOffsetHeight() - TabPanel.TAB_HEIGHT - S_UI.MAGIC_UI_SPACING*2 - tabButtonContainerHeight;
+		editorHeight = editorHeight < 0.0 ? 0.0 : editorHeight;
 		m_editor.setSize(m_viewContext.splitPanel.getTabPanelWidth() + "px", editorHeight + "px");
 		
 		m_editor.updateLayout();

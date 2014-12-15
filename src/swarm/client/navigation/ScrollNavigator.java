@@ -2,8 +2,6 @@ package swarm.client.navigation;
 
 import java.util.logging.Logger;
 
-import javax.persistence.criteria.Root;
-
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Overflow;
 import com.google.gwt.event.dom.client.ScrollEvent;

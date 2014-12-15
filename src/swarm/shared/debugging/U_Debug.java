@@ -1,8 +1,14 @@
 package swarm.shared.debugging;
 
+import java.util.logging.Logger;
+
+import swarm.client.input.BrowserHistoryManager;
+
 
 public final class U_Debug
 {
+	private static final Logger s_logger = Logger.getLogger(BrowserHistoryManager.class.getName());
+	
 	private static I_AssertionDelegate s_delegate;
 	
 	private U_Debug()
@@ -33,5 +39,16 @@ public final class U_Debug
 	public static void ASSERT(boolean condition)
 	{
 		U_Debug.ASSERT(condition, "");
+	}
+	
+	public static void printStackTrace(int limit)
+	{
+		Error error = new Error();
+		StackTraceElement[] stackTrace = error.getStackTrace();
+		for( int i = 1; i < stackTrace.length && i < limit; i++ )
+		{
+			s_logger.severe(stackTrace[i].toString());
+		}
+		s_logger.severe("==========");
 	}
 }

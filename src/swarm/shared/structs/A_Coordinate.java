@@ -223,6 +223,6 @@ public abstract class A_Coordinate extends A_JsonEncodable
 	@Override
 	public String toString()
 	{
-		return "["+this.getClass().getName()+"(x="+U_Logging.toFixed(m_x)+", y="+U_Logging.toFixed(m_y)+", z="+U_Logging.toFixed(m_z)+"]";
+		return "["+this.getClass().getSimpleName()+"(x="+U_Logging.toFixed(m_x)+", y="+U_Logging.toFixed(m_y)+", z="+U_Logging.toFixed(m_z)+"]";
 	}
 }

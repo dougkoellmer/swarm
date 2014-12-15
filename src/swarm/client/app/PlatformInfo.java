@@ -49,6 +49,7 @@ public class PlatformInfo
 	
 	private native String getCssTransform()
 	/*-{
+	 
 			return $wnd.Modernizr.prefixed("transform");
 	}-*/;
 	

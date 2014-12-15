@@ -232,6 +232,6 @@ public class GridCoordinate extends A_JsonEncodable implements I_JsonComparable
 	@Override
 	public String toString()
 	{
-		return "["+this.getClass().getName()+"(m="+m_m+", n="+m_n+")]";
+		return "["+this.getClass().getSimpleName()+"(m="+m_m+", n="+m_n+")]";
 	}
 }
