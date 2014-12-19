@@ -1145,7 +1145,10 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 	{
 		m_contentPanel.setVisible(false);
 		
+		//--- DRK > This now at most just removes/stops any other attached code.
+		//---		Before it handled actually inserting the meta image...now handled manually (below as of tihs writing).
 		m_sandboxMngr.start(m_contentPanel.getElement(), code, null, m_codeLoadListener);
+		
 		m_contentPanel.getElement().appendChild(m_metaEntry.getElement());
 		m_metaEntry.onAttached();
 		m_metaImageLoader.load(m_metaEntry, m_metaLoadListener);

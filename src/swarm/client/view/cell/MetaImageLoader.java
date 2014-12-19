@@ -121,19 +121,23 @@ public class MetaImageLoader
 		
 		private void onLoadSucceeded()
 		{
-			m_state = E_ImageLoadState.RENDERING;
-			m_timeRendering = 0.0;
+			resetRenderingState();
 		}
 		
 		private void onAlreadyLoaded()
 		{
-			m_state = E_ImageLoadState.RENDERING;
-			m_timeRendering = 0.0;
+			resetRenderingState();
 			
 			if( m_listener != null )
 			{
 				m_listener.onLoaded(this);
 			}
+		}
+		
+		private void resetRenderingState()
+		{
+			m_state = E_ImageLoadState.RENDERING;
+			m_timeRendering = 0.0;
 		}
 		
 		boolean isAttached()
@@ -144,6 +148,11 @@ public class MetaImageLoader
 		void onAttached()
 		{
 			m_visible = true;
+			
+			if( m_state.ordinal() >= E_ImageLoadState.RENDERING.ordinal() )
+			{
+				resetRenderingState();
+			}
 		}
 		
 		void onDettached()
@@ -170,7 +179,6 @@ public class MetaImageLoader
 	
 	public MetaImageLoader(double queuePopRate)
 	{
-//		m_listener = listener;
 		m_queuePopRate = queuePopRate;
 	}
 	
@@ -191,16 +199,13 @@ public class MetaImageLoader
 		}
 		
 		if( entry.isAtLeastQueued() )  return entry; // just being anal
-		if( entry.isLoaded() )  return entry;
 		
 		if( m_loadQueue.size() == 0 )
 		{
-			load(entry);
+			m_queuePopTimer = 0.0;
 		}
-		else
-		{
-			queue(entry);
-		}
+
+		queue(entry);
 		
 		return entry;
 	}
@@ -231,16 +236,9 @@ public class MetaImageLoader
 	}
 	
 	private void load(Entry entry)
-	{
-		if( entry.m_state != E_ImageLoadState.FAILED )
-		{
-			//--- DRK > Always adding new listener just in case to avoid potential stale state issues in 3rd party library.
-			//---		Not that I've seen them (in fact test seems to show that re-adding it not necessary), just being defensive.
-			//---		UPDATE: On second thought, gating this to remove more damaging risk of doubled callbacks after image load fail.
-			addImagesLoadedListener(this, entry, entry.m_element, entry.m_url);
-		}
-		
+	{		
 		entry.startLoad();
+		addImagesLoadedListener(this, entry, entry.m_element);
 	}
 	
 	private void queue(Entry entry)
@@ -254,7 +252,7 @@ public class MetaImageLoader
 		return m_entryMap.get(url);
 	}
 	
-	private native void addImagesLoadedListener(MetaImageLoader loader, Entry entry, Element element, String url)
+	private native void addImagesLoadedListener(MetaImageLoader loader, Entry entry, Element element)
 	/*-{
 			var imgLoad = new $wnd.imagesLoaded( element );
 			
@@ -291,7 +289,7 @@ public class MetaImageLoader
 			{
 				Entry entry = m_loadQueue.remove(m_loadQueue.size()-1);
 				
-				if( !entry.isLoaded() )
+				if( !entry.isAtLeastLoading() )
 				{
 					load(entry);
 					
