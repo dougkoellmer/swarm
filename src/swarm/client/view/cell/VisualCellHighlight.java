@@ -22,7 +22,6 @@ import swarm.client.view.S_UI;
 import swarm.client.view.U_Css;
 import swarm.client.view.ViewConfig;
 import swarm.client.view.ViewContext;
-import swarm.client.view.cell.VisualCell.E_MetaState;
 import swarm.shared.app.S_CommonApp;
 import swarm.shared.debugging.U_Debug;
 import swarm.shared.entities.A_Grid;
@@ -58,7 +57,7 @@ public class VisualCellHighlight extends FlowPanel implements I_UIElement
 			if( cell != null )
 			{
 				VisualCell visualCell = (VisualCell) cell.getVisualization();
-				if( visualCell.getMetaState() == E_MetaState.NOT_SET )
+				if( visualCell.getImageLoadState() == E_ImageLoadState.NOT_SET )
 				{
 					return !visualCell.isMetaImageProbablyInMemory();
 				}

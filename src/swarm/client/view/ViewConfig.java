@@ -9,6 +9,7 @@ public class ViewConfig
 	public double cellFadeInTime = .25;
 	public int flushCodeFrameRate = 2;
 //	public int flushCodeFrameRate = 60;
+	public double metaQueuePopRate = .5;
 	
 	public double magFadeInTime_seconds = .5;
 	public double hudFadeOutTime_seconds = magFadeInTime_seconds;

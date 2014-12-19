@@ -74,15 +74,7 @@ public class SandboxManager
 				
 				if( codeLevel == E_CodeSafetyLevel.META_IMAGE )
 				{
-					ImageElement imageElement = Document.get().createImageElement();
-					imageElement.getStyle().setWidth(100, Unit.PCT);
-					imageElement.getStyle().setHeight(100, Unit.PCT);
-					listener.onElementPrimedForMeta(imageElement);
-					imageElement.setSrc(code.getRawCode());
-
 					removeAllChildren(host);
-
-					host.appendChild(imageElement);
 				}
 				else
 				{

@@ -19,6 +19,7 @@ import swarm.client.view.S_UI;
 import swarm.client.view.U_Css;
 import swarm.client.view.U_View;
 import swarm.client.view.ViewContext;
+import swarm.client.view.cell.MetaImageLoader.Entry;
 import swarm.client.view.sandbox.SandboxManager;
 import swarm.client.view.tabs.code.I_CodeLoadListener;
 import swarm.client.view.widget.UIBlocker;
@@ -55,10 +56,6 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 	private static final double DISABLE_TIMER = -1.0;
 	private static final double ENABLE_TIMER = 0.0;
 	
-	//TODO: Move to config
-	private static final double META_IMAGE_LOAD_DELAY = .5;
-	private static final double META_IMAGE_RENDER_DELAY__SHOULD_BE = 2.0;
-	private static final double META_IMAGE_RENDER_DELAY__DEFINITELY_SHOULD_BE = 0.0;
 	
 	public static interface I_CodeListener
 	{
@@ -73,19 +70,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 		CHANGING_FROM_SNAP;
 	};
 	
-	static enum E_MetaState
-	{
-		NOT_SET,
-		DELAYING,
-		LOADING,
-		RENDERING,
-		SHOULD_BE_RENDERED_BY_NOW,
-		DEFINITELY_SHOULD_BE_RENDERED_BY_NOW;
-	}
-	
 	private static final Logger s_logger = Logger.getLogger(VisualCell.class.getName());
-	
-	private static final HashSet<String> s_alreadyRenderedMeta = new HashSet<String>();
 	
 	private static int s_currentId = 0;
 	
@@ -102,16 +87,27 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 		{
 			m_this.clearStatusHtml();
 		}
-
-		@Override
-		public void onElementPrimedForMeta(Element element)
-		{
-			if( m_this.m_codeSafetyLevel == E_CodeSafetyLevel.META_IMAGE )
-			{
-				m_this.addImagesLoadedListener(m_this, element);
-			}
-		}
 	}
+	
+	private final MetaImageLoader.I_Listener m_metaLoadListener = new MetaImageLoader.I_Listener()
+	{
+		@Override public void onRendered(Entry entry)
+		{
+			if( entry != m_metaEntry )  return; // should never happen.
+			
+			ensureFadedIn();
+			m_codeListener.onMetaImageRendered();
+			
+		}
+		
+		@Override public void onLoaded(Entry entry)
+		{
+			if( entry != m_metaEntry )  return; // should never happen.
+			
+			m_contentPanel.setVisible(true);
+			m_codeListener.onMetaImageLoaded();
+		}
+	};
 	
 	private static class QueuedSetCode
 	{
@@ -175,13 +171,9 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 	
 	private double m_totalTimeSinceCreation = 0.0;
 	
-	private double m_metaTimeTracker;
-	private Code m_metaCode = null;
-	private E_MetaState m_metaState = null;
-	private boolean m_isMetaProbablyCachedInMemory = false;
 	private boolean m_fadeIn = false;
 	
-	private final Storage m_localStorage = Storage.getLocalStorageIfSupported();
+	
 	
 	
 	private int m_zIndex_default;
@@ -236,8 +228,12 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 	private final AppContext m_appContext;
 	private final ViewContext m_viewContext;
 	
+	private final MetaImageLoader m_metaImageLoader;
+	private MetaImageLoader.Entry m_metaEntry;
+	
 	public VisualCell(ViewContext viewContext, I_CellSpinner spinner, SandboxManager sandboxMngr, CameraManager cameraMngr)
 	{
+		m_metaImageLoader = viewContext.metaImageLoader;
 		m_viewContext = viewContext;
 		m_appContext = viewContext.appContext;
 		m_retractionEasing = viewContext.config.cellRetractionEasing;
@@ -247,8 +243,6 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 		m_sizeChangeTime = viewContext.config.cellSizeChangeTime_seconds;
 		m_id = s_currentId;
 		s_currentId++;
-		
-		stopMetaTimeTracker();
 		
 		this.addStyleName("visual_cell");
 		m_glassPanel.addStyleName("sm_cell_glass");
@@ -273,8 +267,6 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 		this.add(m_contentPanel);
 		this.add(m_statusPanel);
 		this.add(m_glassPanel);
-		
-		clearMetaImageState();
 	}
 	
 	@Override public void setVisible(boolean value)
@@ -366,34 +358,11 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 			m_timeSinceFirstCodeSet += timeStep;
 		}
 		
-		if( isMetaTimeTrackerRunning() )
+		if( m_metaEntry != null )
 		{
-			m_metaTimeTracker += timeStep;
-			
-			if( m_metaState == E_MetaState.DELAYING && m_metaTimeTracker >= META_IMAGE_LOAD_DELAY )
+			if( m_metaEntry.getState() == E_ImageLoadState.RENDERING )
 			{
-				m_metaState = E_MetaState.LOADING;
-				m_contentPanel.setVisible(false);
-				m_sandboxMngr.start(m_contentPanel.getElement(), m_metaCode, null, m_codeLoadListener);
-			}
-			else if( m_metaState == E_MetaState.RENDERING )
-			{
-				if( m_metaTimeTracker >= META_IMAGE_RENDER_DELAY__SHOULD_BE )
-				{
-					m_metaState = E_MetaState.SHOULD_BE_RENDERED_BY_NOW;
-					m_codeListener.onMetaImageRendered();
-					restartMetaTimeTracker();
-					ensureFadedIn();
-				}
-				else
-				{
-					fadeIn(m_metaTimeTracker);
-				}
-			}
-			else if( m_metaState == E_MetaState.SHOULD_BE_RENDERED_BY_NOW && m_metaTimeTracker >= META_IMAGE_RENDER_DELAY__DEFINITELY_SHOULD_BE )
-			{
-				m_metaState = E_MetaState.DEFINITELY_SHOULD_BE_RENDERED_BY_NOW;
-				stopMetaTimeTracker();
+				fadeIn(m_metaEntry.getTimeRendering());
 			}
 		}
 		else if( m_subCellDimension == 1 )
@@ -720,7 +689,12 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 	
 	private void onCreatedOrRecycled(int width, int height, int padding, int subCellDimension)
 	{
-		clearMetaImageState();
+		if( m_metaEntry != null )
+		{
+			m_metaEntry.onDettached();
+			m_metaEntry = null;
+		}
+		
 		m_timeSinceFirstCodeSet = 0.0;
 		m_totalTimeSinceCreation = 0.0;
 		m_clearLoadingTimer = DISABLE_TIMER;
@@ -730,7 +704,6 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 		m_isFocused = false;
 		m_isValidated = false;
 		m_subCellDimension = subCellDimension;
-		m_isMetaProbablyCachedInMemory = false;
 		
 		m_targetWidth = m_defaultWidth = m_baseWidth = m_width = width;
 		m_targetHeight = m_defaultHeight = m_baseHeight = m_height = height;
@@ -884,7 +857,6 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 //			s_logger.severe("DESTROYED THE CELL");
 //		}
 		
-		clearMetaImageState();
 		m_bufferCell = null;
 		m_isFocused = false;
 		m_subCellDimension = -1;
@@ -911,8 +883,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 		}
 	}
 	
-	@Override
-	public void onFocusGained()
+	@Override public void onFocusGained()
 	{
 		this.setVisible(true);
 		
@@ -933,8 +904,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 		m_sandboxMngr.allowScrolling(m_contentPanel.getElement(), true);
 	}
 	
-	@Override
-	public void onFocusLost()
+	@Override public void onFocusLost()
 	{
 		m_isSnapping = false; // just in case.
 		m_isFocused = false;
@@ -1096,14 +1066,12 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 	
 	@Override public void setCode(Code code, String cellNamespace)
 	{
-		/*if( m_sandboxMngr.isRunning() )
-		{
-			m_sandboxMngr.stop(m_contentPanel.getElement());
-		}*/
-		
 		boolean snappingOrFocused = m_subCellDimension == 1 && (m_isSnapping || m_isFocused);
-		m_isMetaProbablyCachedInMemory = m_subCellDimension > 1 && s_alreadyRenderedMeta.contains(code.getRawCode());
-//		boolean alreadyRenderedMeta = m_subCellDimension > 1 && s_renderedMeta.contains(code.getRawCode());
+		
+		if( m_subCellDimension > 1 )
+		{
+			m_metaEntry = m_metaImageLoader.preLoad(code.getRawCode());
+		}
 		
 		if( !snappingOrFocused )//|| !alreadyRenderedMeta )
 		{
@@ -1111,18 +1079,6 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 			
 			return;
 		}
-		
-//		if( alreadyRenderedMeta )
-//		{
-//			setCode_commonPreInit(code);
-//			
-//			m_metaState = E_MetaState.DEFINITELY_SHOULD_BE_RENDERED_BY_NOW;
-//			stopMetaTimeTracker();
-//			
-//			setCode_meta(code, /*delayLoading=*/false);
-//			
-//			return;
-//		}
 		
 		setCode_private(code, cellNamespace);
 	}
@@ -1150,13 +1106,11 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 		{
 			m_contentPanel.setVisible(false);
 		}
-
-		clearMetaImageState();
 	}
 	
 	public boolean isMetaImageProbablyInMemory()
 	{
-		return m_isMetaProbablyCachedInMemory;
+		return m_metaEntry != null && m_metaEntry.isLoaded();
 	}
 
 	private void setCode_private(Code code, String cellNamespace)
@@ -1167,47 +1121,10 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 		{
 			m_sandboxMngr.stop(m_contentPanel.getElement());
 			
-			boolean delayLoading = true;
+//			Camera camera = m_cameraMngr.getCamera();
+//			double deltaZ = camera.getPosition().getZ() - camera.getPrevPosition().getZ();
 			
-			Camera camera = m_cameraMngr.getCamera();
-			double deltaZ = camera.getPosition().getZ() - camera.getPrevPosition().getZ();
-			
-			if( deltaZ == 0 )
-			{
-				delayLoading = false;
-			}
-			else
-			{
-//				boolean isProbablyCachedOnDisk = false;
-//				
-//				//--- DRK > No idea what's going on here...if I use mozIsLocallyAvailable it seems 
-//				//---		to block the thread or something...m_metaCode!=null before this call
-//				//---		but then can somehow get nulled out by the time we get past this block.
-//				//---		It also seemed to cause weird ghosting of things like canvas backing 
-//				//---		and cell highlight.
-////				if( canCheckMozLocalAvailability() )
-////				{
-////					isProbablyCachedOnDisk = isLocallyAvailable(url);
-////				}
-//				
-//				if( !m_isMetaProbablyCachedInMemory )
-//				{
-//					String url = getAbsoluteUrl(code.getRawCode());
-//					isProbablyCachedOnDisk = m_localStorage == null ? false : m_localStorage.getItem(url) != null;
-//				}
-//				
-//				delayLoading = !m_isMetaProbablyCachedInMemory && !isProbablyCachedOnDisk;
-				
-				delayLoading = false;
-			}
-			
-			if( !delayLoading )
-			{
-				m_metaState = E_MetaState.LOADING;
-				restartMetaTimeTracker();
-			}
-			
-			setCode_meta(code, delayLoading);
+			setCode_meta(code);
 		}
 		else
 		{
@@ -1224,131 +1141,25 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 		m_sandboxMngr.start(m_contentPanel.getElement(), code, cellNamespace, m_codeLoadListener);
 	}
 	
-	private void setCode_meta(Code code, boolean delayLoading)
+	private void setCode_meta(Code code)
 	{
-		m_metaCode = code;
-		
-		if( !delayLoading )
-		{
-			m_contentPanel.setVisible(false);
-			
-			m_sandboxMngr.start(m_contentPanel.getElement(), m_metaCode, null, m_codeLoadListener);
-		}
-		else
-		{
-			m_metaState = E_MetaState.DELAYING;
-			restartMetaTimeTracker();
-		}
-	}
-	
-	private void onMetaImageLoadFailed()
-	{
-		//--- DRK > Should already be invisible from upstream code...just making sure.
 		m_contentPanel.setVisible(false);
-	}
-	
-	private void onMetaImageLoaded(String url)
-	{
-		if( !canCheckMozLocalAvailability() && m_localStorage != null )
-		{
-			m_localStorage.setItem(url, "");
-		}
 		
-		if( isMetaTimeTrackerRunning() )
-		{
-			m_metaState = E_MetaState.RENDERING;
-			restartMetaTimeTracker();
-		}
-		
-		if( m_metaCode != null )
-		{
-			s_alreadyRenderedMeta.add(m_metaCode.getRawCode());
-		}
-		
-		m_contentPanel.setVisible(true);
-		m_codeListener.onMetaImageLoaded();
-	}
-	
-	private void clearMetaImageState()
-	{
-		stopMetaTimeTracker();
-		m_metaState = E_MetaState.NOT_SET;
-		m_metaCode = null;
-	}
-	
-	private void stopMetaTimeTracker()
-	{
-		m_metaTimeTracker = DISABLE_TIMER;
-	}
-	
-	private boolean isMetaTimeTrackerRunning()
-	{
-		return m_metaTimeTracker >= 0.0;
-	}
-	
-	private void restartMetaTimeTracker()
-	{
-		m_metaTimeTracker = 0.0;
+		m_sandboxMngr.start(m_contentPanel.getElement(), code, null, m_codeLoadListener);
+		m_contentPanel.getElement().appendChild(m_metaEntry.getElement());
+		m_metaEntry.onAttached();
+		m_metaImageLoader.load(m_metaEntry, m_metaLoadListener);
 	}
 
-	private native void addImagesLoadedListener(VisualCell cell, Element element)
-	/*-{
-			var imgLoad = new $wnd.imagesLoaded( element );
-			
-			imgLoad.on('done', function()
-			{
-				if( element.parentNode )
-				{
-					cell.@swarm.client.view.cell.VisualCell::onMetaImageLoaded(Ljava/lang/String;)(element.src);
-				}
-				else
-				{
-				}
-			});
-			
-			imgLoad.on('fail', function()
-			{
-				if( element.parentNode )
-				{
-					cell.@swarm.client.view.cell.VisualCell::onMetaImageLoadFailed()();
-				}
-			});
-	}-*/;
 	
-	private static native boolean canCheckMozLocalAvailability()
-	/*-{
-			return false; // for now mozIsLocallyAvailable seems a little borked and/or slow.
-			return typeof $wnd.navigator.mozIsLocallyAvailable !== 'undefined';
-	}-*/;
 	
-	private static native String getAbsoluteUrl(String url)
-	/*-{
-			var loc = window.location;
-			var url = "" + loc.protocol + "//" + loc.host + url;
-			
-			return url;
-	}-*/;
 	
-	private static native String getPathFromAbsolute(String url)
-	/*-{
-			var url = url.replace(/^.*\/\/[^\/]+/, '');
-			
-			return url;
-	}-*/;
 	
-	private static native boolean isLocallyAvailable(String url)
-	/*-{
-			if( $wnd.navigator.mozIsLocallyAvailable(url, true) )
-			{
-				return true;
-			}
-	}-*/;
-	
-	public E_MetaState getMetaState()
+	public E_ImageLoadState getImageLoadState()
 	{
-		if( m_codeSafetyLevel != E_CodeSafetyLevel.META_IMAGE )  return E_MetaState.NOT_SET;
+		if( m_codeSafetyLevel != E_CodeSafetyLevel.META_IMAGE )  return E_ImageLoadState.NOT_SET;
 
-		return m_metaState;
+		return m_metaEntry != null && m_metaEntry.isAttached() ? m_metaEntry.getState() : E_ImageLoadState.NOT_SET;
 	}
 	
 	public E_CodeSafetyLevel getCodeSafetyLevel()
@@ -1454,7 +1265,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 		
 		if( m_subCellDimension == 1 )  return true;
 		
-		return m_metaState != null && m_metaState.ordinal() >= E_MetaState.RENDERING.ordinal();
+		return m_metaEntry != null && m_metaEntry.isAttached() && m_metaEntry.getState().ordinal() >= E_ImageLoadState.RENDERING.ordinal();
 	}
 	
 	@Override public void onSavedFromDeathSentence()

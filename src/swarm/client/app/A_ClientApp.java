@@ -60,6 +60,7 @@ import swarm.client.view.ViewController;
 import swarm.client.view.cell.B33Spinner;
 import swarm.client.view.cell.I_CellSpinner;
 import swarm.client.view.cell.I_CellSpinnerFactory;
+import swarm.client.view.cell.MetaImageLoader;
 import swarm.client.view.cell.SpritePlateSpinner;
 import swarm.client.view.sandbox.SandboxManager;
 import swarm.client.view.tooltip.E_ToolTipType;
@@ -317,6 +318,7 @@ public class A_ClientApp extends A_App implements I_TimeSource
 	
 	protected void stage_startViewManagers()
 	{
+		m_viewContext.metaImageLoader = new MetaImageLoader(m_viewConfig.metaQueuePopRate);
 		m_viewContext.recaptchaWrapper = new RecaptchaWrapper();
 		m_viewContext.clickMngr = new ClickManager();
 		m_viewContext.toolTipMngr = new ToolTipManager(m_appContext.platformInfo.getPlatform() != E_Platform.IOS, S_UI.TOOL_TIP_DELAY);

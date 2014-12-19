@@ -20,7 +20,6 @@ import swarm.client.view.E_ZIndex;
 import swarm.client.view.I_UIElement;
 import swarm.client.view.U_Css;
 import swarm.client.view.ViewContext;
-import swarm.client.view.cell.VisualCell.E_MetaState;
 import swarm.client.view.dialog.Dialog;
 import swarm.shared.debugging.U_Debug;
 import swarm.shared.entities.A_Grid;
@@ -165,11 +164,11 @@ public class VisualCellManager implements I_UIElement
 						{
 							BufferCell cell = cellBuffer.getCellAtAbsoluteCoord(m_obscured.m, m_obscured.n);
 							VisualCell visualCell = (VisualCell) cell.getVisualization();
-							E_MetaState state = visualCell.getMetaState();
+							E_ImageLoadState state = visualCell.getImageLoadState();
 							
 	//						s_logger.severe(state+"");
 							
-							if( visualCell.isMetaImageProbablyInMemory() || state == VisualCell.E_MetaState.DEFINITELY_SHOULD_BE_RENDERED_BY_NOW )
+							if( visualCell.isMetaImageProbablyInMemory() || state == E_ImageLoadState.DEFINITELY_SHOULD_BE_RENDERED_BY_NOW )
 							{
 								return m_obscured.offset;
 							}
@@ -276,7 +275,7 @@ public class VisualCellManager implements I_UIElement
 				m_flushCodeTracker = 0;
 			}
 			
-			if( cellBuffer.getSubCellCount() > 1 && ithVisualCell.getMetaState() != VisualCell.E_MetaState.DEFINITELY_SHOULD_BE_RENDERED_BY_NOW )
+			if( cellBuffer.getSubCellCount() > 1 && ithVisualCell.getImageLoadState() != E_ImageLoadState.DEFINITELY_SHOULD_BE_RENDERED_BY_NOW )
 			{
 				m_needToUpdateBacking = true;
 			}
@@ -499,7 +498,7 @@ public class VisualCellManager implements I_UIElement
 				m_flushCodeTracker = 0;
 			}
 			
-			if( subCellCount_i > 1 && ithVisualCell.getMetaState() != VisualCell.E_MetaState.DEFINITELY_SHOULD_BE_RENDERED_BY_NOW )
+			if( subCellCount_i > 1 && ithVisualCell.getImageLoadState() != E_ImageLoadState.DEFINITELY_SHOULD_BE_RENDERED_BY_NOW )
 			{
 				m_needToUpdateBacking = true;
 			}
