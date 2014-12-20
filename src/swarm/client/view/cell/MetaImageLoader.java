@@ -122,6 +122,11 @@ public class MetaImageLoader
 		private void onLoadSucceeded()
 		{
 			resetRenderingState();
+			
+			if( m_listener != null )
+			{
+				m_listener.onLoaded(this);
+			}
 		}
 		
 		private void onAlreadyLoaded()
@@ -236,7 +241,7 @@ public class MetaImageLoader
 	}
 	
 	private void load(Entry entry)
-	{		
+	{
 		entry.startLoad();
 		addImagesLoadedListener(this, entry, entry.m_element);
 	}
@@ -258,12 +263,12 @@ public class MetaImageLoader
 			
 			imgLoad.on('done', function()
 			{
-				loader.@swarm.client.view.cell.MetaImageLoader::onLoadSucceeded(Lswarm/client/view/cell/MetaImageLoader/Entry;)(entry);
+				loader.@swarm.client.view.cell.MetaImageLoader::onLoadSucceeded(Lswarm/client/view/cell/MetaImageLoader$Entry;)(entry);
 			});
 			
 			imgLoad.on('fail', function()
 			{
-				loader.@swarm.client.view.cell.MetaImageLoader::onLoadFailed(Lswarm/client/view/cell/MetaImageLoader/Entry;)(entry);
+				loader.@swarm.client.view.cell.MetaImageLoader::onLoadFailed(Lswarm/client/view/cell/MetaImageLoader$Entry;)(entry);
 			});
 	}-*/;
 	
