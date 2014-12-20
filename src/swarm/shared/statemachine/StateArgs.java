@@ -28,8 +28,7 @@ public class StateArgs
 		}
 		else
 		{
-			m_values = new Object[1];
-			m_values[0] = value;
+			m_values = new Object[]{value};
 		}
 	}
 	

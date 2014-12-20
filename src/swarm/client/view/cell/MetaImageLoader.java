@@ -282,7 +282,7 @@ public class MetaImageLoader
 		entry.onLoadSucceeded();
 	}
 	
-	void update(double timestep)
+	void updateQueue(double timestep)
 	{
 		m_queuePopTimer += timestep;
 		
@@ -302,7 +302,10 @@ public class MetaImageLoader
 				}
 			}
 		}
-		
+	}
+	
+	void updateEntries(double timestep)
+	{
 		for( int i = 0; i < m_entryList.size(); i++ )
 		{
 			Entry ithEntry = m_entryList.get(i);
@@ -310,8 +313,6 @@ public class MetaImageLoader
 			ithEntry.update(timestep);
 		}
 	}
-	
-	
 	
 //	private static native boolean canCheckMozLocalAvailability()
 //	/*-{

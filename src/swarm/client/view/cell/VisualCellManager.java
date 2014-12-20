@@ -232,6 +232,7 @@ public class VisualCellManager implements I_UIElement
 	
 	private void updateCellsWithNoTransforms(double timeStep)
 	{
+		m_viewContext.metaImageLoader.updateEntries(timeStep);
 		m_needToUpdateBacking = false;
 		
 		CellBufferManager cellManager = m_viewContext.appContext.cellBufferMngr;
@@ -249,6 +250,7 @@ public class VisualCellManager implements I_UIElement
 		m_backingConfig.timestep = timeStep;
 		
 		updateCanvasBacking();
+		m_viewContext.metaImageLoader.updateQueue(timeStep);
 	}
 	
 	private void updateCellsWithNoTransforms(CellBuffer cellBuffer, double timeStep, int subCellCount_highest)
@@ -291,6 +293,7 @@ public class VisualCellManager implements I_UIElement
 	
 	private void updateCellTransforms(double timeStep, boolean isViewStateTransition)
 	{
+		m_viewContext.metaImageLoader.updateEntries(timeStep);
 		m_needToUpdateBacking = false;
 		
 		CellBufferManager cellManager = m_viewContext.appContext.cellBufferMngr;
@@ -380,6 +383,7 @@ public class VisualCellManager implements I_UIElement
 //		m_container.getElement().getStyle().setDisplay(Display.BLOCK);
 		
 		updateCanvasBacking();
+		m_viewContext.metaImageLoader.updateQueue(timeStep);
 	}
 	
 	private void updateCellTransforms
