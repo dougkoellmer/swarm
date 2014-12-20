@@ -167,6 +167,7 @@ public class VisualCellManager implements I_UIElement
 							E_ImageLoadState state = visualCell.getImageLoadState();
 							
 	//						s_logger.severe(state+"");
+							boolean isInMemory = state.ordinal() < E_ImageLoadState.RENDERING.ordinal();
 							
 							if( visualCell.isMetaImageProbablyInMemory() || state == E_ImageLoadState.DEFINITELY_SHOULD_BE_RENDERED_BY_NOW )
 							{

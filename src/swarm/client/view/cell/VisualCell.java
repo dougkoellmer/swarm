@@ -230,6 +230,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 	
 	private final MetaImageLoader m_metaImageLoader;
 	private MetaImageLoader.Entry m_metaEntry;
+	private boolean m_isMetaProbablyCachedInMemory = false;
 	
 	public VisualCell(ViewContext viewContext, I_CellSpinner spinner, SandboxManager sandboxMngr, CameraManager cameraMngr)
 	{
@@ -330,6 +331,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 		if( !m_fadeIn || !m_hasSetCodeYet )  return;
 		
 		double alpha = time / m_viewContext.config.cellFadeInTime;
+
 //		alpha = Math.sqrt(alpha);
 		m_contentPanel.getElement().getStyle().setOpacity(alpha);
 		
@@ -360,7 +362,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 		
 		if( m_metaEntry != null )
 		{
-			if( m_metaEntry.getState() == E_ImageLoadState.RENDERING )
+			if( m_metaEntry.getState().ordinal() >= E_ImageLoadState.RENDERING.ordinal() )
 			{
 				fadeIn(m_metaEntry.getTimeRendering());
 			}
@@ -688,13 +690,8 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 	}
 	
 	private void onCreatedOrRecycled(int width, int height, int padding, int subCellDimension)
-	{
-		if( m_metaEntry != null )
-		{
-			m_metaEntry.onDettached();
-			m_metaEntry = null;
-		}
-		
+	{		
+		m_isMetaProbablyCachedInMemory = false;
 		m_timeSinceFirstCodeSet = 0.0;
 		m_totalTimeSinceCreation = 0.0;
 		m_clearLoadingTimer = DISABLE_TIMER;
@@ -856,6 +853,12 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 //		{
 //			s_logger.severe("DESTROYED THE CELL");
 //		}
+		
+		if( m_metaEntry != null )
+		{
+			m_metaEntry.onDettached();
+			m_metaEntry = null;
+		}
 		
 		m_bufferCell = null;
 		m_isFocused = false;
@@ -1071,6 +1074,8 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 		if( m_subCellDimension > 1 )
 		{
 			m_metaEntry = m_metaImageLoader.preLoad(code.getRawCode());
+			
+			m_isMetaProbablyCachedInMemory = m_metaEntry.isLoaded();
 		}
 		
 		if( !snappingOrFocused )//|| !alreadyRenderedMeta )
@@ -1110,7 +1115,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 	
 	public boolean isMetaImageProbablyInMemory()
 	{
-		return m_metaEntry != null && m_metaEntry.isLoaded();
+		return m_isMetaProbablyCachedInMemory;
 	}
 
 	private void setCode_private(Code code, String cellNamespace)

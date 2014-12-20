@@ -13,7 +13,8 @@ class PU_StateMachine
 		
 		
 		//--- DRK > Dumbed down version not using isAssignableFrom for GWT JRE emulation.
-		//---		TODO: Use dependency injection or something so normal java runtimes can implement this better.
+		//---		TODO: Use dependency injection or something so normal java runtimes can implement this better
+		//---			and include interfaces in the inheritance check.
 		Class<?> curr = subclass;
 		
 		while( curr != null )

@@ -7,6 +7,7 @@ import swarm.shared.statemachine.I_StateEventListener;
 public class ViewConfig
 {
 	public double cellFadeInTime = .25;
+//	public double cellFadeInTime = 2;;
 	public int flushCodeFrameRate = 2;
 //	public int flushCodeFrameRate = 60;
 	public double metaQueuePopRate = .5;
