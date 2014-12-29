@@ -19,7 +19,8 @@ import swarm.client.view.S_UI;
 import swarm.client.view.U_Css;
 import swarm.client.view.U_View;
 import swarm.client.view.ViewContext;
-import swarm.client.view.cell.MetaImageLoader.Entry;
+import swarm.client.view.cell.Cell1ImageLoader.Cell1Proxy;
+import swarm.client.view.cell.MetaImageLoader.MetaImage;
 import swarm.client.view.sandbox.SandboxManager;
 import swarm.client.view.tabs.code.I_CodeLoadListener;
 import swarm.client.view.widget.UIBlocker;
@@ -89,23 +90,41 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 		}
 	}
 	
-	private final MetaImageLoader.I_Listener m_metaLoadListener = new MetaImageLoader.I_Listener()
+	private final CellImageProxy.I_Listener m_metaLoadListener = new CellImageProxy.I_Listener()
 	{
-		@Override public void onRendered(Entry entry)
+		@Override public void onRendered(CellImageProxy entry)
 		{
-			if( entry != m_metaEntry )  return; // should never happen.
+			if( entry != m_metaImageProxy )  return; // should never happen.
 			
 			ensureFadedIn();
 			m_codeListener.onMetaImageRendered();
 			
 		}
 		
-		@Override public void onLoaded(Entry entry)
+		@Override public void onLoaded(CellImageProxy entry)
 		{
-			if( entry != m_metaEntry )  return; // should never happen.
+			if( entry != m_metaImageProxy )  return; // should never happen.
 			
 			m_contentPanel.setVisible(true);
 			m_codeListener.onMetaImageLoaded();
+		}
+	};
+	
+	private final CellImageProxy.I_Listener m_cell1LoadListener = new CellImageProxy.I_Listener()
+	{
+		@Override public void onRendered(CellImageProxy entry)
+		{
+			if( entry != m_cell1Proxy )  return; // should never happen.
+			
+			ensureFadedIn();
+			
+		}
+		
+		@Override public void onLoaded(CellImageProxy entry)
+		{
+			if( entry != m_cell1Proxy )  return; // should never happen.
+			
+			m_contentPanel.setVisible(true);
 		}
 	};
 	
@@ -229,12 +248,16 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 	private final ViewContext m_viewContext;
 	
 	private final MetaImageLoader m_metaImageLoader;
-	private MetaImageLoader.Entry m_metaEntry;
+	private MetaImageLoader.MetaImage m_metaImageProxy;
 	private boolean m_isMetaProbablyCachedInMemory = false;
+	
+	private final Cell1ImageLoader m_cell1ImageLoader;
+	private Cell1Proxy m_cell1Proxy;
 	
 	public VisualCell(ViewContext viewContext, I_CellSpinner spinner, SandboxManager sandboxMngr, CameraManager cameraMngr)
 	{
 		m_metaImageLoader = viewContext.metaImageLoader;
+		m_cell1ImageLoader = viewContext.cell1ImageLoader;
 		m_viewContext = viewContext;
 		m_appContext = viewContext.appContext;
 		m_retractionEasing = viewContext.config.cellRetractionEasing;
@@ -360,11 +383,11 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 			m_timeSinceFirstCodeSet += timeStep;
 		}
 		
-		if( m_metaEntry != null )
+		if( m_metaImageProxy != null )
 		{
-			if( m_metaEntry.getState().ordinal() >= E_ImageLoadState.RENDERING.ordinal() )
+			if( m_metaImageProxy.getState().ordinal() >= E_ImageLoadState.RENDERING.ordinal() )
 			{
-				fadeIn(m_metaEntry.getTimeRendering());
+				fadeIn(m_metaImageProxy.getTimeRendering());
 			}
 		}
 		else if( m_subCellDimension == 1 )
@@ -854,10 +877,15 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 //			s_logger.severe("DESTROYED THE CELL");
 //		}
 		
-		if( m_metaEntry != null )
+		if( m_metaImageProxy != null )
 		{
-			m_metaEntry.onDettached();
-			m_metaEntry = null;
+			m_metaImageProxy.onDettached();
+			m_metaImageProxy = null;
+		}
+		
+		if( m_cell1Proxy != null )
+		{
+			m_cell1Proxy = null;
 		}
 		
 		m_bufferCell = null;
@@ -1073,9 +1101,9 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 		
 		if( m_subCellDimension > 1 )
 		{
-			m_metaEntry = m_metaImageLoader.preLoad(code.getRawCode());
+			m_metaImageProxy = m_metaImageLoader.preLoad(code.getRawCode());
 			
-			m_isMetaProbablyCachedInMemory = m_metaEntry.isLoaded();
+			m_isMetaProbablyCachedInMemory = m_metaImageProxy.isLoaded();
 		}
 		
 		if( !snappingOrFocused )//|| !alreadyRenderedMeta )
@@ -1133,7 +1161,20 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 		}
 		else
 		{
+			//--- DRK > Null check shouldn't be needed but who knows.
+			boolean loadProxy = !m_isFocused && m_cell1Proxy == null;
+			
+			if( loadProxy )
+			{
+				m_cell1Proxy = m_cell1ImageLoader.getProxy(m_bufferCell.getCoordinate().getM(), m_bufferCell.getCoordinate().getN());
+			}
+			
 			setCode_nonMeta(code, cellNamespace);
+			
+			if( loadProxy )
+			{
+				m_cell1ImageLoader.load(m_cell1Proxy, m_contentPanel.getElement(), m_cell1LoadListener);
+			}
 		}
 		
 		if( m_codeListener != null )  m_codeListener.onCodeLoaded(this);
@@ -1151,23 +1192,19 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 		m_contentPanel.setVisible(false);
 		
 		//--- DRK > This now at most just removes/stops any other attached code.
-		//---		Before it handled actually inserting the meta image...now handled manually (below as of tihs writing).
+		//---		Before it handled actually inserting the meta image...now handled manually (below as of this writing).
 		m_sandboxMngr.start(m_contentPanel.getElement(), code, null, m_codeLoadListener);
 		
-		m_contentPanel.getElement().appendChild(m_metaEntry.getElement());
-		m_metaEntry.onAttached();
-		m_metaImageLoader.load(m_metaEntry, m_metaLoadListener);
+		m_contentPanel.getElement().appendChild(m_metaImageProxy.getElement());
+		m_metaImageProxy.onAttached();
+		m_metaImageLoader.load(m_metaImageProxy, m_metaLoadListener);
 	}
-
-	
-	
-	
 	
 	public E_ImageLoadState getImageLoadState()
 	{
 		if( m_codeSafetyLevel != E_CodeSafetyLevel.META_IMAGE )  return E_ImageLoadState.NOT_SET;
 
-		return m_metaEntry != null && m_metaEntry.isAttached() ? m_metaEntry.getState() : E_ImageLoadState.NOT_SET;
+		return m_metaImageProxy != null && m_metaImageProxy.isAttached() ? m_metaImageProxy.getState() : E_ImageLoadState.NOT_SET;
 	}
 	
 	public E_CodeSafetyLevel getCodeSafetyLevel()
@@ -1273,7 +1310,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 		
 		if( m_subCellDimension == 1 )  return true;
 		
-		return m_metaEntry != null && m_metaEntry.isAttached() && m_metaEntry.getState().ordinal() >= E_ImageLoadState.RENDERING.ordinal();
+		return m_metaImageProxy != null && m_metaImageProxy.isAttached() && m_metaImageProxy.getState().ordinal() >= E_ImageLoadState.RENDERING.ordinal();
 	}
 	
 	@Override public void onSavedFromDeathSentence()

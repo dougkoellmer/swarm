@@ -9,6 +9,7 @@ import swarm.client.navigation.MouseNavigator;
 import swarm.client.navigation.ScrollNavigator;
 import swarm.client.thirdparty.captcha.RecaptchaWrapper;
 import swarm.client.view.cell.AlertManager;
+import swarm.client.view.cell.Cell1ImageLoader;
 import swarm.client.view.cell.I_CellSpinnerFactory;
 import swarm.client.view.cell.MetaImageLoader;
 import swarm.client.view.cell.VisualCellManager;
@@ -35,5 +36,7 @@ public class ViewContext
 	public BrowserNavigator browserNavigator;
 	public MouseNavigator mouseNavigator;
 	public ScrollNavigator scrollNavigator;
+	
 	public MetaImageLoader metaImageLoader;
+	public Cell1ImageLoader cell1ImageLoader;
 }

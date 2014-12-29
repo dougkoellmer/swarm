@@ -4,41 +4,29 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import swarm.client.view.cell.CellImageProxy.I_Listener;
+
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.Style.Unit;
 
 public class MetaImageLoader
-{
-	public static interface I_Listener
-	{
-		void onLoaded(Entry entry);
-		void onRendered(Entry entry);
-	}
-	
-	private static final double META_IMAGE_RENDER_DELAY__SHOULD_BE = 2.0;
-	private static final double META_IMAGE_RENDER_DELAY__DEFINITELY_SHOULD_BE = META_IMAGE_RENDER_DELAY__SHOULD_BE + 0.0;
-	
-	static final class Entry
+{	
+	static final class MetaImage extends CellImageProxy
 	{
 		private final ImageElement m_element;
 		private final String m_url;
-		private E_ImageLoadState m_state;
-		
-		private double m_timeRendering = 0.0;
-		
 		private boolean m_visible = false;
-		private I_Listener m_listener;
 		
-		Entry(String url)
+		MetaImage(String url)
 		{
+			super();
+			
 			m_url = url;
 			m_element = Document.get().createImageElement();
 			m_element.getStyle().setWidth(100, Unit.PCT);
 			m_element.getStyle().setHeight(100, Unit.PCT);
-			
-			m_state = E_ImageLoadState.NOT_SET;
 		}
 		
 		public Element getElement()
@@ -46,56 +34,11 @@ public class MetaImageLoader
 			return m_element;
 		}
 		
-		public E_ImageLoadState getState()
-		{
-			return m_state;
-		}
-		
-		public double getTimeRendering()
-		{
-			return m_timeRendering;
-		}
-		
-		private void update(double timestep)
+		@Override void update(double timestep)
 		{
 			if( !m_visible )  return;
-			if( m_state.ordinal() < E_ImageLoadState.RENDERING.ordinal() )  return;
 			
-			m_timeRendering += timestep;
-			
-			E_ImageLoadState oldState = m_state;
-			
-			if( m_timeRendering >= META_IMAGE_RENDER_DELAY__DEFINITELY_SHOULD_BE )
-			{
-				m_state = E_ImageLoadState.DEFINITELY_SHOULD_BE_RENDERED_BY_NOW;
-			}
-			else if( m_timeRendering >= META_IMAGE_RENDER_DELAY__SHOULD_BE )
-			{
-				m_state = E_ImageLoadState.SHOULD_BE_RENDERED_BY_NOW;
-			}
-			
-			if( m_listener != null )
-			{
-				if( oldState.ordinal() <= E_ImageLoadState.RENDERING.ordinal() && m_state.ordinal() > E_ImageLoadState.RENDERING.ordinal() )
-				{
-					m_listener.onRendered(this);
-				}
-			}
-		}
-		
-		boolean isAtLeastQueued()
-		{
-			return this.m_state.ordinal() >= E_ImageLoadState.QUEUED.ordinal();
-		}
-		
-		boolean isAtLeastLoading()
-		{
-			return this.m_state.ordinal() >= E_ImageLoadState.LOADING.ordinal();
-		}
-		
-		boolean isLoaded()
-		{
-			return this.m_state.ordinal() >= E_ImageLoadState.RENDERING.ordinal();
+			super.update(timestep);
 		}
 		
 		private void startLoad()
@@ -107,16 +50,6 @@ public class MetaImageLoader
 			
 			m_state = E_ImageLoadState.LOADING;
 			m_element.setSrc(m_url);
-		}
-		
-		private void onQueued()
-		{
-			m_state = E_ImageLoadState.QUEUED;
-		}
-		
-		private void onLoadFailed()
-		{
-			m_state = E_ImageLoadState.FAILED;
 		}
 		
 		private void onLoadSucceeded()
@@ -137,12 +70,6 @@ public class MetaImageLoader
 			{
 				m_listener.onLoaded(this);
 			}
-		}
-		
-		private void resetRenderingState()
-		{
-			m_state = E_ImageLoadState.RENDERING;
-			m_timeRendering = 0.0;
 		}
 		
 		boolean isAttached()
@@ -174,10 +101,10 @@ public class MetaImageLoader
 	
 //	private static final Storage s_localStorage = Storage.getLocalStorageIfSupported();
 	
-	private final ArrayList<Entry> m_loadQueue = new ArrayList<Entry>();
+	private final ArrayList<MetaImage> m_loadQueue = new ArrayList<MetaImage>();
 	
-	private final HashMap<String, Entry> m_entryMap = new HashMap<String, Entry>();
-	private final ArrayList<Entry> m_entryList = new ArrayList<Entry>();
+	private final HashMap<String, MetaImage> m_entryMap = new HashMap<String, MetaImage>();
+	private final ArrayList<MetaImage> m_entryList = new ArrayList<MetaImage>();
 	
 	private final double m_queuePopRate;
 	private double m_queuePopTimer;
@@ -187,9 +114,9 @@ public class MetaImageLoader
 		m_queuePopRate = queuePopRate;
 	}
 	
-	Entry preLoad(String url)
+	MetaImage preLoad(String url)
 	{
-		Entry entry = getEntry(url);
+		MetaImage entry = getEntry(url);
 		
 		if( entry != null ) 
 		{
@@ -215,7 +142,7 @@ public class MetaImageLoader
 		return entry;
 	}
 	
-	Entry load(Entry entry, I_Listener listener)
+	MetaImage load(MetaImage entry, I_Listener listener)
 	{
 		entry.m_listener = listener;
 		
@@ -231,53 +158,53 @@ public class MetaImageLoader
 		return entry;
 	}
 	
-	private Entry newEntry(String url)
+	private MetaImage newEntry(String url)
 	{
-		Entry entry = new Entry(url);
+		MetaImage entry = new MetaImage(url);
 		m_entryMap.put(url, entry);
 		m_entryList.add(entry);
 		
 		return entry;
 	}
 	
-	private void load(Entry entry)
+	private void load(MetaImage entry)
 	{
 		entry.startLoad();
 		addImagesLoadedListener(this, entry, entry.m_element);
 	}
 	
-	private void queue(Entry entry)
+	private void queue(MetaImage entry)
 	{
 		m_loadQueue.add(entry);
 		entry.onQueued();
 	}
 	
-	private Entry getEntry(String url)
+	private MetaImage getEntry(String url)
 	{
 		return m_entryMap.get(url);
 	}
 	
-	private native void addImagesLoadedListener(MetaImageLoader loader, Entry entry, Element element)
+	private native void addImagesLoadedListener(MetaImageLoader loader, MetaImage entry, Element element)
 	/*-{
 			var imgLoad = new $wnd.imagesLoaded( element );
 			
 			imgLoad.on('done', function()
 			{
-				loader.@swarm.client.view.cell.MetaImageLoader::onLoadSucceeded(Lswarm/client/view/cell/MetaImageLoader$Entry;)(entry);
+				loader.@swarm.client.view.cell.MetaImageLoader::onLoadSucceeded(Lswarm/client/view/cell/MetaImageLoader$MetaImage;)(entry);
 			});
 			
 			imgLoad.on('fail', function()
 			{
-				loader.@swarm.client.view.cell.MetaImageLoader::onLoadFailed(Lswarm/client/view/cell/MetaImageLoader$Entry;)(entry);
+				loader.@swarm.client.view.cell.MetaImageLoader::onLoadFailed(Lswarm/client/view/cell/MetaImageLoader$MetaImage;)(entry);
 			});
 	}-*/;
 	
-	private void onLoadFailed(Entry entry)
+	private void onLoadFailed(MetaImage entry)
 	{
 		entry.onLoadFailed();
 	}
 	
-	private void onLoadSucceeded(Entry entry)
+	private void onLoadSucceeded(MetaImage entry)
 	{
 		entry.onLoadSucceeded();
 	}
@@ -292,7 +219,7 @@ public class MetaImageLoader
 			
 			while( m_loadQueue.size() > 0 )
 			{
-				Entry entry = m_loadQueue.remove(m_loadQueue.size()-1);
+				MetaImage entry = m_loadQueue.remove(m_loadQueue.size()-1);
 				
 				if( !entry.isAtLeastLoading() )
 				{
@@ -308,7 +235,7 @@ public class MetaImageLoader
 	{
 		for( int i = 0; i < m_entryList.size(); i++ )
 		{
-			Entry ithEntry = m_entryList.get(i);
+			MetaImage ithEntry = m_entryList.get(i);
 			
 			ithEntry.update(timestep);
 		}

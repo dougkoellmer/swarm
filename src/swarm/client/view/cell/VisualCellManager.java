@@ -231,9 +231,15 @@ public class VisualCellManager implements I_UIElement
 		}
 	}
 	
+	private void updateImageLoaders(double timestep)
+	{
+		m_viewContext.metaImageLoader.updateEntries(timestep);
+		m_viewContext.cell1ImageLoader.updateEntries(timestep);
+	}
+	
 	private void updateCellsWithNoTransforms(double timeStep)
 	{
-		m_viewContext.metaImageLoader.updateEntries(timeStep);
+		updateImageLoaders(timeStep);
 		m_needToUpdateBacking = false;
 		
 		CellBufferManager cellManager = m_viewContext.appContext.cellBufferMngr;
@@ -294,7 +300,7 @@ public class VisualCellManager implements I_UIElement
 	
 	private void updateCellTransforms(double timeStep, boolean isViewStateTransition)
 	{
-		m_viewContext.metaImageLoader.updateEntries(timeStep);
+		updateImageLoaders(timeStep);
 		m_needToUpdateBacking = false;
 		
 		CellBufferManager cellManager = m_viewContext.appContext.cellBufferMngr;
