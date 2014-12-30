@@ -48,7 +48,7 @@ public class VisualCellHighlight extends FlowPanel implements I_UIElement
 	
 	private final ClientGrid.Obscured m_obscured = new ClientGrid.Obscured()
 	{
-		@Override public boolean isVisualizationLoaded()
+		@Override public boolean stopOnCurrentObscuringCell()
 		{
 			CellBufferManager bufferMngr = m_viewContext.appContext.cellBufferMngr;
 			CellBuffer buffer = bufferMngr.getDisplayBuffer(U_Bits.calcBitPosition(this.subCellCount));

@@ -49,6 +49,16 @@ public class MetaImageLoader
 			}
 		}
 		
+		@Override protected void onLoadFailed()
+		{
+			m_state = E_ImageLoadState.FAILED;
+			
+			if( m_listener != null )
+			{
+				m_listener.onLoadFailed(this);
+			}
+		}
+		
 		private void onAlreadyLoaded()
 		{
 			resetRenderingState();
@@ -203,7 +213,7 @@ public class MetaImageLoader
 		{
 			MetaImageProxy ithEntry = m_entryList.get(i);
 			
-			ithEntry.update(timestep);
+			ithEntry.update(timestep, CellImageProxy.NO_LOAD_TIMEOUT);
 		}
 	}
 	

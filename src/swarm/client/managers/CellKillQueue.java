@@ -1,6 +1,7 @@
 package swarm.client.managers;
 
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 import swarm.client.entities.BufferCell;
 import swarm.client.entities.ClientGrid;
@@ -10,6 +11,30 @@ import swarm.shared.utils.U_Bits;
 
 class CellKillQueue extends A_BufferCellList
 {
+	private static final Logger s_logger = Logger.getLogger(CellKillQueue.class.getName());
+	
+	private final class CustomObscured extends ClientGrid.Obscured
+	{		
+		@Override public boolean stopOnCurrentObscuringCell()
+		{
+			int index = U_Bits.calcBitPosition(this.subCellCount);
+			CellBuffer buffer = m_parent.getDisplayBuffer(index);
+			BufferCell cell = buffer.getCellAtAbsoluteCoord(this.m, this.n);
+			
+			if( cell == null )  return false;
+			if( cell.getVisualization() == null )  return false;
+			
+			if( !cell.getVisualization().isLoaded() )
+			{
+				return true;
+			}
+			
+			return false;
+		}
+	};
+	
+	private final CustomObscured m_customObscured = new CustomObscured();
+	
 	private final ClientGrid.Obscured m_obscured = new ClientGrid.Obscured();
 	private final double m_deathCountdown;
 	
@@ -43,18 +68,25 @@ class CellKillQueue extends A_BufferCellList
 		}
 	}
 	
-//	private boolean isEverythingLoadedAbove(BufferCell ithCell)
-//	{
-//		
-//	}
+	private boolean isEverythingLoadedAbove(ClientGrid grid, BufferCell cell)
+	{
+		int maxSubCellCount = m_parent.getHighestDisplayBuffer().getSubCellCount();
+		
+		if( grid.isObscured(cell.getCoordinate().getM(), cell.getCoordinate().getN(), m_subCellCount, maxSubCellCount, m_customObscured) )
+		{
+			return false;
+		}
+		
+		return true;
+	}
 	
-	private boolean isEverythingLoadedUnderneath(BufferCell ithCell)
+	private boolean isEverythingLoadedUnderneath(ClientGrid grid, BufferCell cell)
 	{
 		if( m_subCellCount <= 1 )  return true;
 		
-		for( int subCellCount = m_subCellCount >>> 1; subCellCount > 0; subCellCount >>>= 1 )
+		for( int ithSubCellCount = m_subCellCount >>> 1; ithSubCellCount > 0; ithSubCellCount >>>= 1 )
 		{
-			int index = U_Bits.calcBitPosition(subCellCount);
+			int index = U_Bits.calcBitPosition(ithSubCellCount);
 			CellBuffer buffer = m_parent.getDisplayBuffer(index);
 			
 			for( int j = 0; j < buffer.m_cellList.size(); j++ )
@@ -62,15 +94,33 @@ class CellKillQueue extends A_BufferCellList
 				BufferCell jthCell = buffer.m_cellList.get(j);
 				
 				if( jthCell == null )  continue;
-
-				if( !jthCell.getVisualization().isLoaded() )
+				
+				if( isObscuring(grid, cell, jthCell, ithSubCellCount))
 				{
-					return false;
+					if( !jthCell.getVisualization().isLoaded() )
+					{
+						return false;
+					}
 				}
 			}
 		}
 		
 		return true;
+	}
+	
+	private boolean isObscuring(ClientGrid grid, BufferCell highCell, BufferCell lowCell, int subCellCount_low)
+	{
+		if( lowCell == null )  return false;
+		
+		if( grid.isObscured(lowCell.getCoordinate().getM(), lowCell.getCoordinate().getN(), subCellCount_low, m_subCellCount, /*depth=*/1, m_obscured) )
+		{
+			if( m_subCellCount == m_obscured.subCellCount && highCell.getCoordinate().isEqualTo(m_obscured.m, m_obscured.n) )
+			{
+				return true;
+			}
+		}
+		
+		return false;
 	}
 	
 	void clearTheDead(ClientGrid grid)
@@ -83,31 +133,28 @@ class CellKillQueue extends A_BufferCellList
 			{
 				m_cellList.remove(i);
 			}
-			else if( !ithCell.getVisualization().isLoaded() || ithCell.kill() || isEverythingLoadedUnderneath(ithCell) )
+			else if( !ithCell.getVisualization().isLoaded() || ithCell.kill()  || (isEverythingLoadedAbove(grid, ithCell) && isEverythingLoadedUnderneath(grid, ithCell)) )
 			{
-				if( m_subCellCount > 1 )
+				for( int ithSubCellCount = m_subCellCount >>> 1; ithSubCellCount > 0; ithSubCellCount >>>= 1 )
 				{
-					for( int subCellCount = m_subCellCount >>> 1; subCellCount > 0; subCellCount >>>= 1 )
+					int index = U_Bits.calcBitPosition(ithSubCellCount);
+					CellBuffer buffer = m_parent.getDisplayBuffer(index);
+					
+					for( int j = 0; j < buffer.m_cellList.size(); j++ )
 					{
-						int index = U_Bits.calcBitPosition(subCellCount);
-						CellBuffer buffer = m_parent.getDisplayBuffer(index);
+						BufferCell jthCell = buffer.m_cellList.get(j);
 						
-						for( int j = 0; j < buffer.m_cellList.size(); j++ )
+						if( isObscuring(grid, ithCell, jthCell, ithSubCellCount) )
 						{
-							BufferCell jthCell = buffer.m_cellList.get(j);
-							
-							if( jthCell == null )  continue;
-							
-							if( grid.isObscured(jthCell.getCoordinate().getM(), jthCell.getCoordinate().getN(), subCellCount, m_subCellCount, m_obscured) )
-							{
-								if( m_subCellCount == m_obscured.subCellCount && ithCell.getCoordinate().isEqualTo(m_obscured.m, m_obscured.n) )
-								{
-									jthCell.getVisualization().onRevealed();
-								}
-							}
+							jthCell.getVisualization().onRevealed();
 						}
 					}
 				}
+				
+				int m = ithCell.getCoordinate().getM();
+				int n = ithCell.getCoordinate().getN();
+				int subCellCount = m_subCellCount;
+				s_logger.severe("killing " + subCellCount + " " + m + " " + n);
 				
 				m_cellPool.deallocCell(ithCell);
 				m_cellList.remove(i);

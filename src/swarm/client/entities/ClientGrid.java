@@ -19,7 +19,7 @@ public class ClientGrid extends A_Grid
 		public int offset;
 		public int subCellCount;
 		
-		public boolean isVisualizationLoaded()
+		public boolean stopOnCurrentObscuringCell()
 		{
 			return true;
 		}
@@ -72,34 +72,39 @@ public class ClientGrid extends A_Grid
 		return (dimension - (dimension % subCellCount)) / subCellCount;
 	}
 	
-	public boolean isObscured(int m, int n, int subCellCount, int highestSubCellCount, Obscured out)
+	public boolean isObscured(int m, int n, int toSubCellCount_low, int fromSubCellCount_high, Obscured out)
 	{
-		if( highestSubCellCount <= subCellCount )  return false;
+		return isObscured(m, n, toSubCellCount_low, fromSubCellCount_high, Integer.MAX_VALUE, out);
+	}
+	
+	public boolean isObscured(int m, int n, int toSubCellCount_low, int fromSubCellCount_high, int maxDepth, Obscured out)
+	{
+		if( fromSubCellCount_high <= toSubCellCount_low )  return false;
 		
-		for( int currentSubCellCount = highestSubCellCount; currentSubCellCount > subCellCount; currentSubCellCount /= 2)
+		for( int currentSubCellCount = fromSubCellCount_high, depth = 0; currentSubCellCount > toSubCellCount_low && depth < maxDepth; currentSubCellCount /= 2, depth++ )
 		{
 //			if( modifySubCellCount(currentSubCellCount) != currentSubCellCount )  continue;
 			
-			int relativeSubCellCount = currentSubCellCount / subCellCount;
+			int relativeSubCellCount = currentSubCellCount / toSubCellCount_low;
 			
 			int m_sub = getSubDimension(m, relativeSubCellCount);
 			int n_sub = getSubDimension(n, relativeSubCellCount);
 			
 			if( isTaken(m_sub, n_sub, currentSubCellCount) )
 			{
-				int modOffset = (m*subCellCount) % currentSubCellCount;
+				int modOffset = (m*toSubCellCount_low) % currentSubCellCount;
 				
 				modOffset = currentSubCellCount - modOffset;
 				modOffset = (modOffset == 0 ? currentSubCellCount : modOffset);
 				
-				modOffset /= subCellCount;
+				modOffset /= toSubCellCount_low;
 				
 				out.m = m_sub;
 				out.n = n_sub;
 				out.subCellCount = currentSubCellCount;
 				out.offset = modOffset;
 				
-				if( out.isVisualizationLoaded() )
+				if( out.stopOnCurrentObscuringCell() )
 				{
 					return true;
 				}
@@ -123,7 +128,7 @@ public class ClientGrid extends A_Grid
 	private int calcBitIndex(int row, int col, int gridSize)
 	{
 		return row * gridSize + col;
-	}//15, 13, 431
+	}
 	
 	public boolean isTaken(GridCoordinate coordinate, int subCellCount)
 	{

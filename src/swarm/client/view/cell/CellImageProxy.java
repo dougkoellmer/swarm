@@ -6,10 +6,13 @@ import swarm.client.view.cell.MetaImageLoader.MetaImageProxy;
 
 public abstract class CellImageProxy
 {
+	protected static final double NO_LOAD_TIMEOUT = -1.0;
+	
 	public static interface I_Listener
 	{
 		void onLoaded(CellImageProxy entry);
 		void onRendered(CellImageProxy entry);
+		void onLoadFailed(CellImageProxy entry);
 	}
 	
 	private static final double META_IMAGE_RENDER_DELAY__SHOULD_BE = 2.0;
@@ -44,7 +47,7 @@ public abstract class CellImageProxy
 		return m_state.ordinal() >= E_ImageLoadState.RENDERING.ordinal() ? m_timer : 0.0;
 	}
 	
-	void update(double timestep)
+	void update(double timestep, double loadTimeout)
 	{
 		if( !m_attached )  return;
 		
@@ -52,7 +55,11 @@ public abstract class CellImageProxy
 		
 		if( m_state == E_ImageLoadState.LOADING )
 		{
-			//--- DRK > Might add timeout logic here but doesn't seem necessary as of now.
+			if( loadTimeout != NO_LOAD_TIMEOUT && m_timer >= loadTimeout )
+			{
+				m_timer = 0.0;
+				onLoadFailed();
+			}
 			return;
 		}
 		else if( m_state.ordinal() < E_ImageLoadState.RENDERING.ordinal() )
@@ -100,10 +107,7 @@ public abstract class CellImageProxy
 		m_state = E_ImageLoadState.QUEUED;
 	}
 	
-	protected void onLoadFailed()
-	{
-		m_state = E_ImageLoadState.FAILED;
-	}
+	protected abstract void onLoadFailed();
 	
 	protected void resetRenderingState()
 	{
@@ -118,6 +122,10 @@ public abstract class CellImageProxy
 		if( m_state.ordinal() >= E_ImageLoadState.RENDERING.ordinal() )
 		{
 			resetRenderingState();
+		}
+		else if( m_state == E_ImageLoadState.LOADING )
+		{
+			m_timer = 0.0;
 		}
 	}
 	

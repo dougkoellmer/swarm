@@ -65,6 +65,16 @@ public class Cell1ImageLoader
 			}
 		}
 		
+		@Override protected void onLoadFailed()
+		{
+			m_state = E_ImageLoadState.FAILED;
+			
+			if( m_listener != null && m_element != null )
+			{
+				m_listener.onLoadFailed(this);
+			}
+		}
+		
 		private void updateListener(I_Listener listener)
 		{
 			m_listener = listener;
@@ -133,7 +143,9 @@ public class Cell1ImageLoader
 		{
 			Cell1Proxy ithEntry = m_list.get(i);
 			
-			ithEntry.update(timestep);
+			//TODO: Move to config?
+			final double loadTimeout = 1.5;
+			ithEntry.update(timestep, loadTimeout);
 		}
 	}
 }

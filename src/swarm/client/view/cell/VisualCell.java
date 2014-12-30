@@ -99,7 +99,6 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 			
 			ensureFadedIn();
 			m_codeListener.onMetaImageRendered();
-			
 		}
 		
 		@Override public void onLoaded(CellImageProxy entry)
@@ -108,6 +107,10 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 			
 			m_contentPanel.setVisible(true);
 			m_codeListener.onMetaImageLoaded();
+		}
+
+		@Override public void onLoadFailed(CellImageProxy entry)
+		{
 		}
 	};
 	
@@ -118,13 +121,24 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 			if( entry != m_cell1Proxy )  return; // should never happen.
 			
 			ensureFadedIn();
-			
 		}
 		
-		@Override public void onLoaded(CellImageProxy entry)
+		@Override public void onLoaded(CellImageProxy proxy)
 		{
-			if( entry != m_cell1Proxy )  return; // should never happen.
+			onLoadOrFail(proxy);
+		}
+		
+		@Override public void onLoadFailed(CellImageProxy proxy)
+		{
+			onLoadOrFail(proxy);
+		}
+		
+		private void onLoadOrFail(CellImageProxy proxy)
+		{
+			if( proxy != m_cell1Proxy )  return; // should never happen.
 			
+			setDefaultZIndex();
+			VisualCell.this.setVisible(true);
 			m_contentPanel.setVisible(true);
 		}
 	};
@@ -224,7 +238,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 			m_obscuredCount = 0;
 		}
 		
-		@Override public boolean isVisualizationLoaded()
+		@Override public boolean stopOnCurrentObscuringCell()
 		{
 			CellBufferManager bufferMngr = m_cell.m_appContext.cellBufferMngr;
 			int index = U_Bits.calcBitPosition(this.subCellCount);
@@ -593,6 +607,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 		if( m_obscured.m_obscuredCount <= 0 )
 		{
 			this.setVisible(true);
+			setDefaultZIndex();
 		}
 	}
 	
@@ -643,7 +658,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 		}
 		else
 		{
-			setZIndex(m_zIndex_default);
+			setDefaultZIndex();
 		}
 		
 		this.showEmptyContent();
@@ -1120,7 +1135,11 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 	
 	private void setCode_commonPreInit(Code code)
 	{
-		this.setVisible(true); // just in case, not needed in all cases.
+		if( m_isSnapping || m_isFocused || m_subCellDimension != 1 )
+		{
+			this.setVisible(true); // just in case, not needed in all cases.
+		}
+		
 		this.clearStatusHtml();
 		
 		m_queuedCode = null;
@@ -1129,7 +1148,8 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 		{
 			if( m_subCellDimension == 1 && !m_isSnapping && !m_isFocused )
 			{
-				setDefaultZIndex();
+				//--- DRK > Now handled in cell1 load callback.
+//				setDefaultZIndex();
 			}
 		}
 		
