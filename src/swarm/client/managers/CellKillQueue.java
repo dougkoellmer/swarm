@@ -43,9 +43,14 @@ class CellKillQueue extends A_BufferCellList
 		}
 	}
 	
+//	private boolean isEverythingLoadedAbove(BufferCell ithCell)
+//	{
+//		
+//	}
+	
 	private boolean isEverythingLoadedUnderneath(BufferCell ithCell)
 	{
-		if( m_subCellCount <= 1 )  return false;
+		if( m_subCellCount <= 1 )  return true;
 		
 		for( int subCellCount = m_subCellCount >>> 1; subCellCount > 0; subCellCount >>>= 1 )
 		{
