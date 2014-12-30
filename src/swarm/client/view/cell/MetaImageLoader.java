@@ -17,7 +17,6 @@ public class MetaImageLoader
 	{
 		private final ImageElement m_element;
 		private final String m_url;
-		private boolean m_visible = false;
 		
 		MetaImage(String url)
 		{
@@ -27,18 +26,6 @@ public class MetaImageLoader
 			m_element = Document.get().createImageElement();
 			m_element.getStyle().setWidth(100, Unit.PCT);
 			m_element.getStyle().setHeight(100, Unit.PCT);
-		}
-		
-		public Element getElement()
-		{
-			return m_element;
-		}
-		
-		@Override void update(double timestep)
-		{
-			if( !m_visible )  return;
-			
-			super.update(timestep);
 		}
 		
 		private void startLoad()
@@ -72,30 +59,9 @@ public class MetaImageLoader
 			}
 		}
 		
-		boolean isAttached()
+		@Override protected Element getElement()
 		{
-			return m_visible;
-		}
-		
-		void onAttached()
-		{
-			m_visible = true;
-			
-			if( m_state.ordinal() >= E_ImageLoadState.RENDERING.ordinal() )
-			{
-				resetRenderingState();
-			}
-		}
-		
-		void onDettached()
-		{
-			m_visible = false;
-			m_listener = null;
-			
-			if( m_element.getParentNode() != null )
-			{
-				m_element.removeFromParent();
-			}
+			return m_element;
 		}
 	}
 	

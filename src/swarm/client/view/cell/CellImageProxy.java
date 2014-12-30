@@ -1,8 +1,10 @@
 package swarm.client.view.cell;
 
+import com.google.gwt.dom.client.Element;
+
 import swarm.client.view.cell.MetaImageLoader.MetaImage;
 
-public class CellImageProxy
+public abstract class CellImageProxy
 {
 	public static interface I_Listener
 	{
@@ -14,40 +16,57 @@ public class CellImageProxy
 	private static final double META_IMAGE_RENDER_DELAY__DEFINITELY_SHOULD_BE = META_IMAGE_RENDER_DELAY__SHOULD_BE + 0.0;
 	
 	protected E_ImageLoadState m_state;
-	
-	private double m_timeRendering = 0.0;
-	
+	private double m_timer = 0.0;
+	private boolean m_attached = false;
 	protected I_Listener m_listener;
 	
 	protected CellImageProxy()
 	{
 		m_state = E_ImageLoadState.NOT_SET;
-		m_timeRendering = 0.0;
+		m_timer = 0.0;
+		m_attached = false;
 	}
+	
+	protected abstract Element getElement();
 	
 	public E_ImageLoadState getState()
 	{
 		return m_state;
 	}
 	
+	boolean isAttached()
+	{
+		return m_attached;
+	}
+	
 	public double getTimeRendering()
 	{
-		return m_state.ordinal() >= E_ImageLoadState.RENDERING.ordinal() ? m_timeRendering : 0.0;
+		return m_state.ordinal() >= E_ImageLoadState.RENDERING.ordinal() ? m_timer : 0.0;
 	}
 	
 	void update(double timestep)
 	{
-		if( m_state.ordinal() < E_ImageLoadState.RENDERING.ordinal() )  return;
+		if( !m_attached )  return;
 		
-		m_timeRendering += timestep;
+		m_timer += timestep;
+		
+		if( m_state == E_ImageLoadState.LOADING )
+		{
+			//--- DRK > Might add timeout logic here but doesn't seem necessary as of now.
+			return;
+		}
+		else if( m_state.ordinal() < E_ImageLoadState.RENDERING.ordinal() )
+		{
+			  return;
+		}
 		
 		E_ImageLoadState oldState = m_state;
 		
-		if( m_timeRendering >= META_IMAGE_RENDER_DELAY__DEFINITELY_SHOULD_BE )
+		if( m_timer >= META_IMAGE_RENDER_DELAY__DEFINITELY_SHOULD_BE )
 		{
 			m_state = E_ImageLoadState.DEFINITELY_SHOULD_BE_RENDERED_BY_NOW;
 		}
-		else if( m_timeRendering >= META_IMAGE_RENDER_DELAY__SHOULD_BE )
+		else if( m_timer >= META_IMAGE_RENDER_DELAY__SHOULD_BE )
 		{
 			m_state = E_ImageLoadState.SHOULD_BE_RENDERED_BY_NOW;
 		}
@@ -89,6 +108,29 @@ public class CellImageProxy
 	protected void resetRenderingState()
 	{
 		m_state = E_ImageLoadState.RENDERING;
-		m_timeRendering = 0.0;
+		m_timer = 0.0;
+	}
+	
+	void onAttached()
+	{
+		m_attached = true;
+		
+		if( m_state.ordinal() >= E_ImageLoadState.RENDERING.ordinal() )
+		{
+			resetRenderingState();
+		}
+	}
+	
+	void onDettached()
+	{
+		m_attached = false;
+		m_listener = null;
+		
+		Element element = getElement();
+		
+		if( element != null && element.getParentNode() != null )
+		{
+			element.removeFromParent();
+		}
 	}
 }

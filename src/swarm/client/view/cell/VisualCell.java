@@ -46,6 +46,7 @@ import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.storage.client.Storage;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
@@ -885,6 +886,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 		
 		if( m_cell1Proxy != null )
 		{
+			m_cell1Proxy.onDettached();
 			m_cell1Proxy = null;
 		}
 		
@@ -1163,28 +1165,41 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 		{
 			//--- DRK > Null check shouldn't be needed but who knows.
 			boolean loadProxy = !m_isFocused && m_cell1Proxy == null;
+			Element hostElement = m_contentPanel.getElement();
 			
 			if( loadProxy )
 			{
 				m_cell1Proxy = m_cell1ImageLoader.getProxy(m_bufferCell.getCoordinate().getM(), m_bufferCell.getCoordinate().getN());
+				
+				if( !m_cell1Proxy.isLoaded() )
+				{
+					hostElement = DOM.createDiv();
+					hostElement.getStyle().setWidth(100, Unit.PCT);
+					hostElement.getStyle().setHeight(100, Unit.PCT);
+					
+					m_sandboxMngr.stop(m_contentPanel.getElement());
+					m_contentPanel.getElement().appendChild(hostElement);
+				}
+				
+				m_cell1Proxy.onAttached();
 			}
 			
-			setCode_nonMeta(code, cellNamespace);
+			setCode_nonMeta(hostElement, code, cellNamespace);
 			
 			if( loadProxy )
 			{
-				m_cell1ImageLoader.load(m_cell1Proxy, m_contentPanel.getElement(), m_cell1LoadListener);
+				m_cell1ImageLoader.load(m_cell1Proxy, hostElement, m_cell1LoadListener);
 			}
 		}
 		
 		if( m_codeListener != null )  m_codeListener.onCodeLoaded(this);
 	}
 	
-	private void setCode_nonMeta(Code code, String cellNamespace)
+	private void setCode_nonMeta(Element hostElement, Code code, String cellNamespace)
 	{
 		m_contentPanel.setVisible(true);
 		
-		m_sandboxMngr.start(m_contentPanel.getElement(), code, cellNamespace, m_codeLoadListener);
+		m_sandboxMngr.start(hostElement, code, cellNamespace, m_codeLoadListener);
 	}
 	
 	private void setCode_meta(Code code)
@@ -1217,7 +1232,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 		m_utilCode.setRawCode(html);
 		m_utilCode.setSafetyLevel(E_CodeSafetyLevel.NO_SANDBOX_STATIC);
 		
-		this.setCode_nonMeta(m_utilCode, "");
+		this.setCode_nonMeta(m_contentPanel.getElement(), m_utilCode, "");
 	}
 	
 	UIBlocker getBlocker()
@@ -1308,9 +1323,22 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 	{
 		if( m_queuedCode != null )  return false;
 		
-		if( m_subCellDimension == 1 )  return true;
-		
-		return m_metaImageProxy != null && m_metaImageProxy.isAttached() && m_metaImageProxy.getState().ordinal() >= E_ImageLoadState.RENDERING.ordinal();
+		if( m_subCellDimension == 1 )
+		{
+			//--- DRK > Not sure what to do when this proxy is null so returning not loaded for now.
+//			if( m_cell1Proxy == null )
+//			{
+//				return true;
+//			}
+//			else
+			{
+				return m_cell1Proxy != null && m_cell1Proxy.isAttached() && m_cell1Proxy.isLoaded();
+			}
+		}
+		else
+		{
+			return m_metaImageProxy != null && m_metaImageProxy.isAttached() && m_metaImageProxy.isLoaded();
+		}
 	}
 	
 	@Override public void onSavedFromDeathSentence()

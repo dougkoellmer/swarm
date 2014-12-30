@@ -15,8 +15,8 @@ public class Cell1ImageLoader
 	{
 		private I_Listener m_listener;
 		private Element m_element;
-		
 		private final int m_hash;
+		
 		
 		private Cell1Proxy(int hash)
 		{
@@ -59,7 +59,7 @@ public class Cell1ImageLoader
 		{
 			resetRenderingState();
 			
-			if( m_listener != null )
+			if( m_listener != null && element == m_element)
 			{
 				m_listener.onLoaded(this);
 			}
@@ -68,6 +68,19 @@ public class Cell1ImageLoader
 		private void updateListener(I_Listener listener)
 		{
 			m_listener = listener;
+		}
+		
+		@Override void onDettached()
+		{
+			super.onDettached();
+			
+			m_element = null;
+		}
+
+		@Override
+		protected Element getElement()
+		{
+			return m_element;
 		}
 	}
 	
