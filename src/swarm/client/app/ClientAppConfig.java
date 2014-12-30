@@ -10,7 +10,7 @@ import swarm.shared.structs.Point;
 
 public class ClientAppConfig extends AppConfig
 {
-	public double killQueueTime = .75;
+	public double killQueueTime = 1.0;
 //	public double killQueueTime = 5.0;
 
 	public double timeThatMetaCellSticksAroundAfterCameraStopsZooming = .18;

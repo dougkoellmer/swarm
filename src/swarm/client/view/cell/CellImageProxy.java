@@ -2,7 +2,7 @@ package swarm.client.view.cell;
 
 import com.google.gwt.dom.client.Element;
 
-import swarm.client.view.cell.MetaImageLoader.MetaImage;
+import swarm.client.view.cell.MetaImageLoader.MetaImageProxy;
 
 public abstract class CellImageProxy
 {

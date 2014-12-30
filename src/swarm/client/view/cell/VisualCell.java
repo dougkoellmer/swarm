@@ -20,7 +20,7 @@ import swarm.client.view.U_Css;
 import swarm.client.view.U_View;
 import swarm.client.view.ViewContext;
 import swarm.client.view.cell.Cell1ImageLoader.Cell1Proxy;
-import swarm.client.view.cell.MetaImageLoader.MetaImage;
+import swarm.client.view.cell.MetaImageLoader.MetaImageProxy;
 import swarm.client.view.sandbox.SandboxManager;
 import swarm.client.view.tabs.code.I_CodeLoadListener;
 import swarm.client.view.widget.UIBlocker;
@@ -249,7 +249,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 	private final ViewContext m_viewContext;
 	
 	private final MetaImageLoader m_metaImageLoader;
-	private MetaImageLoader.MetaImage m_metaImageProxy;
+	private MetaImageLoader.MetaImageProxy m_metaImageProxy;
 	private boolean m_isMetaProbablyCachedInMemory = false;
 	
 	private final Cell1ImageLoader m_cell1ImageLoader;

@@ -68,8 +68,7 @@ public class VisualCellPool implements I_CellPoolDelegate
 	
 	private final VisualCell.I_CodeListener m_codeListener = new VisualCell.I_CodeListener()
 	{
-		@Override
-		public void onCodeLoaded(VisualCell cell)
+		@Override public void onCodeLoaded(VisualCell cell)
 		{
 			BufferCell bufferCell = cell.getBufferCell();
 			
@@ -100,15 +99,10 @@ public class VisualCellPool implements I_CellPoolDelegate
 		
 		@Override public void onMetaImageLoaded()
 		{
-			//TODO: Sloppy dependency/callback chain here.
-			m_viewContext.cellMngr.onMetaCellLoaded();
 		}
 
-		@Override
-		public void onMetaImageRendered()
-		{
-			m_viewContext.cellMngr.onMetaCellRendered();
-			
+		@Override public void onMetaImageRendered()
+		{			
 			m_viewContext.stateContext.perform(StateMachine_Camera.SignalBufferDirty.class);
 		}
 	};

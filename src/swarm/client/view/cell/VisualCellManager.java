@@ -899,14 +899,6 @@ public class VisualCellManager implements I_UIElement
 		}
 	}
 	
-	public void onMetaCellLoaded()
-	{
-	}
-	
-	public void onMetaCellRendered()
-	{
-	}
-	
 	private BufferCell getCurrentBufferCell()
 	{
 		State_ViewingCell state = m_viewContext.stateContext.getEntered(State_ViewingCell.class);

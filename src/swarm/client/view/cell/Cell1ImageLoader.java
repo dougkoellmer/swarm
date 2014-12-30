@@ -77,8 +77,7 @@ public class Cell1ImageLoader
 			m_element = null;
 		}
 
-		@Override
-		protected Element getElement()
+		@Override protected Element getElement()
 		{
 			return m_element;
 		}

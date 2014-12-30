@@ -58,7 +58,7 @@ public class CellBufferPair
 //		s_logger.severe("Raw: " + m_subCellCount + " " + m_utilCoord1.toString() + " " + newBufferWidth + " " + newBufferHeight);		
 		
 		//--- DRK > Constrain both the position and size of the buffer if necessary so it maps onto the grid in a minimal fashion.
-		//---		The following is capable of creating a buffer of zero size, which is fine.
+		//---		The following can create a buffer of zero size, which is fine.
 		int gridWidthRemainder = m_subCellCount > 0 ? grid.getWidth() % m_subCellCount : 0;
 		int relativeGridWidth = grid.getWidth() == 0 ? 0 : (grid.getWidth() - gridWidthRemainder) / m_subCellCount;
 		relativeGridWidth += gridWidthRemainder > 0 ? 1 : 0;

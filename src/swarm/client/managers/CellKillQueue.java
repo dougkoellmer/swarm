@@ -43,6 +43,31 @@ class CellKillQueue extends A_BufferCellList
 		}
 	}
 	
+	private boolean isEverythingLoadedUnderneath(BufferCell ithCell)
+	{
+		if( m_subCellCount <= 1 )  return false;
+		
+		for( int subCellCount = m_subCellCount >>> 1; subCellCount > 0; subCellCount >>>= 1 )
+		{
+			int index = U_Bits.calcBitPosition(subCellCount);
+			CellBuffer buffer = m_parent.getDisplayBuffer(index);
+			
+			for( int j = 0; j < buffer.m_cellList.size(); j++ )
+			{
+				BufferCell jthCell = buffer.m_cellList.get(j);
+				
+				if( jthCell == null )  continue;
+
+				if( !jthCell.getVisualization().isLoaded() )
+				{
+					return false;
+				}
+			}
+		}
+		
+		return true;
+	}
+	
 	void clearTheDead(ClientGrid grid)
 	{
 		for( int i = m_cellList.size()-1; i >= 0; i--)
@@ -53,29 +78,26 @@ class CellKillQueue extends A_BufferCellList
 			{
 				m_cellList.remove(i);
 			}
-			else if( ithCell.kill() )
+			else if( !ithCell.getVisualization().isLoaded() || ithCell.kill() || isEverythingLoadedUnderneath(ithCell) )
 			{
-				if( ithCell.getVisualization().isLoaded() )
+				if( m_subCellCount > 1 )
 				{
-					if( m_subCellCount > 1 )
+					for( int subCellCount = m_subCellCount >>> 1; subCellCount > 0; subCellCount >>>= 1 )
 					{
-						for( int subCellCount = m_subCellCount >>> 0x1; subCellCount > 0; subCellCount >>>= 0x1 )
+						int index = U_Bits.calcBitPosition(subCellCount);
+						CellBuffer buffer = m_parent.getDisplayBuffer(index);
+						
+						for( int j = 0; j < buffer.m_cellList.size(); j++ )
 						{
-							int index = U_Bits.calcBitPosition(subCellCount);
-							CellBuffer buffer = m_parent.getDisplayBuffer(index);
+							BufferCell jthCell = buffer.m_cellList.get(j);
 							
-							for( int j = 0; j < buffer.m_cellList.size(); j++ )
+							if( jthCell == null )  continue;
+							
+							if( grid.isObscured(jthCell.getCoordinate().getM(), jthCell.getCoordinate().getN(), subCellCount, m_subCellCount, m_obscured) )
 							{
-								BufferCell jthCell = buffer.m_cellList.get(j);
-								
-								if( jthCell == null )  continue;
-								
-								if( grid.isObscured(jthCell.getCoordinate().getM(), jthCell.getCoordinate().getN(), subCellCount, m_subCellCount, m_obscured) )
+								if( m_subCellCount == m_obscured.subCellCount && ithCell.getCoordinate().isEqualTo(m_obscured.m, m_obscured.n) )
 								{
-									if( m_subCellCount == m_obscured.subCellCount && ithCell.getCoordinate().isEqualTo(m_obscured.m, m_obscured.n) )
-									{
-										jthCell.getVisualization().onRevealed();
-									}
+									jthCell.getVisualization().onRevealed();
 								}
 							}
 						}

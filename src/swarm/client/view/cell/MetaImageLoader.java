@@ -13,12 +13,12 @@ import com.google.gwt.dom.client.Style.Unit;
 
 public class MetaImageLoader
 {	
-	static final class MetaImage extends CellImageProxy
+	static final class MetaImageProxy extends CellImageProxy
 	{
 		private final ImageElement m_element;
 		private final String m_url;
 		
-		MetaImage(String url)
+		MetaImageProxy(String url)
 		{
 			super();
 			
@@ -67,10 +67,10 @@ public class MetaImageLoader
 	
 //	private static final Storage s_localStorage = Storage.getLocalStorageIfSupported();
 	
-	private final ArrayList<MetaImage> m_loadQueue = new ArrayList<MetaImage>();
+	private final ArrayList<MetaImageProxy> m_loadQueue = new ArrayList<MetaImageProxy>();
 	
-	private final HashMap<String, MetaImage> m_entryMap = new HashMap<String, MetaImage>();
-	private final ArrayList<MetaImage> m_entryList = new ArrayList<MetaImage>();
+	private final HashMap<String, MetaImageProxy> m_entryMap = new HashMap<String, MetaImageProxy>();
+	private final ArrayList<MetaImageProxy> m_entryList = new ArrayList<MetaImageProxy>();
 	
 	private final double m_queuePopRate;
 	private double m_queuePopTimer;
@@ -80,9 +80,9 @@ public class MetaImageLoader
 		m_queuePopRate = queuePopRate;
 	}
 	
-	MetaImage preLoad(String url)
+	MetaImageProxy preLoad(String url)
 	{
-		MetaImage entry = getEntry(url);
+		MetaImageProxy entry = getEntry(url);
 		
 		if( entry != null ) 
 		{
@@ -108,7 +108,7 @@ public class MetaImageLoader
 		return entry;
 	}
 	
-	MetaImage load(MetaImage entry, I_Listener listener)
+	MetaImageProxy load(MetaImageProxy entry, I_Listener listener)
 	{
 		entry.m_listener = listener;
 		
@@ -124,53 +124,53 @@ public class MetaImageLoader
 		return entry;
 	}
 	
-	private MetaImage newEntry(String url)
+	private MetaImageProxy newEntry(String url)
 	{
-		MetaImage entry = new MetaImage(url);
+		MetaImageProxy entry = new MetaImageProxy(url);
 		m_entryMap.put(url, entry);
 		m_entryList.add(entry);
 		
 		return entry;
 	}
 	
-	private void load(MetaImage entry)
+	private void load(MetaImageProxy entry)
 	{
 		entry.startLoad();
 		addImagesLoadedListener(this, entry, entry.m_element);
 	}
 	
-	private void queue(MetaImage entry)
+	private void queue(MetaImageProxy entry)
 	{
 		m_loadQueue.add(entry);
 		entry.onQueued();
 	}
 	
-	private MetaImage getEntry(String url)
+	private MetaImageProxy getEntry(String url)
 	{
 		return m_entryMap.get(url);
 	}
 	
-	private native void addImagesLoadedListener(MetaImageLoader loader, MetaImage entry, Element element)
+	private native void addImagesLoadedListener(MetaImageLoader loader, MetaImageProxy entry, Element element)
 	/*-{
 			var imgLoad = new $wnd.imagesLoaded( element );
 			
 			imgLoad.on('done', function()
 			{
-				loader.@swarm.client.view.cell.MetaImageLoader::onLoadSucceeded(Lswarm/client/view/cell/MetaImageLoader$MetaImage;)(entry);
+				loader.@swarm.client.view.cell.MetaImageLoader::onLoadSucceeded(Lswarm/client/view/cell/MetaImageLoader$MetaImageProxy;)(entry);
 			});
 			
 			imgLoad.on('fail', function()
 			{
-				loader.@swarm.client.view.cell.MetaImageLoader::onLoadFailed(Lswarm/client/view/cell/MetaImageLoader$MetaImage;)(entry);
+				loader.@swarm.client.view.cell.MetaImageLoader::onLoadFailed(Lswarm/client/view/cell/MetaImageLoader$MetaImageProxy;)(entry);
 			});
 	}-*/;
 	
-	private void onLoadFailed(MetaImage entry)
+	private void onLoadFailed(MetaImageProxy entry)
 	{
 		entry.onLoadFailed();
 	}
 	
-	private void onLoadSucceeded(MetaImage entry)
+	private void onLoadSucceeded(MetaImageProxy entry)
 	{
 		entry.onLoadSucceeded();
 	}
@@ -185,7 +185,7 @@ public class MetaImageLoader
 			
 			while( m_loadQueue.size() > 0 )
 			{
-				MetaImage entry = m_loadQueue.remove(m_loadQueue.size()-1);
+				MetaImageProxy entry = m_loadQueue.remove(m_loadQueue.size()-1);
 				
 				if( !entry.isAtLeastLoading() )
 				{
@@ -201,7 +201,7 @@ public class MetaImageLoader
 	{
 		for( int i = 0; i < m_entryList.size(); i++ )
 		{
-			MetaImage ithEntry = m_entryList.get(i);
+			MetaImageProxy ithEntry = m_entryList.get(i);
 			
 			ithEntry.update(timestep);
 		}
