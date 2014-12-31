@@ -8,7 +8,7 @@ import swarm.shared.structs.Code;
  * ...
  * @author 
  */
-public interface I_BufferCellVisualization
+public interface I_CellVisualization
 {
 //	void onCellRecycled(int width, int height, int padding, int subCellDimension);
 	
@@ -29,6 +29,8 @@ public interface I_BufferCellVisualization
 	void onFocusLost();
 	
 	boolean isLoaded();
+	
+	boolean isFullyDisplayed();
 	
 	void onSavedFromDeathSentence();
 	

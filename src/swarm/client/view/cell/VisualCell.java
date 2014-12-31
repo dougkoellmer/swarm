@@ -9,7 +9,7 @@ import swarm.client.app.AppContext;
 import swarm.client.entities.BufferCell;
 import swarm.client.entities.Camera;
 import swarm.client.entities.ClientGrid;
-import swarm.client.entities.I_BufferCellVisualization;
+import swarm.client.entities.I_CellVisualization;
 import swarm.client.managers.CameraManager;
 import swarm.client.managers.CellBuffer;
 import swarm.client.managers.CellBufferManager;
@@ -53,7 +53,7 @@ import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
 
-public class VisualCell extends AbsolutePanel implements I_BufferCellVisualization
+public class VisualCell extends AbsolutePanel implements I_CellVisualization
 {
 	private static final double DISABLE_TIMER = -1.0;
 	private static final double ENABLE_TIMER = 0.0;
@@ -205,7 +205,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 	
 	private double m_totalTimeSinceCreation = 0.0;
 	
-	private boolean m_fadeIn = false;
+	private boolean m_fadingIn = false;
 	
 	
 	
@@ -366,7 +366,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 	
 	private void fadeIn(double time)
 	{
-		if( !m_fadeIn || !m_hasSetCodeYet )  return;
+		if( !m_fadingIn || !m_hasSetCodeYet )  return;
 		
 		double alpha = time / m_viewContext.config.cellFadeInTime;
 
@@ -375,7 +375,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 		
 		if( alpha >= 1.0 )
 		{
-			m_fadeIn = false;
+			m_fadingIn = false;
 		}
 	}
 	
@@ -668,13 +668,13 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 			//--- DRK > Hmm with reveal logic now I'm not sure this is needed.
 			if( subCellDimension == 1 )
 			{
-				m_fadeIn = false;
+				m_fadingIn = false;
 				ensureFadedIn();
 			}
 		}
 		else
 		{
-			m_fadeIn = true;
+			m_fadingIn = true;
 			ensureFadedOut();
 		}
 		
@@ -691,7 +691,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 			
 			if( m_obscured.m_obscuredCount > 0 )
 			{
-				m_fadeIn = false;
+				m_fadingIn = false;
 				ensureFadedIn();
 				obscuredAsCell1 = true;
 			}
@@ -718,6 +718,11 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 	{
 		if( value == m_zIndex )  return;
 		
+		if( m_isFocused )
+		{
+			s_logger.severe("ERERE");
+		}
+		
 		m_zIndex = value;
 		
 		this.getElement().getStyle().setZIndex(m_zIndex);
@@ -725,6 +730,9 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 	
 	public void setDefaultZIndex()
 	{
+		//--- DRK > Little sloppy but a failsafe against bad z-index logic.
+		if( m_isFocused || m_isSnapping )  return;
+		
 		this.setZIndex(m_zIndex_default);
 	}
 	
@@ -1028,7 +1036,7 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 	{
 		ensureFadedIn();
 		this.setVisible(true);
-		m_fadeIn = false;
+		m_fadingIn = false;
 		
 		//--- DRK > Added this conditional because for fringe case of instant snap,
 		//--- 		onFocusGained can be called before popUp. I thought this case wasn't
@@ -1337,6 +1345,11 @@ public class VisualCell extends AbsolutePanel implements I_BufferCellVisualizati
 		{
 			this.m_statusPanel.setContent(null);
 		}
+	}
+	
+	@Override public boolean isFullyDisplayed()
+	{
+		return m_visible && !m_fadingIn;
 	}
 
 	@Override public boolean isLoaded()

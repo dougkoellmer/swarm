@@ -29,6 +29,11 @@ class CellKillQueue extends A_BufferCellList
 				return true;
 			}
 			
+			if( !cell.getVisualization().isFullyDisplayed() )
+			{
+				return true;
+			}
+			
 			return false;
 		}
 	};
@@ -151,10 +156,10 @@ class CellKillQueue extends A_BufferCellList
 					}
 				}
 				
-				int m = ithCell.getCoordinate().getM();
-				int n = ithCell.getCoordinate().getN();
-				int subCellCount = m_subCellCount;
-				s_logger.severe("killing " + subCellCount + " " + m + " " + n);
+//				int m = ithCell.getCoordinate().getM();
+//				int n = ithCell.getCoordinate().getN();
+//				int subCellCount = m_subCellCount;
+//				s_logger.severe("killing " + subCellCount + " " + m + " " + n);
 				
 				m_cellPool.deallocCell(ithCell);
 				m_cellList.remove(i);

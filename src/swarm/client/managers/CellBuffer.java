@@ -13,7 +13,7 @@ import java.util.logging.Logger;
 import swarm.client.entities.BufferCell;
 import swarm.client.entities.Camera;
 import swarm.client.entities.ClientGrid;
-import swarm.client.entities.I_BufferCellVisualization;
+import swarm.client.entities.I_CellVisualization;
 import swarm.client.structs.BufferCellPool;
 import swarm.client.structs.I_LocalCodeRepository;
 import swarm.shared.utils.U_Bits;
@@ -209,7 +209,7 @@ public class CellBuffer extends A_BufferCellList
 							
 							if( obscuringCell != null )
 							{
-								I_BufferCellVisualization obscuringCellVisualization = obscuringCell.getVisualization();
+								I_CellVisualization obscuringCellVisualization = obscuringCell.getVisualization();
 								
 								if( obscuringCellVisualization.isLoaded() )
 								{

@@ -25,7 +25,7 @@ public class BufferCell extends A_Cell
 	
 	private static final Point s_utilPoint = new Point();
 	
-	private I_BufferCellVisualization m_visualization = null;
+	private I_CellVisualization m_visualization = null;
 	
 	private final E_CodeStatus m_codeStatus[] = new E_CodeStatus[E_CodeType.values().length];
 	
@@ -375,12 +375,12 @@ public class BufferCell extends A_Cell
 		}
 	}
 	
-	public void setVisualization(I_BufferCellVisualization visualization)
+	public void setVisualization(I_CellVisualization visualization)
 	{
 		m_visualization = visualization;
 	}
 	
-	public I_BufferCellVisualization getVisualization()
+	public I_CellVisualization getVisualization()
 	{
 		return m_visualization;
 	}

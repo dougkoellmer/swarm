@@ -8,7 +8,7 @@ import swarm.shared.statemachine.*;
 import com.google.gwt.user.client.ui.Widget;
 
 import swarm.client.entities.BufferCell;
-import swarm.client.entities.I_BufferCellVisualization;
+import swarm.client.entities.I_CellVisualization;
 import swarm.client.managers.CameraManager;
 import swarm.client.states.camera.I_State_SnappingOrViewing;
 import swarm.client.states.camera.StateMachine_Camera;
@@ -132,7 +132,7 @@ public class VisualCellPool implements I_CellPoolDelegate
 		return m_pool;
 	}
 	
-	@Override public I_BufferCellVisualization createVisualization(BufferCell bufferCell, int width, int height, int padding, int subCellDim, int highestPossibleSubCellCount, boolean justRemovedMetaCountOverride)
+	@Override public I_CellVisualization createVisualization(BufferCell bufferCell, int width, int height, int padding, int subCellDim, int highestPossibleSubCellCount, boolean justRemovedMetaCountOverride)
 	{
 		VisualCell newVisualCell = m_pool.allocate();
 		
@@ -151,7 +151,7 @@ public class VisualCellPool implements I_CellPoolDelegate
 		return newVisualCell;
 	}
 	
-	@Override public void destroyVisualization(I_BufferCellVisualization visualization)
+	@Override public void destroyVisualization(I_CellVisualization visualization)
 	{
 		VisualCell visualCell = (VisualCell) visualization;
 		
