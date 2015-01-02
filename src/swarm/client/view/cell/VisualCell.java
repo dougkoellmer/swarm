@@ -289,8 +289,8 @@ public class VisualCell extends AbsolutePanel implements I_CellVisualization
 		m_glassPanel.addStyleName("sm_cell_glass");
 
 		//m_backgroundPanel.getElement().getStyle().setPosition(Position.ABSOLUTE);
-		m_statusPanel.getElement().getStyle().setPosition(Position.RELATIVE);
-		m_statusPanel.getElement().getStyle().setTop(-100, Unit.PCT);
+//		m_statusPanel.getElement().getStyle().setPosition(Position.RELATIVE);
+//		m_statusPanel.getElement().getStyle().setTop(-100, Unit.PCT);
 		m_glassPanel.getElement().getStyle().setPosition(Position.ABSOLUTE);
 		
 		m_statusPanel.setZIndex(E_ZIndex.CELL_STATUS.get());
@@ -648,6 +648,7 @@ public class VisualCell extends AbsolutePanel implements I_CellVisualization
 		m_bufferCell = bufferCell;
 		clearStatusHtmlForSure();
 		m_statusPanel.removeConstraints(width, height);
+//		m_statusPanel.getElement().getStyle().setTop(-height, Unit.PX);
 		
 		Camera camera = m_cameraMngr.getCamera();
 		double deltaZ = camera.getPosition().getZ() - camera.getPrevPosition().getZ();
@@ -961,6 +962,8 @@ public class VisualCell extends AbsolutePanel implements I_CellVisualization
 		U_Css.allowUserSelect(m_contentPanel.getElement(), true);
 		
 		m_sandboxMngr.allowScrolling(m_contentPanel.getElement(), true);
+		
+		showLoading();
 	}
 	
 	@Override public void onFocusLost()
