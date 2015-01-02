@@ -83,6 +83,13 @@ public class CameraManager
 		if ( m_xProgress == 0 )
 		{
 			m_cameraAtRestFrameCount++;
+			
+			//--- DRK > Wow not proud of this one...
+			if( m_cameraAtRestFrameCount == 2 )
+			{
+				m_cameraAtRestFrameCount++;
+			}
+			
 			m_snapTime = 0;
 			
 			if( m_cameraAtRestFrameCount == 1 )

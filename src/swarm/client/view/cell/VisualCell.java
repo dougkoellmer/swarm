@@ -438,6 +438,7 @@ public class VisualCell extends AbsolutePanel implements I_CellVisualization
 		
 		if( m_spinner.asWidget().getParent() != null )
 		{
+//			s_logger.severe(timeStep+"");
 			m_spinner.update(timeStep);
 		}
 
@@ -587,6 +588,7 @@ public class VisualCell extends AbsolutePanel implements I_CellVisualization
 		totalHeight = totalHeight >= 0 ? totalHeight : 0;
 		
 		m_contentPanel.setSize(m_defaultWidth + "px", m_defaultHeight + "px");
+		m_statusPanel.setSize(m_defaultWidth + "px", m_defaultHeight + "px");
 		this.setSize(totalWidth + "px", totalHeight + "px");
 	}
 	
@@ -595,6 +597,8 @@ public class VisualCell extends AbsolutePanel implements I_CellVisualization
 		this.flushLayout();
 		m_contentPanel.getElement().getStyle().clearWidth();
 		m_contentPanel.getElement().getStyle().clearHeight();
+		m_statusPanel.getElement().getStyle().clearWidth();
+		m_statusPanel.getElement().getStyle().clearHeight();
 	}
 	
 	private void flushLayout()
