@@ -66,7 +66,7 @@ public class VisualCellPool implements I_CellPoolDelegate
 	
 	private final ViewContext m_viewContext;
 	
-	private final VisualCell.I_CodeListener m_codeListener = new VisualCell.I_CodeListener()
+	private final VisualCell.I_EventListener m_codeListener = new VisualCell.I_EventListener()
 	{
 		@Override public void onCodeLoaded(VisualCell cell)
 		{
@@ -104,6 +104,14 @@ public class VisualCellPool implements I_CellPoolDelegate
 		@Override public void onMetaImageRendered()
 		{			
 			m_viewContext.stateContext.perform(StateMachine_Camera.SignalBufferDirty.class);
+		}
+		
+		@Override public void onPopped(VisualCell visualCell)
+		{
+			if( m_viewContext.cellHud != null )
+			{
+				m_viewContext.cellHud.onCellPopped(visualCell);
+			}
 		}
 	};
 	

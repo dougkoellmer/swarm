@@ -12,6 +12,7 @@ import swarm.client.view.cell.AlertManager;
 import swarm.client.view.cell.Cell1ImageLoader;
 import swarm.client.view.cell.I_CellSpinnerFactory;
 import swarm.client.view.cell.MetaImageLoader;
+import swarm.client.view.cell.VisualCellHud;
 import swarm.client.view.cell.VisualCellManager;
 import swarm.client.view.tooltip.ToolTipManager;
 import swarm.shared.statemachine.StateContext;
@@ -39,4 +40,6 @@ public class ViewContext
 	
 	public MetaImageLoader metaImageLoader;
 	public Cell1ImageLoader cell1ImageLoader;
+	
+	public VisualCellHud cellHud;
 }

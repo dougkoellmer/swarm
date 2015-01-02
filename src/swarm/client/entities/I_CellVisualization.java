@@ -35,4 +35,6 @@ public interface I_CellVisualization
 	void onSavedFromDeathSentence();
 	
 	void onRevealed();
+	
+	void onSnappedTo();
 }

@@ -59,11 +59,12 @@ public class VisualCell extends AbsolutePanel implements I_CellVisualization
 	private static final double ENABLE_TIMER = 0.0;
 	
 	
-	public static interface I_CodeListener
+	public static interface I_EventListener
 	{
 		void onCodeLoaded(VisualCell cell);
 		void onMetaImageLoaded();
 		void onMetaImageRendered();
+		void onPopped(VisualCell cell);
 	}
 	static enum LayoutState
 	{
@@ -98,7 +99,7 @@ public class VisualCell extends AbsolutePanel implements I_CellVisualization
 			if( entry != m_metaImageProxy )  return; // should never happen.
 			
 			ensureFadedIn();
-			m_codeListener.onMetaImageRendered();
+			m_eventListener.onMetaImageRendered();
 		}
 		
 		@Override public void onLoaded(CellImageProxy entry)
@@ -106,7 +107,7 @@ public class VisualCell extends AbsolutePanel implements I_CellVisualization
 			if( entry != m_metaImageProxy )  return; // should never happen.
 			
 			m_contentPanel.setVisible(true);
-			m_codeListener.onMetaImageLoaded();
+			m_eventListener.onMetaImageLoaded();
 		}
 
 		@Override public void onLoadFailed(CellImageProxy entry)
@@ -155,7 +156,7 @@ public class VisualCell extends AbsolutePanel implements I_CellVisualization
 		}
 	}
 	
-	private I_CodeListener m_codeListener;
+	private I_EventListener m_eventListener;
 	private int m_id;
 	private final AbsolutePanel m_contentPanel = new AbsolutePanel();
 	private final UIBlocker	m_statusPanel = new UIBlocker();
@@ -199,6 +200,7 @@ public class VisualCell extends AbsolutePanel implements I_CellVisualization
 	
 	private boolean m_isSnapping = false;
 	private boolean m_isFocused = false;
+	private boolean m_isPoppedUp = false;
 	private LayoutState m_layoutState = LayoutState.NOT_CHANGING;
 	private final double m_sizeChangeTime;
 	private final double m_retractionEasing;
@@ -334,9 +336,9 @@ public class VisualCell extends AbsolutePanel implements I_CellVisualization
 		return m_visible;
 	}
 	
-	public void setCodeListener(I_CodeListener listener)
+	public void setCodeListener(I_EventListener listener)
 	{
-		m_codeListener = listener;
+		m_eventListener = listener;
 	}
 	
 	public BufferCell getBufferCell()
@@ -718,11 +720,6 @@ public class VisualCell extends AbsolutePanel implements I_CellVisualization
 	{
 		if( value == m_zIndex )  return;
 		
-		if( m_isFocused )
-		{
-			s_logger.severe("ERERE");
-		}
-		
 		m_zIndex = value;
 		
 		this.getElement().getStyle().setZIndex(m_zIndex);
@@ -743,6 +740,7 @@ public class VisualCell extends AbsolutePanel implements I_CellVisualization
 		m_totalTimeSinceCreation = 0.0;
 		m_clearLoadingTimer = DISABLE_TIMER;
 		m_hasSetCodeYet = false;
+		m_isPoppedUp = false;
 		m_queuedCode = null;
 		m_layoutState = LayoutState.NOT_CHANGING;
 		m_isFocused = false;
@@ -916,6 +914,7 @@ public class VisualCell extends AbsolutePanel implements I_CellVisualization
 		m_bufferCell = null;
 		m_isFocused = false;
 		m_subCellDimension = -1;
+		m_isPoppedUp = false;
 
 		if( m_codeSafetyLevel != null && !m_codeSafetyLevel.isStatic() )
 		{
@@ -964,6 +963,7 @@ public class VisualCell extends AbsolutePanel implements I_CellVisualization
 	{
 		m_isSnapping = false; // just in case.
 		m_isFocused = false;
+		m_isPoppedUp = false; // just in case...perhaps not technically accurate (still popped z-index-wise while fader is fading out)...but more convenient for use case for hud for now
 		m_statusPanel.removeConstraints(m_defaultWidth, m_defaultHeight);
 		
 		this.m_glassPanel.setVisible(true);
@@ -1034,6 +1034,7 @@ public class VisualCell extends AbsolutePanel implements I_CellVisualization
 	
 	public void popUp()
 	{
+		m_isPoppedUp = true;
 		ensureFadedIn();
 		this.setVisible(true);
 		m_fadingIn = false;
@@ -1049,10 +1050,13 @@ public class VisualCell extends AbsolutePanel implements I_CellVisualization
 			setZIndex(E_ZIndex.CELL_POPPED.get());
 			m_isSnapping = true;
 		}
+		
+		if( m_eventListener != null )  m_eventListener.onPopped(this);
 	}
 	
 	public void cancelPopUp()
 	{
+		m_isPoppedUp = false;
 		boolean wasSnapping = m_isSnapping;
 		m_isSnapping = false;
 		
@@ -1071,6 +1075,7 @@ public class VisualCell extends AbsolutePanel implements I_CellVisualization
 	public void pushDown()
 	{
 		setZIndex(E_ZIndex.CELL_PUSHED_BACK_DOWN.get());
+		m_isPoppedUp = false;
 	}
 	
 	@Override
@@ -1220,7 +1225,7 @@ public class VisualCell extends AbsolutePanel implements I_CellVisualization
 			}
 		}
 		
-		if( m_codeListener != null )  m_codeListener.onCodeLoaded(this);
+		if( m_eventListener != null )  m_eventListener.onCodeLoaded(this);
 	}
 	
 	private void setCode_nonMeta(Element hostElement, Code code, String cellNamespace)
@@ -1378,5 +1383,15 @@ public class VisualCell extends AbsolutePanel implements I_CellVisualization
 	{
 		//--- DRK > Currently not fading out so don't need this.
 //		m_contentPanel.getElement().getStyle().setOpacity(1.0);
+	}
+
+	public boolean isPoppedUp()
+	{
+		return m_isPoppedUp;
+	}
+
+	@Override public void onSnappedTo()
+	{
+		m_isSnapping = true;
 	}
 }

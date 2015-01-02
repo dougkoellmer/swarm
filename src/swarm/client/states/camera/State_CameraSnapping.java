@@ -311,9 +311,14 @@ public class State_CameraSnapping extends A_State implements I_StateEventListene
 		
 		m_targetCell = m_appContext.cellBufferMngr.getLowestDisplayBuffer().getCellAtAbsoluteCoord(m_targetGridCoordinate);
 		
-		if( m_targetCell != null && fireEvent )
+		if( m_targetCell != null )
 		{
-			perform(Event_CameraSnapping_OnTargetCellAppeared.class);
+			m_targetCell.getVisualization().onSnappedTo();
+			
+			if( fireEvent )
+			{
+				perform(Event_CameraSnapping_OnTargetCellAppeared.class);
+			}
 		}
 	}
 	

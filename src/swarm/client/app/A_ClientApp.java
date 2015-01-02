@@ -99,14 +99,14 @@ public class A_ClientApp extends A_App implements I_TimeSource
 	protected final ViewContext m_viewContext;
 	protected StateContext m_stateContext;
 	
-	protected A_ClientApp(ClientAppConfig appConfig, ViewConfig viewConfig)
+	protected A_ClientApp(ClientAppConfig appConfig, ViewConfig viewConfig, ViewContext viewContext)
 	{
 		super(E_AppEnvironment.CLIENT);
 		
 		m_appConfig = appConfig;
 		m_viewConfig = viewConfig;
 		m_appContext = new AppContext();
-		m_viewContext = new ViewContext();
+		m_viewContext = viewContext;
 		m_viewContext.appConfig = m_appConfig;
 		m_viewContext.config = viewConfig;
 		m_appContext.config = m_appConfig;

@@ -222,9 +222,9 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 				if( event.getState() instanceof State_CameraSnapping )
 				{
 					if( event.getState().getPreviousState() != State_ViewingCell.class )
-					{						
-						this.setVisible(true);
-						m_baseAlpha = m_alpha;
+					{
+//						this.setVisible(true);
+//						m_baseAlpha = m_alpha;
 					}
 					else
 					{
@@ -336,13 +336,11 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 							this.setWidthInstantly(viewingState.getCell().getCoordinate());
 							this.setPositionInstantly(viewingState.getCell().getCoordinate(), true);
 							flushCropping();
-							
 						}
 					}
 					else if( snappingState != null )
 					{
-						this.setTargetWidth(snappingState.getTargetCoord());
-						this.setTargetPosition(snappingState.getTargetCoord());
+						setTargetLayoutWhileSnapping(snappingState, snappingState.getTargetCoord());
 					}
 				}
 				else if( event.getTargetClass() == Action_Camera_SnapToPoint.class )
@@ -376,8 +374,11 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 						this.flushWidth();
 					}
 
-					this.setTargetWidth(args.getTargetCoordinate());
-					this.setTargetPosition(args.getTargetCoordinate());
+					State_CameraSnapping snappingState = event.get(State_CameraSnapping.class);
+					if( snappingState != null )
+					{
+						setTargetLayoutWhileSnapping(snappingState, args.getTargetCoordinate());
+					}
 					
 					clearCropping();
 				}
@@ -414,8 +415,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 					{
 						State_CameraSnapping state = event.get(State_CameraSnapping.class);
 						
-						this.setTargetWidth(state.getTargetCoord());
-						this.setTargetPosition(state.getTargetCoord());
+						this.setTargetLayoutWhileSnapping(state, state.getTargetCoord());
 					}
 				}
 				
@@ -487,6 +487,19 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 		}
 		
 		this.getElement().getStyle().setWidth(cropperWidth, Unit.PX);
+	}
+	
+	private void setTargetLayoutWhileSnapping(State_CameraSnapping state, GridCoordinate coord)
+	{
+		if( state.getPreviousState() != State_ViewingCell.class )
+		{
+			BufferCell cell = state.getCell();
+			
+			if( cell == null || !((VisualCell)cell.getVisualization()).isPoppedUp() )  return;
+		}
+		
+		setTargetWidth(coord);
+		setTargetPosition(coord);
 	}
 	
 	private void setTargetWidth(GridCoordinate coord)
@@ -693,5 +706,20 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 		double scaling = m_viewContext.cellMngr.getLastScaling();
 		String scaleProperty = U_Css.createScaleTransform(scaling, has3dTransforms);
 		U_Css.setTransform(this.getElement(), translation + " " + scaleProperty);
+	}
+
+	public void onCellPopped(VisualCell visualCell)
+	{
+		State_CameraSnapping state = m_viewContext.stateContext.get(State_CameraSnapping.class);
+		
+		if( state == null )  return;
+		
+		if( state.getPreviousState() != State_ViewingCell.class )
+		{
+			setTargetLayoutWhileSnapping(state, state.getTargetCoord());
+			
+			this.setVisible(true);
+			m_baseAlpha = m_alpha;
+		}
 	}
 }

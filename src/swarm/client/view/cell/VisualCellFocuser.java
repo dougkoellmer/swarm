@@ -114,11 +114,15 @@ public class VisualCellFocuser extends FlowPanel implements I_UIElement
 				if( cell != null )
 				{
 					VisualCell visualCell = (VisualCell) cell.getVisualization();
-					popUp(visualCell);
-					m_poppedCell = visualCell;
-					m_poppedCellCoord.copy(cell.getCoordinate());
 					
-					return true;
+					if( m_appContext.cellBufferMngr.getNonOverriddenSubCellCount() == 1 )// || visualCell.isLoaded() )
+					{
+						popUp(visualCell);
+						m_poppedCell = visualCell;
+						m_poppedCellCoord.copy(cell.getCoordinate());
+						
+						return true;
+					}
 				}
 			}
 		}
