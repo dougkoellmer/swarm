@@ -438,7 +438,6 @@ public class VisualCell extends AbsolutePanel implements I_CellVisualization
 		
 		if( m_spinner.asWidget().getParent() != null )
 		{
-//			s_logger.severe(timeStep+"");
 			m_spinner.update(timeStep);
 		}
 
@@ -962,8 +961,6 @@ public class VisualCell extends AbsolutePanel implements I_CellVisualization
 		U_Css.allowUserSelect(m_contentPanel.getElement(), true);
 		
 		m_sandboxMngr.allowScrolling(m_contentPanel.getElement(), true);
-		
-		showLoading();
 	}
 	
 	@Override public void onFocusLost()

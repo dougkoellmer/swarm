@@ -762,7 +762,7 @@ public class VisualCellManager implements I_UIElement
 					
 					//boolean flushDestroyQueueIfMoving = (event.getState().getUpdateCount() % 8) == 0;
 					
-//					s_logger.severe(""+m_viewContext.appContext.cameraMngr.getAtRestFrameCount());
+					s_logger.severe(""+m_viewContext.appContext.cameraMngr.getAtRestFrameCount());
 //					s_logger.severe(m_cellPool.getInner().getCheckOutCount() + "/" + m_cellPool.getInner().getAllocCount());
 					
 					
@@ -788,9 +788,13 @@ public class VisualCellManager implements I_UIElement
 						{
 //							s_logger.severe("updateCellTransforms >=2");
 							
-							if( event.getState().getClass() != State_ViewingCell.class )
+							if( event.getState().getClass() != State_ViewingCell.class || didJustUpdateBuffers )
 							{
 								this.updateCellTransforms(timestep);
+							}
+							else
+							{
+								this.updateCellsWithNoTransforms(timestep);
 							}
 						}
 						else
