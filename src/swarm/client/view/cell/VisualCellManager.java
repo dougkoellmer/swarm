@@ -762,7 +762,7 @@ public class VisualCellManager implements I_UIElement
 					
 					//boolean flushDestroyQueueIfMoving = (event.getState().getUpdateCount() % 8) == 0;
 					
-					s_logger.severe(""+m_viewContext.appContext.cameraMngr.getAtRestFrameCount());
+//					s_logger.severe(""+m_viewContext.appContext.cameraMngr.getAtRestFrameCount());
 //					s_logger.severe(m_cellPool.getInner().getCheckOutCount() + "/" + m_cellPool.getInner().getAllocCount());
 					
 					

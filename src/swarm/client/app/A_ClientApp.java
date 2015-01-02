@@ -467,7 +467,7 @@ public class A_ClientApp extends A_App implements I_TimeSource
 	{
 		double currentTime = U_Time.getSeconds();
 		double timestep = currentTime - m_lastTime;
-		s_logger.severe("APP timestep = " + timestep);
+//		s_logger.severe("APP timestep = " + timestep);
 		m_stateContext.onUpdate(timestep);
 		m_lastTime = currentTime;
 
