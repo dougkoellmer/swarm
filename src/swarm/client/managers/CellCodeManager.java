@@ -176,7 +176,7 @@ public class CellCodeManager implements I_TransactionResponseHandler
 		return txnMngr.containsDispatchedRequest(E_RequestPath.syncCode, m_postQuery);
 	}
 	
-	public void populateCell(BufferCell cell, I_LocalCodeRepository localHtmlSource, int cellSize, boolean communicateWithServer, final E_CodeType eType)
+	public void populateCell(BufferCell cell, I_LocalCodeRepository localHtmlSource, int cellSize, boolean communicateWithServer, boolean populateFromLocal, final E_CodeType eType)
 	{
 		ClientTransactionManager txnMngr = m_appContext.txnMngr;
 		
@@ -195,50 +195,53 @@ public class CellCodeManager implements I_TransactionResponseHandler
 					return;
 				}
 				
-				if( !localHtmlSource.tryPopulatingCell(absCoord, eType, cell) )
+				if( populateFromLocal )
 				{
-					if( communicateWithServer )
+					if( !localHtmlSource.tryPopulatingCell(absCoord, eType, cell) )
 					{
-						//--- DRK > If we're syncing this cell, it's valid for it to not have compiled html, but we 
-						//---		don't want to hit the server because we expect that compiled html from the sync is incoming.
-						//---		Generally the cell WILL have both static and dynamic html already because syncing implies that we've visited
-						//---		the cell and probably gotten data.  We DO NOT need compiled versions of the cell to be able to update it though.
-						//---		Retrieval of the compiled html versions can (theoretically) fail and the retrieval of source can
-						//---		succeed, and editing the cell is still allowed...this is an unlikely scenario on many accounts though.
-						if( isSyncing(absCoord) )
+						if( communicateWithServer )
 						{
-							U_Debug.ASSERT(eType != E_CodeType.SOURCE, "populateCell1");
-							
-							cell.onServerRequest(eType);
-							
-							return;
-						}
-						
-						//--- DRK > This if-check is the last line of defense (as of this writing) to prevent duplicate requests from being sent out.
-						//---		There are more checks in place before this, but this is necessary to catch at least one fringy case:
-						//---
-						//---		(1) User navigates quickly over a cell.
-						//---		(2) Transaction goes out, and cell gets its status for eType set to WAITING_ON_CODE.
-						//---		(3) User navigates past the cell so it's now off screen.
-						//---		(4) User navigates quickly back...the cell now has status of NEEDS_CODE despite a transaction being out.
-						//---		(5) Since a cell's state is somewhat transient and doesn't know that a transaction is already out, we track it here.
-						//---		(6) Cell gets its status set correctly to WAITING_ON_CODE without another transaction going out.
-						prepareGetQuery(cell.getCoordinate(), eType);
-						if( !txnMngr.containsDispatchedRequest(E_RequestPath.getCode, m_getQuery) )
-						{							
-							I_WritesJson codeTypeWrapper = new I_WritesJson()
+							//--- DRK > If we're syncing this cell, it's valid for it to not have compiled html, but we 
+							//---		don't want to hit the server because we expect that compiled html from the sync is incoming.
+							//---		Generally the cell WILL have both static and dynamic html already because syncing implies that we've visited
+							//---		the cell and probably gotten data.  We DO NOT need compiled versions of the cell to be able to update it though.
+							//---		Retrieval of the compiled html versions can (theoretically) fail and the retrieval of source can
+							//---		succeed, and editing the cell is still allowed...this is an unlikely scenario on many accounts though.
+							if( isSyncing(absCoord) )
 							{
-								@Override
-								public void writeJson(I_JsonObject json_out, A_JsonFactory factory)
-								{
-									factory.getHelper().putInt(json_out, E_JsonKey.codeType, eType.ordinal());
-								}
-							};
+								U_Debug.ASSERT(eType != E_CodeType.SOURCE, "populateCell1");
+								
+								cell.onServerRequest(eType);
+								
+								return;
+							}
 							
-							txnMngr.queueRequest(E_RequestPath.getCode, cell.getCoordinate(), codeTypeWrapper);
+							//--- DRK > This if-check is the last line of defense (as of this writing) to prevent duplicate requests from being sent out.
+							//---		There are more checks in place before this, but this is necessary to catch at least one fringy case:
+							//---
+							//---		(1) User navigates quickly over a cell.
+							//---		(2) Transaction goes out, and cell gets its status for eType set to WAITING_ON_CODE.
+							//---		(3) User navigates past the cell so it's now off screen.
+							//---		(4) User navigates quickly back...the cell now has status of NEEDS_CODE despite a transaction being out.
+							//---		(5) Since a cell's state is somewhat transient and doesn't know that a transaction is already out, we track it here.
+							//---		(6) Cell gets its status set correctly to WAITING_ON_CODE without another transaction going out.
+							prepareGetQuery(cell.getCoordinate(), eType);
+							if( !txnMngr.containsDispatchedRequest(E_RequestPath.getCode, m_getQuery) )
+							{							
+								I_WritesJson codeTypeWrapper = new I_WritesJson()
+								{
+									@Override
+									public void writeJson(I_JsonObject json_out, A_JsonFactory factory)
+									{
+										factory.getHelper().putInt(json_out, E_JsonKey.codeType, eType.ordinal());
+									}
+								};
+								
+								txnMngr.queueRequest(E_RequestPath.getCode, cell.getCoordinate(), codeTypeWrapper);
+							}
+						
+							cell.onServerRequest(eType);
 						}
-					
-						cell.onServerRequest(eType);
 					}
 				}
 			}

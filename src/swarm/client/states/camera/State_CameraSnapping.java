@@ -135,7 +135,7 @@ public class State_CameraSnapping extends A_State implements I_StateEventListene
 			m_appContext.codeMngr.nukeFromOrbit(targetCoordinate, nukeType);
 			
 			//--- DRK > Not flushing populator here because requestCodeForTargetCell() will do it for us.
-			this.updateSnapBufferManager(false);
+			this.updateSnapBufferManager(/*flushPopulator=*/false);
 			
 			this.m_hasRequestedSourceCode = false;
 			this.m_hasRequestedCompiledCode = false;
@@ -159,7 +159,7 @@ public class State_CameraSnapping extends A_State implements I_StateEventListene
 			
 			//--- DRK > Same target cell as last time, but target position might
 			//---		have changed enough to require loading/deleting of different nearby cells
-			this.updateSnapBufferManager(true);
+			this.updateSnapBufferManager(/*flushPopulator=*/true);
 		}
 		
 		CameraManager manager = m_appContext.cameraMngr;
@@ -208,7 +208,7 @@ public class State_CameraSnapping extends A_State implements I_StateEventListene
 				//--- DRK > As an optimization, we only retrieve the source html if we're in the html state.
 				if( getContext().isForegrounded(StateMachine_EditingCode.class) )
 				{
-					populator.populateCell(cell, localCodeRepo, 1, true, E_CodeType.SOURCE);
+					populator.populateCell(cell, localCodeRepo, 1, true, /*populateFromLocal=*/true, E_CodeType.SOURCE);
 					
 					m_hasRequestedSourceCode = true;
 				}
@@ -216,7 +216,7 @@ public class State_CameraSnapping extends A_State implements I_StateEventListene
 			
 			if( !m_hasRequestedCompiledCode )
 			{
-				populator.populateCell(cell, localCodeRepo, 1, true, E_CodeType.COMPILED);
+				populator.populateCell(cell, localCodeRepo, 1, true, /*populateFromLocal=*/true, E_CodeType.COMPILED);
 
 				//--- DRK > NOTE that COMPILED_STATIC html will be retrieved implicitly because we update the buffer manager
 				//---		itself before we get into this method...it will be in the same batch too, automatically...cool.
@@ -240,13 +240,13 @@ public class State_CameraSnapping extends A_State implements I_StateEventListene
 		ClientGrid grid = m_appContext.gridMngr.getGrid();
 		I_LocalCodeRepository htmlSource = m_internalCodeRepo;
 		
-		int options = F_BufferUpdateOption.COMMUNICATE_WITH_SERVER;
+		int options = 0x0;
 		if( flushPopulator )
 		{
 			options |= F_BufferUpdateOption.FLUSH_CELL_POPULATOR;
 		}
 		
-		m_snapBufferManager.update_cameraMoving(0.0, grid, m_snapCamera, null, htmlSource, options);
+		m_snapBufferManager.update_cameraMoving(0.0, grid, m_snapCamera, m_targetGridCoordinate, htmlSource, options);
 	}
 	
 	I_LocalCodeRepository getCompiledStaticHtmlSource()
@@ -394,11 +394,11 @@ public class State_CameraSnapping extends A_State implements I_StateEventListene
 					
 					tryToGetTargetCell(/*fireEvent=*/true);
 					
-					this.updateSnapBufferManager(true);
+					this.updateSnapBufferManager(/*flushPopulator=*/true);
 				}
 				else if( event.getTargetClass() == StateMachine_Base.OnGridUpdate.class )
 				{
-					this.updateSnapBufferManager(true);
+					this.updateSnapBufferManager(/*flushPopulator=*/true);
 				}
 				else if( event.getTargetClass() == Event_Camera_OnAddressResponse.class )
 				{

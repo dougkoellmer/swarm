@@ -416,8 +416,8 @@ public class StateMachine_Camera extends A_StateMachine implements I_StateEventL
 					{
 						I_LocalCodeRepository targetCellHtmlSource = snappingState.getHtmlSourceForTargetCell();
 	
-						m_appContext.codeMngr.populateCell(cell, targetCellHtmlSource, 1, false, E_CodeType.COMPILED);
-						m_appContext.codeMngr.populateCell(cell, targetCellHtmlSource, 1, false, E_CodeType.SOURCE);
+						m_appContext.codeMngr.populateCell(cell, targetCellHtmlSource, 1, false, /*populateFromLocal=*/true, E_CodeType.COMPILED);
+						m_appContext.codeMngr.populateCell(cell, targetCellHtmlSource, 1, false, /*populateFromLocal=*/true, E_CodeType.SOURCE);
 					}
 					
 					//--- DRK > NOTE: Don't need to flush populator because we're not telling it to communicate with server.

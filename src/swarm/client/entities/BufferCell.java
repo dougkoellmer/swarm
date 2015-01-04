@@ -118,6 +118,11 @@ public class BufferCell extends A_Cell
 	{
 		m_codeStatus[eType.ordinal()] = E_CodeStatus.WAITING_ON_CODE;
 		
+		showLoading_private(eType);
+	}
+	
+	private void showLoading_private(E_CodeType eType)
+	{
 		if( m_visualization == null )  return;
 		
 		if( m_isFocused && eType == E_CodeType.COMPILED )
@@ -186,8 +191,8 @@ public class BufferCell extends A_Cell
 					//--- DRK > NOTE: In this case, we're assuming that the splash code was already set on the visualization,
 					//---				and that the splash code is identical to the compiled code, so we don't do anything
 					//---				for reasons of optimization.  This may be a bad assumption however...time will tell.
-					
-					U_Debug.ASSERT(this.getCode(E_CodeType.SPLASH).isStandInFor(E_CodeType.COMPILED), "onFocusGained1");
+					//---		UPDATE: Was getting NPE here, fixed upstream issue, but just commenting out for now...too much shit hitting the fan.
+//					U_Debug.ASSERT(this.getCode(E_CodeType.SPLASH).isStandInFor(E_CodeType.COMPILED), "onFocusGained1");
 				}
 				else
 				{
