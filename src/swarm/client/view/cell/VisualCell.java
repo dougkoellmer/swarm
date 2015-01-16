@@ -43,6 +43,7 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.Style.Display;
+import com.google.gwt.dom.client.Style.Overflow;
 import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.storage.client.Storage;
@@ -159,6 +160,7 @@ public class VisualCell extends AbsolutePanel implements I_CellVisualization
 	private I_EventListener m_eventListener;
 	private int m_id;
 	private final AbsolutePanel m_contentPanel = new AbsolutePanel();
+	private Element m_hostElement = null;
 	private final UIBlocker	m_statusPanel = new UIBlocker();
 	private final AbsolutePanel m_glassPanel = new AbsolutePanel();
 	private final I_CellSpinner m_spinner;
@@ -750,6 +752,7 @@ public class VisualCell extends AbsolutePanel implements I_CellVisualization
 		m_isFocused = false;
 		m_isValidated = false;
 		m_subCellDimension = subCellDimension;
+		m_hostElement = null;
 		
 		m_targetWidth = m_defaultWidth = m_baseWidth = m_width = width;
 		m_targetHeight = m_defaultHeight = m_baseHeight = m_height = height;
@@ -774,7 +777,8 @@ public class VisualCell extends AbsolutePanel implements I_CellVisualization
 	
 	public int calcNaturalHeight()
 	{
-		int naturalHeight = m_contentPanel.getElement().getScrollHeight();
+		Element host = m_hostElement != null ? m_hostElement : m_contentPanel.getElement();
+		int naturalHeight = host.getScrollHeight();
 		naturalHeight = naturalHeight < m_defaultHeight ? m_defaultHeight : naturalHeight;
 		
 		return naturalHeight;
@@ -782,7 +786,8 @@ public class VisualCell extends AbsolutePanel implements I_CellVisualization
 	
 	public int calcNaturalWidth()
 	{
-		int naturalWidth = m_contentPanel.getElement().getScrollWidth();
+		Element host = m_hostElement != null ? m_hostElement : m_contentPanel.getElement();
+		int naturalWidth = host.getScrollWidth();
 		naturalWidth = naturalWidth < m_defaultWidth ? m_defaultWidth : naturalWidth;
 		
 		return naturalWidth;
@@ -915,6 +920,7 @@ public class VisualCell extends AbsolutePanel implements I_CellVisualization
 			m_cell1Proxy = null;
 		}
 		
+		m_hostElement = null;
 		m_bufferCell = null;
 		m_isFocused = false;
 		m_subCellDimension = -1;
@@ -1202,7 +1208,7 @@ public class VisualCell extends AbsolutePanel implements I_CellVisualization
 		{
 			//--- DRK > Null check shouldn't be needed but who knows.
 			boolean loadProxy = !m_isFocused && m_cell1Proxy == null;
-			Element hostElement = m_contentPanel.getElement();
+			m_hostElement = m_contentPanel.getElement();
 			
 			if( loadProxy )
 			{
@@ -1210,22 +1216,24 @@ public class VisualCell extends AbsolutePanel implements I_CellVisualization
 				
 				if( !m_cell1Proxy.isLoaded() )
 				{
-					hostElement = DOM.createDiv();
-					hostElement.getStyle().setWidth(100, Unit.PCT);
-					hostElement.getStyle().setHeight(100, Unit.PCT);
+					m_hostElement = DOM.createDiv();
+					m_hostElement.getStyle().setWidth(100, Unit.PCT);
+					m_hostElement.getStyle().setHeight(100, Unit.PCT);
+					m_hostElement.getStyle().setPosition(Position.RELATIVE);
+					m_hostElement.getStyle().setOverflow(Overflow.HIDDEN);
 					
 					m_sandboxMngr.stop(m_contentPanel.getElement());
-					m_contentPanel.getElement().appendChild(hostElement);
+					m_contentPanel.getElement().appendChild(m_hostElement);
 				}
 				
 				m_cell1Proxy.onAttached();
 			}
 			
-			setCode_nonMeta(hostElement, code, cellNamespace);
+			setCode_nonMeta(m_hostElement, code, cellNamespace);
 			
 			if( loadProxy )
 			{
-				m_cell1ImageLoader.load(m_cell1Proxy, hostElement, m_cell1LoadListener);
+				m_cell1ImageLoader.load(m_cell1Proxy, m_hostElement, m_cell1LoadListener);
 			}
 		}
 		
