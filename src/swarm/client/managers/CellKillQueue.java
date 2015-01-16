@@ -138,7 +138,12 @@ class CellKillQueue extends A_BufferCellList
 			{
 				m_cellList.remove(i);
 			}
-			else if( !ithCell.getVisualization().isLoaded() || ithCell.kill()  || (isEverythingLoadedAbove(grid, ithCell) && isEverythingLoadedUnderneath(grid, ithCell)) )
+			else if
+			(
+				!ithCell.getVisualization().isLoaded() ||//&& m_subCellCount > 1	||
+				ithCell.kill()													||
+				(isEverythingLoadedAbove(grid, ithCell) && isEverythingLoadedUnderneath(grid, ithCell))
+			)
 			{
 				for( int ithSubCellCount = m_subCellCount >>> 1; ithSubCellCount > 0; ithSubCellCount >>>= 1 )
 				{

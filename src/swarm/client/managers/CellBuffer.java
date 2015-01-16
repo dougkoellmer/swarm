@@ -124,7 +124,7 @@ public class CellBuffer extends A_BufferCellList
 	
 	private void deallocOrSentenceToDeathIfLoaded(BufferCell cell)
 	{
-		if( !cell.getVisualization().isLoaded() )
+		if( !cell.getVisualization().isLoaded() )//&& m_subCellCount > 1 )
 		{
 //			if( m_subCellCount == 1 )  s_logger.severe("DESTROYED");
 			m_cellPool.deallocCell(cell);
@@ -213,7 +213,7 @@ public class CellBuffer extends A_BufferCellList
 							{
 								I_CellVisualization obscuringCellVisualization = obscuringCell.getVisualization();
 								
-								if( obscuringCellVisualization.isLoaded() )
+								if( obscuringCellVisualization != null && obscuringCellVisualization.isFullyDisplayed() )
 								{
 									if( m_obscured.offset == 1 )
 									{
@@ -237,7 +237,7 @@ public class CellBuffer extends A_BufferCellList
 				//--- DRK > For a brief time the swap method's success was determined by us being aboveCurrentSubCellCount
 				//---		but I believe I meant aboveCurrentSubCellCount && obscured. This still might be faulty.
 				//---		Maybe we want to be greedy and never check if cell is loaded. !isBeingSnappedTo added now later in the day too.
-				boolean onlySwapIfLoaded = !isBeingSnappedTo && aboveCurrentSubCellCount && obscured;
+				boolean onlySwapIfLoaded = !isBeingSnappedTo && aboveCurrentSubCellCount && obscured && m_subCellCount > 1;
 //				boolean checkIsLoaded = false;
 				
 				if( swap(m, n, otherBuffer, this, onlySwapIfLoaded) != null )

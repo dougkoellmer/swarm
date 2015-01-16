@@ -898,7 +898,7 @@ public class VisualCell extends AbsolutePanel implements I_CellVisualization
 	
 	public void onDestroy()
 	{
-//		if( m_subCellDimension == 1 && m_bufferCell.getCoordinate().isEqualTo(16, 14) )
+//		if( m_subCellDimension == 1 && m_bufferCell.getCoordinate().isEqualTo(18, 16) )
 //		{
 //			s_logger.severe("DESTROYED THE CELL");
 //		}
@@ -1358,7 +1358,7 @@ public class VisualCell extends AbsolutePanel implements I_CellVisualization
 	
 	@Override public boolean isFullyDisplayed()
 	{
-		return m_visible && !m_fadingIn;
+		return isLoaded() && m_visible && !m_fadingIn;
 	}
 
 	@Override public boolean isLoaded()
