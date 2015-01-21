@@ -145,6 +145,7 @@ public class CellBuffer extends A_BufferCellList
 		boolean justRemovedOverride = (options__extends__smF_BufferUpdateOption & F_BufferUpdateOption.JUST_REMOVED_OVERRIDE) != 0;
 		boolean populateFromLocal = (options__extends__smF_BufferUpdateOption & F_BufferUpdateOption.POPULATE_CODE_FROM_LOCAL_SOURCES) != 0;
 		boolean madeOrSwappedSnapTargetCell = false;
+		BufferCell snapTargetCell = null;
 
 		int i, m, n;
 		
@@ -256,7 +257,12 @@ public class CellBuffer extends A_BufferCellList
 					{
 //						if( m_subCellCount == 1 )  s_logger.severe("SAVED");
 						
-						madeOrSwappedSnapTargetCell = isBeingSnappedTo ? true : madeOrSwappedSnapTargetCell;
+						if( isBeingSnappedTo )
+						{
+							snapTargetCell = cellFromKillQueue;
+							madeOrSwappedSnapTargetCell = true;
+						}
+						
 						cellFromKillQueue.saveFromDeathSentence();
 						
 						continue;
@@ -285,16 +291,17 @@ public class CellBuffer extends A_BufferCellList
 		//---		the metacell skip over logic at the top of the loop above.
 		if( !madeOrSwappedSnapTargetCell && m_subCellCount == 1 && snapCoord_nullable != null )
 		{
-			if( swap(snapCoord_nullable.getM(), snapCoord_nullable.getN(), otherBuffer, this, /*onlySwapIfLoaded=*/false) == null )
+			snapTargetCell = swap(snapCoord_nullable.getM(), snapCoord_nullable.getN(), otherBuffer, this, /*onlySwapIfLoaded=*/false);
+			if( snapTargetCell == null )
 			{
-				BufferCell cellSavedFromDeathSentence = swap(snapCoord_nullable.getM(), snapCoord_nullable.getN(), m_killQueue, this, /*onlySwapIfLoaded=*/false);
-				if( cellSavedFromDeathSentence != null )
+				snapTargetCell = swap(snapCoord_nullable.getM(), snapCoord_nullable.getN(), m_killQueue, this, /*onlySwapIfLoaded=*/false);
+				if( snapTargetCell != null )
 				{
-					cellSavedFromDeathSentence.saveFromDeathSentence();
+					snapTargetCell.saveFromDeathSentence();
 				}
 				else if( this.isInBoundsAbsolute(snapCoord_nullable) )
 				{
-					makeNewCell(snapCoord_nullable.getM(), snapCoord_nullable.getN(), grid, localCodeSource, createVisualizations, communicateWithServer | communicateWithServerForSnapTarget, justRemovedOverride);
+					snapTargetCell = makeNewCell(snapCoord_nullable.getM(), snapCoord_nullable.getN(), grid, localCodeSource, createVisualizations, communicateWithServer | communicateWithServerForSnapTarget, justRemovedOverride);
 				}
 			}
 		}
@@ -316,6 +323,21 @@ public class CellBuffer extends A_BufferCellList
 			{
 				BufferCell ithCell = m_cellList.get(i);
 				m_codeMngr.populateCell(ithCell, localCodeSource, m_subCellCount, communicateWithServer, populateFromLocal, E_CodeType.SPLASH);
+			}
+		}
+		else if( communicateWithServerForSnapTarget )
+		{
+			if( snapCoord_nullable != null && m_subCellCount == 1) // just being anal
+			{
+				if( snapTargetCell == null )
+				{
+					snapTargetCell = getCellAtAbsoluteCoord(snapCoord_nullable);
+				}
+				
+				if( snapTargetCell != null )
+				{
+					m_codeMngr.populateCell(snapTargetCell, localCodeSource, m_subCellCount, /*communicateWithServer=*/true, /*populateFromLocal=*/true, E_CodeType.SPLASH);
+				}
 			}
 		}
 		
@@ -358,7 +380,7 @@ public class CellBuffer extends A_BufferCellList
 		}
 	}
 	
-	private void makeNewCell(int m, int n, ClientGrid grid, I_LocalCodeRepository localCodeSource, boolean createVisualizations, boolean hitPopulator, boolean justRemovedOverride)
+	private BufferCell makeNewCell(int m, int n, ClientGrid grid, I_LocalCodeRepository localCodeSource, boolean createVisualizations, boolean hitPopulator, boolean justRemovedOverride)
 	{
 		int highestPossibleSubCellCount = 0x1 << m_parent.getBufferCount();
 		BufferCell newCell = m_cellPool.allocCell(grid, m_subCellCount, highestPossibleSubCellCount, createVisualizations, m, n, justRemovedOverride);
@@ -385,6 +407,8 @@ public class CellBuffer extends A_BufferCellList
 		{
 			m_cellSizeMngr.populateCellSize(s_utilMapping, this.m_parent, newCell);
 		}
+		
+		return newCell;
 	}
 	
 	@Override public BufferCell getCellAtAbsoluteCoord(int m, int n)

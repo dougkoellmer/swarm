@@ -38,6 +38,8 @@ public class BufferCell extends A_Cell
 	private double m_deathCountdown = -1;
 	private double m_totalDeathTime = -1;
 	
+	private boolean m_hasEverSetCodeOnVisualization = false;
+	
 	public BufferCell() 
 	{
 		this.setStatusAll(E_CodeStatus.NEEDS_CODE);
@@ -196,7 +198,7 @@ public class BufferCell extends A_Cell
 				}
 				else
 				{
-					m_visualization.setCode(code, this.getCellNamespace());
+					setCodeOnVis(code, this.getCellNamespace());
 				}
 			}
 			else if( compiledStatus == E_CodeStatus.GET_ERROR )
@@ -224,7 +226,7 @@ public class BufferCell extends A_Cell
 				Code code = this.getCode(E_CodeType.SPLASH);
 				if( splashStatus == E_CodeStatus.HAS_CODE && code != null && code.isStandInFor(E_CodeType.COMPILED))
 				{
-					m_visualization.setCode(code, this.getCellNamespace());
+					setCodeOnVis(code, this.getCellNamespace());
 					
 					//--- DRK > This ASSERT and similar one below don't seem to make sense cause the case would have
 					//---		been caught upstream in the if/else.
@@ -347,6 +349,14 @@ public class BufferCell extends A_Cell
 	
 	private void setCode_private(E_CodeType eType, Code code, boolean updateVisualization)
 	{
+		if( getCoordinate().isEqualTo(16, 14) )
+		{
+			boolean onlineBuffer = getVisualization() != null;
+			String onlineBufferString = onlineBuffer ? "ONLINE" : "OFFLINE";
+			
+			s_logger.severe("setCode for " + onlineBufferString + " " + eType + " with updateVis=" + updateVisualization + " and isFocused=" + m_isFocused);
+		}
+		
 		super.setCode(eType, code);
 		
 		if( code == null )  return;
@@ -362,7 +372,7 @@ public class BufferCell extends A_Cell
 				{
 					if( updateVisualization )
 					{
-						m_visualization.setCode(code, this.getCellNamespace());
+						setCodeOnVis(code, this.getCellNamespace());
 					}
 				}
 			}
@@ -373,11 +383,18 @@ public class BufferCell extends A_Cell
 				{
 					if( updateVisualization )
 					{
-						m_visualization.setCode(code, this.getCellNamespace());
+						setCodeOnVis(code, this.getCellNamespace());
 					}
 				}
 			}
 		}
+	}
+	
+	private void setCodeOnVis(Code code, String namespace)
+	{
+		m_visualization.setCode(code, namespace);
+		
+		m_hasEverSetCodeOnVisualization = true;
 	}
 	
 	public void setVisualization(I_CellVisualization visualization)
@@ -410,6 +427,8 @@ public class BufferCell extends A_Cell
 	private void clear_private()
 	{
 		super.clearCode();
+		
+		m_hasEverSetCodeOnVisualization = false;
 		
 		this.setStatusAll(E_CodeStatus.NEEDS_CODE);
 		this.m_focusedCellSize.setToDefaults();

@@ -949,7 +949,7 @@ public class VisualCell extends AbsolutePanel implements I_CellVisualization
 	}
 	
 	@Override public void onFocusGained()
-	{
+	{		
 		this.setVisible(true);
 		
 		m_isSnapping = false;
@@ -1136,7 +1136,7 @@ public class VisualCell extends AbsolutePanel implements I_CellVisualization
 	}
 	
 	@Override public void setCode(Code code, String cellNamespace)
-	{
+	{		
 		boolean snappingOrFocused = m_subCellDimension == 1 && (m_isSnapping || m_isFocused);
 		
 		if( m_subCellDimension > 1 )
@@ -1192,7 +1192,7 @@ public class VisualCell extends AbsolutePanel implements I_CellVisualization
 	}
 
 	private void setCode_private(Code code, String cellNamespace)
-	{
+	{		
 		setCode_commonPreInit(code);
 		
 		if( m_codeSafetyLevel == E_CodeSafetyLevel.META_IMAGE )

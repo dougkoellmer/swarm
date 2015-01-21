@@ -178,6 +178,9 @@ public class CellCodeManager implements I_TransactionResponseHandler
 	
 	public void populateCell(BufferCell cell, I_LocalCodeRepository localHtmlSource, int cellSize, boolean communicateWithServer, boolean populateFromLocal, final E_CodeType eType)
 	{
+//		boolean onlineBuffer = cell.getVisualization() != null;
+//		String onlineBufferString = onlineBuffer ? "ONLINE" : "OFFLINE";
+		
 		ClientTransactionManager txnMngr = m_appContext.txnMngr;
 		
 		GridCoordinate absCoord = cell.getCoordinate();
@@ -199,6 +202,10 @@ public class CellCodeManager implements I_TransactionResponseHandler
 				{
 					if( !localHtmlSource.tryPopulatingCell(absCoord, eType, cell) )
 					{
+//						if( cell.getCoordinate().isEqualTo(16, 14) )
+//						{
+//							s_logger.severe("DIDN'T "+onlineBufferString+" POPULATE FROM LOCAL: " + eType);
+//						}
 						if( communicateWithServer )
 						{
 							//--- DRK > If we're syncing this cell, it's valid for it to not have compiled html, but we 
@@ -242,6 +249,13 @@ public class CellCodeManager implements I_TransactionResponseHandler
 						
 							cell.onServerRequest(eType);
 						}
+					}
+					else
+					{
+//						if( cell.getCoordinate().isEqualTo(16, 14) )
+//						{
+//							s_logger.severe("POPULATED "+onlineBufferString+" FROM LOCAL: " + eType);
+//						}
 					}
 				}
 			}

@@ -216,6 +216,11 @@ public class State_CameraSnapping extends A_State implements I_StateEventListene
 			
 			if( !m_hasRequestedCompiledCode )
 			{
+//				if( cell.getCoordinate().isEqualTo(16, 14) )
+//				{
+//					s_logger.severe("REQUESTING COMPILED");
+//				}
+				
 				populator.populateCell(cell, localCodeRepo, 1, true, /*populateFromLocal=*/true, E_CodeType.COMPILED);
 
 				//--- DRK > NOTE that COMPILED_STATIC html will be retrieved implicitly because we update the buffer manager
