@@ -349,13 +349,13 @@ public class BufferCell extends A_Cell
 	
 	private void setCode_private(E_CodeType eType, Code code, boolean updateVisualization)
 	{
-		if( getCoordinate().isEqualTo(16, 14) )
-		{
-			boolean onlineBuffer = getVisualization() != null;
-			String onlineBufferString = onlineBuffer ? "ONLINE" : "OFFLINE";
-			
-			s_logger.severe("setCode for " + onlineBufferString + " " + eType + " with updateVis=" + updateVisualization + " and isFocused=" + m_isFocused);
-		}
+//		if( getCoordinate().isEqualTo(16, 14) )
+//		{
+//			boolean onlineBuffer = getVisualization() != null;
+//			String onlineBufferString = onlineBuffer ? "ONLINE" : "OFFLINE";
+//			
+//			s_logger.severe("setCode for " + onlineBufferString + " " + eType + " with updateVis=" + updateVisualization + " and isFocused=" + m_isFocused);
+//		}
 		
 		super.setCode(eType, code);
 		

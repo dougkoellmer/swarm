@@ -495,7 +495,13 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 		{
 			BufferCell cell = state.getCell();
 			
-			if( cell == null || !((VisualCell)cell.getVisualization()).isPoppedUp() )  return;
+			if( cell == null || !((VisualCell)cell.getVisualization()).isPoppedUp() )
+			{
+				if( m_alpha <= 0.0 )
+				{
+					return;
+				}
+			}
 		}
 		
 		setTargetWidth(coord);
