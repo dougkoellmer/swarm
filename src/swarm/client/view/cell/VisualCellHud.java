@@ -121,14 +121,14 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 					VisualCellHud.this.setPositionInstantly(viewingState.getTargetCoord(), true);
 					flushCropping();
 					
-					if( getScrollY() >= grid.getCellPadding() )
-					{
-						VisualCellHud.this.setAlpha(.75);
-					}
-					else
-					{
-						VisualCellHud.this.setAlpha(1);
-					}
+//					if( getScrollY() >= grid.getCellPadding() )
+//					{
+//						VisualCellHud.this.setAlpha(.75);
+//					}
+//					else
+//					{
+//						VisualCellHud.this.setAlpha(1);
+//					}
 				}
 				else
 				{
@@ -211,6 +211,11 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 		{
 			return 0.0;
 		}
+	}
+	
+	private double calcScrollYOffset()
+	{
+		return -getScrollY();
 	}
 
 	@Override public void onStateEvent(A_BaseStateEvent event)
@@ -590,7 +595,7 @@ public class VisualCellHud extends FlowPanel implements I_UIElement
 		A_Grid grid = m_viewContext.appContext.gridMngr.getGrid();
 		targetCoord.calcPoint(point_out, grid.getCellWidth(), grid.getCellHeight(), grid.getCellPadding(), 1);
 		point_out.incY(this.calcYOffsetFromCellTop(grid));
-		
+		point_out.incY(this.calcScrollYOffset());
 		point_out.incX(this.calcScrollXOffset(grid));
 		
 		if( forTargetLayout )

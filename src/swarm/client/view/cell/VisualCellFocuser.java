@@ -115,7 +115,7 @@ public class VisualCellFocuser extends FlowPanel implements I_UIElement
 				{
 					VisualCell visualCell = (VisualCell) cell.getVisualization();
 					
-					if( m_appContext.cellBufferMngr.getNonOverriddenSubCellCount() == 1 || visualCell.isLoaded() )
+					if( m_appContext.cellBufferMngr.getNonOverriddenSubCellCount() == 1 || visualCell.isLoadedEnoughForPop() )
 					{
 						popUp(visualCell);
 						m_poppedCell = visualCell;

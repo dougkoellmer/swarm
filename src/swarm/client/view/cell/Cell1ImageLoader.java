@@ -29,12 +29,18 @@ public class Cell1ImageLoader
 		{
 			m_listener = listener;
 			
-			resetRenderingState();
+			setToRendered();
 			
 			if( m_listener != null )
 			{
 				m_listener.onLoaded(this);
+				m_listener.onRendered(this);
 			}
+		}
+		
+		@Override protected double getRenderTime()
+		{
+			return .3;
 		}
 		
 		private void startLoad(Element element, I_Listener listener)

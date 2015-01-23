@@ -123,6 +123,7 @@ public class VisualCell extends AbsolutePanel implements I_CellVisualization
 			if( entry != m_cell1Proxy )  return; // should never happen.
 			
 			ensureFadedIn();
+			setDefaultZIndex();
 		}
 		
 		@Override public void onLoaded(CellImageProxy proxy)
@@ -133,13 +134,14 @@ public class VisualCell extends AbsolutePanel implements I_CellVisualization
 		@Override public void onLoadFailed(CellImageProxy proxy)
 		{
 			onLoadOrFail(proxy);
+			
+			setDefaultZIndex();
 		}
 		
 		private void onLoadOrFail(CellImageProxy proxy)
 		{
 			if( proxy != m_cell1Proxy )  return; // should never happen.
 			
-			setDefaultZIndex();
 			VisualCell.this.setVisible(true);
 			m_contentPanel.setVisible(true);
 		}
@@ -1367,6 +1369,11 @@ public class VisualCell extends AbsolutePanel implements I_CellVisualization
 	@Override public boolean isFullyDisplayed()
 	{
 		return isLoaded() && m_visible && !m_fadingIn;
+	}
+	
+	public boolean isLoadedEnoughForPop()
+	{
+		return m_cell1Proxy != null && m_cell1Proxy.getState() == E_ImageLoadState.DEFINITELY_SHOULD_BE_RENDERED_BY_NOW;
 	}
 
 	@Override public boolean isLoaded()

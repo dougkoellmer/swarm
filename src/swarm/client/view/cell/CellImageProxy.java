@@ -16,7 +16,7 @@ public abstract class CellImageProxy
 	}
 	
 	private static final double META_IMAGE_RENDER_DELAY__SHOULD_BE = 2.0;
-	private static final double META_IMAGE_RENDER_DELAY__DEFINITELY_SHOULD_BE = META_IMAGE_RENDER_DELAY__SHOULD_BE + 0.0;
+	private static final double META_IMAGE_RENDER_DELAY__DEFINITELY_SHOULD_BE =  0.0;
 	
 	protected E_ImageLoadState m_state;
 	private double m_timer = 0.0;
@@ -40,6 +40,11 @@ public abstract class CellImageProxy
 	boolean isAttached()
 	{
 		return m_attached;
+	}
+	
+	protected double getRenderTime()
+	{
+		return META_IMAGE_RENDER_DELAY__SHOULD_BE;
 	}
 	
 	public double getTimeRendering()
@@ -68,12 +73,13 @@ public abstract class CellImageProxy
 		}
 		
 		E_ImageLoadState oldState = m_state;
+		double renderTime = getRenderTime();
 		
-		if( m_timer >= META_IMAGE_RENDER_DELAY__DEFINITELY_SHOULD_BE )
+		if( m_timer >= renderTime + META_IMAGE_RENDER_DELAY__DEFINITELY_SHOULD_BE )
 		{
 			m_state = E_ImageLoadState.DEFINITELY_SHOULD_BE_RENDERED_BY_NOW;
 		}
-		else if( m_timer >= META_IMAGE_RENDER_DELAY__SHOULD_BE )
+		else if( m_timer >= renderTime )
 		{
 			m_state = E_ImageLoadState.SHOULD_BE_RENDERED_BY_NOW;
 		}
@@ -113,6 +119,11 @@ public abstract class CellImageProxy
 	{
 		m_state = E_ImageLoadState.RENDERING;
 		m_timer = 0.0;
+	}
+	
+	protected void setToRendered()
+	{
+		m_state = E_ImageLoadState.DEFINITELY_SHOULD_BE_RENDERED_BY_NOW;
 	}
 	
 	void onAttached()
