@@ -38,9 +38,9 @@ class CellKillQueue extends A_BufferCellList
 		}
 	};
 	
-	private final CustomObscured m_customObscured = new CustomObscured();
+	private final CustomObscured m_obscured_everythingAbove = new CustomObscured();
 	
-	private final ClientGrid.Obscured m_obscured = new ClientGrid.Obscured();
+	private final ClientGrid.Obscured m_obscured_below = new ClientGrid.Obscured();
 	private final double m_deathCountdown;
 	
 	CellKillQueue(CellBufferManager parent, int subCellCount, BufferCellPool pool, double deathCountdown)
@@ -73,11 +73,12 @@ class CellKillQueue extends A_BufferCellList
 		}
 	}
 	
+	// LOGIC OK
 	private boolean isEverythingLoadedAbove(ClientGrid grid, BufferCell cell)
 	{
 		int maxSubCellCount = m_parent.getHighestDisplayBuffer().getSubCellCount();
 		
-		if( grid.isObscured(cell.getCoordinate().getM(), cell.getCoordinate().getN(), m_subCellCount, maxSubCellCount, m_customObscured) )
+		if( grid.isObscured(cell.getCoordinate().getM(), cell.getCoordinate().getN(), m_subCellCount, maxSubCellCount, m_obscured_everythingAbove) )
 		{
 			return false;
 		}
@@ -85,7 +86,7 @@ class CellKillQueue extends A_BufferCellList
 		return true;
 	}
 	
-	private boolean isEverythingLoadedUnderneath(ClientGrid grid, BufferCell cell)
+	private boolean isEverythingLoadedUnderneath(BufferCell cell, ClientGrid grid)
 	{
 		if( m_subCellCount <= 1 )  return true;
 		
@@ -102,7 +103,7 @@ class CellKillQueue extends A_BufferCellList
 				
 				if( isObscuring(grid, cell, jthCell, ithSubCellCount))
 				{
-					if( !jthCell.getVisualization().isLoaded() )
+					if( !jthCell.getVisualization().isFullyDisplayed() )
 					{
 						return false;
 					}
@@ -117,9 +118,10 @@ class CellKillQueue extends A_BufferCellList
 	{
 		if( lowCell == null )  return false;
 		
-		if( grid.isObscured(lowCell.getCoordinate().getM(), lowCell.getCoordinate().getN(), subCellCount_low, m_subCellCount, /*depth=*/1, m_obscured) )
+		//--- DRK > Using max depth of 1 here cause we don't care about checking past highCell's subCellCount.
+		if( grid.isObscured(lowCell.getCoordinate().getM(), lowCell.getCoordinate().getN(), subCellCount_low, m_subCellCount, /*maxDepth=*/1, m_obscured_below) )
 		{
-			if( m_subCellCount == m_obscured.subCellCount && highCell.getCoordinate().isEqualTo(m_obscured.m, m_obscured.n) )
+			if( m_subCellCount == m_obscured_below.subCellCount && highCell.getCoordinate().isEqualTo(m_obscured_below.m, m_obscured_below.n) )
 			{
 				return true;
 			}
@@ -142,7 +144,7 @@ class CellKillQueue extends A_BufferCellList
 			(
 				!ithCell.getVisualization().isLoaded() ||//&& m_subCellCount > 1	||
 				ithCell.kill()													||
-				(isEverythingLoadedAbove(grid, ithCell) && isEverythingLoadedUnderneath(grid, ithCell))
+				(isEverythingLoadedAbove(grid, ithCell) && isEverythingLoadedUnderneath(ithCell, grid))
 			)
 			{
 				for( int ithSubCellCount = m_subCellCount >>> 1; ithSubCellCount > 0; ithSubCellCount >>>= 1 )
