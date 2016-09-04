@@ -37,7 +37,6 @@ import swarm.shared.structs.MutableCode;
 import swarm.shared.structs.Point;
 import swarm.shared.structs.Rect;
 
-import com.dougkoellmer.client.app.ClientApp;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;

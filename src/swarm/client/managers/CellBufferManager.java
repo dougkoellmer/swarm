@@ -3,8 +3,6 @@ package swarm.client.managers;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
-import com.dougkoellmer.shared.app.S_App;
-
 import swarm.client.entities.Camera;
 import swarm.client.entities.BufferCell;
 import swarm.client.entities.ClientGrid;

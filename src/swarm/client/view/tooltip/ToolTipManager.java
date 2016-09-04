@@ -13,7 +13,6 @@ import swarm.client.view.alignment.E_AlignmentType;
 import swarm.client.view.alignment.U_Alignment;
 import swarm.shared.debugging.U_Debug;
 import swarm.shared.structs.Point;
-import com.gargoylesoftware.htmlunit.javascript.host.Event;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
