@@ -192,13 +192,13 @@ public class CellPreviewServlet extends A_BaseServlet
 								String nodeWebkitStuff  =
 										"setTimeout(function()" +
 										"{" +
-										"	var gui = require('nw.gui');" +
+										"	var gui = window.require('nw.gui');" +
 										"	var win = gui.Window.get();" +
 										"	win.capturePage(function(img)" +
 										"	{" +
 										"		var base64Data = img.replace(/^data:image\\\\/(png|jpg|jpeg);base64,/, '');" +
 										"		console.log(base64Data);" +
-										"		require('fs').writeFile('"+imageName+".jpg', base64Data, 'base64', function(err)" +
+										"		nw.require('fs').writeFile('"+imageName+".jpg', base64Data, 'base64', function(err)" +
 										"		{" +
 										"			console.log(err);" +
 										"			win.close();" +
